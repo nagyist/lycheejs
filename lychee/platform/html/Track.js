@@ -64,7 +64,6 @@ lychee.define('Track').tags({
 	}
 
 
-
 	var _supportedFormats = [];
 	for (var ext in _codecs) {
 		if (_codecs[ext] !== false) {
@@ -75,7 +74,6 @@ lychee.define('Track').tags({
 	if (lychee.debug === true) {
 		console.log("lychee.Track: Supported media formats are " + _supportedFormats.join(', '));
 	}
-
 
 
 	var Class = function(id, settings, isReady) {
@@ -133,6 +131,12 @@ lychee.define('Track').tags({
 				formats: []
 			},
 
+
+
+			/*
+			 * PRIVATE API
+			 */
+
 			__init: function(url) {
 
 				// Shared context = more performance
@@ -174,6 +178,7 @@ lychee.define('Track').tags({
 			/*
 			 * PUBLIC API
 			 */
+
 			play: function(loop) {
 
 				loop = loop === true ? true : false;
@@ -228,6 +233,7 @@ lychee.define('Track').tags({
 			// a setTimeout() way of doing this, but it caused
 			// several timing problems due to different behaviours
 			// of timeouts if a Page/Tab is hidden
+
 			pause: function() {
 				this.__wasLoopingBeforePause = this.__isLooping;
 				this.stop();
@@ -300,6 +306,7 @@ lychee.define('Track').tags({
 					this.__isIdle = true;
 				}
 
+
 				return this.__isIdle;
 
 			},
@@ -332,6 +339,7 @@ lychee.define('Track').tags({
 			/*
 			 * PRIVATE API
 			 */
+
 			__init: function(url) {
 
 				this.__audio = new Audio(url);
@@ -390,6 +398,7 @@ lychee.define('Track').tags({
 			/*
 			 * PUBLIC API
 			 */
+
 			play: function(loop) {
 
 				loop = loop === true ? true : false;
@@ -437,6 +446,7 @@ lychee.define('Track').tags({
 
 				}
 
+
 				return false;
 
 			},
@@ -451,6 +461,7 @@ lychee.define('Track').tags({
 					return true;
 
 				}
+
 
 				return false;
 
@@ -468,6 +479,7 @@ lychee.define('Track').tags({
 				if (newVolume === volume) {
 					return true;
 				}
+
 
 				return false;
 

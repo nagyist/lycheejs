@@ -4,9 +4,10 @@
 
 		"platform": {
 
-			"html": "platform/html",
-			"v8gl": "platform/v8gl",
-			"webgl": "platform/webgl"
+			"html":   "platform/html",
+			"nodejs": "platform/nodejs",
+			"v8gl":   "platform/v8gl",
+			"webgl":  "platform/webgl"
 
 		}
 
@@ -20,7 +21,15 @@
 
 				"Input": [ "js" ],
 				"Jukebox": [ "js" ],
-				"Preloader": [ "js" ],
+				"Renderer": [ "js" ],
+				"Track": [ "js" ]
+
+			},
+
+			"nodejs": {
+
+				"Input": [ "js" ],
+				"Jukebox": [ "js" ],
 				"Renderer": [ "js" ],
 				"Track": [ "js" ]
 
@@ -34,7 +43,6 @@
 
 				"Input": [ "js" ],
 				"Jukebox": [ "js" ],
-				"Preloader": [ "js" ],
 				"Renderer": [ "js" ],
 				"Track": [ "js" ]
 
@@ -48,14 +56,18 @@
 
 		"game": {
 			"Entity": [ "js" ],
+			"Graph": [ "js" ],
 			"Loop": [ "js" ],
 			"Main": [ "js" ],
+			"Sprite": [ "js" ],
 			"State": [ "js" ],
 			"Jukebox": [ "js" ]
 		},
 
 		"physics": {
 			"Particle": [ "js" ],
+			"ParticleEmitter": [ "js" ],
+			"ParticleMagnet": [ "js" ],
 			"Vector": [ "js" ]
 		},
 
@@ -64,6 +76,16 @@
 			"ASTWalker": [ "js" ],
 			"Tokenizer": [ "js" ],
 			"Parser": [ "js" ]
+		},
+
+		"ui": {
+			"Entity": [ "js" ],
+			"Graph": [ "js" ],
+			"Renderer": [ "js" ],
+			"Button": [ "js" ],
+			"Sprite": [ "js" ],
+			"Text": [ "js" ],
+			"Tile": [ "js" ]
 		},
 
 		"Font": [ "js" ],

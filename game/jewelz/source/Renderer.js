@@ -1,70 +1,45 @@
 
-lychee.define('game.Renderer').requires([
-	'game.entity.Jewel',
-	'game.entity.Text'
-]).includes([
-	'lychee.Renderer'
+lychee.define('game.Renderer').includes([
+	'lychee.ui.Renderer'
 ]).exports(function(lychee, global) {
 
 	var Class = function(id) {
 
-		lychee.Renderer.call(this, id);
-
-		this.settings = lychee.extend({}, this.defaults);
-
-		this.__map = {};
+		lychee.ui.Renderer.call(this, id);
 
 	};
 
 	Class.prototype = {
 
-		defaults: {
-			sprite: null,
-			map: null,
-			tile: 0
-		},
+		renderDeco: function(entity) {
 
-		reset: function(width, height, resetCache, settings) {
-
-			lychee.Renderer.prototype.reset.call(this, width, height, resetCache);
-
-			if (Object.prototype.toString.call(settings) === '[object Object]') {
-				this.settings = lychee.extend({}, this.settings, settings);
-			}
+			var map = entity.getMap();
+			var pos = entity.getPosition();
+			var image = entity.getImage();
 
 
-			this.__map.w = this.settings.tile;
-			this.__map.h = this.settings.tile;
-
+			this.drawSprite(
+				pos.x - entity.width / 2,
+				pos.y - entity.height / 2,
+				image,
+				map
+			);
 
 		},
 
 		renderJewel: function(entity) {
 
-			var map = this.settings.map['jewel-' + entity.getColor()];
-			var tile = this.settings.tile;
-			var sprite = this.settings.sprite;
+			var map = entity.getMap();
 			var pos = entity.getPosition();
-
-			this.__map.x = map.x * tile;
-			this.__map.y = map.y * tile;
+			var image = entity.getImage();
 
 
 			this.drawSprite(
-				pos.x - tile / 2,
-				pos.y - tile / 2,
-				sprite,
-				this.__map
+				pos.x - entity.width / 2,
+				pos.y - entity.height / 2,
+				image,
+				map
 			);
-
-		},
-
-		renderText: function(entity) {
-
-			var pos = entity.getPosition();
-
-
-			this.drawText(pos.x, pos.y, entity.text, entity.font);
 
 		}
 

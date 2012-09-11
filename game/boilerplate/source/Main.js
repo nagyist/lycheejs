@@ -17,9 +17,8 @@ lychee.define('game.Main').requires([
 
 		this.fonts = {};
 		this.sprite = null;
-		this.map = null;
 
-		this.__offset = null;
+		this.__offset = { x: 0, y: 0 };
 
 		this.load();
 
@@ -29,6 +28,7 @@ lychee.define('game.Main').requires([
 	Class.prototype = {
 
 		defaults: {
+			title: 'boilerplate',
 			base: './asset',
 			sound: true,
 			music: true,
@@ -47,7 +47,8 @@ lychee.define('game.Main').requires([
 				base + '/img/font_48_white.png',
 				base + '/img/font_32_white.png',
 				base + '/img/font_16_white.png',
-				base + '/img/sprite.png'
+				base + '/img/sprite.png',
+				base + '/json/sprite.json'
 			];
 
 
@@ -78,49 +79,12 @@ lychee.define('game.Main').requires([
 				});
 
 
-				this.map = {
-					sprite: {
-						image: assets[urls[3]],
-						states: {
-							'first': {
-								width:  32,
-								height: 32,
-								map: [
-									{ x: 0,    y: 0, w: 32, h: 32 },
-									{ x: 32,   y: 0, w: 32, h: 32 },
-									{ x: 64,   y: 0, w: 32, h: 32 },
-									{ x: 96,   y: 0, w: 32, h: 32 },
-									{ x: 128,  y: 0, w: 32, h: 32 },
-									{ x: 160,  y: 0, w: 32, h: 32 }
-								]
-							},
-							'second': {
-								width:  32,
-								height: 32,
-								map: [
-									{ x: 0,    y: 64, w: 32, h: 32 },
-									{ x: 32,   y: 64, w: 32, h: 32 },
-									{ x: 64,   y: 64, w: 32, h: 32 },
-									{ x: 96,   y: 64, w: 32, h: 32 },
-									{ x: 128,  y: 64, w: 32, h: 32 },
-									{ x: 160,  y: 64, w: 32, h: 32 }
-								]
-							},
-							'third': {
-								width:  32,
-								height: 32,
-								map: [
-									{ x: 0,    y: 128, w: 32, h: 32 },
-									{ x: 32,   y: 128, w: 32, h: 32 },
-									{ x: 64,   y: 128, w: 32, h: 32 },
-									{ x: 96,   y: 128, w: 32, h: 32 },
-									{ x: 128,  y: 128, w: 32, h: 32 },
-									{ x: 160,  y: 128, w: 32, h: 32 }
-								]
-							}
-						}
-					}
+				this.config = {
+					sprite: assets[urls[4]]
 				};
+
+				this.config.sprite.image = assets[urls[3]];
+
 
 				this.init();
 
@@ -151,11 +115,9 @@ lychee.define('game.Main').requires([
 			}
 
 
-			this.renderer.reset(this.settings.width, this.settings.height, true);
+			this.renderer.reset(this.settings.width, this.settings.height, false);
 
-			this.__rendererEnv = env;
-
-			this.getOffset(true);
+			this.__offset = env.offset; // Linked
 
 		},
 
@@ -164,15 +126,12 @@ lychee.define('game.Main').requires([
 			lychee.game.Main.prototype.init.call(this);
 
 			this.renderer = new game.Renderer('game');
-
 			this.renderer.reset(
 				this.settings.width,
 				this.settings.height,
-				true, { map: this.map }
+				true
 			);
-
-			this.renderer.setBackground("#222");
-
+			this.renderer.setBackground("#222222");
 
 			this.reset();
 
@@ -180,16 +139,16 @@ lychee.define('game.Main').requires([
 			this.jukebox = new game.Jukebox(this);
 
 			this.input = new lychee.Input({
-				delay: 0,
-				fireModifiers: true
+				delay:        0,
+				fireModifier: false,
+				fireKey:      false, // change to true for NodeJS support
+				fireTouch:    true,
+				fireSwipe:    false
 			});
 
 
-			this.states = {
-				game:    new game.state.Game(this),
-				menu:    new game.state.Menu(this)
-			};
-
+			this.states.game = new game.state.Game(this);
+			this.states.menu = new game.state.Menu(this);
 
 			this.setState('menu');
 
@@ -197,32 +156,8 @@ lychee.define('game.Main').requires([
 
 		},
 
-		getOffset: function(reset) {
-
-			if (this.__offset === null || reset === true) {
-				this.__offset = this.__rendererEnv.offset;
-			}
-
+		getOffset: function() {
 			return this.__offset;
-
-		},
-
-		set: function(key, value) {
-
-			if (this.settings[key] !== undefined) {
-
-				if (value === null) {
-					value = this.defaults[key];
-				}
-
-				this.settings[key] = value;
-
-				return true;
-
-			}
-
-			return false;
-
 		}
 
 	};

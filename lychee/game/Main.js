@@ -27,16 +27,18 @@ lychee.define('lychee.game.Main').requires([
 		},
 
 		load: function() {
+
+			// Default behaviour:
+			// Directly initialize, load no assets
+			this.init();
+
 		},
 
-		init: function(context) {
-
-			context = context !== undefined ? context : null;
+		init: function() {
 
 			this.loop = new lychee.game.Loop({
 				render: this.settings.renderFps,
-				update: this.settings.updateFps,
-				context: context
+				update: this.settings.updateFps
 			});
 
 			this.loop.bind('update', this.updateLoop, this);

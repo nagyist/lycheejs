@@ -26,7 +26,7 @@ lychee.define('Renderer').tags({
 			offset: {}
 		};
 
-		this.__colorCache = {};
+		this.__colorcache = {};
 		this.__window = null;
 		this.__state = null;
 		this.__alpha = 1;
@@ -60,6 +60,8 @@ lychee.define('Renderer').tags({
 			}
 
 
+			glut.initDisplayMode(glut.DOUBLE | glut.RGBA | glut.DEPTH);
+
 			if (width !== this.__width || height !== this.__height) {
 
 				if (this.__window !== null) {
@@ -87,15 +89,14 @@ lychee.define('Renderer').tags({
 			}
 
 
-			glut.initDisplayMode(glut.DOUBLE | glut.RGBA | glut.DEPTH);
-
-
 			gl.matrixMode(gl.PROJECTION);
 			gl.loadIdentity();
 			gl.ortho(0, this.__width, this.__height, 0, 0, 1);
 
 			gl.disable(gl.DEPTH_TEST);
 
+
+			this.__updateEnvironment();
 
 		},
 
@@ -131,6 +132,17 @@ lychee.define('Renderer').tags({
 		},
 
 		getEnvironment: function() {
+			this.__updateEnvironment();
+			return this.__environment;
+		},
+
+
+
+		/*
+		 * PRIVATE API: Helpers
+		 */
+
+		__updateEnvironment: function() {
 
 			this.__environment.width = this.__width;
 			this.__environment.height = this.__height;
@@ -141,45 +153,36 @@ lychee.define('Renderer').tags({
 			this.__environment.offset.x = 0;
 			this.__environment.offset.y = 0;
 
-
-			return this.__environment;
-
 		},
-
-
-
-		/*
-		 * Helpers
-		 */
 
 		__hexToRGB: function(hex) {
 
-			var result;
+			if (typeof hex === 'string') {
 
-			result = /^#?([a-f\d]{1})([a-f\d]{1})([a-f\d]{1})$/i.exec(hex);
-			if (result) {
+				if (hex.length === 7) {
 
-				this.__colorCache.r = parseInt(result[1] + result[1], 16);
-				this.__colorCache.g = parseInt(result[2] + result[2], 16);
-				this.__colorCache.b = parseInt(result[3] + result[3], 16);
+					this.__colorcache.r = parseInt(hex[1] + hex[2], 16);
+					this.__colorcache.g = parseInt(hex[3] + hex[4], 16);
+					this.__colorcache.b = parseInt(hex[5] + hex[6], 16);
 
-				return this.__colorCache;
+					return this.__colorcache;
 
-			}
-
-			result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-			if (result) {
-
-				this.__colorCache.r = parseInt(result[1], 16);
-				this.__colorCache.g = parseInt(result[2], 16);
-				this.__colorCache.b = parseInt(result[3], 16);
-
-				return this.__colorCache;
+				}
 
 			}
 
 
-			return this.__colorCache;
+			if (lychee.debug === true) {
+				console.warn('lychee.Renderer: Invalid Hex Color "' + hex + '"');
+			}
+
+
+			this.__colorcache.r = 0;
+			this.__colorcache.g = 0;
+			this.__colorcache.b = 0;
+
+
+			return this.__colorcache;
 
 		},
 
@@ -204,28 +207,25 @@ lychee.define('Renderer').tags({
 		 * Setters
 		 */
 
-		// TODO: Implement global alpha
 		setAlpha: function(alpha) {
 
 			alpha = typeof alpha === 'number' ? alpha : null;
 
 			if (alpha !== null && alpha >= 0 && alpha <= 1) {
-
+				this.__alpha = alpha;
 			}
 
 		},
 
 		setBackground: function(color) {
 
-			color = typeof color === 'string' ? color : '#000';
+			color = typeof color === 'string' ? color : '#000000';
 
 			var background = this.__hexToRGB(color);
 
-			this.__background = {
-				r: background.r / 255,
-				g: background.g / 255,
-				b: background.b / 255
-			};
+			this.__background.r = background.r / 255;
+			this.__background.g = background.g / 255;
+			this.__background.b = background.b / 255;
 
 		},
 
@@ -239,7 +239,7 @@ lychee.define('Renderer').tags({
 
 			if (this.__state !== 'running') return;
 
-			color = typeof color === 'string' ? color : '#000';
+			color = typeof color === 'string' ? color : '#000000';
 			background = background === true ? true : false;
 			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
 
@@ -250,7 +250,7 @@ lychee.define('Renderer').tags({
 
 			var rgb_color = this.__hexToRGB(color);
 
-			gl.color3f(rgb_color.r, rgb_color.g, rgb_color.b);
+			gl.color4f(rgb_color.r / 255, rgb_color.g / 255, rgb_color.b / 255, this.__alpha);
 
 
 			if (background === false) {
@@ -304,7 +304,7 @@ lychee.define('Renderer').tags({
 
 			if (this.__state !== 'running') return;
 
-			color = typeof color === 'string' ? color : '#000';
+			color = typeof color === 'string' ? color : '#000000';
 			background = background === true ? true : false;
 			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
 
@@ -315,7 +315,7 @@ lychee.define('Renderer').tags({
 
 			var rgb_color = this.__hexToRGB(color);
 
-			gl.color3f(rgb_color.r, rgb_color.g, rgb_color.b);
+			gl.color4f(rgb_color.r / 255, rgb_color.g / 255, rgb_color.b / 255, this.__alpha);
 
 
 			if (background === false) {
@@ -359,7 +359,7 @@ lychee.define('Renderer').tags({
 
 			if (this.__state !== 'running') return;
 
-			color = typeof color === 'string' ? color : '#000';
+			color = typeof color === 'string' ? color : '#000000';
 			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
 
  			gl.matrixMode(gl.MODELVIEW);
@@ -368,7 +368,7 @@ lychee.define('Renderer').tags({
 
 			var rgb_color = this.__hexToRGB(color);
 
-			gl.color3f(rgb_color.r, rgb_color.g, rgb_color.b);
+			gl.color4f(rgb_color.r / 255, rgb_color.g / 255, rgb_color.b / 255, this.__alpha);
 
 			gl.begin(gl.LINES);
 
@@ -416,19 +416,22 @@ lychee.define('Renderer').tags({
 				gl.matrixMode(gl.MODELVIEW);
 				gl.loadIdentity();
 
-				gl.color3f(1.0, 1.0, 1.0);
+				gl.color4f(1.0, 1.0, 1.0, this.__alpha);
+
+				gl.enable(gl.BLEND);
+				gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, texture.id);
 
 				gl.begin(gl.QUADS);
-				gl.texCoord2d(sx1, sy1);
+				gl.texCoord2f(sx1, sy1);
 				gl.vertex2f(x1, y1);
-				gl.texCoord2d(sx2, sy1);
+				gl.texCoord2f(sx2, sy1);
 				gl.vertex2f(x2, y1);
-				gl.texCoord2d(sx2, sy2);
+				gl.texCoord2f(sx2, sy2);
 				gl.vertex2f(x2, y2);
-				gl.texCoord2d(sx1, sy2);
+				gl.texCoord2f(sx1, sy2);
 				gl.vertex2f(x1, y2);
 				gl.end();
 
@@ -450,19 +453,22 @@ lychee.define('Renderer').tags({
 				gl.matrixMode(gl.MODELVIEW);
 				gl.loadIdentity();
 
-				gl.color3f(1.0, 1.0, 1.0);
+				gl.color4f(1.0, 1.0, 1.0, this.__alpha);
+
+				gl.enable(gl.BLEND);
+				gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, texture.id);
 
 				gl.begin(gl.QUADS);
-				gl.texCoord2d(sx1, sy1);
+				gl.texCoord2f(sx1, sy1);
 				gl.vertex2f(x1, y1);
-				gl.texCoord2d(sx2, sy1);
+				gl.texCoord2f(sx2, sy1);
 				gl.vertex2f(x2, y1);
-				gl.texCoord2d(sx2, sy2);
+				gl.texCoord2f(sx2, sy2);
 				gl.vertex2f(x2, y2);
-				gl.texCoord2d(sx1, sy2);
+				gl.texCoord2f(sx1, sy2);
 				gl.vertex2f(x1, y2);
 				gl.end();
 
@@ -476,7 +482,7 @@ lychee.define('Renderer').tags({
 						y1,
 						x1 + map.w,
 						y1 + map.h,
-						'#f00',
+						'#ff0000',
 						false,
 						1
 					);
@@ -566,7 +572,7 @@ lychee.define('Renderer').tags({
 					gl.matrixMode(gl.MODELVIEW);
 					gl.loadIdentity();
 
-					gl.color3f(1.0, 1.0, 1.0);
+					gl.color4f(1.0, 1.0, 1.0, this.__alpha);
 
 					gl.enable(gl.BLEND);
 					gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
@@ -575,13 +581,13 @@ lychee.define('Renderer').tags({
 					gl.bindTexture(gl.TEXTURE_2D, texture.id);
 
 					gl.begin(gl.QUADS);
-					gl.texCoord2d(sx1, sy1);
+					gl.texCoord2f(sx1, sy1);
 					gl.vertex2f(x1, y1);
-					gl.texCoord2d(sx2, sy1);
+					gl.texCoord2f(sx2, sy1);
 					gl.vertex2f(x2, y1);
-					gl.texCoord2d(sx2, sy2);
+					gl.texCoord2f(sx2, sy2);
 					gl.vertex2f(x2, y2);
-					gl.texCoord2d(sx1, sy2);
+					gl.texCoord2f(sx1, sy2);
 					gl.vertex2f(x1, y2);
 					gl.end();
 
@@ -595,7 +601,7 @@ lychee.define('Renderer').tags({
 							y,
 							x + margin + chr.real,
 							y + chr.height,
-							'#ff0',
+							'#ffff00',
 							false,
 							1
 						);
@@ -609,7 +615,7 @@ lychee.define('Renderer').tags({
 			// text based rendering
 			} else if (Object.prototype.toString.call(font) === '[object Object]'){
 
-				font.color = typeof font.color === 'string' ? font.color : '#000';
+				font.color = typeof font.color === 'string' ? font.color : '#000000';
 				font.font = typeof font.font === 'string' ? font.font : 'Arial';
 				font.size = typeof font.size === 'number' ? font.size : 12;
 
@@ -623,3 +629,4 @@ lychee.define('Renderer').tags({
 	return Class;
 
 });
+

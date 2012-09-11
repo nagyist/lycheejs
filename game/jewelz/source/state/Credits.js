@@ -18,6 +18,10 @@ lychee.define('game.state.Credits').includes([
 
 	Class.prototype = {
 
+		reset: function() {
+
+		},
+
 		enter: function() {
 
 			lychee.game.State.prototype.enter.call(this);
@@ -176,7 +180,7 @@ lychee.define('game.state.Credits').includes([
 
 		},
 
-		__processTouch: function(position, delta) {
+		__processTouch: function(id, position, delta) {
 			this.game.setState('menu');
 		}
 
