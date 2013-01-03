@@ -3,57 +3,49 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 	var Class = function(data) {
 
-		var settings = lychee.extend({}, this.defaults, data);
+		var settings = lychee.extend({}, data);
 
 
-		this.__clock = null;
+		this.width  = typeof settings.width === 'number' ? settings.width : 0;
+		this.height = typeof settings.height === 'number' ? settings.height : 0;
+		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
 
+
+		this.__clock     = null;
 		this.__animation = null;
-		this.__collision = null;
-		this.__effect = null;
-		this.__position = { x: 0, y: 0, z: 0 };
-		this.__shape = null;
-		this.__state = 'default';
-		this.__tween = null;
+		this.__collision = Class.COLLISION.none;
+		this.__effect    = null;
+		this.__position  = { x: 0, y: 0, z: 0 };
+		this.__velocity  = { x: 0, y: 0, z: 0 };
+		this.__shape     = Class.SHAPE.rectangle;
+		this.__state     = 'default';
+		this.__states    = { 'default' : null };
+		this.__tween     = null;
 
 
-		this.__states = lychee.extend({}, this.defaults.states, settings.states);
+		if (settings.states instanceof Object) {
+
+			for (var id in settings.states) {
+				if (settings.states.hasOwnProperty(id)) {
+					this.__states[id] = settings.states[id];
+				}
+			}
+
+		}
 
 
 		// Reuse this cache for performance relevant methods
 		this.__cache = {
 			position: {},
-			tween: {},
-			effect: {}
+			tween:    {},
+			effect:   {}
 		};
 
 
-		this.width  = settings.width;
-		this.height = settings.height;
-		this.radius = settings.radius;
-
-
 		this.setPosition(settings.position);
-		this.setCollisionType(settings.collision);
 		this.setShape(settings.shape);
 		this.setState(settings.state);
-
-
-		if (Object.prototype.toString.call(settings.animation) === '[object Object]') {
-
-			if (typeof settings.animation.duration === 'number') {
-
-				var duration = settings.animation.duration;
-				var loop = settings.animation.loop === true ? true : false;
-
-				delete settings.animation.duration;
-				delete settings.animation.loop;
-
-				this.setAnimation(duration, settings.animation, loop);
-
-			}
-
-		}
+		this.setCollision(settings.collision);
 
 
 		settings = null;
@@ -249,25 +241,6 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 	Class.prototype = {
 
-		defaults: {
-
-			position: {
-				x: 0, y: 0, z: 0
-			},
-
-			radius: 0,
-			width:  0,
-			height: 0,
-
-			shape: Class.SHAPE.circle,
-			collision: Class.COLLISION.none,
-
-			states: {
-				'default': 0
-			}
-
-		},
-
 		// Allows sync(null, true) for reset
 		sync: function(clock, force) {
 
@@ -300,7 +273,8 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 		update: function(clock, delta) {
 
 
-			// Sync clocks initially (if Entity was created before loop started)
+			// 1. Sync clocks initially
+			// (if Entity was created before loop started)
 			if (this.__clock === null) {
 				this.sync(clock);
 			}
@@ -308,10 +282,12 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 			var t = 0;
 			var dt = delta / 1000;
+			var cache = this.__cache.position;
 
+
+			// 2. Tweening
 			if (this.__tween !== null && (this.__clock <= this.__tween.start + this.__tween.duration)) {
 
-				var cache = this.__cache.position;
 				t = (this.__clock - this.__tween.start) / this.__tween.duration;
 
 
@@ -359,6 +335,35 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 			}
 
 
+			// 3. Velocities
+			if (
+				this.__velocity.x !== 0
+				|| this.__velocity.y !== 0
+				|| this.__velocity.z !== 0
+			) {
+
+				cache.x = this.__position.x;
+				cache.y = this.__position.y;
+				cache.z = this.__position.z;
+
+				if (this.__velocity.x !== 0) {
+					cache.x += this.__velocity.x * dt;
+				}
+
+				if (this.__velocity.y !== 0) {
+					cache.y += this.__velocity.y * dt;
+				}
+
+				if (this.__velocity.z !== 0) {
+					cache.z += this.__velocity.z * dt;
+				}
+
+				this.setPosition(cache);
+
+			}
+
+
+			// 4. Effects
 			if (this.__effect !== null && (this.__clock <= this.__effect.start + this.__effect.duration)) {
 
 				t = (this.__clock - this.__effect.start) / this.__effect.duration;
@@ -375,6 +380,7 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 			}
 
 
+			// 5. Animation (Interpolation)
 			if (this.__animation !== null && (this.__clock <= this.__animation.start + this.__animation.duration)) {
 
 				t = (this.__clock - this.__animation.start) / this.__animation.duration;
@@ -404,8 +410,7 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 			scope = scope !== undefined ? scope : this;
 
 
-			var tween = null;
-			if (Object.prototype.toString.call(position) === '[object Object]') {
+			if (position instanceof Object) {
 
 				position.x = typeof position.x === 'number' ? position.x : this.__position.x;
 				position.y = typeof position.y === 'number' ? position.y : this.__position.y;
@@ -413,7 +418,7 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 				var pos = this.getPosition();
 
-				tween = {
+				var tween = {
 					start: this.__clock,
 					duration: duration,
 					from: {
@@ -426,11 +431,14 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 					scope: scope
 				};
 
+				this.__tween = tween;
+
 			}
 
+		},
 
-			this.__tween = tween;
-
+		clearTween: function() {
+			this.__tween = null;
 		},
 
 		getPosition: function() {
@@ -439,17 +447,44 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 		setPosition: function(position) {
 
-			if (Object.prototype.toString.call(position) !== '[object Object]') {
-				return false;
+			if (position instanceof Object) {
+
+				this.__position.x = typeof position.x === 'number' ? position.x : this.__position.x;
+				this.__position.y = typeof position.y === 'number' ? position.y : this.__position.y;
+				this.__position.z = typeof position.z === 'number' ? position.z : this.__position.z;
+
+				return true;
+
 			}
 
 
-			this.__position.x = typeof position.x === 'number' ? position.x : this.__position.x;
-			this.__position.y = typeof position.y === 'number' ? position.y : this.__position.y;
-			this.__position.z = typeof position.z === 'number' ? position.z : this.__position.z;
+			return false;
 
-			return true;
+		},
 
+		getVelocity: function() {
+			return this.__velocity;
+		},
+
+		setVelocity: function(velocity) {
+
+			if (velocity instanceof Object) {
+
+				this.__velocity.x = typeof velocity.x === 'number' ? velocity.x : this.__velocity.x;
+				this.__velocity.y = typeof velocity.y === 'number' ? velocity.y : this.__velocity.y;
+				this.__velocity.z = typeof velocity.z === 'number' ? velocity.z : this.__velocity.z;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		getStateMap: function() {
+			return this.__states[this.__state];
 		},
 
 		getState: function() {
@@ -473,8 +508,8 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 		collidesWith: function(entity) {
 
 			if (
-				this.getCollisionType() === Class.COLLISION.none
-				|| entity.getCollisionType() === Class.COLLISION.none
+				this.getCollision() === Class.COLLISION.none
+				|| entity.getCollision() === Class.COLLISION.none
 			) {
 				return false;
 			}
@@ -544,11 +579,14 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 
 		},
 
-		getCollisionType: function() {
+		getCollision: function() {
 			return this.__collision;
 		},
 
-		setCollisionType: function(type) {
+		setCollision: function(type) {
+
+			if (typeof type !== 'number') return false;
+
 
 			var found = false;
 
@@ -576,6 +614,9 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 		},
 
 		setShape: function(shape) {
+
+			if (typeof shape !== 'number') return false;
+
 
 			var found = false;
 
@@ -611,19 +652,17 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 		setAnimation: function(duration, settings, loop) {
 
 			duration = typeof duration === 'number' ? duration : null;
-			settings = Object.prototype.toString.call(settings) === '[object Object]' ? settings : null;
+			settings = settings instanceof Object ? settings : null;
 			loop = loop === true ? true : false;
 
 
-			var animation = null;
 			if (duration !== null || settings !== null) {
 
 				// Faster than an animationdefaults object lookup
 				settings.frame  = settings.frame || 0;
 				settings.frames = settings.frames || 10;
 
-
-				animation = {
+				var animation = {
 					start: this.__clock,
 					frame: settings.frame,
 					frames: settings.frames,
@@ -631,10 +670,9 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 					loop: loop
 				};
 
+				this.__animation = animation;
+
 			}
-
-
-			this.__animation = animation;
 
 		},
 
@@ -645,44 +683,42 @@ lychee.define('lychee.game.Entity').exports(function(lychee) {
 		setEffect: function(duration, data, settings, scope, loop) {
 
 			duration = typeof duration === 'number' ? duration : (data.duration ? data.duration : null);
-			settings = Object.prototype.toString.call(settings) === '[object Object]' ? settings : null;
+			settings = settings instanceof Object ? settings : null;
 			scope = scope !== undefined ? scope : this;
 			loop = loop === true ? true : false;
 
 
-			var effect = null;
-			if (duration !== null && Object.prototype.toString.call(data) === '[object Object]') {
+			if (
+				duration !== null
+				&& data instanceof Object
+				&& data.callback instanceof Function
+			) {
 
-				if (data.callback instanceof Function) {
+				var position = this.getPosition();
 
-					var position = this.getPosition();
-
-					effect = {
-						start: this.__clock,
-						callback: data.callback,
-						clear: data.clear || null,
-						duration: duration,
-						scope: scope,
-						loop: loop,
-						origin: {
-							x: position.x,
-							y: position.y,
-							z: position.z
-						}
-					};
-
-					if (Object.prototype.toString.call(data.defaults) === '[object Object]') {
-						effect.settings = lychee.extend({}, data.defaults, settings);
-					} else {
-						effect.settings = settings;
+				var effect = {
+					start: this.__clock,
+					callback: data.callback,
+					clear: data.clear || null,
+					duration: duration,
+					scope: scope,
+					loop: loop,
+					origin: {
+						x: position.x,
+						y: position.y,
+						z: position.z
 					}
+				};
 
+				if (data.defaults instanceof Object) {
+					effect.settings = lychee.extend({}, data.defaults, settings);
+				} else {
+					effect.settings = settings;
 				}
 
+				this.__effect = effect;
+
 			}
-
-
-			this.__effect = effect;
 
 		},
 

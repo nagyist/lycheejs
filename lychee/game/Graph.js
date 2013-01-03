@@ -78,8 +78,9 @@ lychee.define('lychee.game.Graph').exports(function(lychee) {
 
 	var Class = function() {
 
-		this.__dirty = false;
-		this.__tree = new _Node(null, null);
+		this.__dirty  = false;
+		this.__tree   = new _Node(null, null);
+		this.__offset = { x: 0, y: 0, z: 0 };
 
 	};
 
@@ -90,10 +91,17 @@ lychee.define('lychee.game.Graph').exports(function(lychee) {
 		 * PUBLIC API
 		 */
 
-		reset: function() {
+		reset: function(clearTree) {
 
-			this.__dirty = false;
-			this.__tree = new _Node(null, null);
+			clearTree = clearTree === true;
+
+
+			this.__dirty  = false;
+			this.__offset = { x: 0, y: 0, z: 0 };
+
+			if (clearTree === true) {
+				this.__tree = new _Node(null, null);
+			}
 
 		},
 
@@ -170,6 +178,23 @@ lychee.define('lychee.game.Graph').exports(function(lychee) {
 
 		},
 
+		getOffset: function() {
+			return this.__offset;
+		},
+
+		setOffset: function(offset) {
+
+			if (Object.prototype.toString.call(offset) !== '[object Object]') {
+				return false;
+			}
+
+			this.__offset.x = typeof offset.x === 'number' ? offset.x : this.__offset.x;
+			this.__offset.y = typeof offset.y === 'number' ? offset.y : this.__offset.y;
+			this.__offset.z = typeof offset.z === 'number' ? offset.z : this.__offset.z;
+
+			return true;
+
+		},
 
 
 
@@ -230,9 +255,9 @@ lychee.define('lychee.game.Graph').exports(function(lychee) {
 			if (node.entity !== null) {
 
 				var position = node.entity.getPosition();
-				var hwidth   = ((node.entity.width  || 0) / 2) || node.entity.radius;
-				var hheight  = ((node.entity.height || 0) / 2) || node.entity.radius;
-				var hdepth   = ((node.entity.depth  || 0) / 2) || node.entity.radius;
+				var hwidth   = (node.entity.width  / 2) || node.entity.radius || 0;
+				var hheight  = (node.entity.height / 2) || node.entity.radius || 0;
+				var hdepth   = (node.entity.depth  / 2) || node.entity.radius || 0;
 
 
 				posX += position.x;

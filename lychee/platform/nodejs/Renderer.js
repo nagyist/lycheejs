@@ -3,8 +3,15 @@ lychee.define('Renderer').tags({
 	platform: 'nodejs'
 }).supports(function(lychee, global) {
 
-	// This is a stub implementation, so it does simply nothing
-	return true;
+	if (
+		typeof process !== 'undefined'
+		&& process.stdout
+	) {
+		return true
+	}
+
+
+	return false;
 
 }).exports(function(lychee, global) {
 
@@ -20,6 +27,8 @@ lychee.define('Renderer').tags({
 			screen: {},
 			offset: {}
 		};
+
+		this.__cache = {};
 
 		this.__state = null;
 		this.__width = 0;
@@ -41,6 +50,11 @@ lychee.define('Renderer').tags({
 			width = typeof width === 'number' ? width : this.__width;
 			height = typeof height === 'number' ? height : this.__height;
 			resetCache = resetCache === true ? true : false;
+
+			if (resetCache === true) {
+				this.__cache = {};
+			}
+
 
 			this.__width = width;
 			this.__height = height;
@@ -113,9 +127,14 @@ lychee.define('Renderer').tags({
 
 		drawLine: function(x1, y1, x2, y2, color, lineWidth) {},
 
+		// points, x1, y1, [ ... x(a), y(a) ... ], [ color, background, lineWidth ]
+		drawPolygon: function(points, x1, y1) {},
+
 		drawSprite: function(x1, y1, sprite, map) {},
 
-		drawText: function(x1, y1, text, font) {}
+		drawText: function(x1, y1, text, font, center) {},
+
+		drawTriangle: function(x1, y1, x2, y2, x3, y3, color, background, lineWidth) {}
 
 	};
 

@@ -2,7 +2,7 @@
 lychee.define('Input').tags({
 	platform: 'v8gl'
 }).includes([
-	'lychee.Events'
+	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
 	if (
@@ -19,6 +19,7 @@ lychee.define('Input').tags({
 	) {
 		return true;
 	}
+
 
 	return false;
 
@@ -124,7 +125,7 @@ lychee.define('Input').tags({
 		this.reset();
 
 
-		lychee.Events.call(this, 'input');
+		lychee.event.Emitter.call(this, 'input');
 
 		_instances.push(this);
 
@@ -256,7 +257,7 @@ lychee.define('Input').tags({
 
 			if (
 				id !== null
-				&& Object.prototype.toString.call(box) === '[object Object]'
+				box instanceof Object
 				&& this.__touchareas[id] === undefined
 			) {
 
@@ -368,7 +369,20 @@ lychee.define('Input').tags({
 
 		__processTouch: function(id, x, y) {
 
-			if (this.__fireTouch === false) return;
+			if (
+				this.__fireTouch === false
+				&& this.__fireSwipe === true
+			) {
+
+				if (this.__swipes[id] === null) {
+					this.__processSwipe(id, 'start', x, y);
+				}
+
+				return;
+
+			} else if (this.__fireTouch === false) {
+				return;
+			}
 
 
 			// 1. Only fire after the enforced delay
@@ -378,11 +392,7 @@ lychee.define('Input').tags({
 			}
 
 
-			// Don't cancel the swipe event by default
-			var cancelSwipe = this.trigger(
-				'touch',
-				[ id, { x: x, y: y }, delta ]
-			) === true;
+			this.trigger('touch', [ id, { x: x, y: y }, delta ]);
 
 
 			// 2. Fire known Touchareas
@@ -409,10 +419,7 @@ lychee.define('Input').tags({
 
 
 			// 3. Fire Swipe Start, but only for tracked touches
-			if (
-				cancelSwipe !== true
-				&& this.__swipes[id] === null
-			) {
+			if (this.__swipes[id] === null) {
 				this.__processSwipe(id, 'start', x, y);
 			}
 

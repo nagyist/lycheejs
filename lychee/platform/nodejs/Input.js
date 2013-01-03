@@ -2,16 +2,17 @@
 lychee.define('Input').tags({
 	platform: 'nodejs'
 }).includes([
-	'lychee.Events'
+	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
 	if (
-		process
+		typeof process !== 'undefined'
 		&& process.stdin
 		&& typeof process.stdin.on === 'function'
 	) {
 		return true;
 	}
+
 
 	return false;
 
@@ -96,7 +97,7 @@ lychee.define('Input').tags({
 		this.reset();
 
 
-		lychee.Events.call(this, 'input');
+		lychee.event.Emitter.call(this, 'input');
 
 		_instances.push(this);
 

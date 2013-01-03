@@ -76,42 +76,54 @@ lychee.define('Track').tags({
 	}
 
 
-	var Class = function(id, settings, isReady) {
+	var _id = 0;
 
-		isReady = isReady === true ? true : false;
+	var Class = function(id, data, isReady) {
 
-		if (_audio === null) {
-			throw "Your Browser does not support HTML5 Audio.";
-		}
+		id      = typeof id === 'string' ? id : ('lychee-Track-' + _id++);
+		isReady = isReady === true;
+
+
+		var settings = lychee.extend({ buffer: null }, data);
+
 
 		this.id = id;
-		this.settings = lychee.extend({}, this.defaults, settings);
 
-		this.__endTime = 0;
-		this.__isIdle = true;
+
+		this.__endTime   = 0;
+		this.__isIdle    = true;
 		this.__isLooping = false;
-		this.__isMuted = false;
-		this.__isReady = isReady;
+		this.__isMuted   = false;
+		this.__isReady   = isReady;
 
 
 		var playableFormat = null;
-		for (var f = 0, l = this.settings.formats.length; f < l; f++) {
 
-			var format = this.settings.formats[f];
-			if (
-				playableFormat === null
-				&& _codecs[format] !== false
-			) {
-				playableFormat = format;
+		if (settings.formats instanceof Array) {
+
+			for (var f = 0, l = settings.formats.length; f < l; f++) {
+
+				var format = settings.formats[f];
+				if (
+					playableFormat === null
+					&& _codecs[format] !== false
+				) {
+					playableFormat = format;
+				}
+
 			}
 
 		}
 
 
+		// Cached settings to allow shared Buffer between multiple lychee.Track instances
+		this.__settings = settings;
+
+
 		if (playableFormat === null) {
 			throw "Your Environment does only support these codecs: " + _supportedFormats.join(', ');
 		} else {
-			this.__init(this.settings.base + '.' + playableFormat);
+			this.__init(settings.base + '.' + playableFormat);
 		}
 
 	};
@@ -125,14 +137,6 @@ lychee.define('Track').tags({
 
 		Class.prototype = {
 
-			defaults: {
-				base: null,
-				buffer: null,
-				formats: []
-			},
-
-
-
 			/*
 			 * PRIVATE API
 			 */
@@ -141,12 +145,12 @@ lychee.define('Track').tags({
 
 				// Shared context = more performance
 				this.__context = _context;
-				this.__gain = this.__context.createGainNode();
+				this.__gain    = this.__context.createGainNode();
 
 				this.__loopingBuffer = null;
 
 
-				if (this.settings.buffer === null) {
+				if (this.__settings.buffer === null) {
 
 					var that = this;
 					var xhr = new XMLHttpRequest();
@@ -157,7 +161,7 @@ lychee.define('Track').tags({
 					xhr.onload = function() {
 
 						that.__context.decodeAudioData(xhr.response, function(buffer) {
-							that.settings.buffer = buffer;
+							that.__settings.buffer = buffer;
 							that.__isReady = true;
 						});
 
@@ -187,7 +191,7 @@ lychee.define('Track').tags({
 
 					var source = this.__context.createBufferSource();
 
-					source.buffer = this.settings.buffer;
+					source.buffer = this.__settings.buffer;
 					source.connect(this.__gain);
 					source.connect(this.__context.destination);
 					source.noteOn(this.__context.currentTime);
@@ -251,12 +255,7 @@ lychee.define('Track').tags({
 					this.__gain.gain.value = 0;
 					this.__isMuted = true;
 
-					return true;
-
 				}
-
-
-				return false;
 
 			},
 
@@ -267,36 +266,15 @@ lychee.define('Track').tags({
 					this.__gain.gain.value = this.__unmuteVolume || 1;
 					this.__isMuted = false;
 
-					return true;
-
 				}
-
-
-				return false;
-
-			},
-
-			getVolume: function() {
-				return this.__gain.gain.value;
-			},
-
-			setVolume: function(volume) {
-
-				var newVolume = Math.min(Math.max(0, volume), 1);
-				this.__gain.gain.value = newVolume;
-
-
-				// Actually can't fail by spec, hugh?
-				return true;
 
 			},
 
 			clone: function() {
 
 				var id = this.id;
-				var settings = lychee.extend({}, this.settings);
 
-				return new lychee.Track(id, settings, this.__isReady);
+				return new lychee.Track(id, this.__settings, this.__isReady);
 
 			},
 
@@ -305,7 +283,6 @@ lychee.define('Track').tags({
 				if (Date.now() > this.__endTime) {
 					this.__isIdle = true;
 				}
-
 
 				return this.__isIdle;
 
@@ -317,6 +294,17 @@ lychee.define('Track').tags({
 
 			isReady: function() {
 				return this.isIdle() && this.__isReady;
+			},
+
+			getVolume: function() {
+				return this.__gain.gain.value;
+			},
+
+			setVolume: function(volume) {
+
+				var newVolume = Math.min(Math.max(0, volume), 1);
+				this.__gain.gain.value = newVolume;
+
 			}
 
 		};
@@ -328,13 +316,6 @@ lychee.define('Track').tags({
 	} else if (_audio !== null) {
 
 		Class.prototype = {
-
-			defaults: {
-				base: null,
-				formats: []
-			},
-
-
 
 			/*
 			 * PRIVATE API
@@ -442,12 +423,7 @@ lychee.define('Track').tags({
 					this.__audio.volume = 0;
 					this.__isMuted = true;
 
-					return true;
-
 				}
-
-
-				return false;
 
 			},
 
@@ -458,37 +434,14 @@ lychee.define('Track').tags({
 					this.__audio.volume = this.__unmuteVolume || 1;
 					this.__isMuted = false;
 
-					return true;
-
 				}
-
-
-				return false;
-
-			},
-
-			getVolume: function() {
-				return this.__audio.volume;
-			},
-
-			setVolume: function(volume) {
-
-				var newVolume = Math.min(Math.max(0, volume), 1);
-				this.__audio.volume = newVolume;
-
-				if (newVolume === volume) {
-					return true;
-				}
-
-
-				return false;
 
 			},
 
 			clone: function() {
 
 				var id = this.id;
-				var settings = lychee.extend({}, this.settings);
+				var settings = lychee.extend({}, this.__settings);
 
 				return new lychee.Track(id, settings, true);
 
@@ -515,6 +468,17 @@ lychee.define('Track').tags({
 
 			isReady: function() {
 				return this.isIdle() && this.__isReady === true;
+			},
+
+			getVolume: function() {
+				return this.__audio.volume;
+			},
+
+			setVolume: function(volume) {
+
+				var newVolume = Math.min(Math.max(0, volume), 1);
+				this.__audio.volume = newVolume;
+
 			}
 
 		};

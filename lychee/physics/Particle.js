@@ -3,21 +3,21 @@ lychee.define('lychee.physics.Particle').exports(function(lychee, global) {
 
 	var Class = function(data) {
 
-		var settings = lychee.extend({}, this.defaults, data);
+		var settings = lychee.extend({}, data);
 
 
-		this.__force = { x: 0, y: 0, z: 0 };
+		this.__force    = { x: 0, y: 0, z: 0 };
 		this.__position = { x: 0, y: 0, z: 0 };
 		this.__velocity = { x: 0, y: 0, z: 0 };
 
-		this.__damping = 1;
+		this.__damping     = 1;
 		this.__inverseMass = null;
 
 
-		settings.force !== null    && this.setForce(settings.force);
-		settings.mass !== null     && this.setMass(settings.mass);
-		settings.position !== null && this.setPosition(settings.position);
-		settings.velocity !== null && this.setVelocity(settings.velocity);
+		this.setForce(settings.force);
+		this.setMass(settings.mass);
+		this.setPosition(settings.position);
+		this.setVelocity(settings.velocity);
 
 
 		settings = null;
@@ -26,14 +26,6 @@ lychee.define('lychee.physics.Particle').exports(function(lychee, global) {
 
 
 	Class.prototype = {
-
-		defaults: {
-			force: null,
-			mass: null,
-			position: null,
-			velocity: null
-		},
-
 
 		/*
 		 * PUBLIC API
@@ -99,12 +91,11 @@ lychee.define('lychee.physics.Particle').exports(function(lychee, global) {
 
 		setForce: function(force) {
 
-			if (Object.prototype.toString.call(force) === '[object Object]') {
+			if (force instanceof Object) {
 
 				this.__force.x = typeof force.x === 'number' ? force.x : this.__force.x;
 				this.__force.y = typeof force.y === 'number' ? force.y : this.__force.y;
 				this.__force.z = typeof force.z === 'number' ? force.z : this.__force.z;
-
 
 				return true;
 
@@ -144,12 +135,11 @@ lychee.define('lychee.physics.Particle').exports(function(lychee, global) {
 
 		setPosition: function(position) {
 
-			if (Object.prototype.toString.call(position) === '[object Object]') {
+			if (position instanceof Object) {
 
 				this.__position.x = typeof position.x === 'number' ? position.x : this.__position.x;
 				this.__position.y = typeof position.y === 'number' ? position.y : this.__position.y;
 				this.__position.z = typeof position.z === 'number' ? position.z : this.__position.z;
-
 
 				return true;
 
@@ -166,12 +156,11 @@ lychee.define('lychee.physics.Particle').exports(function(lychee, global) {
 
 		setVelocity: function(velocity) {
 
-			if (Object.prototype.toString.call(velocity) === '[object Object]') {
+			if (velocity instanceof Object) {
 
 				this.__velocity.x = typeof velocity.x === 'number' ? velocity.x : this.__velocity.x;
 				this.__velocity.y = typeof velocity.y === 'number' ? velocity.y : this.__velocity.y;
 				this.__velocity.z = typeof velocity.z === 'number' ? velocity.z : this.__velocity.z;
-
 
 				return true;
 

@@ -5,7 +5,7 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 
 	var Class = function(data, graph) {
 
-		var settings = lychee.extend({}, this.defaults, data);
+		var settings = lychee.extend({}, data);
 
 
 		this.__graph = null;
@@ -33,7 +33,8 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 		}
 
 
-		settings.position !== null && this.setPosition(settings.position);
+		this.setPosition(settings.position);
+
 
 		settings = null;
 
@@ -65,12 +66,6 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 
 
 	Class.prototype = {
-
-		defaults: {
-			position: null
-		},
-
-
 
 		/*
 		 * PUBLIC API
@@ -117,7 +112,7 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 
 		setPosition: function(position) {
 
-			if (Object.prototype.toString.call(position) === '[object Object]') {
+			if (position instanceof Object) {
 
 				this.__position.x = typeof position.x === 'number' ? position.x : this.__position.x;
 				this.__position.y = typeof position.y === 'number' ? position.y : this.__position.y;
@@ -137,7 +132,7 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 		spawn: function(amount, data) {
 
 			amount = typeof amount === 'number' ? amount : null;
-			data = Object.prototype.toString.call(data) === '[object Object]' ? data : null;
+			data   = data instanceof Object ? data : null;
 
 
 			if (amount === null || data === null) return;
@@ -158,7 +153,7 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 				}
 
 
-				if (data.velocity && Object.prototype.toString.call(data.velocity.x) === '[object Array]') {
+				if (data.velocity && data.velocity.x instanceof Array) {
 					settings.velocity.x = (data.velocity.x[0] + Math.random() * (data.velocity.x[1] - data.velocity.x[0])) | 0;
 					settings.velocity.y = (data.velocity.y[0] + Math.random() * (data.velocity.y[1] - data.velocity.y[0])) | 0;
 					settings.velocity.z = (data.velocity.z[0] + Math.random() * (data.velocity.z[1] - data.velocity.z[0])) | 0;
@@ -173,7 +168,7 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 				}
 
 
-				if (Object.prototype.toString.call(data.mass) === '[object Array]') {
+				if (data.mass instanceof Array) {
 					settings.mass = data.mass[0] + Math.random() * (data.mass[1] - data.mass[0]);
 				} else {
 					settings.mass = data.mass || 1;
@@ -192,32 +187,32 @@ lychee.define('lychee.physics.ParticleEmitter').requires([
 
 			delta = typeof delta === 'number' ? delta : (data.delta ? data.delta : null);
 			amount   = typeof amount === 'number' ? amount : (data.amount ? data.amount : null);
-			settings = Object.prototype.toString.call(settings) === '[object Object]' ? settings : null;
+			settings = settings instanceof Array ? settings : null;
 			scope    = scope !== undefined ? scope : this;
 
 
 			var spawn = null;
-			if (delta !== null && Object.prototype.toString.call(data) === '[object Object]') {
+			if (
+				delta !== null
+				&& data instanceof Object
+				&& data.callback instanceof Function
+			) {
 
-				if (data.callback instanceof Function) {
-
-					spawn = {
-						start: this.__clock,
-						delta: delta,
-						step: 0,
-						amount: amount,
-						callback: data.callback,
-						clear: data.clear || null,
-						scope: scope
-					};
+				spawn = {
+					start: this.__clock,
+					delta: delta,
+					step: 0,
+					amount: amount,
+					callback: data.callback,
+					clear: data.clear || null,
+					scope: scope
+				};
 
 
-					if (Object.prototype.toString.call(data.defaults) === '[object Object]') {
-						spawn.settings = lychee.extend({}, data.defaults, settings);
-					} else {
-						spawn.settings = settings;
-					}
-
+				if (data.defaults instanceof Object) {
+					spawn.settings = lychee.extend({}, data.defaults, settings);
+				} else {
+					spawn.settings = settings;
 				}
 
 			}

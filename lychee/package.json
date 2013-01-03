@@ -19,19 +19,31 @@
 
 			"html": {
 
+				"net": {
+					"Client": [ "js" ]
+				},
+
 				"Input": [ "js" ],
 				"Jukebox": [ "js" ],
 				"Renderer": [ "js" ],
-				"Track": [ "js" ]
+				"Track": [ "js" ],
+				"Viewport": [ "js" ]
 
 			},
 
 			"nodejs": {
 
+				"net": {
+					"Protocol": [ "js" ],
+					"Remote": [ "js" ],
+					"Server": [ "js" ]
+				},
+
 				"Input": [ "js" ],
 				"Jukebox": [ "js" ],
 				"Renderer": [ "js" ],
-				"Track": [ "js" ]
+				"Track": [ "js" ],
+				"Viewport": [ "js" ]
 
 			},
 
@@ -44,7 +56,8 @@
 				"Input": [ "js" ],
 				"Jukebox": [ "js" ],
 				"Renderer": [ "js" ],
-				"Track": [ "js" ]
+				"Track": [ "js" ],
+				"Viewport": [ "js" ]
 
 			},
 
@@ -52,6 +65,12 @@
 
 			}
 
+		},
+
+		"event": {
+			"Bus": [ "js" ],
+			"Emitter": [ "js" ],
+			"Promise": [ "js" ]
 		},
 
 		"game": {
@@ -64,18 +83,17 @@
 			"Jukebox": [ "js" ]
 		},
 
+		"math": {
+			"Matrix4": [ "js" ],
+			"Quaternion": [ "js" ],
+			"Vector3": [ "js" ],
+			"Vector4": [ "js" ]
+		},
+
 		"physics": {
 			"Particle": [ "js" ],
 			"ParticleEmitter": [ "js" ],
-			"ParticleMagnet": [ "js" ],
-			"Vector": [ "js" ]
-		},
-
-		"parser": {
-			"ASTScope": [ "js" ],
-			"ASTWalker": [ "js" ],
-			"Tokenizer": [ "js" ],
-			"Parser": [ "js" ]
+			"ParticleMagnet": [ "js" ]
 		},
 
 		"ui": {
@@ -88,8 +106,7 @@
 			"Tile": [ "js" ]
 		},
 
-		"Font": [ "js" ],
-		"Events": [ "js" ]
+		"Font": [ "js" ]
 
 	}
 

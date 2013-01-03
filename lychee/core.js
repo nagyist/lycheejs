@@ -60,13 +60,17 @@ if (typeof global !== 'undefined') {
 
 	lychee.rebase = function(settings) {
 
-		settings = Object.prototype.toString.call(settings) === '[object Object]' ? settings : null;
+		settings = settings instanceof Object ? settings : null;
 
 
 		if (settings !== null) {
 
 			for (var namespace in settings) {
-				_bases[namespace] = settings[namespace];
+				if (settings.hasOwnProperty(namespace)) {
+
+					_bases[namespace] = settings[namespace];
+
+				}
 			}
 
 		}
@@ -78,25 +82,27 @@ if (typeof global !== 'undefined') {
 
 	lychee.tag = function(settings) {
 
-		settings = Object.prototype.toString.call(settings) === '[object Object]' ? settings : null;
+		settings = settings instanceof Object ? settings : null;
 
 
 		if (settings !== null) {
 
 			for (var tag in settings) {
+				if (settings.hasOwnProperty(tag)) {
 
-				var values = null;
+					var values = null;
 
-				if (Object.prototype.toString.call(settings[tag]) === '[object Array]') {
-					values = settings[tag];
-				} else if (typeof settings[tag] === 'string') {
-					values = [ settings[tag] ];
+					if (settings[tag] instanceof Array) {
+						values = settings[tag];
+					} else if (typeof settings[tag] === 'string') {
+						values = [ settings[tag] ];
+					}
+
+					if (values !== null) {
+						_tags[tag] = values;
+					}
+
 				}
-
-				if (values !== null) {
-					_tags[tag] = values;
-				}
-
 			}
 
 		}
@@ -117,7 +123,7 @@ if (typeof global !== 'undefined') {
 	};
 
 
-	lychee.build = function(tags, callback, scope) {
+	lychee.build = function(callback, scope) {
 		throw "lychee.build: You need to include the lychee.Builder to build the dependency tree.";
 	};
 
@@ -154,14 +160,18 @@ if (typeof global !== 'undefined') {
 
 		tags: function(tags) {
 
-			if (Object.prototype.toString.call(tags) !== '[object Object]') {
+			if (!tags instanceof Object) {
 				this.__throw('tags({ tag: \'value\' })');
 				return this;
 			}
 
 			for (var name in tags) {
-				var value = tags[name];
-				this._tags[name] = value;
+				if (tags.hasOwnProperty(name)) {
+
+					var value = tags[name];
+					this._tags[name] = value;
+
+				}
 			}
 
 			return this;
@@ -182,7 +192,7 @@ if (typeof global !== 'undefined') {
 
 		requires: function(requires) {
 
-			if (Object.prototype.toString.call(requires) !== '[object Array]') {
+			if (!requires instanceof Array) {
 				this.__throw('requires([ \'array\', \'of\', \'requirements\' ])');
 				return this;
 			}
@@ -209,7 +219,7 @@ if (typeof global !== 'undefined') {
 
 		includes: function(includes) {
 
-			if (Object.prototype.toString.call(includes) !== '[object Array]') {
+			if (!includes instanceof Array) {
 				this.__throw('includes([ \'array\', \'of\', \'includes\' ])');
 				return this;
 			}

@@ -43,14 +43,12 @@
 					if (instance.__fired[url] === undefined) {
 
 						if (instance.__pending[url] === false) {
-
 							ready[url] = _cache[url] || null;
-							map[url] = instance.__map[url] || null;
-
 						} else {
 							errors[url] = null;
 						}
 
+						map[url] = instance.__map[url] || null;
 						instance.__fired[url] = true;
 
 					}
@@ -59,7 +57,7 @@
 
 
 				if (Object.keys(errors).length > 0) {
-					instance.trigger('error', [ errors ]);
+					instance.trigger('error', [ errors, map ]);
 				}
 
 
@@ -100,7 +98,7 @@
 
 		var settings = lychee.extend({}, data);
 
-		settings.timeout  = typeof settings.timeout === 'number' ? settings.timeout : this.defaults.timeout;
+		settings.timeout  = typeof settings.timeout === 'number' ? settings.timeout : 3000;
 
 
 		this.__timeout  = settings.timeout;
@@ -122,16 +120,10 @@
 
 	Class.prototype = {
 
-		defaults: {
-			timeout: 3000
-		},
-
-
-
 		/*
 		 * EVENT BINDINGS
 		 *
-		 * (not using lychee.Events
+		 * (not using lychee.event.Emitter
 		 *  due to no-dependency
 		 *  reasons)
 		 */
@@ -171,7 +163,7 @@
 
 		trigger: function(event, args) {
 
-			args = Object.prototype.toString.call(args) === '[object Array]' ? args : [];
+			args = args instanceof Array ? args : [];
 
 
 			if (this.__events[event] !== undefined) {
@@ -192,12 +184,13 @@
 
 		load: function(urls, map, forced) {
 
+			urls = urls instanceof Array ? urls : (typeof urls === 'string' ? [ urls ] : null);
 			urls = typeof urls === 'string' ? [ urls ] : urls;
 			map = map !== undefined ? map : null;
 			forced = typeof forced === 'string' ? forced : null;
 
 
-			if (Object.prototype.toString.call(urls) !== '[object Array]') {
+			if (urls === null) {
 				return false;
 			}
 
@@ -253,8 +246,8 @@
 
 		get: function(url) {
 
-			if (_cache.resource[url] !== undefined) {
-				return _cache.resource[url];
+			if (_cache[url] !== undefined) {
+				return _cache[url];
 			}
 
 
@@ -270,6 +263,10 @@
 
 		_load: function(url, type, _cache) {
 			throw "lychee.Preloader: You need to include the platform-specific bootstrap.js to load other files.";
+		},
+
+		_progress: function(url, _cache) {
+
 		}
 
 	};
