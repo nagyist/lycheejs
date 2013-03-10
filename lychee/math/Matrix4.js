@@ -161,9 +161,9 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 
 		determinant: function() {
 
-			var a00 = this._data[0],  a01 = this._data[1],  a02 = this._data[2],  a03 = this._data[3];
-			var a10 = this._data[4],  a11 = this._data[5],  a12 = this._data[6],  a13 = this._data[7];
-			var a20 = this._data[8],  a21 = this._data[9],  a22 = this._data[10], a23 = this._data[11];
+			var a00 =  this._data[0], a01 =  this._data[1], a02 =  this._data[2], a03 =  this._data[3];
+			var a10 =  this._data[4], a11 =  this._data[5], a12 =  this._data[6], a13 =  this._data[7];
+			var a20 =  this._data[8], a21 =  this._data[9], a22 = this._data[10], a23 = this._data[11];
 			var a30 = this._data[12], a31 = this._data[13], a32 = this._data[14], a33 = this._data[15];
 
 			var b00 = a00 * a11 - a01 * a10;
@@ -199,10 +199,10 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 
 			var d = this._data;
 
-			d[12] = d[0] * x + d[4] * y +  d[8] * z + d[12];
-			d[13] = d[1] * x + d[5] * y +  d[9] * z + d[13];
-			d[14] = d[2] * x + d[6] * y + d[10] * z + d[14];
-			d[15] = d[3] * x + d[7] * y + d[11] * z + d[15];
+			d[12] =  d[0] * x +  d[4] * y +  d[8] * z + d[12];
+			d[13] =  d[1] * x +  d[5] * y +  d[9] * z + d[13];
+			d[14] =  d[2] * x +  d[6] * y + d[10] * z + d[14];
+			d[15] =  d[3] * x +  d[7] * y + d[11] * z + d[15];
 
 		},
 
@@ -222,12 +222,12 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var a23 = a[11];
 
 
-			d[4]  = a10 * cos + a20 * sin;
-			d[5]  = a11 * cos + a21 * sin;
-			d[6]  = a12 * cos + a22 * sin;
-			d[7]  = a13 * cos + a23 * sin;
-			d[8]  = a20 * cos - a10 * sin;
-			d[9]  = a21 * cos - a11 * sin;
+			 d[4] = a10 * cos + a20 * sin;
+			 d[5] = a11 * cos + a21 * sin;
+			 d[6] = a12 * cos + a22 * sin;
+			 d[7] = a13 * cos + a23 * sin;
+			 d[8] = a20 * cos - a10 * sin;
+			 d[9] = a21 * cos - a11 * sin;
 			d[10] = a22 * cos - a12 * sin;
 			d[11] = a23 * cos - a13 * sin;
 
@@ -249,12 +249,12 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var a23 = a[11];
 
 
-			d[0]  = a00 * cos - a20 * sin;
-			d[1]  = a01 * cos - a21 * sin;
-			d[2]  = a02 * cos - a22 * sin;
-			d[3]  = a03 * cos - a23 * sin;
-			d[8]  = a00 * sin + a20 * cos;
-			d[9]  = a01 * sin + a21 * cos;
+			 d[0] = a00 * cos - a20 * sin;
+			 d[1] = a01 * cos - a21 * sin;
+			 d[2] = a02 * cos - a22 * sin;
+			 d[3] = a03 * cos - a23 * sin;
+			 d[8] = a00 * sin + a20 * cos;
+			 d[9] = a01 * sin + a21 * cos;
 			d[10] = a02 * sin + a22 * cos;
 			d[11] = a03 * sin + a23 * cos;
 
@@ -293,12 +293,30 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var y = axis._data[1];
 			var z = axis._data[2];
 
-			if (x === 1 && y === 0 && z === 0) {
+			if (
+				   x === 1
+				&& y === 0
+				&& z === 0
+			) {
+
 				return this.rotateX(radian);
-			} else if (x === 0 && y === 1 && z === 0) {
+
+			} else if (
+				   x === 0
+				&& y === 1
+				&& z === 0
+			) {
+
 				return this.rotateY(radian);
-			} else if (x === 0 && y === 0 && z === 1) {
+
+			} else if (
+				   x === 0
+				&& y === 0
+				&& z === 1
+			) {
+
 				return this.rotateZ(radian);
+
 			}
 
 
@@ -339,16 +357,16 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var r22 = z * z * t + c;
 
 
-			d[0]  = a00 * r00 + a10 * r01 + a20 * r02;
-			d[1]  = a01 * r00 + a11 * r01 + a21 * r02;
-			d[2]  = a02 * r00 + a12 * r01 + a22 * r02;
-			d[3]  = a03 * r00 + a13 * r01 + a23 * r02;
-			d[4]  = a00 * r10 + a10 * r11 + a20 * r12;
-			d[5]  = a01 * r10 + a11 * r11 + a21 * r12;
-			d[6]  = a02 * r10 + a12 * r11 + a22 * r12;
-			d[7]  = a03 * r10 + a13 * r11 + a23 * r12;
-			d[8]  = a00 * r20 + a10 * r21 + a20 * r22;
-			d[9]  = a01 * r20 + a11 * r21 + a21 * r22;
+			 d[0] = a00 * r00 + a10 * r01 + a20 * r02;
+			 d[1] = a01 * r00 + a11 * r01 + a21 * r02;
+			 d[2] = a02 * r00 + a12 * r01 + a22 * r02;
+			 d[3] = a03 * r00 + a13 * r01 + a23 * r02;
+			 d[4] = a00 * r10 + a10 * r11 + a20 * r12;
+			 d[5] = a01 * r10 + a11 * r11 + a21 * r12;
+			 d[6] = a02 * r10 + a12 * r11 + a22 * r12;
+			 d[7] = a03 * r10 + a13 * r11 + a23 * r12;
+			 d[8] = a00 * r20 + a10 * r21 + a20 * r22;
+			 d[9] = a01 * r20 + a11 * r21 + a21 * r22;
 			d[10] = a02 * r20 + a12 * r21 + a22 * r22;
 			d[11] = a03 * r20 + a13 * r21 + a23 * r22;
 
@@ -359,6 +377,7 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var x = vector._data[0];
 			var y = vector._data[1];
 			var z = vector._data[2];
+
 
 			d[0] *= x; d[4] *= y;  d[8] *= z;
 			d[1] *= x; d[5] *= y;  d[9] *= z;
@@ -373,19 +392,19 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var tb = 1 / (top - bottom);
 			var nf = 1 / (near - far);
 
+
 			var d = this._data;
 
-
-			d[0]  = (near * 2) * rl;
-			d[1]  = 0;
-			d[2]  = 0;
-			d[3]  = 0;
-			d[4]  = 0;
-			d[5]  = (near * 2) * tb;
-			d[6]  = 0;
-			d[7]  = 0;
-			d[8]  = (right + left) * rl;
-			d[9]  = (top + bottom) * tb;
+			 d[0] = (near * 2) * rl;
+			 d[1] = 0;
+			 d[2] = 0;
+			 d[3] = 0;
+			 d[4] = 0;
+			 d[5] = (near * 2) * tb;
+			 d[6] = 0;
+			 d[7] = 0;
+			 d[8] = (right + left) * rl;
+			 d[9] = (top + bottom) * tb;
 			d[10] = (far + near) * nf;
 			d[11] = -1;
 			d[12] = 0;
@@ -400,19 +419,19 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var f  = 1.0 / Math.tan(fovy / 2);
 			var nf = 1 / (near - far);
 
+
 			var d = this._data;
 
-
-			d[0] = f / aspect;
-			d[1] = 0;
-			d[2] = 0;
-			d[3] = 0;
-			d[4] = 0;
-			d[5] = f;
-			d[6] = 0;
-			d[7] = 0;
-			d[8] = 0;
-			d[9] = 0;
+			 d[0] = f / aspect;
+			 d[1] = 0;
+			 d[2] = 0;
+			 d[3] = 0;
+			 d[4] = 0;
+			 d[5] = f;
+			 d[6] = 0;
+			 d[7] = 0;
+			 d[8] = 0;
+			 d[9] = 0;
 			d[10] = (far + near) * nf;
 			d[11] = -1;
 			d[12] = 0;
@@ -428,19 +447,19 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var bt = 1 / (bottom - top);
 			var nf = 1 / (near - far);
 
+
 			var d = this._data;
 
-
-			d[0] = -2 * lr;
-			d[1] = 0;
-			d[2] = 0;
-			d[3] = 0;
-			d[4] = 0;
-			d[5] = -2 * bt;
-			d[6] = 0;
-			d[7] = 0;
-			d[8] = 0;
-			d[9] = 0;
+			 d[0] = -2 * lr;
+			 d[1] = 0;
+			 d[2] = 0;
+			 d[3] = 0;
+			 d[4] = 0;
+			 d[5] = -2 * bt;
+			 d[6] = 0;
+			 d[7] = 0;
+			 d[8] = 0;
+			 d[9] = 0;
 			d[10] = 2 * nf;
 			d[11] = 0;
 			d[12] = (left + right) * lr;
@@ -460,7 +479,7 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var z2 = eyez - centerz;
 
 			if (
-				Math.abs(z0) < Class.PRECISION
+				   Math.abs(z0) < Class.PRECISION
 				&& Math.abs(z1) < Class.PRECISION
 				&& Math.abs(z2) < Class.PRECISION
 			) {
@@ -468,7 +487,7 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			}
 
 
-			var len = 1 / Math.sqrt(z0*z0 + z1*z1 + z2*z2);
+			len = 1 / Math.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
 			z0 *= len;
 			z1 *= len;
 			z2 *= len;
@@ -478,7 +497,7 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var x1 = upz * z0 - upx * z2;
 			var x2 = upx * z1 - upy * z0;
  
-			len = Math.sqrt(x0*x0 + x1*x1 + x2*x2);
+			len = Math.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
 			if (len === 0) {
 
 				x0 = 0;
@@ -499,7 +518,7 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 			var y1 = z2 * x0 - z0 * x2;
 			var y2 = z0 * x1 - z1 * x0;
 
-			len = Math.sqrt(y0*y0 + y1*y1 + y2*y2);
+			len = Math.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
 			if (len === 0) {
 
 				y0 = 0;
@@ -518,16 +537,16 @@ lychee.define('lychee.math.Matrix4').exports(function(lychee, global) {
 
 			var d = this._data;
 
-			d[0]  = x0;
-			d[1]  = y0;
-			d[2]  = z0;
-			d[3]  = 0;
-			d[4]  = x1;
-			d[5]  = y1;
-			d[6]  = z1;
-			d[7]  = 0;
-			d[8]  = x2;
-			d[9]  = y2;
+			 d[0] = x0;
+			 d[1] = y0;
+			 d[2] = z0;
+			 d[3] = 0;
+			 d[4] = x1;
+			 d[5] = y1;
+			 d[6] = z1;
+			 d[7] = 0;
+			 d[8] = x2;
+			 d[9] = y2;
 			d[10] = z2;
 			d[11] = 0;
 			d[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);

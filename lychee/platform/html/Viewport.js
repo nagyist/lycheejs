@@ -106,27 +106,89 @@ lychee.define('Viewport').tags({
 	};
 
 
+	var _enterFullscreen = null;
+	var _leaveFullscreen = null;
+
 	(function() {
 
 		var methods = [];
 
 		if (typeof global.onorientationchange !== 'undefined') {
-			methods.push('orientationchange');
+			methods.push('Orientation');
 			global.addEventListener('orientationchange', _listeners.orientationchange, true);
 		}
 
 		if (typeof global.onfocus !== 'undefined') {
-			methods.push('focus');
+			methods.push('Focus');
 			global.addEventListener('focus', _listeners.focus, true);
 		}
 
 		if (typeof global.onblur !== 'undefined') {
-			methods.push('blur');
+			methods.push('Blur');
 			global.addEventListener('blur', _listeners.blur, true);
 		}
 
 
 		global.addEventListener('resize', _listeners.resize, true);
+
+
+		if (global.document && global.document.documentElement) {
+
+			var element = global.document.documentElement;
+
+			if (
+				typeof element.requestFullscreen === 'function'
+				&& typeof element.exitFullscreen === 'function'
+			) {
+
+				_enterFullscreen = function() {
+					element.requestFullscreen();
+				};
+
+				_leaveFullscreen = function() {
+					element.exitFullscreen();
+				};
+
+			}
+
+
+			if (_enterFullscreen === null || _leaveFullscreen === null) {
+
+				var prefixes = [ 'moz', 'ms', 'webkit' ];
+
+				for (var p = 0, pl = prefixes.length; p < pl; p++) {
+
+					if (
+						typeof element[prefixes[p] + 'RequestFullScreen'] === 'function'
+						&& typeof document[prefixes[p] + 'CancelFullScreen'] === 'function'
+					) {
+
+						(function(document, element, prefix) {
+
+							_enterFullscreen = function() {
+								element[prefix + 'RequestFullScreen']();
+							};
+
+							_leaveFullscreen = function() {
+								document[prefix + 'LeaveFullScreen']();
+							};
+
+						})(global.document, element, prefixes[p]);
+
+						break;
+
+					}
+
+				}
+
+			}
+
+		}
+
+
+		if (_enterFullscreen !== null && _leaveFullscreen !== null) {
+			methods.push('Fullscreen');
+		}
 
 
 		if (lychee.debug === true) {
@@ -144,8 +206,10 @@ lychee.define('Viewport').tags({
 		this.__width  = global.innerWidth;
 		this.__height = global.innerHeight;
 
+		this.__isFullscreen = false;
 
-		lychee.event.Emitter.call(this, 'viewport');
+
+		lychee.event.Emitter.call(this);
 
 		_instances.push(this);
 
@@ -153,6 +217,48 @@ lychee.define('Viewport').tags({
 
 
 	Class.prototype = {
+
+		/*
+		 * PUBLIC API
+		 */
+
+		enterFullscreen: function() {
+
+			if (_enterFullscreen !== null) {
+
+				this.__isFullscreen = true;
+				_enterFullscreen();
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		leaveFullscreen: function() {
+
+			if (_leaveFullscreen !== null) {
+
+				this.__isFullscreen = false;
+				_leaveFullscreen();
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		isFullscreen: function() {
+			return this.__isFullscreen === true;
+		},
+
+
 
 		/*
 		 * PRIVATE API
@@ -163,6 +269,14 @@ lychee.define('Viewport').tags({
 		},
 
 		__processReshape: function(width, height) {
+
+			if (
+				width === this.__width
+				&& height === this.__height
+			) {
+				return;
+			}
+
 
 			this.__width  = width;
 			this.__height = height;

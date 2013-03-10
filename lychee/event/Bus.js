@@ -5,6 +5,30 @@ lychee.define('lychee.event.Bus').requires([
 
 	var _emitterId = 0;
 
+	var _trigger_channel = function(type, root) {
+
+		var id   = root.getEmitterId();
+		var args = [].splice.call(arguments, 1);
+
+
+		if (
+			   this.__channels[type] !== undefined
+			&& this.__channels[type][id] !== undefined
+		) {
+
+			for (var c = 1, cl = this.__channels[type][id].length; c < cl; c++) {
+
+				var emitter = this.__channels[type][id][c];
+
+				emitter.trigger(type, args);
+
+			}
+
+		}
+
+	};
+
+
 
 	var Class = function() {
 
@@ -16,41 +40,12 @@ lychee.define('lychee.event.Bus').requires([
 	Class.prototype = {
 
 		/*
-		 * PRIVATE API
-		 */
-
-		__triggerChannel: function(type, root) {
-
-			var id   = root.getEmitterId();
-			var args = [].splice.call(arguments, 1);
-
-
-			if (
-				this.__channels[type] !== undefined
-				&& this.__channels[type][id] !== undefined
-			) {
-
-				for (var c = 1, cl = this.__channels[type][id].length; c < cl; c++) {
-
-					var emitter = this.__channels[type][id][c];
-
-					emitter.trigger(type, args);
-
-				}
-
-			}
-
-		},
-
-
-
-		/*
 		 * PUBLIC API
 		 */
 
 		addChannel: function(type, emitters) {
 
-			type = typeof type === 'string' ? type : null;
+			type     = typeof type === 'string'                                      ? type     : null;
 			emitters = Object.prototype.toString.call(emitters) === '[object Array]' ? emitters : null;
 
 			if (type !== null && type.charAt(0) === '@') {
@@ -72,7 +67,7 @@ lychee.define('lychee.event.Bus').requires([
 					var emitter = emitters[e];
 
 					if (
-						typeof emitter.bind === 'function'
+						   typeof emitter.bind === 'function'
 						&& typeof emitter.unbind === 'function'
 						&& typeof emitter.trigger === 'function'
 					) {
@@ -92,8 +87,8 @@ lychee.define('lychee.event.Bus').requires([
 
 					if (this.__channels[type][root.getEmitterId()] === undefined) {
 
-						root.unbind('@' + type, this.__triggerChannel, this);
-						root.bind('@' + type, this.__triggerChannel, this);
+						root.unbind('@' + type, _trigger_channel, this);
+						root.bind('@' + type,   _trigger_channel, this);
 
 						this.__channels[type][root.getEmitterId()] = channel;
 
@@ -112,11 +107,11 @@ lychee.define('lychee.event.Bus').requires([
 
 		removeChannel: function(type, root) {
 
-			type = typeof type === 'string' ? type : null;
+			type = typeof type === 'string'                ? type : null;
 			root = typeof root.getEmitterId === 'function' ? root : null;
 
 			if (
-				type !== null
+				   type !== null
 				&& root !== null
 				&& this.__channels[type] !== undefined
 			) {
@@ -124,7 +119,7 @@ lychee.define('lychee.event.Bus').requires([
 				var rootId = root.getEmitterId();
 				if (this.__channels[type][rootId] !== undefined) {
 
-					rootId.unbind('@' + type, this.__triggerChannel, this);
+					rootId.unbind('@' + type, _trigger_channel, this);
 					delete this.__channels[type][rootId];
 
 					return true;

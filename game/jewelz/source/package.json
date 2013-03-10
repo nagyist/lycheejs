@@ -5,32 +5,36 @@
 	"tree": {
 
 		"state": {
-			"Credits": [ "js" ],
-			"GameBlast": [ "js" ],
-			"GameBoard": [ "js" ],
-			"GamePuzzle": [ "js" ],
+			"Game": [ "js" ],
 			"Menu": [ "js" ],
 			"Result": [ "js" ]
 		},
 
 		"entity": {
-			"Deco": [ "js" ],
-			"Jewel": [ "js" ]
+			"lycheeJS": [ "js", "png" ],
+
+			"Background": [ "js", "json", "png" ],
+			"Deco": [ "js", "json", "png" ],
+			"Font": [
+				"js",
+				"headline.fnt",
+				"normal.fnt"
+			],
+			"Jewel": [ "js", "json", "png" ]
 		},
 
-		"scene": {
-			"GameBlast": [ "js" ],
-			"GameBoard": [ "js" ],
-			"Overlay": [ "js" ],
-			"UI": [ "js" ]
+		"logic": {
+			"Game": [ "js" ],
+			"Level": [
+				"js",
+				"data.json"
+			],
+			"Score": [ "js" ]
 		},
 
 		"DeviceSpecificHacks": [ "js" ],
 		"Jukebox": [ "js" ],
-		"Main": [ "js", "css" ],
-		"Renderer": [ "js" ],
-		"Scene": [ "js" ],
-		"Score": [ "js" ]
+		"Main": [ "js", "css" ]
 
 	}
 }

@@ -13,7 +13,7 @@ lychee.define('Renderer').tags({
 
 	return false;
 
-}).exports(function(lychee, global) {
+}).exports(function(lychee, global, attachments) {
 
 	var Class = function(id) {
 
@@ -41,8 +41,26 @@ lychee.define('Renderer').tags({
 
 	Class.prototype = {
 
+		__updateEnvironment: function() {
+
+			var env = this.__environment;
+
+
+			env.screen.width  = 0;
+			env.screen.height = 0;
+
+			env.offset.x = 0;
+			env.offset.y = 0;
+
+			env.width  = this.__width;
+			env.height = this.__height;
+
+		},
+
+
+
 		/*
-		 * State and Environment Management
+		 * STATE AND ENVIRONMENT MANAGEMENT
 		 */
 
 		reset: function(width, height, resetCache) {
@@ -73,9 +91,19 @@ lychee.define('Renderer').tags({
 			this.__state = 'stopped';
 		},
 
-		clear: function() {},
+		clear: function() {
 
-		flush: function() {},
+		},
+
+		flush: function() {
+
+		},
+
+
+
+		/*
+		 * SETTERS AND GETTERS
+		 */
 
 		isRunning: function() {
 			return this.__state === 'running';
@@ -86,55 +114,60 @@ lychee.define('Renderer').tags({
 			return this.__environment;
 		},
 
+		setAlpha: function(alpha) {
 
+		},
 
-		/*
-		 * PRIVATE API: Helpers
-		 */
-
-		__updateEnvironment: function() {
-
-			this.__environment.screen.width  = 0;
-			this.__environment.screen.height = 0;
-
-			this.__environment.offset.x = 0;
-			this.__environment.offset.y = 0;
-
-			this.__environment.width  = this.__width;
-			this.__environment.height = this.__height;
+		setBackground: function(color) {
 
 		},
 
 
 
 		/*
-		 * Setters
+		 * DRAWING API
 		 */
 
-		setAlpha: function(alpha) {},
+		drawTriangle: function(x1, y1, x2, y2, x3, y3, color, background, lineWidth) {
 
-		setBackground: function(color) {},
+		},
+
+		drawPolygon: function(points, x1, y1) {
+		},
+
+		drawBox: function(x1, y1, x2, y2, color, background, lineWidth) {
+
+		},
+
+		drawArc: function(x, y, start, end, radius, color, background, lineWidth) {
+
+		},
+
+		drawCircle: function(x, y, radius, color, background, lineWidth) {
+
+		},
+
+		drawLine: function(x1, y1, x2, y2, color, lineWidth) {
+
+		},
+
+		drawSprite: function(x1, y1, sprite, map) {
+
+		},
+
+		drawText: function(x1, y1, text, font, center) {
+
+		},
 
 
 
 		/*
-		 * Drawing API
+		 * RENDERING API
 		 */
 
-		drawBox: function(x1, y1, x2, y2, color, background, lineWidth) {},
+		renderEntity: function(entity, offsetX, offsetY) {
 
-		drawCircle: function(x, y, radius, color, background, lineWidth) {},
-
-		drawLine: function(x1, y1, x2, y2, color, lineWidth) {},
-
-		// points, x1, y1, [ ... x(a), y(a) ... ], [ color, background, lineWidth ]
-		drawPolygon: function(points, x1, y1) {},
-
-		drawSprite: function(x1, y1, sprite, map) {},
-
-		drawText: function(x1, y1, text, font, center) {},
-
-		drawTriangle: function(x1, y1, x2, y2, x3, y3, color, background, lineWidth) {}
+		}
 
 	};
 

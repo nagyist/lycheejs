@@ -1,6 +1,6 @@
 
 // Set to true to see lychee debug messages
-// lychee.debug = true;
+lychee.debug = true;
 
 
 // Rebase required namespaces for inclusion
@@ -27,9 +27,6 @@ lychee.rebase({
 
 
 lychee.build(function(lychee, global) {
-
-	lychee.Preloader.prototype._progress(null, null);
-
 
 	var settings = {
 		base: './asset',

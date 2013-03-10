@@ -2,9 +2,7 @@
 lychee.define('tool.UIGenerator').tags({
 	platform: 'html'
 }).requires([
-	'lychee.ui.Button',
-	'lychee.ui.Text',
-	'lychee.ui.Sprite'
+	'lychee.ui.Button'
 ]).includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global) {

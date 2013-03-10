@@ -4,8 +4,20 @@
 	"tree": {
 
 		"entity": {
-			"Ball": [ "js" ],
-			"Paddle": [ "js" ]
+			"lycheeJS": [ "js", "png" ],
+
+			"Ball": [ "js", "png" ],
+			"Font": [
+				"js",
+				"headline.fnt",
+				"normal.fnt",
+				"small.fnt"
+			],
+			"Paddle": [
+				"js",
+				"blue.png",
+				"red.png"
+			]
 		},
 
 		"state": {
@@ -14,10 +26,7 @@
 		},
 
 		"DeviceSpecificHacks": [ "js" ],
-		"Jukebox": [ "js" ],
-		"Main": [ "js", "css" ],
-		"Renderer": [ "js" ],
-		"Scene": [ "js" ]
+		"Main": [ "js", "css" ]
 
 	}
 }

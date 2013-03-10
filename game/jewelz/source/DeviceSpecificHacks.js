@@ -1,25 +1,27 @@
 
-lychee.define('game.DeviceSpecificHacks').exports(function(lychee, global) {
+lychee.define('game.DeviceSpecificHacks').exports(function(lychee, game, global, attachments) {
 
 	var Callback = function() {
+
+		var settings = this.settings;
 
 		if (typeof global.navigator !== 'undefined') {
 
 			if (global.navigator.appName === 'V8GL') {
 
-				this.settings.fullscreen = true;
-				this.settings.music = false;
-				this.settings.sound = false;
+				settings.fullscreen = true;
+				settings.music = false;
+				settings.sound = false;
 
 			} else if (global.navigator.userAgent.match(/iPad/)) {
 
-				this.settings.fullscreen = true;
-				this.settings.music = false;
-				this.settings.sound = true;
+				settings.fullscreen = true;
+				settings.music = false;
+				settings.sound = true;
 
 			} else if (global.navigator.userAgent.match(/Android/)) {
 
-				this.settings.fullscreen = true;
+				settings.fullscreen = true;
 
 			}
 
@@ -31,3 +33,4 @@ lychee.define('game.DeviceSpecificHacks').exports(function(lychee, global) {
 	return Callback;
 
 });
+

@@ -4,8 +4,8 @@ lychee.define('lychee.net.Protocol').tags({
 }).supports(function(lychee, global) {
 
 	if (
-		typeof global.Buffer !== 'undefined'
-		&& typeof global.Buffer.byteLength === 'function'
+		   typeof Buffer !== 'undefined'
+		&& typeof Buffer.byteLength === 'function'
 	) {
 
 		return true;
@@ -30,7 +30,7 @@ lychee.define('lychee.net.Protocol').tags({
 		this.__op          = 0;
 		this.__mode        = 0;
 		this.__frameLength = 0;
-		this.__closeCode   = 1000;
+		this.__closeCode   = Class.STATUS.normal_closure;
 
 		this.__isClosed    = false;
 		this.__isMasked    = false;
@@ -39,6 +39,38 @@ lychee.define('lychee.net.Protocol').tags({
 
 
 	Class.VERSION = 13;
+
+
+	/*
+	 * STATUS CODES
+	 *
+	 * Using HYBI headers, adopted from:
+	 * http://www.iana.org/assignments/websocket/websocket.xml
+	 */
+
+	Class.STATUS = {
+
+		// IESG_HYBI
+		normal_closure:     1000,
+		going_away:         1001,
+		protocol_error:     1002,
+		unsupported_data:   1003,
+		no_status_received: 1005,
+		abnormal_closure:   1006,
+		invalid_payload:    1007,
+		policy_violation:   1008,
+		message_too_big:    1009,
+		missing_extension:  1010,
+		internal_error:     1011,
+
+		// IESG_HYBI Current
+		service_restart:    1012,
+		service_overload:   1013,
+
+		// IESG_HYBI
+		tls_handshake:      1015
+
+	};
 
 
 	Class.prototype = {
@@ -52,7 +84,7 @@ lychee.define('lychee.net.Protocol').tags({
 			if (this.__isClosed === true) {
 				return;
 			} else if (data.length > this.__maxFrameSize) {
-				this.__closeCode = 1009; // Frame too big
+				this.__closeCode = Class.STATUS.message_too_big;
 				return this.close(false);
 			}
 
@@ -105,7 +137,7 @@ lychee.define('lychee.net.Protocol').tags({
 				data      &= 240;
 
 
-				// Frame Check
+				// 0: Continuation Frame
 				if (
 					(data & 2) === 2
 					|| (data & 4) === 4
@@ -114,38 +146,38 @@ lychee.define('lychee.net.Protocol').tags({
 
 					this.__mode = -1;
 
+				// 1: Text Frame
+				} else if (this.__op === 1) {
 
-				// Close Frame
+					this.__mode = 1;
+
+				// 2: Binary Frame
+				} else if (this.__op === 2) {
+
+					this.__mode = 1;
+
+				// 8: Connection Close Frame
 				} else if (this.__op === 8) {
 
 					this.__mode = -1;
 
 
-				// Ping Frame
+				// 9: Ping Frame
 				} else if (this.__op === 9) {
 
 					this.__mode = 1;
 
 
-				// Pong Frame
+				// 10: Pong Frame
 				} else if (this.__op === 10) {
 
 					this.__mode = 1;
 
 
-				// TODO: Unused OP Codes
-				} else if (
-					this.__op !== 1
-					&& this.__op !== 2
-					&& this.__op !== 9
-				) {
-
-					this.__mode = -1;
-
-
+				// 3-7, 11-15: Unassigned OP Codes
 				} else {
 
-					this.__mode = 1;
+					this.__mode = -1;
 
 				}
 
@@ -175,7 +207,7 @@ lychee.define('lychee.net.Protocol').tags({
 				} else {
 
 					// Protocol Error
-					this.__closeCode = 1002;
+					this.__closeCode = Class.STATUS.protocol_error;
 					this.__mode      = -1;
 
 				}
@@ -246,23 +278,25 @@ lychee.define('lychee.net.Protocol').tags({
 				}
 
 
-				this.__mode           = 0;
-				this.__offset        += this.__frameLength;
+				this.__mode    = 0;
+				this.__offset += this.__frameLength;
 
 
-				// Ping
-				if (this.__op === 9) {
+				// Handle Ping Frame & Pong Frame
+				if (this.__op === 9 || this.__op === 10) {
 
-					this.write(message, isBinary, false);
+					// Answer the Ping with a Pong
+					if (this.__op === 9) {
+						this.write(message, isBinary, false);
+					}
 
 
-				// Message
-				} else if (this.__op !== 10) {
-
+				// Message Frame
+				} else {
 
 					var result = callback.call(scope, message, isBinary);
 					if (result === false) {
-						this.__closeCode = 1003; // Unsupported Data
+						this.__closeCode = Class.STATUS.unsupported_data;
 						this.close(false);
 					}
 
@@ -374,9 +408,11 @@ lychee.define('lychee.net.Protocol').tags({
 
 			if (this.__isClosed === false) {
 
+				this.__isClosed = true;
+
 				this.write(reason || 'Disconnect', false, true);
 
-				this.__closeCode = null;
+				this.__closeCode = Class.STATUS.normal_closure;
 				this.__closeCallback(closedByRemote);
 
 				return true;

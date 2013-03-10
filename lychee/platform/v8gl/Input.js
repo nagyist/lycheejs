@@ -125,7 +125,7 @@ lychee.define('Input').tags({
 		this.reset();
 
 
-		lychee.event.Emitter.call(this, 'input');
+		lychee.event.Emitter.call(this);
 
 		_instances.push(this);
 
@@ -139,7 +139,7 @@ lychee.define('Input').tags({
 
 		 8: 'backspace',
 		 9: 'tab',
-		13: 'enter',
+		13: 'return',
 		16: 'shift',
 		17: 'ctrl',
 		18: 'alt',
@@ -229,9 +229,6 @@ lychee.define('Input').tags({
 
 		reset: function() {
 
-			this.__touchareas = null; // GC hint
-			this.__touchareas = {};
-
 			this.__swipes     = null; // GC hint
 			this.__swipes     = {
 				0: null, 1: null,
@@ -247,48 +244,6 @@ lychee.define('Input').tags({
 				touch: Date.now(),
 				swipe: Date.now()
 			};
-
-		},
-
-		addToucharea: function(id, box) {
-
-			id = typeof id === 'string' ? id : null;
-
-
-			if (
-				id !== null
-				box instanceof Object
-				&& this.__touchareas[id] === undefined
-			) {
-
-				this.__touchareas[id] = {
-					id: id,
-					x1: typeof box.x1 === 'number' ? box.x1 : 0,
-					x2: typeof box.x2 === 'number' ? box.x2 : Infinity,
-					y1: typeof box.y1 === 'number' ? box.y1 : 0,
-					y2: typeof box.y2 === 'number' ? box.y2 : Infinity
-				};
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		removeToucharea: function(id) {
-
-			id = typeof id === 'string' ? id : null;
-
-			if (id !== null && this.__touchareas[id] !== undefined) {
-				delete this.__touchareas[id];
-				return true;
-			}
-
-
-			return false;
 
 		},
 
@@ -392,36 +347,21 @@ lychee.define('Input').tags({
 			}
 
 
-			this.trigger('touch', [ id, { x: x, y: y }, delta ]);
+			var handled = false;
 
-
-			// 2. Fire known Touchareas
-			for (var tid in this.__touchareas) {
-
-				var toucharea = this.__touchareas[tid];
-
-				if (
-					x > toucharea.x1
-					&& x < toucharea.x2
-					&& y > toucharea.y1
-					&& y < toucharea.y2
-				) {
-					this.trigger(
-						'toucharea-' + tid,
-						[ delta ]
-					);
-				}
-
-			}
+			handled = this.trigger('touch', [ id, { x: x, y: y }, delta ]) || handled;
 
 
 			this.__clock.touch = Date.now();
 
 
-			// 3. Fire Swipe Start, but only for tracked touches
+			// 2. Fire Swipe Start, but only for tracked touches
 			if (this.__swipes[id] === null) {
-				this.__processSwipe(id, 'start', x, y);
+				handled = this.__processSwipe(id, 'start', x, y) || handled;
 			}
+
+
+			return handled;
 
 		},
 
@@ -450,12 +390,15 @@ lychee.define('Input').tags({
 			}
 
 
+			var handled = false;
+
+
 			if (state === 'start') {
 
-				this.trigger(
+				handled = this.trigger(
 					'swipe',
 					[ id, 'start', position, delta, swipe ]
-				);
+				) || handled;
 
 				this.__swipes[id] = {
 					x: x, y: y
@@ -463,17 +406,17 @@ lychee.define('Input').tags({
 
 			} else if (state === 'move') {
 
-				this.trigger(
+				handled = this.trigger(
 					'swipe',
 					[ id, 'move', position, delta, swipe ]
-				);
+				) || handled;
 
 			} else if (state === 'end') {
 
-				this.trigger(
+				handled = this.trigger(
 					'swipe',
 					[ id, 'end', position, delta, swipe ]
-				);
+				) || handled;
 
 				this.__swipes[id] = null;
 
@@ -481,6 +424,9 @@ lychee.define('Input').tags({
 
 
 			this.__clock.swipe = Date.now();
+
+
+			return handled;
 
 		}
 

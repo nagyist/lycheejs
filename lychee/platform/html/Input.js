@@ -5,10 +5,7 @@ lychee.define('Input').tags({
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	if (
-		global.document
-		&& typeof global.document.addEventListener === 'function'
-	) {
+	if (typeof global.addEventListener === 'function') {
 		return true;
 	}
 
@@ -56,6 +53,7 @@ lychee.define('Input').tags({
 			}
 
 
+			// Prevent scrolling and swiping behaviour
 			if (handled === true) {
 				event.preventDefault();
 				event.stopPropagation();
@@ -103,8 +101,18 @@ lychee.define('Input').tags({
 
 			_mouseactive = true;
 
+
+			var handled = false;
+
 			for (var i = 0, l = _instances.length; i < l; i++) {
-				_instances[i].__processTouch(0, event.pageX, event.pageY);
+				handled = _instances[i].__processTouch(0, event.pageX, event.pageY) || handled;
+			}
+
+
+			// Prevent drag of canvas as image
+			if (handled === true) {
+				event.preventDefault();
+				event.stopPropagation();
 			}
 
 		},
@@ -113,8 +121,18 @@ lychee.define('Input').tags({
 
 			if (_mouseactive === false) return;
 
+
+			var handled = false;
+
 			for (var i = 0, l = _instances.length; i < l; i++) {
-				_instances[i].__processSwipe(0, 'move', event.pageX, event.pageY);
+				handled = _instances[i].__processSwipe(0, 'move', event.pageX, event.pageY) || handled;
+			}
+
+
+			// Prevent selection of canvas as content
+			if (handled === true) {
+				event.preventDefault();
+				event.stopPropagation();
 			}
 
 		},
@@ -138,20 +156,20 @@ lychee.define('Input').tags({
 
 		var keyboard = 'onkeydown' in global;
 		if (keyboard === true) {
-			document.addEventListener('keydown', _listeners.keydown, true);
+			global.addEventListener('keydown', _listeners.keydown, true);
 		}
 
 		var touch = 'ontouchstart' in global;
 		var mouse = 'onmousedown' in global;
 		if (touch === true) {
-			document.addEventListener('touchstart', _listeners.touchstart, true);
-			document.addEventListener('touchmove',  _listeners.touchmove,  true);
-			document.addEventListener('touchend',   _listeners.touchend,   true);
+			global.addEventListener('touchstart', _listeners.touchstart, true);
+			global.addEventListener('touchmove',  _listeners.touchmove,  true);
+			global.addEventListener('touchend',   _listeners.touchend,   true);
 		} else if (mouse === true) {
-			document.addEventListener('mousedown',  _listeners.mousestart, true);
-			document.addEventListener('mousemove',  _listeners.mousemove,  true);
-			document.addEventListener('mouseup',    _listeners.mouseend,   true);
-			document.addEventListener('mouseout',   _listeners.mouseend,   true);
+			global.addEventListener('mousedown',  _listeners.mousestart, true);
+			global.addEventListener('mousemove',  _listeners.mousemove,  true);
+			global.addEventListener('mouseup',    _listeners.mouseend,   true);
+			global.addEventListener('mouseout',   _listeners.mouseend,   true);
 		}
 
 
@@ -191,7 +209,7 @@ lychee.define('Input').tags({
 		this.reset();
 
 
-		lychee.event.Emitter.call(this, 'input');
+		lychee.event.Emitter.call(this);
 
 		_instances.push(this);
 
@@ -205,7 +223,7 @@ lychee.define('Input').tags({
 
 		 8: 'backspace',
 		 9: 'tab',
-		13: 'enter',
+		13: 'return',
 		16: 'shift',
 		17: 'ctrl',
 		18: 'alt',
@@ -268,9 +286,6 @@ lychee.define('Input').tags({
 
 		reset: function() {
 
-			this.__touchareas = null; // GC hint
-			this.__touchareas = {};
-
 			this.__swipes     = null; // GC hint
 			this.__swipes     = {
 				0: null, 1: null,
@@ -286,48 +301,6 @@ lychee.define('Input').tags({
 				touch: Date.now(),
 				swipe: Date.now()
 			};
-
-		},
-
-		addToucharea: function(id, box) {
-
-			id = typeof id === 'string' ? id : null;
-
-
-			if (
-				id !== null
-				&& box instanceof Object
-				&& this.__touchareas[id] === undefined
-			) {
-
-				this.__touchareas[id] = {
-					id: id,
-					x1: typeof box.x1 === 'number' ? box.x1 : 0,
-					x2: typeof box.x2 === 'number' ? box.x2 : Infinity,
-					y1: typeof box.y1 === 'number' ? box.y1 : 0,
-					y2: typeof box.y2 === 'number' ? box.y2 : Infinity
-				};
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		removeToucharea: function(id) {
-
-			id = typeof id === 'string' ? id : null;
-
-			if (id !== null && this.__touchareas[id] !== undefined) {
-				delete this.__touchareas[id];
-				return true;
-			}
-
-
-			return false;
 
 		},
 
@@ -433,25 +406,10 @@ lychee.define('Input').tags({
 			handled = this.trigger('touch', [ id, { x: x, y: y }, delta ]) || handled;
 
 
-			// 2. Fire known Touchareas
-			for (var tid in this.__touchareas) {
-
-				var toucharea = this.__touchareas[tid];
-
-				if (
-					x > toucharea.x1 && x < toucharea.x2
-					&& y > toucharea.y1 && y < toucharea.y2
-				) {
-					handled = this.trigger('toucharea-' + tid, [ delta ]) || handled;
-				}
-
-			}
-
-
 			this.__clock.touch = Date.now();
 
 
-			// 3. Fire Swipe Start, but only for tracked touches
+			// 2. Fire Swipe Start, but only for tracked touches
 			if (this.__swipes[id] === null) {
 				handled = this.__processSwipe(id, 'start', x, y) || handled;
 			}

@@ -4,7 +4,8 @@ lychee.define('lychee.event.Promise').exports(function(lychee, global) {
 	var Class = function(callback, scope) {
 
 		callback = callback instanceof Function ? callback : null;
-		scope    = scope !== undefined ? scope : this;
+		scope    = scope !== undefined          ? scope    : this;
+
 
 		this.__callback  = callback;
 		this.__scope     = scope;
@@ -20,9 +21,9 @@ lychee.define('lychee.event.Promise').exports(function(lychee, global) {
 
 		then: function(onresolve, onreject, scope) {
 
-			onresolve = onresolve instanceof Function ? onresolve: null;
-			onreject  = onreject instanceof Function ? onreject: null;
-			scope     = scope !== undefined ? scope : this;
+			onresolve = onresolve instanceof Function ? onresolve : null;
+			onreject  = onreject instanceof Function  ? onreject  : null;
+			scope     = scope !== undefined           ? scope     : this;
 
 
 			this.__onresolve = onresolve;

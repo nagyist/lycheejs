@@ -3,6 +3,19 @@
 
 	"tree": {
 
+		"entity": {
+			"lycheeJS": [ "js", "png" ],
+
+			"Circle": [ "js" ],
+			"Font": [
+				"js",
+				"headline.fnt",
+				"normal.fnt",
+				"small.fnt"
+			],
+			"Text": [ "js" ]
+		},
+
 		"state": {
 			"Game": [ "js" ],
 			"Menu": [ "js" ]
@@ -10,9 +23,7 @@
 
 		"DeviceSpecificHacks": [ "js" ],
 		"Jukebox": [ "js" ],
-		"Main": [ "js", "css" ],
-		"Renderer": [ "js" ],
-		"Scene": [ "js" ]
+		"Main": [ "js", "css" ]
 
 	}
 }

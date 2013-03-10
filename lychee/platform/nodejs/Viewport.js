@@ -61,7 +61,7 @@ lychee.define('Viewport').tags({
 		this.__height = process.stdout.rows;
 
 
-		lychee.event.Emitter.call(this, 'viewport');
+		lychee.event.Emitter.call(this);
 
 		_instances.push(this);
 

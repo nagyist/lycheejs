@@ -13,7 +13,7 @@ lychee.define('Track').tags({
 }).exports(function(lychee, global) {
 
 	var _mime = {
-		'3gp':  [ 'audio/3gpp' ],
+		'3gp':  [ 'audio/3gpp', 'audio/3gpp2'],
 		'aac':  [ 'audio/aac', 'audio/aacp' ],
 		'amr':  [ 'audio/amr' ],
 		'caf':  [ 'audio/x-caf', 'audio/x-aiff; codecs="IMA-ADPCM, ADPCM"' ],
@@ -87,13 +87,13 @@ lychee.define('Track').tags({
 		var settings = lychee.extend({ buffer: null }, data);
 
 
-		this.id = id;
-
+		this.id     = id;
+		this.muted  = false;
+		this.volume = 1.0;
 
 		this.__endTime   = 0;
 		this.__isIdle    = true;
 		this.__isLooping = false;
-		this.__isMuted   = false;
 		this.__isReady   = isReady;
 
 
@@ -247,29 +247,6 @@ lychee.define('Track').tags({
 				this.play(this.__wasLoopingBeforePause);
 			},
 
-			mute: function() {
-
-				if (this.__isMuted === false) {
-
-					this.__unmuteVolume = this.__gain.gain.value;
-					this.__gain.gain.value = 0;
-					this.__isMuted = true;
-
-				}
-
-			},
-
-			unmute: function() {
-
-				if (this.__isMuted === true) {
-
-					this.__gain.gain.value = this.__unmuteVolume || 1;
-					this.__isMuted = false;
-
-				}
-
-			},
-
 			clone: function() {
 
 				var id = this.id;
@@ -278,32 +255,68 @@ lychee.define('Track').tags({
 
 			},
 
-			isIdle: function() {
+			isPlaying: function() {
 
 				if (Date.now() > this.__endTime) {
 					this.__isIdle = true;
 				}
 
-				return this.__isIdle;
+				return this.__isIdle === false;
 
-			},
-
-			isMuted: function() {
-				return this.__isMuted;
 			},
 
 			isReady: function() {
-				return this.isIdle() && this.__isReady;
+				return this.__isReady && this.isPlaying() === false;
 			},
 
-			getVolume: function() {
-				return this.__gain.gain.value;
+			setMuted: function(muted) {
+
+				muted = muted === true;
+
+
+				if (
+					muted === true
+					&& this.muted === false
+				) {
+
+					this.__unmuteVolume = this.__gain.gain.value;
+					this.__gain.gain.value = 0;
+					this.muted = true;
+
+					return true;
+
+				} else if (
+					muted === false
+					&& this.muted === true
+				) {
+
+					this.__gain.gain.value = this.__unmuteVolume || 1;
+					this.muted = false;
+
+					return true;
+
+				}
+
+
+				return false;
+
 			},
 
 			setVolume: function(volume) {
 
-				var newVolume = Math.min(Math.max(0, volume), 1);
-				this.__gain.gain.value = newVolume;
+				if (typeof volume === 'number') {
+
+					var value = Math.min(Math.max(0, volume), 1);
+
+					this.__gain.gain.value = value;
+					this.volume = value;
+
+					return true;
+
+				}
+
+
+				return false;
 
 			}
 
@@ -417,11 +430,11 @@ lychee.define('Track').tags({
 
 			mute: function() {
 
-				if (this.__isMuted === false) {
+				if (this.muted === false) {
 
 					this.__unmuteVolume = this.__audio.volume;
 					this.__audio.volume = 0;
-					this.__isMuted = true;
+					this.muted = true;
 
 				}
 
@@ -429,10 +442,10 @@ lychee.define('Track').tags({
 
 			unmute: function() {
 
-				if (this.__isMuted === true) {
+				if (this.muted === true) {
 
 					this.__audio.volume = this.__unmuteVolume || 1;
-					this.__isMuted = false;
+					this.muted = false;
 
 				}
 
@@ -447,7 +460,7 @@ lychee.define('Track').tags({
 
 			},
 
-			isIdle: function() {
+			isPlaying: function() {
 
 				if (Date.now() > this.__endTime) {
 					return this.__onEnd();
@@ -458,26 +471,29 @@ lychee.define('Track').tags({
 				}
 
 
-				return this.__isIdle;
+				return this.__isIdle === false;
 
-			},
-
-			isMuted: function() {
-				return this.__isMuted;
 			},
 
 			isReady: function() {
-				return this.isIdle() && this.__isReady === true;
-			},
-
-			getVolume: function() {
-				return this.__audio.volume;
+				return this.__isReady && this.isPlaying() === false;
 			},
 
 			setVolume: function(volume) {
 
-				var newVolume = Math.min(Math.max(0, volume), 1);
-				this.__audio.volume = newVolume;
+				if (typeof volume === 'number') {
+
+					var value = Math.min(Math.max(0, volume), 1);
+
+					this.__audio.volume = value;
+					this.volume = value;
+
+					return true;
+
+				}
+
+
+				return false;
 
 			}
 

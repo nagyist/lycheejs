@@ -4,36 +4,27 @@ lychee.define('game.state.Game').requires([
 	'game.entity.Paddle'
 ]).includes([
 	'lychee.game.State'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, game, global, attachments) {
 
 	var Class = function(game) {
 
-		lychee.game.State.call(this, game, 'menu');
+		lychee.game.State.call(this, game);
 
-		this.__input = this.game.input;
-		this.__loop = this.game.loop;
-		this.__renderer = this.game.renderer;
 
-		this.__clock = 0;
-		this.__entities = {};
-		this.__locked = false;
+		this.__enemy = {
+			clock:  null,
+			delta:  500,
+			target: { y: 0 }
+		};
+		this.__player = {
+			target: { y: 0 }
+		};
 
 		this.__score = {
-			cpu: 0,
-			player: 0
+			player: 0,
+			enemy:  0
 		};
 
-		// required for AI logic
-		this.__ai = {
-			clock: null,
-			delta: 500, // lower = smarter
-			position: {
-				y: 0
-			}
-		};
-
-		// required for Player logic
-		this.__target = { y: 0 };
 
 		this.reset();
 
@@ -44,72 +35,86 @@ lychee.define('game.state.Game').requires([
 
 		reset: function() {
 
-			this.__entities.ball = new game.entity.Ball(this.game.images.ball);
-			this.__entities.player = new game.entity.Paddle(this.game.images.player);
-			this.__entities.cpu    = new game.entity.Paddle(this.game.images.cpu);
+			var renderer = this.renderer;
+			if (renderer !== null) {
+
+				this.removeLayer('game');
+
+
+				var layer = new lychee.game.Layer();
+
+				layer.setEntity('ball',   new game.entity.Ball());
+				layer.setEntity('player', new game.entity.Paddle('player'));
+				layer.setEntity('enemy',  new game.entity.Paddle('enemy'));
+
+				var width = renderer.getEnvironment().width;
+
+				layer.getEntity('player').setPosition({ x: -1/2 * width + 20 });
+				layer.getEntity('enemy').setPosition({  x:  1/2 * width - 20 });
+
+
+				this.setLayer('game', layer);
+
+			}
 
 		},
 
-		// this method will reset the game board each round
-		__reset: function(winner) {
+		__resetGame: function(winner) {
 
 			winner = typeof winner === 'string' ? winner : null;
 
-			var width = this.game.settings.width;
-			var height = this.game.settings.height;
+
+			var renderer = this.renderer;
+			var env      = renderer.getEnvironment();
 
 
-			this.__entities.ball.setPosition({
-				x: width / 2,
-				y: height / 2
-			});
+			var layer = this.getLayer('game');
+			var ball  = layer.getEntity('ball');
 
+			var velocity = {
+				x: 150 + Math.random() * 100,
+				y: 25  + Math.random() * 100
+			};
 
-			var v = { x: 150 + Math.random() * 100, y: Math.random() * 100 };
+			if (Math.random() > 0.5) velocity.y *= -1;
 
-			if (Math.random() > 0.5) { v.y *= -1; }
 			if (
 				winner === 'player'
 				|| (winner === null && Math.random() > 0.5)
 			) {
-				v.x *= -1;
+				velocity.x *= -1;
 			}
 
-			this.__entities.ball.setVelocity(v);
+			ball.setPosition({ x: 0, y: 0 });
+			ball.setVelocity(velocity);
 
-			this.__entities.player.setPosition({
-				x: 20,
-				y: height / 2
-			});
 
-			this.__entities.cpu.setPosition({
-				x: width - 20,
-				y: height / 2
-			});
+			var player = layer.getEntity('player');
+			var enemy  = layer.getEntity('enemy');
 
-			this.__target.y = height / 2;
-			this.__ai.position.y = height / 2;
+			player.setPosition({ y: 0 });
+			enemy.setPosition({  y: 0 });
 
 		},
 
 		enter: function() {
 
+			this.__score.enemy    = 0;
+			this.__score.player   = 0;
+			this.__enemy.target.y = 0;
+
+			var env = this.renderer.getEnvironment();
+			this.__width  = env.width;
+			this.__height = env.height;
+
+			this.__resetGame(null);
+
+
 			lychee.game.State.prototype.enter.call(this);
-
-			this.__score.cpu = 0;
-			this.__score.player = 0;
-			this.__reset();
-
-			this.__input.bind('touch', this.__processTouch, this);
-			this.__renderer.start();
 
 		},
 
 		leave: function() {
-
-			this.__renderer.stop();
-			this.__input.unbind('touch', this.__processTouch);
-
 
 			lychee.game.State.prototype.leave.call(this);
 
@@ -117,192 +122,178 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			this.__entities.ball.update(clock, delta);
-			this.__entities.cpu.update(clock, delta);
-			this.__entities.player.update(clock, delta);
-
-			// Ball Entity
-			var ball = this.__entities.ball;
-			var position = ball.getPosition();
-			var velocity = ball.getVelocity();
+			lychee.game.State.prototype.update.call(this, clock, delta);
 
 
-			// 1. Check if someone won this round
-			if (position.x < ball.radius && velocity.x < 0) {
-				this.__score.cpu++;
-				this.__reset('cpu');
-				return;
+			var layer = this.getLayer('game');
+			var ball  = layer.getEntity('ball');
+
+			var hwidth  = this.__width / 2;
+			var hheight = this.__height / 2;
+
+			var position = ball.position;
+			var velocity = ball.velocity;
+
+
+			/*
+			 * 1: WORLD BOUNDARIES
+			 */
+
+			if (position.y > hheight && velocity.y > 0) {
+				position.y = hheight - 1;
+				velocity.y = -1 * velocity.y;
 			}
 
-			if (position.x > this.game.settings.width - ball.radius && velocity.x > 0) {
+			if (position.y < -hheight && velocity.y < 0) {
+				position.y = -hheight + 1;
+				velocity.y = -1 * velocity.y;
+			}
+
+
+			if (position.x > hwidth) {
 				this.__score.player++;
-				this.__reset('player');
+				this.__resetGame('player');
+				return;
+			} else if (position.x < -hwidth) {
+				this.__score.enemy++;
+				this.__resetGame('enemy');
 				return;
 			}
 
 
-			// 2. Check if the Ball is outside our world in Y direction
-			if (position.y < ball.radius && velocity.y < 0) {
-				velocity.y = -velocity.y;
+
+			/*
+			 * 2: COLLISIONS
+			 */
+
+			var player = layer.getEntity('player');
+			var enemy  = layer.getEntity('enemy');
+
+			if (ball.collidesWith(player) === true) {
+				velocity.x = Math.abs(velocity.x);
 			}
 
-			if (position.y > this.game.settings.height - ball.radius && velocity.y > 0) {
-				velocity.y = -velocity.y;
-			}
-
-
-			// 3. Check if the Ball collides with a Paddle
-			if (this.__entities.ball.collidesWith(this.__entities.player)) {
-
-				var delta = position.x - this.__entities.player.getPosition().x;
-				if (delta >= 0 && velocity.x < 0) {
-					velocity.x = -velocity.x;
-				}
-
-			}
-
-			if (this.__entities.ball.collidesWith(this.__entities.cpu)) {
-
-				var delta = this.__entities.cpu.getPosition().x - position.x;
-				if (delta >= 0 && velocity.x > 0) {
-					velocity.x = -velocity.x;
-				}
-
+			if (ball.collidesWith(enemy) === true) {
+				velocity.x = -1 * Math.abs(velocity.x);
 			}
 
 
-			// 4. AI logic
-			var ai = this.__ai;
-			var halfpaddleheight = this.__entities.cpu.height / 2;
-			var cpuposition = this.__entities.cpu.getPosition();
-			if (ai.clock === null) {
 
-				ai.position.y = position.y;
-				ai.clock = clock;
+			/*
+			 * 3: ENEMY (AI) LOGIC
+			 */
 
-			} else if ((clock - ai.clock) > ai.delta) {
+			var data   = this.__enemy;
+			var target = this.__enemy.target;
 
-				ai.position.y = position.y;
+			if (data.clock === null) {
+				data.clock = clock;
+			}
 
+			if ((clock - data.clock) > data.delta) {
+
+				target.y   = position.y;
+				data.clock = clock;
 
 				if (
-					ai.position.y < cpuposition.y - halfpaddleheight
-					|| ai.position.y > cpuposition.y + halfpaddleheight
+					   target.y > enemy.position.y - 10
+					&& target.y < enemy.position.y + 10
 				) {
 
-					var vy = ai.position.y > this.__entities.cpu.getPosition().y ? 100 : -100;
-					this.__entities.cpu.setVelocity({ y: vy });
-
-					ai.clock = clock;
+					target.y = enemy.position.y;
+					enemy.setVelocity({ y: 0 });
 
 				} else {
-					this.__entities.cpu.setVelocity({ y: 0 });
+
+					if (target.y > enemy.position.y - 10) {
+						enemy.setVelocity({ y:  100 });
+					}
+
+					if (target.y < enemy.position.y + 10) {
+						enemy.setVelocity({ y: -100 });
+					}
+
 				}
 
 			}
 
-			if (cpuposition.y < halfpaddleheight) {
-				cpuposition.y = halfpaddleheight;
-			}
-
-			if (cpuposition.y > this.game.settings.height - halfpaddleheight) {
-				cpuposition.y = this.game.settings.height - halfpaddleheight;
-			}
 
 
-			// 5. Player Logic
-			var playerposition = this.__entities.player.getPosition();
+			/*
+			 * 4: PLAYER LOGIC
+			 */
 
-			var target = this.__target;
-			if (
-				target.y > playerposition.y - 10
-				&& target.y < playerposition.y + 10
-			) {
-				this.__entities.player.setVelocity({ y: 0 });
-			}
+			var target = this.__player.target;
+			if (target.y !== null) {
 
-			if (playerposition.y < halfpaddleheight) {
-				playerposition.y = halfpaddleheight;
-			}
+				if (
+					   target.y > player.position.y - 10
+					&& target.y < player.position.y + 10
+				) {
 
-			if (playerposition.y > this.game.settings.height - halfpaddleheight) {
-				playerposition.y = this.game.settings.height - halfpaddleheight;
+					player.setVelocity({ y: 0 });
+					target.y = null;
+
+				} else {
+
+					if (target.y > player.position.y - 10) {
+						player.setVelocity({ y:  100 });
+					}
+
+					if (target.y < player.position.y + 10) {
+						player.setVelocity({ y: -100 });
+					}
+
+				}
+
 			}
 
 		},
 
 		render: function(clock, delta) {
 
-			this.__renderer.clear();
+			var renderer = this.renderer;
+			if (renderer !== null) {
 
-			this.__renderer.renderEntity(this.__entities.ball);
-			this.__renderer.renderEntity(this.__entities.player);
-			this.__renderer.renderEntity(this.__entities.cpu);
+				renderer.clear();
 
-			this.__renderer.drawText(
-				100, 20,
-				this.__score.player + '',
-				this.game.fonts.normal
-			);
-
-			this.__renderer.drawText(
-				this.game.settings.width - 100, 20,
-				this.__score.cpu + '',
-				this.game.fonts.normal
-			);
+				// We enforce custom render() workflow
+				lychee.game.State.prototype.render.call(this, clock, delta, true);
 
 
-			this.__renderer.flush();
+				renderer.drawText(
+					100, 20,
+					this.__score.player + '',
+					this.game.fonts.normal
+				);
 
-		},
-
-		__processTouch: function(id, position, delta) {
-
-			if (this.__locked === true) return;
-
-			var offset = this.game.getOffset();
-
-			position.x -= offset.x;
-			position.y -= offset.y;
+				renderer.drawText(
+					this.__width - 100, 20,
+					this.__score.enemy + '',
+					this.game.fonts.normal
+				);
 
 
-			var playerposition = this.__entities.player.getPosition();
-			if (playerposition.y + 10 > position.y) {
-				this.__entities.player.setVelocity({ y: -100 });
-			} else if (playerposition.y - 10 < position.y) {
-				this.__entities.player.setVelocity({ y: 100 });
+				renderer.flush();
+
 			}
 
-			this.__target.y = position.y;
-
 		},
 
-		__getEntityByPosition: function(x, y) {
+		processTouch: function(id, position, delta) {
 
-			var found = null;
+			var renderer = this.renderer;
+			if (renderer !== null) {
 
-			for (var e in this.__entities) {
+				var env = renderer.getEnvironment();
 
-				if (this.__entities[e] === null) continue;
-
-				var entity = this.__entities[e];
-				var position = entity.getPosition();
-
-				if (
-					x >= position.x - entity.width / 2
-					&& x <= position.x + entity.width / 2
-					&& y >= position.y - entity.height / 2
-					&& y <= position.y + entity.height / 2
-				) {
-					found = entity;
-					break;
-				}
-
+				position.y -= env.offset.y;
+				position.y -= env.height / 2;
 
 			}
 
 
-			return found;
+			this.__player.target.y = position.y;
 
 		}
 

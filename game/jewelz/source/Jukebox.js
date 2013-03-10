@@ -1,36 +1,31 @@
 
 lychee.define('game.Jukebox').includes([
 	'lychee.game.Jukebox'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, game, global, attachments) {
 
 	var Class = function(game) {
 
 		lychee.game.Jukebox.call(this, 20, game.loop);
 
-		var base = game.settings.base + '/snd';
-		var formats = [ 'mp3', 'ogg' ];
 
-		var tracks = [
+		var bases = [
+			'./asset/sound/success',
+			'./asset/sound/fail',
+			'./asset/music/temple'
+		];
 
-			// state.Game
-			'countdown',
+		var ids = [
 			'success',
 			'fail',
-
-			// state.Menu
-			'click',
-
-			// Music
 			'music'
-
 		];
 
 
-		for (var t = 0, l = tracks.length; t < l; t++) {
+		for (var i = 0, il = ids.length; i < il; i++) {
 
-			var track = new lychee.Track(tracks[t], {
-				base: base + '/' + tracks[t],
-				formats: formats
+			var track = new lychee.Track(ids[i], {
+				base:    bases[i],
+				formats: [ 'ogg', 'mp3' ]
 			});
 
 			this.add(track);

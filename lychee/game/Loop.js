@@ -20,7 +20,7 @@ lychee.define('lychee.game.Loop').includes([
 			for (var i = 0, l = _instances.length; i < l; i++) {
 
 				var instance = _instances[i];
-				var clock = Date.now() - instance.__clock.start;
+				var clock    = Date.now() - instance.__clock.start;
 
 				instance._updateLoop(clock);
 				instance._renderLoop(clock);
@@ -64,15 +64,21 @@ lychee.define('lychee.game.Loop').includes([
 
 		var settings = lychee.extend({}, data);
 
-		this.__timeouts = {};
+
+		this.__timeouts  = {};
 		this.__intervals = {};
-		this.__state = 'running';
+		this.__state     = 'running';
+		this.__ms        = {
+			render: Infinity,
+			update: Infinity
+		};
 
-		lychee.event.Emitter.call(this, 'loop');
+
+		lychee.event.Emitter.call(this);
 
 
-		var ok = this.reset(settings.update, settings.render);
-		if (ok === true) {
+		var ready = this.reset(settings.render, settings.update);
+		if (ready === true) {
 			_instances.push(this);
 		}
 
@@ -87,35 +93,37 @@ lychee.define('lychee.game.Loop').includes([
 		 * PUBLIC API
 		 */
 
-		reset: function(updateFps, renderFps) {
+		reset: function(render, update) {
 
-			updateFps = typeof updateFps === 'number' ? updateFps : 0;
-			renderFps = typeof renderFps === 'number' ? renderFps : 0;
+			render = typeof render === 'number' ? render : 0;
+			update = typeof update === 'number' ? update : 0;
 
 
-			if (updateFps < 0) updateFps = 0;
-			if (renderFps < 0) renderFps = 0;
+			if (render > 60) render = 60;
+			if (update > 60) update = 60;
+			if (render < 0)  render = 0;
+			if (update < 0)  update = 0;
 
-			if (updateFps === 0 && renderFps === 0) {
+
+			if (
+				   render === 0
+				&& update === 0
+			) {
+
 				return false;
+
 			}
 
 
 			this.__clock = {
-				start: Date.now(),
+				start:  Date.now(),
 				update: 0,
 				render: 0
 			};
 
 
-			this.__ms = {};
-
-			if (updateFps > 0) this.__ms.update = 1000 / updateFps;
-			if (renderFps > 0) this.__ms.render = 1000 / updateFps;
-
-
-			this.__updateFps = updateFps;
-			this.__renderFps = renderFps;
+			if (render > 0) this.__ms.render = 1000 / update;
+			if (update > 0) this.__ms.update = 1000 / update;
 
 
 			return true;
@@ -130,11 +138,15 @@ lychee.define('lychee.game.Loop').includes([
 			this.__state = 'stopped';
 		},
 
+		isRunning: function() {
+			return this.__state === 'running';
+		},
+
 		timeout: function(delta, callback, scope) {
 
-			delta = typeof delta === 'number' ? delta : null;
+			delta    = typeof delta === 'number'    ? delta    : null;
 			callback = callback instanceof Function ? callback : null;
-			scope = scope !== undefined ? scope : global;
+			scope    = scope !== undefined          ? scope    : global;
 
 
 			if (delta === null || callback === null) {
@@ -144,9 +156,9 @@ lychee.define('lychee.game.Loop').includes([
 
 			var id = _timeoutId++;
 			this.__timeouts[id] = {
-				start: this.__clock.update + delta,
+				start:    this.__clock.update + delta,
 				callback: callback,
-				scope: scope
+				scope:    scope
 			};
 
 
@@ -161,9 +173,9 @@ lychee.define('lychee.game.Loop').includes([
 
 		interval: function(delta, callback, scope) {
 
-			delta = typeof delta === 'number' ? delta : null;
+			delta    = typeof delta === 'number'    ? delta    : null;
 			callback = callback instanceof Function ? callback : null;
-			scope = scope !== undefined ? scope : global;
+			scope    = scope !== undefined          ? scope    : global;
 
 
 			if (delta === null || callback === null) {
@@ -173,11 +185,11 @@ lychee.define('lychee.game.Loop').includes([
 
 			var id = _intervalId++;
 			this.__intervals[id] = {
-				start: this.__clock.update + delta,
-				delta: delta,
-				step: 0,
+				start:    this.__clock.update + delta,
+				delta:    delta,
+				step:     0,
 				callback: callback,
-				scope: scope
+				scope:    scope
 			};
 
 
@@ -188,10 +200,6 @@ lychee.define('lychee.game.Loop').includes([
 				}
 			};
 
-		},
-
-		isRunning: function() {
-			return this.__state === 'running';
 		},
 
 

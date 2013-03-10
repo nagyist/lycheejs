@@ -45,8 +45,13 @@
 
 		// called inside lychee.build()
 		if (url === null && _cache === null) {
-			_bar.parentNode.removeChild(_bar);
+
+			if (_bar.parentNode !== null) {
+				_bar.parentNode.removeChild(_bar);
+			}
+
 			return;
+
 		}
 
 

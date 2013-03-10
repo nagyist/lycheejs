@@ -1,9 +1,7 @@
 
 lychee.define('Renderer').tags({
 	platform: 'html'
-}).requires([
-	'lychee.Font'
-]).supports(function(lychee, global) {
+}).supports(function(lychee, global) {
 
 	/*
 	 * Hint for check against undefined:
@@ -31,33 +29,29 @@ lychee.define('Renderer').tags({
 
 	return false;
 
-}).exports(function(lychee, global) {
+}).exports(function(lychee, global, attachments) {
 
 	var Class = function(id) {
 
 		id = typeof id === 'string' ? id : null;
 
-		this.__id = id;
+		this.__id     = id;
 		this.__canvas = global.document.createElement('canvas');
-		this.__ctx = this.__canvas.getContext('2d');
+		this.__ctx    = this.__canvas.getContext('2d');
 
 		this.__environment = {
-			width: null,
+			width:  null,
 			height: null,
 			screen: {},
 			offset: {}
 		};
 
-		this.__cache = {};
-
-		this.__state = null;
-		this.__alpha = 1;
+		this.__cache      = {};
+		this.__state      = null;
+		this.__alpha      = 1;
 		this.__background = null;
-		this.__width = 0;
-		this.__height = 0;
-
-		// required for requestAnimationFrame
-		this.context = this.__canvas;
+		this.__width      = 0;
+		this.__height     = 0;
 
 
 		if (this.__id !== null) {
@@ -73,15 +67,33 @@ lychee.define('Renderer').tags({
 
 	Class.prototype = {
 
+		__updateEnvironment: function() {
+
+			var env = this.__environment;
+
+
+			env.screen.width  = global.innerWidth;
+			env.screen.height = global.innerHeight;
+
+			env.offset.x = this.__canvas.offsetLeft;
+			env.offset.y = this.__canvas.offsetTop;
+
+			env.width  = this.__width;
+			env.height = this.__height;
+
+		},
+
+
+
 		/*
-		 * State and Environment Management
+		 * STATE AND ENVIRONMENT MANAGEMENT
 		 */
 
 		reset: function(width, height, resetCache) {
 
-			width = typeof width === 'number' ? width : this.__width;
-			height = typeof height === 'number' ? height : this.__height;
-			resetCache = resetCache === true ? true : false;
+			width      = typeof width === 'number'  ? width  : this.__width;
+			height     = typeof height === 'number' ? height : this.__height;
+			resetCache = resetCache === true;
 
 			if (resetCache === true) {
 				this.__cache = {};
@@ -106,9 +118,11 @@ lychee.define('Renderer').tags({
 		},
 
 		start: function() {
+
 			if (this.__state !== 'running') {
 				this.__state = 'running';
 			}
+
 		},
 
 		stop: function() {
@@ -133,9 +147,17 @@ lychee.define('Renderer').tags({
 
 		},
 
-		flush: function() {
+		flush: function(command) {
+
+			if (this.__state !== 'running' || typeof command !== 'number') return;
 
 		},
+
+
+
+		/*
+		 * SETTERS AND GETTERS
+		 */
 
 		isRunning: function() {
 			return this.__state === 'running';
@@ -145,34 +167,6 @@ lychee.define('Renderer').tags({
 			this.__updateEnvironment();
 			return this.__environment;
 		},
-
-
-
-		/*
-		 * PRIVATE API: Helpers
-		 */
-
-		__updateEnvironment: function() {
-
-			var env = this.__environment;
-
-
-			env.screen.width  = global.innerWidth;
-			env.screen.height = global.innerHeight;
-
-			env.offset.x = this.__canvas.offsetLeft;
-			env.offset.y = this.__canvas.offsetTop;
-
-			env.width  = this.__width;
-			env.height = this.__height;
-
-		},
-
-
-
-		/*
-		 * Setters
-		 */
 
 		setAlpha: function(alpha) {
 
@@ -193,18 +187,179 @@ lychee.define('Renderer').tags({
 
 		},
 
+		createBuffer: function(width, height) {
+
+			width  = typeof width === 'number'  ? width  : 1;
+			height = typeof height === 'number' ? height : 1;
+
+
+			var buffer = document.createElement('canvas');
+
+			buffer.width  = width;
+			buffer.height = height;
+
+			return buffer;
+
+		},
+
+		clearBuffer: function(buffer) {
+
+			var ctx = buffer.getContext('2d');
+
+			ctx.clearRect(0, 0, buffer.width, buffer.height);
+
+		},
+
+		setBuffer: function(buffer) {
+
+			if (buffer === null) {
+				this.__ctx = this.__canvas.getContext('2d');
+			} else {
+				this.__ctx = buffer.getContext('2d');
+			}
+
+		},
+
 
 
 		/*
-		 * Drawing API
+		 * DRAWING API
 		 */
+
+		drawArc: function(x, y, start, end, radius, color, background, lineWidth) {
+
+			if (this.__state !== 'running') return;
+
+			color      = typeof color === 'string' ? color : '#000000';
+			background = background === true;
+			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
+
+
+			var ctx = this.__ctx;
+			var pi2 = Math.PI * 2;
+
+
+			ctx.beginPath();
+
+			ctx.arc(
+				x,
+				y,
+				radius,
+				start * pi2,
+				end * pi2
+			);
+
+			if (background === false) {
+				ctx.lineWidth   = lineWidth;
+				ctx.strokeStyle = color;
+				ctx.stroke();
+			} else {
+				ctx.fillStyle   = color;
+				ctx.fill();
+			}
+
+			ctx.closePath();
+
+		},
+
+		drawBox: function(x1, y1, x2, y2, color, background, lineWidth) {
+
+			if (this.__state !== 'running') return;
+
+			color      = typeof color === 'string' ? color : '#000000';
+			background = background === true;
+			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
+
+
+			var ctx = this.__ctx;
+
+
+			if (background === false) {
+				ctx.lineWidth   = lineWidth;
+				ctx.strokeStyle = color;
+				ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+			} else {
+				ctx.fillStyle   = color;
+				ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+			}
+
+		},
+
+		drawBuffer: function(x1, y1, buffer) {
+
+			this.__ctx.drawImage(
+				buffer,
+				x1,
+				y1
+			);
+
+		},
+
+		drawCircle: function(x, y, radius, color, background, lineWidth) {
+
+			if (this.__state !== 'running') return;
+
+			color      = typeof color === 'string' ? color : '#000000';
+			background = background === true;
+			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
+
+
+			var ctx = this.__ctx;
+
+
+			ctx.beginPath();
+
+			ctx.arc(
+				x,
+				y,
+				radius,
+				0,
+				Math.PI * 2
+			);
+
+			if (background === false) {
+				ctx.lineWidth   = lineWidth;
+				ctx.strokeStyle = color;
+				ctx.stroke();
+			} else {
+				ctx.fillStyle   = color;
+				ctx.fill();
+			}
+
+			ctx.closePath();
+
+		},
+
+		drawLine: function(x1, y1, x2, y2, color, lineWidth) {
+
+			if (this.__state !== 'running') return;
+
+			color     = typeof color === 'string' ? color : '#000000';
+			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
+
+
+			var ctx = this.__ctx;
+
+
+			ctx.beginPath();
+
+			ctx.moveTo(x1, y1);
+			ctx.lineTo(x2, y2);
+
+			ctx.lineWidth   = lineWidth;
+			ctx.strokeStyle = color;
+			ctx.stroke();
+
+			ctx.closePath();
+
+		},
 
 		drawTriangle: function(x1, y1, x2, y2, x3, y3, color, background, lineWidth) {
 
 			if (this.__state !== 'running') return;
 
 			color = typeof color === 'string' ? color : '#000000';
-			background = background === true ? true : false;
+			background = background === true;
 			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
@@ -235,7 +390,6 @@ lychee.define('Renderer').tags({
 		drawPolygon: function(points, x1, y1) {
 
 			if (this.__state !== 'running') return;
-
 
 			var l = arguments.length;
 
@@ -298,163 +452,54 @@ lychee.define('Renderer').tags({
 
 		},
 
-		drawBox: function(x1, y1, x2, y2, color, background, lineWidth) {
+		drawSprite: function(x1, y1, texture, map) {
 
 			if (this.__state !== 'running') return;
 
-			color = typeof color === 'string' ? color : '#000000';
-			background = background === true ? true : false;
-			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
+			texture = texture instanceof Texture ? texture : null;
+			map     = map instanceof Object      ? map     : null;
 
 
-			var ctx = this.__ctx;
+			if (texture !== null) {
+
+				if (map === null) {
+
+					this.__ctx.drawImage(
+						texture.buffer,
+						x1,
+						y1
+					);
+
+				} else {
+
+					if (lychee.debug === true) {
+
+						this.drawBox(
+							x1,
+							y1,
+							x1 + map.w,
+							y1 + map.h,
+							'#ff0000',
+							false,
+							1
+						);
+
+					}
 
 
-			if (background === false) {
-				ctx.lineWidth   = lineWidth;
-				ctx.strokeStyle = color;
-				ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-			} else {
-				ctx.fillStyle   = color;
-				ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
-			}
-
-		},
-
-		drawArc: function(x, y, start, end, radius, color, background, lineWidth) {
-
-			if (this.__state !== 'running') return;
-
-			color = typeof color === 'string' ? color : '#000000';
-			background = background === true ? true : false;
-			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
-
-
-			var ctx = this.__ctx;
-			var pi2 = Math.PI * 2;
-
-
-			ctx.beginPath();
-
-			ctx.arc(
-				x,
-				y,
-				radius,
-				start * pi2,
-				end * pi2
-			);
-
-			if (background === false) {
-				ctx.lineWidth   = lineWidth;
-				ctx.strokeStyle = color;
-				ctx.stroke();
-			} else {
-				ctx.fillStyle   = color;
-				ctx.fill();
-			}
-
-			ctx.closePath();
-
-		},
-
-		drawCircle: function(x, y, radius, color, background, lineWidth) {
-
-			if (this.__state !== 'running') return;
-
-			color = typeof color === 'string' ? color : '#000000';
-			background = background === true ? true : false;
-			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
-
-
-			var ctx = this.__ctx;
-
-
-			ctx.beginPath();
-
-			ctx.arc(
-				x,
-				y,
-				radius,
-				0,
-				Math.PI * 2
-			);
-
-			if (background === false) {
-				ctx.lineWidth   = lineWidth;
-				ctx.strokeStyle = color;
-				ctx.stroke();
-			} else {
-				ctx.fillStyle   = color;
-				ctx.fill();
-			}
-
-			ctx.closePath();
-
-		},
-
-		drawLine: function(x1, y1, x2, y2, color, lineWidth) {
-
-			if (this.__state !== 'running') return;
-
-			color = typeof color === 'string' ? color : '#000000';
-			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
-
-
-			var ctx = this.__ctx;
-
-
-			ctx.beginPath();
-
-			ctx.moveTo(x1, y1);
-			ctx.lineTo(x2, y2);
-
-			ctx.lineWidth   = lineWidth;
-			ctx.strokeStyle = color;
-			ctx.stroke();
-
-			ctx.closePath();
-
-		},
-
-		drawSprite: function(x1, y1, sprite, map) {
-
-			if (this.__state !== 'running') return;
-
-			map = map instanceof Object ? map : null;
-
-
-			if (map === null) {
-
-				this.__ctx.drawImage(sprite, x1, y1);
-
-			} else {
-
-				if (lychee.debug === true) {
-
-					this.drawBox(
+					this.__ctx.drawImage(
+						texture.buffer,
+						map.x,
+						map.y,
+						map.w,
+						map.h,
 						x1,
 						y1,
-						x1 + map.w,
-						y1 + map.h,
-						'#ff0000',
-						false,
-						1
+						map.w,
+						map.h
 					);
 
 				}
-
-
-				this.__ctx.drawImage(
-					sprite,
-					map.x,
-					map.y,
-					map.w,
-					map.h,
-					x1,
-					y1,
-					map.w,
-					map.h
-				);
 
 			}
 
@@ -464,15 +509,14 @@ lychee.define('Renderer').tags({
 
 			if (this.__state !== 'running') return;
 
-			font = font instanceof lychee.Font ? font : null;
+			font   = font instanceof Font ? font : null;
 			center = center === true;
 
 
 			if (font !== null) {
 
-				var settings = font.getSettings();
-				var sprite = font.getSprite();
-
+				var baseline = font.baseline;
+				var kerning  = font.kerning;
 
 				var chr, t, l;
 
@@ -483,17 +527,17 @@ lychee.define('Renderer').tags({
 
 					for (t = 0, l = text.length; t < l; t++) {
 						chr = font.get(text[t]);
-						textwidth += chr.real + settings.kerning;
+						textwidth += chr.real + kerning;
 						textheight = Math.max(textheight, chr.height);
 					}
 
 					x1 -= textwidth / 2;
-					y1 -= (textheight - settings.baseline) / 2;
+					y1 -= (textheight - baseline) / 2;
 
 				}
 
 
-				y1 -= settings.baseline / 2;
+				y1 -= baseline / 2;
 
 
 				var margin = 0;
@@ -509,7 +553,7 @@ lychee.define('Renderer').tags({
 							y1,
 							x1 + margin + chr.real,
 							y1 + chr.height,
-							'#ffff00',
+							'#00ff00',
 							false,
 							1
 						);
@@ -517,20 +561,40 @@ lychee.define('Renderer').tags({
 					}
 
 					this.__ctx.drawImage(
-						chr.sprite || sprite,
+						font.texture,
 						chr.x,
 						chr.y,
 						chr.width,
 						chr.height,
-						x1 + margin - settings.spacing,
+						x1 + margin - font.spacing,
 						y1,
 						chr.width,
 						chr.height
 					);
 
-					margin += chr.real + settings.kerning;
+					margin += chr.real + font.kerning;
 
 				}
+
+			}
+
+		},
+
+
+
+		/*
+		 * RENDERING API
+		 */
+
+		renderEntity: function(entity, offsetX, offsetY) {
+
+			if (typeof entity.render === 'function') {
+
+				entity.render(
+					this,
+					offsetX || 0,
+					offsetY || 0
+				);
 
 			}
 

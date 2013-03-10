@@ -28,16 +28,12 @@ lychee.rebase({
 
 lychee.build(function(lychee, global) {
 
-	lychee.Preloader.prototype._progress(null, null);
-
-
 	var settings = {
-		base: './asset',
 		music: true,
 		sound: true
 	};
 
-	new game.Main(settings);
+global._MAIN = new game.Main(settings);
 
 }, typeof global !== 'undefined' ? global : this);
 

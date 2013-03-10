@@ -5,7 +5,9 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 
 
 	var Class = function() {
+
 		this._data = new _type(4);
+
 	};
 
 
@@ -15,7 +17,13 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 
 			var clone = new Class();
 
-			clone.set(this._data[0], this._data[1], this._data[2], this._data[3]);
+			clone.set(
+				this._data[0],
+				this._data[1],
+				this._data[2],
+				this._data[3]
+			);
+
 
 			return clone;
 
@@ -147,7 +155,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = v[3] - d[3];
 
 
-			return Math.sqrt(x*x + y*y + z*z + w*w);
+			return Math.sqrt(x * x + y * y + z * z + w * w);
 
 		},
 
@@ -162,7 +170,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = v[3] - d[3];
 
 
-			return (x*x + y*y + z*z + w*w);
+			return (x * x + y * y + z * z + w * w);
 
 		},
 
@@ -176,7 +184,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			return Math.sqrt(x*x + y*y + z*z + w*w);
+			return Math.sqrt(x * x + y * y + z * z + w * w);
 
 		},
 
@@ -190,7 +198,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			return (x*x + y*y + z*z + w*w);
+			return (x * x + y * y + z * z + w * w);
 
 		},
 
@@ -216,7 +224,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			var length = (x*x + y*y + z*z + w*w);
+			var length = (x * x + y * y + z * z + w * w);
 			if (length > 0) {
 
 				length = 1 / Math.sqrt(length);
@@ -258,6 +266,32 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 
 		},
 
+		interpolateAdd: function(vector, t) {
+
+			var d = this._data;
+			var v = vector._data;
+
+
+ 			d[0] += t * v[0];
+			d[1] += t * v[1];
+			d[2] += t * v[2];
+			d[3] += t * v[3];
+
+		},
+
+		interpolateSet: function(vector, t) {
+
+			var d = this._data;
+			var v = vector._data;
+
+
+ 			d[0] = t * v[0];
+			d[1] = t * v[1];
+			d[2] = t * v[2];
+			d[3] = t * v[3];
+
+		},
+
 		applyMatrix4: function(matrix) {
 
 			var d = this._data;
@@ -269,10 +303,10 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			d[0] = m[0]*x  +  m[4]*y  + m[8]*z  + m[12]*w;
-			d[1] = m[1]*x  +  m[5]*y  + m[9]*z  + m[13]*w;
-			d[2] = m[2]*x  +  m[6]*y  + m[10]*z + m[14]*w;
-			d[3] = m[3]*x  +  m[7]*y  + m[11]*z + m[15]*w;
+			d[0] =  m[0] * x +  m[4] * y +  m[8] * z + m[12] * w;
+			d[1] =  m[1] * x +  m[5] * y +  m[9] * z + m[13] * w;
+			d[2] =  m[2] * x +  m[6] * y + m[10] * z + m[14] * w;
+			d[3] =  m[3] * x +  m[7] * y + m[11] * z + m[15] * w;
 
 		},
 

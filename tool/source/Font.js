@@ -9,7 +9,7 @@ lychee.define('tool.Font').requires([
 	'ui.Radios',
 	'ui.Select',
 	'ui.Textarea'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, tool, global) {
 
 
 	var Class = function(settings) {
@@ -46,7 +46,7 @@ lychee.define('tool.Font').requires([
 			background: 'transparent',
 			firstChar: 32,
 			lastChar: 127,
-			spritemap: global.tool.FontGenerator.SPRITEMAP.x,
+			spritemap: tool.FontGenerator.SPRITEMAP.x,
 
 			backend: null
 
@@ -121,7 +121,7 @@ lychee.define('tool.Font').requires([
 
 
 			select = new ui.Select(function(value) {
-				var _value = global.tool.FontGenerator.SPRITEMAP[value] || this.settings.spritemap;
+				var _value = tool.FontGenerator.SPRITEMAP[value] || this.settings.spritemap;
 				this.settings.spritemap = _value;
 				this.__refresh();
 			}, this);

@@ -1,89 +1,199 @@
 
 lychee.define('lychee.ui.Entity').includes([
-	'lychee.game.Entity'
+	'lychee.event.Emitter'
 ]).exports(function(lychee, global) {
+
+	var _default_state  = 'default';
+	var _default_states = { 'default': null, 'active': null };
+
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
-		this.__layout = null;
-		this.__value = null;
-		this.___events = {};
+		this.width  = typeof settings.width  === 'number' ? settings.width  : 0;
+		this.height = typeof settings.height === 'number' ? settings.height : 0;
+		this.depth  = 0;
+		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
+
+		this.shape    = Class.SHAPE.rectangle;
+		this.state    = _default_state;
+		this.position = { x: 0, y: 0 };
+		this.visible  = true;
+
+		this.__clock  = null;
+		this.__states = _default_states;
 
 
-		if (settings.layout) {
-			this.setLayout(settings.layout);
-			delete settings.layout;
+		if (settings.states instanceof Object) {
+
+			this.__states = { 'default': null, 'active': null };
+
+			for (var id in settings.states) {
+
+				if (settings.states.hasOwnProperty(id)) {
+					this.__states[id] = settings.states[id];
+				}
+
+			}
+
 		}
 
 
-		lychee.game.Entity.call(this, settings);
+		this.setShape(settings.shape);
+		this.setState(settings.state);
+		this.setPosition(settings.position);
+		this.setVisible(settings.visible);
+
+
+		lychee.event.Emitter.call(this);
 
 		settings = null;
 
 	};
 
 
+	// Same ENUM values as lychee.game.Entity
+	Class.SHAPE = {
+		circle:    0,
+		rectangle: 2
+	};
+
+
 	Class.prototype = {
 
 		/*
-		 * PUBLIC API
+		 * ENTITY API
 		 */
 
-		hasEvent: function(type) {
+		serialize: function() {
 
-			if (this.___events[type] === undefined) {
-				return false;
+			var settings = {};
+
+
+			if (this.width  !== 0) settings.width  = this.width;
+			if (this.height !== 0) settings.height = this.height;
+			if (this.radius !== 0) settings.radius = this.radius;
+
+			if (this.shape !== Class.SHAPE.rectangle) settings.shape   = this.shape;
+			if (this.state !== _default_state)        settings.state   = this.state;
+			if (this.__states !== _default_states)    settings.states  = this.__states;
+			if (this.visible !== true)                settings.visible = this.visible;
+
+
+			if (
+				   this.position.x !== 0
+				|| this.position.y !== 0
+			) {
+
+				settings.position = {};
+
+				if (this.position.x !== 0) settings.position.x = this.position.x;
+				if (this.position.y !== 0) settings.position.y = this.position.y;
+
 			}
 
-			if (this.___events[type].length === 0) {
-				return false;
-			}
 
-			return true;
+			return {
+				'constructor': 'lychee.ui.Entity',
+				'arguments':   [ settings ]
+			};
 
 		},
 
-		bind: function(type, callback, scope) {
+		// Allows sync(null, true) for reset
+		sync: function(clock, force) {
 
-			if (this.___events[type] === undefined) {
-				this.___events[type] = [];
+			force = force === true;
+
+			if (force === true) {
+				this.__clock = clock;
 			}
 
 
-			this.___events[type].push({
-				callback: callback,
-				scope: scope || global
-			});
+			if (this.__clock === null) {
+
+				this.__clock = clock;
+
+			}
 
 		},
 
-		unbind: function(type, callback, scope) {
+		// HINT: Renderer skips if no render() method exists
+		// render: function(renderer, offsetX, offsetY) {},
 
-			callback = callback instanceof Function ? callback : null;
-			scope = scope !== undefined ? scope : null;
+		update: function(clock, delta) {
 
-			if (this.___events[type] === undefined) {
+			// 1. Sync clocks initially
+			// (if Entity was created before loop started)
+			if (this.__clock === null) {
+				this.sync(clock);
+			}
+
+			this.__clock = clock;
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
+		setPosition: function(position) {
+
+			if (position instanceof Object) {
+
+				this.position.x = typeof position.x === 'number' ? position.x : this.position.x;
+				this.position.y = typeof position.y === 'number' ? position.y : this.position.y;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		getStateMap: function() {
+			return this.__states[this.state];
+		},
+
+		setState: function(id) {
+
+			id = typeof id === 'string' ? id : null;
+
+			if (id !== null && this.__states[id] !== undefined) {
+				this.state = id;
 				return true;
 			}
 
+
+			return false;
+
+		},
+
+		setShape: function(shape) {
+
+			if (typeof shape !== 'number') return false;
+
+
 			var found = false;
 
-			for (var i = 0, l = this.___events[type].length; i < l; i++) {
+			for (var id in Class.SHAPE) {
 
-				var entry = this.___events[type][i];
-
-				if (
-					(callback === null || entry.callback === callback)
-					&& (scope === null || entry.scope === scope)
-				) {
+				if (shape === Class.SHAPE[id]) {
 					found = true;
-					this.___events[type].splice(i, 1);
-					l--;
+					break;
 				}
 
+			}
+
+
+			if (found === true) {
+				this.shape = shape;
 			}
 
 
@@ -91,113 +201,18 @@ lychee.define('lychee.ui.Entity').includes([
 
 		},
 
-		trigger: function(type, data) {
+		setVisible: function(visible) {
 
-			var passData = data;
-			if (data === undefined || Object.prototype.toString.call(data) !== '[object Array]') {
-				passData = [ this, this.__value ];
-			}
+			if (visible === true || visible === false) {
 
+				this.visible = visible;
 
-			var success = false;
-
-			if (this.___events[type] !== undefined) {
-
-				for (var i = 0, l = this.___events[type].length; i < l; i++) {
-
-					var entry = this.___events[type][i];
-					entry.callback.apply(entry.scope, passData);
-
-				}
-
-				success = true;
+				return true;
 
 			}
 
 
-			return success;
-
-		},
-
-		relayout: function(parent) {
-
-			var cache = this.__cache.position;
-
-			var hwidth = parent.width / 2;
-			var hheight = parent.height / 2;
-
-
-			var layout = this.__layout;
-			if (layout !== null) {
-
-				if (layout.position === 'relative') {
-
-					if (layout.x >= -1 && layout.x <= 1) {
-						cache.x = layout.x * hwidth;
-					}
-
-					if (layout.y >= -1 && layout.y <= 1) {
-						cache.y = layout.y * hheight;
-					}
-
-				} else if (layout.position === 'absolute') {
-
-					if (layout.x >= -hwidth && layout.x <= hwidth) {
-						cache.x = layout.x;
-					}
-
-					if (layout.y >= -hheight && layout.y <= hheight) {
-						cache.y = layout.y;
-					}
-
-				}
-
-
-				this.setPosition(cache);
-
-			}
-
-		},
-
-		getValue: function() {
-			return this.__value;
-		},
-
-		setValue: function(value) {
-			this.__value = value;
-		},
-
-		getLabel: function() {
-			return null;
-		},
-
-		getLayout: function() {
-			return this.__layout;
-		},
-
-		setLayout: function(layout) {
-
-			if (this.__layout === null) {
-
-				this.__layout = {
-					position: 'absolute',
-					x: 0, y: 0
-				};
-
-			}
-
-
-			if (Object.prototype.toString.call(layout) !== '[object Object]') {
-				return false;
-			}
-
-
-			this.__layout.position = typeof layout.position === 'string' ? layout.position : this.__layout.position;
-			this.__layout.x        = typeof layout.x === 'number' ? layout.x : this.__layout.x;
-			this.__layout.y        = typeof layout.y === 'number' ? layout.y : this.__layout.y;
-
-
-			return true;
+			return false;
 
 		}
 
@@ -207,3 +222,4 @@ lychee.define('lychee.ui.Entity').includes([
 	return Class;
 
 });
+

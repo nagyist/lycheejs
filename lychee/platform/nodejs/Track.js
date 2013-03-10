@@ -26,12 +26,12 @@ lychee.define('Track').tags({
 		isReady = true; // Correct API Simulation
 
 
-		this.id = id;
-
+		this.id     = id;
+		this.muted  = false;
+		this.volume = 0.0;
 
 		this.__isIdle    = true;
 		this.__isLooping = false;
-		this.__isMuted   = false;
 		this.__isReady   = true;
 
 
@@ -67,22 +67,6 @@ lychee.define('Track').tags({
 
 		resume: function() {},
 
-		mute: function() {
-
-			if (this.__isMuted === false) {
-				this.__isMuted = true;
-			}
-
-		},
-
-		unmute: function() {
-
-			if (this.__isMuted === true) {
-				this.__isMuted = false;
-			}
-
-		},
-
 		clone: function() {
 
 			var id = this.id;
@@ -91,23 +75,32 @@ lychee.define('Track').tags({
 
 		},
 
-		isIdle: function() {
-			return this.__isIdle;
-		},
-
-		isMuted: function() {
-			return this.__isMuted;
+		isPlaying: function() {
+			return this.__isIdle === false;
 		},
 
 		isReady: function() {
-			return this.isIdle() && this.__isReady === true;
+			return this.__isReady && this.isPlaying() === false;
 		},
 
-		getVolume: function() {
-			return 0;
+		setMuted: function(muted) {
+
+			muted = muted === true;
+
+
+			this.muted = muted;
+
+			return true;
+
 		},
 
-		setVolume: function(volume) {}
+		setVolume: function(volume) {
+
+			this.volume = 0.0;
+
+			return false;
+
+		}
 
 	};
 

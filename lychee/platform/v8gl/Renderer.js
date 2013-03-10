@@ -1,9 +1,7 @@
 
 lychee.define('Renderer').tags({
 	platform: 'v8gl'
-}).requires([
-	'lychee.Font'
-]).supports(function(lychee, global) {
+}).supports(function(lychee, global) {
 
 	if (global.gl && global.glut) {
 		return true;
@@ -12,7 +10,7 @@ lychee.define('Renderer').tags({
 
 	return false;
 
-}).exports(function(lychee, global) {
+}).exports(function(lychee, global, attachments) {
 
 	var Class = function(id) {
 
@@ -45,8 +43,68 @@ lychee.define('Renderer').tags({
 
 	Class.prototype = {
 
+		__updateEnvironment: function() {
+
+			this.__environment.width = this.__width;
+			this.__environment.height = this.__height;
+
+			this.__environment.screen.width = this.__width;
+			this.__environment.screen.height = this.__height;
+
+			this.__environment.offset.x = 0;
+			this.__environment.offset.y = 0;
+
+		},
+
+		__hexToRGB: function(hex) {
+
+			if (
+				typeof hex === 'string'
+				&& hex.length === 7
+			) {
+
+				this.__colorcache.r = parseInt(hex[1] + hex[2], 16);
+				this.__colorcache.g = parseInt(hex[3] + hex[4], 16);
+				this.__colorcache.b = parseInt(hex[5] + hex[6], 16);
+
+				return this.__colorcache;
+
+			}
+
+
+			if (lychee.debug === true) {
+				console.warn('lychee.Renderer: Invalid Hex Color "' + hex + '"');
+			}
+
+
+			this.__colorcache.r = 0;
+			this.__colorcache.g = 0;
+			this.__colorcache.b = 0;
+
+
+			return this.__colorcache;
+
+		},
+
+		__translateToTexCoord: function(pos, full, inverted) {
+
+			var result = 0;
+
+			if (inverted === true) {
+				result = (full - pos) / full;
+				result = 1 - (pos / full);
+			} else {
+				result = pos / full;
+			}
+
+			return result;
+
+		},
+
+
+
 		/*
-		 * State and Environment Management
+		 * STATE AND ENVIRONMENT MANAGEMENT
 		 */
 
 		reset: function(width, height, resetCache) {
@@ -130,13 +188,34 @@ lychee.define('Renderer').tags({
 
 		},
 
-		flush: function() {
+		flush: function(command) {
 
 			if (this.__state !== 'running') return;
 
-			glut.swapBuffers();
+			// Flush all buffers
+			if (command === 0) {
+
+				glut.swapBuffers();
+
+			// Flush buffer to temporary buffer
+			} else if (command === 1) {
+
+				// TODO: Save current buffer
+
+			// Flush temporary buffer to buffer
+			} else if (command === 2) {
+
+				// TODO: Restore old buffer
+
+			}
 
 		},
+
+
+
+		/*
+		 * SETTERS AND GETTERS
+		 */
 
 		isRunning: function() {
 			return this.__state === 'running';
@@ -146,76 +225,6 @@ lychee.define('Renderer').tags({
 			this.__updateEnvironment();
 			return this.__environment;
 		},
-
-
-
-		/*
-		 * PRIVATE API: Helpers
-		 */
-
-		__updateEnvironment: function() {
-
-			this.__environment.width = this.__width;
-			this.__environment.height = this.__height;
-
-			this.__environment.screen.width = this.__width;
-			this.__environment.screen.height = this.__height;
-
-			this.__environment.offset.x = 0;
-			this.__environment.offset.y = 0;
-
-		},
-
-		__hexToRGB: function(hex) {
-
-			if (
-				typeof hex === 'string'
-				&& hex.length === 7
-			) {
-
-				this.__colorcache.r = parseInt(hex[1] + hex[2], 16);
-				this.__colorcache.g = parseInt(hex[3] + hex[4], 16);
-				this.__colorcache.b = parseInt(hex[5] + hex[6], 16);
-
-				return this.__colorcache;
-
-			}
-
-
-			if (lychee.debug === true) {
-				console.warn('lychee.Renderer: Invalid Hex Color "' + hex + '"');
-			}
-
-
-			this.__colorcache.r = 0;
-			this.__colorcache.g = 0;
-			this.__colorcache.b = 0;
-
-
-			return this.__colorcache;
-
-		},
-
-		__translateToTexCoord: function(pos, full, inverted) {
-
-			var result = 0;
-
-			if (inverted === true) {
-				result = (full - pos) / full;
-				result = 1 - (pos / full);
-			} else {
-				result = pos / full;
-			}
-
-			return result;
-
-		},
-
-
-
-		/*
-		 * Setters
-		 */
 
 		setAlpha: function(alpha) {
 
@@ -239,11 +248,96 @@ lychee.define('Renderer').tags({
 
 		},
 
+		createBuffer: function(width, height) {
+
+			// gl.createBuffer();
+
+		},
+
+		clearBuffer: function(buffer) {
+
+			// reset the passed-through buffer
+			// to full transparency
+
+		},
+
+		setBuffer: function(buffer) {
+
+			// set the current drawing buffer to
+			// the given one
+
+		},
+
 
 
 		/*
-		 * Drawing API
+		 * DRAWING API
 		 */
+
+		drawTriangle: function(x1, y1, x2, y2, x3, y3, color, background, lineWidth) {
+
+			if (this.__state !== 'running') return;
+
+			color = typeof color === 'string' ? color : '#000000';
+			background = background === true ? true : false;
+			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
+
+
+			// TODO: Implement Triangle Rendering
+
+		},
+
+		drawPolygon: function(points, x1, y1) {
+
+			if (this.__state !== 'running') return;
+
+			var l = arguments.length;
+
+			if (points > 3) {
+
+				var optargs = l - (points * 2) - 1;
+
+				var color      = '#000000';
+				var background = false;
+				var lineWidth  = 1;
+
+
+				if (optargs === 3) {
+
+					color      = arguments[l - 3];
+					background = arguments[l - 2];
+					lineWidth  = arguments[l - 1];
+
+				} else if (optargs === 2) {
+
+					color      = arguments[l - 2];
+					background = arguments[l - 1];
+
+				} else if (optargs === 1) {
+
+					color      = arguments[l - 1];
+
+				}
+
+
+				// TODO: Implement Polygon Rendering
+				// ctx.beginPath();
+				// ctx.moveTo(x1, y1);
+
+				// for (var p = 1; p < points; p++) {
+
+				// 	ctx.lineTo(
+				// 		arguments[1 + p * 2],
+				// 		arguments[1 + p * 2 + 1]
+				// 	);
+
+				// }
+
+				// ctx.lineTo(x1, y1);
+
+			}
+
+		},
 
 		drawBox: function(x1, y1, x2, y2, color, background, lineWidth) {
 
@@ -307,6 +401,12 @@ lychee.define('Renderer').tags({
 				gl.end();
 
 			}
+
+		},
+
+		drawArc: function(x, y, start, end, radius, color, background, lineWidth) {
+
+			// TODO: Implement Arc Rendering
 
 		},
 
@@ -507,14 +607,14 @@ lychee.define('Renderer').tags({
 
 			if (this.__state !== 'running') return;
 
-			font = font instanceof lychee.Font ? font : null;
+			font   = font instanceof Font ? font : null;
 			center = center === true;
 
 
 			if (font !== null) {
 
-				var settings = font.getSettings();
-				var sprite = font.getSprite();
+				var baseline = font.baseline;
+				var kerning  = font.kerning;
 
 
 				var chr, t, l;
@@ -526,17 +626,31 @@ lychee.define('Renderer').tags({
 
 					for (t = 0, l = text.length; t < l; t++) {
 						chr = font.get(text[t]);
-						textwidth += chr.real + settings.kerning;
+						textwidth += chr.real + kerning;
 						textheight = Math.max(textheight, chr.height);
 					}
 
 					x1 -= textwidth / 2;
-					y1 -= (textheight - settings.baseline) / 2;
+					y1 -= (textheight - baseline) / 2;
 
 				}
 
 
-				y1 -= settings.baseline / 2;
+				y1 -= baseline / 2;
+
+
+				var texture = font.texture;
+
+				if (this.__texturecache[texture.url] === undefined) {
+
+					this.__texturecache[texture.url] = texture;
+					this.__texturecache[texture.url].generate();
+
+					if (lychee.debug === true) {
+						console.log("lychee.Renderer: cached texture", texture.url, texture.width + "x" + texture.height);
+					}
+
+				}
 
 
 				var margin = 0;
@@ -548,31 +662,16 @@ lychee.define('Renderer').tags({
 				for (t = 0, l = text.length; t < l; t++) {
 
 					var chr = font.get(text[t]);
-					var texture = chr.sprite || sprite;
 
-
-					if (this.__texturecache[texture.url] === undefined) {
-
-						this.__texturecache[texture.url] = texture;
-						this.__texturecache[texture.url].generate();
-
-						if (lychee.debug === true) {
-							console.log("lychee.Renderer: cached texture", texture.url, texture.width + "x" + texture.height);
-						}
-
-					}
-
-
-					x1 = xorg + margin - settings.spacing;
+					x1 = xorg + margin - spacing;
 					y1 = yorg;
 					x2 = x1 + chr.width;
 					y2 = y1 + chr.height;
 
-
 					sx1 = this.__translateToTexCoord(chr.x, texture.width);
 					sy1 = this.__translateToTexCoord(chr.y, texture.height);
 
-					sx2 = this.__translateToTexCoord(chr.x + chr.width, texture.width);
+					sx2 = this.__translateToTexCoord(chr.x + chr.width,  texture.width);
 					sy2 = this.__translateToTexCoord(chr.y + chr.height, texture.height);
 
 
@@ -608,16 +707,36 @@ lychee.define('Renderer').tags({
 							yorg,
 							xorg + margin + chr.real,
 							yorg + chr.height,
-							'#ffff00',
+							'#00ff00',
 							false,
 							1
 						);
 
 					}
 
-					margin += chr.real + settings.kerning;
+					margin += chr.real + kerning;
 
 				}
+
+			}
+
+		},
+
+
+
+		/*
+		 * RENDERING API
+		 */
+
+		renderEntity: function(entity, offsetX, offsetY) {
+
+			if (typeof entity.render === 'function') {
+
+				entity.render(
+					this,
+					offsetX || 0,
+					offsetY || 0
+				);
 
 			}
 

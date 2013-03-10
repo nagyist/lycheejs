@@ -1,46 +1,43 @@
 
 lychee.define('lychee.event.Emitter').exports(function(lychee, global) {
 
-	// High Performance Implementation of a generic Event Emitter
+	var Class = function() {
 
-	var Class = function(namespace) {
-
-		this.___namespace    = namespace;
-		this.___emitterId    = null;
-		this.___events       = {};
+		this.___emitterId = null;
+		this.___events    = {};
 
 	};
 
 
 	Class.prototype = {
 
-		getNamespace: function() {
-			return this.___namespace;
-		},
-
 		getEmitterId: function() {
 			return this.___emitterId;
 		},
 
 		setEmitterId: function(id) {
+
+			id = typeof id === 'number' ? id : null;
+
 			this.___emitterId = id;
+
 		},
 
 		bind: function(type, callback, scope, once) {
 
-			type     = typeof type === 'string' ? type : null;
+			type     = typeof type === 'string'     ? type     : null;
 			callback = callback instanceof Function ? callback : null;
-			scope    = scope !== undefined ? scope : this;
+			scope    = scope !== undefined          ? scope    : this;
 			once     = once === true;
 
 
-			if (type === null && callback === null) {
+			if (type === null || callback === null) {
 				return false;
 			}
 
 
 			var passAction = false;
-			var passSelf = false;
+			var passSelf   = false;
 
 			if (type.charAt(0) === '@') {
 				type = type.substr(1, type.length - 1);
@@ -72,7 +69,7 @@ lychee.define('lychee.event.Emitter').exports(function(lychee, global) {
 		trigger: function(type, data) {
 
 			type = typeof type === 'string' ? type : null;
-			data = data instanceof Array ? data : null;
+			data = data instanceof Array    ? data : null;
 
 
 			var args = data;
@@ -108,7 +105,13 @@ lychee.define('lychee.event.Emitter').exports(function(lychee, global) {
 
 
 					if (entry.once === true) {
-						this.unbind(type, entry.callback, entry.scope);
+
+						var result = this.unbind(type, entry.callback, entry.scope);
+						if (result === true) {
+							el--;
+							e--;
+						}
+
 					}
 
 				}
@@ -125,9 +128,9 @@ lychee.define('lychee.event.Emitter').exports(function(lychee, global) {
 
 		unbind: function(type, callback, scope) {
 
-			type     = typeof type === 'string' ? type : null;
+			type     = typeof type === 'string'     ? type     : null;
 			callback = callback instanceof Function ? callback : null;
-			scope    = scope !== undefined ? scope : null;
+			scope    = scope !== undefined          ? scope    : null;
 
 
 			if (this.___events[type] === undefined) {

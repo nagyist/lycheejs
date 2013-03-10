@@ -97,7 +97,7 @@ lychee.define('Input').tags({
 		this.reset();
 
 
-		lychee.event.Emitter.call(this, 'input');
+		lychee.event.Emitter.call(this);
 
 		_instances.push(this);
 
@@ -121,20 +121,6 @@ lychee.define('Input').tags({
 				touch: Date.now(),
 				swipe: Date.now()
 			};
-
-		},
-
-		addToucharea: function(id, box) {
-
-			// No touch support, so this method does nothing.
-			return false;
-
-		},
-
-		removeToucharea: function(id) {
-
-			// No touch support, so this method does nothing.
-			return false;
 
 		},
 

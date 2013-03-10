@@ -49,7 +49,7 @@
 
 <script>
 // Set to true to see lychee debug messages
-// lychee.debug = true;
+lychee.debug = true;
 
 lychee.rebase({
 	ui: "./ui",
@@ -75,6 +75,8 @@ lychee.build(function(lychee, global) {
 		backend: './source/Font.php'
 
 	});
+
+	lychee.Preloader.prototype._progress(null, null);
 
 }, this);
 </script>

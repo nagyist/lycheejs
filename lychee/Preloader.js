@@ -94,7 +94,7 @@
 	};
 
 
-	var Class = function(data) {
+	lychee.Preloader = function(data) {
 
 		var settings = lychee.extend({}, data);
 
@@ -118,7 +118,7 @@
 	};
 
 
-	Class.prototype = {
+	lychee.Preloader.prototype = {
 
 		/*
 		 * EVENT BINDINGS
@@ -182,12 +182,11 @@
 		 * PUBLIC API
 		 */
 
-		load: function(urls, map, forced) {
+		load: function(urls, map, extension) {
 
-			urls = urls instanceof Array ? urls : (typeof urls === 'string' ? [ urls ] : null);
-			urls = typeof urls === 'string' ? [ urls ] : urls;
-			map = map !== undefined ? map : null;
-			forced = typeof forced === 'string' ? forced : null;
+			urls      = urls instanceof Array         ? urls      : (typeof urls === 'string' ? [ urls ] : null);
+			map       = map !== undefined             ? map       : null;
+			extension = typeof extension === 'string' ? extension : null;
 
 
 			if (urls === null) {
@@ -222,8 +221,8 @@
 
 					} else {
 
-						if (forced !== null) {
-							this._load(url, forced, _cache);
+						if (extension !== null) {
+							this._load(url, extension, _cache);
 						} else {
 							this._load(url, tmp[tmp.length - 1], _cache);
 						}
@@ -270,9 +269,6 @@
 		}
 
 	};
-
-
-	lychee.Preloader = Class;
 
 })(lychee, typeof global !== 'undefined' ? global : this);
 

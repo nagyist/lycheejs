@@ -7,12 +7,13 @@ lychee.define('lychee.game.Jukebox').requires([
 
 	var Class = function(maxPoolSize, loop) {
 
+		this.__clock    = 0;
+		this.__effects  = {};
+		this.__effectId = 0;
+
+
 		lychee.Jukebox.call(this, maxPoolSize);
 
-
-		this.__clock = 0;
-		this.__effects = {};
-		this.__effectId = 0;
 
 		if (loop instanceof lychee.game.Loop) {
 			loop.bind('update', this.update, this);
@@ -57,10 +58,11 @@ lychee.define('lychee.game.Jukebox').requires([
 
 		fadeIn: function(id, duration, loop, volume) {
 
-			id = typeof id === 'string' ? id : null;
+			id       = typeof id === 'string'       ? id       : null;
 			duration = typeof duration === 'number' ? duration : 1000;
-			loop = loop === true ? true : false;
-			volume = typeof volume === 'number' ? volume : 1;
+			loop     = loop === true                ? true     : false;
+			volume   = typeof volume === 'number'   ? volume   : 1;
+
 
 			if (id !== null) {
 
@@ -68,11 +70,11 @@ lychee.define('lychee.game.Jukebox').requires([
 				this.setVolume(id, 0);
 
 				var effect = {
-					id: id,
-					type: 'fade-in',
+					id:    id,
+					type:  'fade-in',
 					start: this.__clock,
-					end: this.__clock + duration,
-					diff: volume
+					end:   this.__clock + duration,
+					diff:  volume
 				};
 
 				this.__effects[++this.__effectId] = effect;
@@ -83,19 +85,20 @@ lychee.define('lychee.game.Jukebox').requires([
 
 		fadeOut: function(id, duration) {
 
-			id = typeof id === 'string' ? id : null;
+			id       = typeof id === 'string'       ? id       : null;
 			duration = typeof duration === 'number' ? duration : 1000;
+
 
 			if (id !== null) {
 
-				var currentVolume = this.getVolume(id);
+				var current = this.getVolume(id);
 
 				var effect = {
-					id: id,
-					type: 'fade-out',
+					id:    id,
+					type:  'fade-out',
 					start: this.__clock,
-					end: this.__clock + duration,
-					diff: currentVolume
+					end:   this.__clock + duration,
+					diff:  current
 				};
 
 				this.__effects[++this.__effectId] = effect;
@@ -106,16 +109,18 @@ lychee.define('lychee.game.Jukebox').requires([
 
 		removeEffects: function(id, type) {
 
-			id = typeof id === 'string' ? id : null;
+			id   = typeof id === 'string'   ? id   : null;
 			type = typeof type === 'string' ? type : null;
+
 
 			var found = false;
 
 			for (var e in this.__effects) {
 
+				if (this.__effects[e] === null) continue;
+
 				if (
-					this.__effects[e] !== null
-					&& (id === null || this.__effects[e].id === id)
+					   (id === null   || this.__effects[e].id === id)
 					&& (type === null || this.__effects[e].type === type)
 				) {
 					this.__effects[e] = null;

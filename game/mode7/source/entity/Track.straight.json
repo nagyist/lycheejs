@@ -1,0 +1,23 @@
+{
+
+	"id":     "valley",
+	"title":  "Valley",
+	"type":   "stadium",
+
+	"route": [
+		[ "straight", 50, null, 0 ]
+	],
+
+	"palette": [{
+		"terrain": "#eeddaa",
+		"road":    "#666666",
+		"rumble":  "#ff3333",
+		"lane":    null
+	}, {
+		"terrain": "#ddcc99",
+		"road":    "#666666",
+		"rumble":  "#cccccc",
+		"lane":    "#cccccc"
+	}]
+
+}

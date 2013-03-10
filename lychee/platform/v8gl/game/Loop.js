@@ -34,7 +34,7 @@ lychee.define('lychee.game.Loop').tags({
 		this.__timeouts = {};
 		this.__intervals = {};
 
-		lychee.event.Emitter.call(this, 'loop');
+		lychee.event.Emitter.call(this);
 
 
 		this.reset(settings.update, settings.render);

@@ -5,8 +5,11 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 
 
 	var Class = function() {
+
 		this._data = new _type(4);
+
 		this.set(0, 0, 0, 1);
+
 	};
 
 
@@ -138,7 +141,7 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			return Math.sqrt(x*x + y*y + z*z + w*w);
+			return Math.sqrt(x * x + y * y + z * z + w * w);
 
 		},
 
@@ -152,7 +155,7 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			return (x*x + y*y + z*z + w*w);
+			return (x * x + y * y + z * z + w * w);
 
 		},
 
@@ -167,8 +170,8 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 
 
 			var invDot = 0;
-			var dot = (x*x + y*y + z*z + w*w);
-			if (dot !== 0) {
+			var dot = (x * x + y * y + z * z + w * w);
+			if (dot > 0) {
 
 				invDot = 1.0 / dot;
 
@@ -191,7 +194,7 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 			var w = d[3];
 
 
-			var length = (x*x + y*y + z*z + w*w);
+			var length = (x * x + y * y + z * z + w * w);
 			if (length > 0) {
 
 				length = 1 / Math.sqrt(length);
@@ -318,7 +321,7 @@ lychee.define('lychee.math.Quaternion').exports(function(lychee, global) {
 			var z = d[2];
 
 
-			d[3] = -Math.sqrt(Math.abs(1.0 - x*x - y*y - z*z));
+			d[3] = -Math.sqrt(Math.abs(1.0 - x * x - y * y - z * z));
 
 		}
 

@@ -2,7 +2,6 @@
 lychee.define('tool.FontGenerator').tags({
 	platform: 'html'
 }).requires([
-	'lychee.Font',
 	'ui.Main'
 ]).includes([
 	'lychee.event.Emitter'

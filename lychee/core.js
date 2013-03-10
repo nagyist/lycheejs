@@ -8,12 +8,17 @@ if (typeof global !== 'undefined') {
 
 (function(lychee, global) {
 
-	var _tree = {};
-	var _tags = {};
-	var _bases = {
-		// default paths
-		'lychee': './lychee'
+	var _cache = {
+		tree: {},
+		tags: {},
+		bases: { 'lychee': './lychee' }
 	};
+
+	var _environment = _cache;
+
+
+	lychee.debug   = false;
+	lychee.VERSION = 0.7;
 
 
 	lychee.define = function(name) {
@@ -66,11 +71,11 @@ if (typeof global !== 'undefined') {
 		if (settings !== null) {
 
 			for (var namespace in settings) {
+
 				if (settings.hasOwnProperty(namespace)) {
-
-					_bases[namespace] = settings[namespace];
-
+					_environment.bases[namespace] = settings[namespace];
 				}
+
 			}
 
 		}
@@ -99,7 +104,7 @@ if (typeof global !== 'undefined') {
 					}
 
 					if (values !== null) {
-						_tags[tag] = values;
+						_environment.tags[tag] = values;
 					}
 
 				}
@@ -112,13 +117,57 @@ if (typeof global !== 'undefined') {
 	};
 
 
-	lychee.getEnvironment = function() {
+	lychee.getEnvironment = function(name) {
 
-		return {
-			tree: _tree,
-			tags: _tags,
-			bases: _bases
-		};
+		name = typeof name === 'string' ? name : null;
+
+
+		if (name !== null) {
+
+			if (_cache[name] !== undefined) {
+				return _cache[name];
+			} else {
+				return null;
+			}
+
+		}
+
+
+		return _environment;
+
+	};
+
+	lychee.setEnvironment = function(object) {
+
+		if (
+			object !== null
+			&& object instanceof Object
+		) {
+
+			if (object.tree === undefined) {
+				object.tree = {};
+			}
+
+			if (object.tags === undefined) {
+				object.tags = {};
+			}
+
+			if (object.bases === undefined) {
+				object.bases = { 'lychee': './lychee' };
+			}
+
+
+			_environment = object;
+			return true;
+
+		} else {
+
+			_environment = _cache;
+
+		}
+
+
+		return false;
 
 	};
 
@@ -128,19 +177,19 @@ if (typeof global !== 'undefined') {
 	};
 
 
-
 	lychee.DefinitionBlock = function(space, name) {
 
 		// allows new lychee.DefinitionBlock('Renderer') without a namespace
 		space = typeof name === 'string' ? space : null;
 		name = typeof name === 'string' ? name : space;
 
-		this._space = space;
-		this._name = name;
-		this._tags = {};
+
+		this._space    = space;
+		this._name     = name;
+		this._tags     = {};
 		this._requires = [];
 		this._includes = [];
-		this._exports = null;
+		this._exports  = null;
 		this._supports = null;
 
 		return this;
@@ -258,9 +307,9 @@ if (typeof global !== 'undefined') {
 
 			if (
 				(this._supports === null || this._supports.call(global, lychee, global) === true)
-				&& _tree[this._space + '.' + this._name] == null
+				&& _environment.tree[this._space + '.' + this._name] == null
 			) {
-				_tree[this._space + '.' + this._name] = this;
+				_environment.tree[this._space + '.' + this._name] = this;
 			}
 
 		}
@@ -271,46 +320,33 @@ if (typeof global !== 'undefined') {
 
 
 
-/*
- *
- * POLYFILLS FOR CRAPPY ENVIRONMENTS
- *
- *
- * This is apparently only for
- * Internet Explorer and NodeJS
- *
- * Thanks for being 2 lazy 2 implement
- * the Console API, bitches! :)
- *
- */
-
-if (typeof console === 'undefined') {
-	console = {};
-}
-
-
 (function(global) {
 
-	if (global.console.log === undefined) {
-		global.console.log = function() {}; // stub!
+	if (typeof console === 'undefined') {
+		global.console = {};
 	}
 
-	if (global.console.error === undefined) {
-		global.console.error = global.console.log;
+
+	if (console.log === undefined) {
+		console.log = function() {}; // stub!
 	}
 
-	if (global.console.warn === undefined) {
-		global.console.warn = global.console.log;
+	if (console.error === undefined) {
+		console.error = global.console.log;
 	}
 
-	if (global.console.group === undefined) {
-		global.console.group = function(title) {
+	if (console.warn === undefined) {
+		console.warn = global.console.log;
+	}
+
+	if (console.group === undefined) {
+		console.group = function(title) {
 			console.log('~ ~ ~ ' + title + '~ ~ ~');
 		};
 	}
 
-	if (global.console.groupEnd === undefined) {
-		global.console.groupEnd = function() {
+	if (console.groupEnd === undefined) {
+		console.groupEnd = function() {
 			console.log('~ ~ ~ ~ ~ ~');
 		};
 	}

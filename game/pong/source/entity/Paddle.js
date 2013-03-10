@@ -1,21 +1,28 @@
-lychee.define('game.entity.Paddle').includes([
-	'lychee.game.Entity'
-]).exports(function(lychee, global) {
 
-	var Class = function(image) {
+lychee.define('game.entity.Paddle').includes([
+	'lychee.game.Sprite'
+]).exports(function(lychee, game, global, attachments) {
+
+	var _textures = {
+		player: attachments['blue.png'],
+		enemy:  attachments['red.png']
+	};
+
+
+	var Class = function(id) {
 
 		var settings = {
 			width:     24,
 			height:    104,
 			collision: lychee.game.Entity.COLLISION.A,
-			shape:     lychee.game.Entity.SHAPE.rectangle
+			shape:     lychee.game.Entity.SHAPE.rectangle,
+
+			texture:   _textures[id] || null,
+			map:       null
 		};
 
 
-		this.__image = image || null;
-
-
-		lychee.game.Entity.call(this, settings);
+		lychee.game.Sprite.call(this, settings);
 
 		settings = null;
 
@@ -23,10 +30,6 @@ lychee.define('game.entity.Paddle').includes([
 
 
 	Class.prototype = {
-
-		getImage: function() {
-			return this.__image;
-		}
 
 	};
 

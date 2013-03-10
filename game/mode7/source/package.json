@@ -1,0 +1,27 @@
+{
+	"tags": {},
+
+	"tree": {
+
+		"entity": {
+			"lycheeJS": [ "js", "png" ],
+			"Track": [
+				"js",
+				"circuit.json",
+				"straight.json",
+				"valley.json"
+			]
+		},
+
+		"state": {
+			"Game": [ "js" ]
+		},
+
+		"Camera": [ "js" ],
+		"Compositor": [ "js" ],
+		"DeviceSpecificHacks": [ "js" ],
+		"Main": [ "js" ],
+		"Renderer": [ "js" ]
+
+	}
+}

@@ -9,5 +9,9 @@ body {
 canvas#game {
 	display: block;
 	margin: 0 auto;
+	user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
 	/* border: 3px solid #888; */
 }
