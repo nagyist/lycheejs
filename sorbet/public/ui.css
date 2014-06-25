@@ -1,0 +1,229 @@
+
+@font-face {
+	font-family: 'exolight';
+	src: url('/webfont/exo-light.eot');
+	src: url('/webfont/exo-light.eot?#iefix') format('embedded-opentype'),
+		 url('/webfont/exo-light.woff') format('woff'),
+		 url('/webfont/exo-light.ttf') format('truetype'),
+		 url('/webfont/exo-light.svg#exolight') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'exobold';
+	src: url('/webfont/exo-bold.eot');
+	src: url('/webfont/exo-bold.eot?#iefix') format('embedded-opentype'),
+		 url('/webfont/exo-bold.woff') format('woff'),
+		 url('/webfont/exo-bold.ttf') format('truetype'),
+		 url('/webfont/exo-bold.svg#exoextrabold') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	color: #dddddd;
+	background: #000000;
+}
+
+
+
+h1#ui-logo {
+	display: block;
+	position: relative;
+	margin: 16px auto;
+}
+
+h1#ui-logo a {
+	display: block;
+	width: 384px;
+	height: 64px;
+	margin: 0px auto;
+	background: url('/logo.png') no-repeat;
+	font-size: 1px;
+	color: transparent;
+}
+
+
+
+menu#ui-menu {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	background: #8f202f;
+}
+
+menu#ui-menu li {
+	display: inline-block;
+	margin: 2px 8px;
+	padding: 0px 8px;
+	height: 40px;
+	line-height: 40px;
+	color: #eeeeee;
+	background: transparent;
+	text-align: center;
+	vertical-align: middle;
+	font-family: "exobold";
+	list-style: none;
+	border: 2px solid #8f202f;
+	border-radius: 0px;
+	cursor: pointer;
+}
+
+menu#ui-menu li:hover,
+menu#ui-menu li:focus {
+	color: #ffffff;
+	background: #000000;
+	border: 2px solid #ffffff;
+	border-radius: 16px;
+}
+
+menu#ui-menu li {
+	-ms-transition: all 250ms ease-out;
+	-moz-transition: all 250ms ease-out;
+	-webkit-transition: all 250ms ease-out;
+	transition: all 250ms ease-out;
+}
+
+
+
+footer#ui-footer {
+	display: block;
+	position: absolute;
+	top: auto;
+	right: 16px;
+	bottom: 16px;
+	left: 16px;
+	z-index: 150;
+}
+
+ul#ui-notifications {
+	display: block;
+	position: relative;
+	margin: 0px auto;
+	min-width: 256px;
+	max-width: 512px;
+}
+
+ul#ui-notifications li {
+	margin: 8px 16px;
+	padding: 8px;
+	list-style: none;
+	text-align: center;
+	font-family: "exobold";
+	border: 2px solid #222222;
+	border-radius: 16px;
+	opacity: 1;
+}
+
+ul#ui-notifications li.default {
+	color: #ffffff;
+	background: #666666;
+}
+
+ul#ui-notifications li.destroy {
+	opacity: 0;
+}
+
+ul#ui-notifications li.notification {
+	color: #ffffff;
+	background: #208f2f;
+	border: 2px solid #568f5e;
+}
+
+ul#ui-notifications li.warning {
+	color: #ffffff;
+	background: #8f2f20;
+	border: 2px solid #8f5e56;
+}
+
+ul#ui-notifications li.error {
+	background: #8f202f;
+	border: 2px solid #8f565e;
+}
+
+ul#ui-notifications li {
+	-ms-transition: all 250ms ease-out;
+	-moz-transition: all 250ms ease-out;
+	-webkit-transition: all 250ms ease-out;
+	transition: all 250ms ease-out;
+}
+
+
+
+.ui-graph {
+	display: block;
+	background: #111111;
+	margin: 8px auto;
+	padding: 16px;
+}
+
+.ui-graph svg {
+	display: block;
+	margin: 0 auto;
+	padding: 0;
+}
+
+.ui-graph g.legend text {
+	font-family: 'exobold';
+	font-size: 12px;
+	stroke-width: 0;
+	text-anchor: left;
+}
+
+.ui-graph g.label text {
+	font-family: 'exobold';
+	font-size: 16px;
+	stroke-width: 0;
+	text-anchor: middle;
+}
+
+.ui-graph g.graph polyline {
+	cursor: pointer;
+	fill: none;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.ui-graph g.graph polyline:hover {
+	stroke-width: 6;
+}
+
+
+.ui-graph g.legend > :nth-child(1),  .ui-graph g.label > :nth-child(1)  { fill: #ffffff; }
+.ui-graph g.legend > :nth-child(2),  .ui-graph g.label > :nth-child(2)  { fill: #8f202f; }
+.ui-graph g.legend > :nth-child(3),  .ui-graph g.label > :nth-child(3)  { fill: #8d4820; }
+.ui-graph g.legend > :nth-child(4),  .ui-graph g.label > :nth-child(4)  { fill: #8d7f20; }
+.ui-graph g.legend > :nth-child(5),  .ui-graph g.label > :nth-child(5)  { fill: #658d20; }
+.ui-graph g.legend > :nth-child(6),  .ui-graph g.label > :nth-child(6)  { fill: #2f8d20; }
+.ui-graph g.legend > :nth-child(7),  .ui-graph g.label > :nth-child(7)  { fill: #208d48; }
+.ui-graph g.legend > :nth-child(8),  .ui-graph g.label > :nth-child(8)  { fill: #208d7f; }
+.ui-graph g.legend > :nth-child(9),  .ui-graph g.label > :nth-child(9)  { fill: #20658d; }
+.ui-graph g.legend > :nth-child(10), .ui-graph g.label > :nth-child(10) { fill: #202f8d; }
+.ui-graph g.legend > :nth-child(11), .ui-graph g.label > :nth-child(11) { fill: #48208d; }
+.ui-graph g.legend > :nth-child(12), .ui-graph g.label > :nth-child(12) { fill: #7f208d; }
+
+.ui-graph g.graph > :nth-child(1)  { stroke: #ffffff; }
+.ui-graph g.graph > :nth-child(2)  { stroke: #8f202f; }
+.ui-graph g.graph > :nth-child(3)  { stroke: #8d4820; }
+.ui-graph g.graph > :nth-child(4)  { stroke: #8d7f20; }
+.ui-graph g.graph > :nth-child(5)  { stroke: #658d20; }
+.ui-graph g.graph > :nth-child(6)  { stroke: #2f8d20; }
+.ui-graph g.graph > :nth-child(7)  { stroke: #208d48; }
+.ui-graph g.graph > :nth-child(8)  { stroke: #208d7f; }
+.ui-graph g.graph > :nth-child(9)  { stroke: #20658d; }
+.ui-graph g.graph > :nth-child(10) { stroke: #202f8d; }
+.ui-graph g.graph > :nth-child(11) { stroke: #48208d; }
+.ui-graph g.graph > :nth-child(12) { stroke: #7f208d; }
+

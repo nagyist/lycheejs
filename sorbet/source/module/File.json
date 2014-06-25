@@ -1,0 +1,183 @@
+{
+
+	"env": {
+		"encoding": "utf8",
+		"type":     "application/json",
+		"stream":   false
+	},
+
+	"fnt": {
+		"encoding": "utf8",
+		"type":     "application/json",
+		"stream":   false
+	},
+
+	"pkg": {
+		"encoding": "utf8",
+		"type":     "application/json",
+		"stream":   false
+	},
+
+	"store": {
+		"encoding": "utf8",
+		"type":     "application/json",
+		"stream":   false
+	},
+
+	"txt": {
+		"encoding": "utf8",
+		"type":     "text/plain",
+		"stream":   false
+	},
+
+	"appcache": {
+		"encoding": "utf8",
+		"type":     "text/cache-manifest",
+		"stream":   false
+	},
+
+	"mf": {
+		"encoding": "utf8",
+		"type":     "text/cache-manifest",
+		"stream":   false
+	},
+
+	"ico": {
+		"encoding": "binary",
+		"type":     "image/x-icon",
+		"stream":   false
+	},
+
+	"jpg": {
+		"encoding": "binary",
+		"type":     "image/jpeg",
+		"stream":   false
+	},
+
+	"png": {
+		"encoding": "binary",
+		"type":     "image/png",
+		"stream":   false
+	},
+
+	"svg": {
+		"encoding": "utf8",
+		"type":     "image/svg+xml",
+		"stream":   false
+	},
+
+	"mp3": {
+		"encoding": "binary",
+		"type":     "audio/mp3",
+		"stream":   true
+	},
+
+	"ogg": {
+		"encoding": "binary",
+		"type":     "application/ogg",
+		"stream":   true
+	},
+
+	"webm": {
+		"encoding": "binary",
+		"type":     "video/webm",
+		"stream":   true
+	},
+
+	"fs": {
+		"encoding": "utf8",
+		"type":     "x-shader/x-fragment",
+		"stream":   false
+	},
+
+	"vs": {
+		"encoding": "utf8",
+		"type":     "x-shader/x-vertex",
+		"stream":   false
+	},
+
+	"html": {
+		"encoding": "utf8",
+		"type":     "text/html",
+		"stream":   false
+	},
+
+	"css": {
+		"encoding": "utf8",
+		"type":     "text/css",
+		"stream":   false
+	},
+
+	"js": {
+		"encoding": "utf8",
+		"type":     "application/javascript",
+		"stream":   false
+	},
+
+	"json": {
+		"encoding": "utf8",
+		"type":     "application/json",
+		"stream":   false
+	},
+
+	"eot": {
+		"encoding": "utf8",
+		"type":     "application/vnd.ms-fontobject",
+		"stream":   false
+	},
+
+	"ttf": {
+		"encoding": "utf8",
+		"type":     "application/x-font-truetype",
+		"stream":   false
+	},
+
+	"woff": {
+		"encoding": "utf8",
+		"type":     "application/font-woff",
+		"stream":   false
+	},
+
+	"mo": {
+		"encoding": "utf8",
+		"type":     "text/x-gettext-catalog",
+		"stream":   false
+	},
+
+	"po": {
+		"encoding": "utf8",
+		"type":     "text/x-gettext-translation",
+		"stream":   false
+	},
+
+	"pot": {
+		"encoding": "utf8",
+		"type":     "text/x-pot",
+		"stream":   false
+	},
+
+	"tar": {
+		"encoding": "binary",
+		"type":     "application/x-tar",
+		"stream":   false
+	},
+
+	"gz": {
+		"encoding": "binary",
+		"type":     "application/x-gzip",
+		"stream":   false
+	},
+
+	"tar.gz": {
+		"encoding": "binary",
+		"type":     "application/x-tgz",
+		"stream":   false
+	},
+
+	"zip": {
+		"encoding": "binary",
+		"type":     "application/zip",
+		"stream":   false
+	}
+
+}

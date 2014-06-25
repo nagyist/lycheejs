@@ -1,0 +1,70 @@
+{
+	"layers": {
+		"ui": {
+			"constructor": "lychee.ui.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.ui.Button",
+					"arguments": [{
+						"label": "Pull Highscores from Server",
+						"position": {
+							"x": 0,
+							"y": -50
+						}
+					}],
+					"blob": {
+						"font": {
+							"constructor": "Font",
+							"arguments": [ "../source/state/Menu.normal.fnt" ]
+						}
+					}
+				}, {
+					"constructor": "lychee.ui.Label",
+					"arguments": [{
+						"label": "Local Highscore",
+						"position": {
+							"x": 0,
+							"y": 50
+						}
+					}],
+					"blob": {
+						"font": {
+							"constructor": "Font",
+							"arguments": [ "../source/state/Game.normal.fnt" ]
+						}
+					}
+				}, {
+					"constructor": "lychee.ui.Layer",
+					"arguments": [{
+						"position": {
+							"x": 0,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "game.entity.Button",
+					"arguments": [{
+						"label": "Exit to Menu",
+						"position": {
+							"x": 0,
+							"y": 0
+						}
+					}, "#MAIN"],
+					"blob": {
+						"font": {
+							"constructor": "Font",
+							"arguments": [ "../source/state/Game.normal.fnt" ]
+						}
+					}
+				}],
+				"map": {
+					"update": 0,
+					"title":  1,
+					"table":  2,
+					"button": 3
+				}
+			}
+		}
+	}
+}

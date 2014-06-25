@@ -1,0 +1,45 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"entity": {
+				"Ball":     [ "js", "json", "png" ],
+				"Paddle":   [ "js", "json", "enemy.png", "player.png" ],
+				"lycheeJS": [ "js", "png" ]
+			},
+
+			"state": {
+				"Game": [ "js", "json", "headline.fnt", "normal.fnt" ],
+				"Menu": [ "js", "json", "headline.fnt", "normal.fnt" ]
+			},
+
+			"DeviceSpecificHacks": [ "js" ],
+			"Main":                [ "js", "css" ]
+
+		}
+
+	}
+
+}

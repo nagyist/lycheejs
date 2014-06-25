@@ -1,0 +1,46 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"entity": {
+				"Background": [ "js", "png" ],
+				"lycheeJS":   [ "js", "png" ],
+				"Track":      [ "js", "circuit.json", "straight.json", "valley.json" ]
+			},
+
+			"state": {
+				"Game": [ "js" ]
+			},
+
+			"Camera":     [ "js" ],
+			"Compositor": [ "js" ],
+			"Main":       [ "js" ],
+			"Renderer":   [ "js" ]
+
+		}
+
+	}
+
+}

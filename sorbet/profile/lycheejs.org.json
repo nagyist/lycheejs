@@ -1,0 +1,68 @@
+{
+
+	"port": 80,
+
+	"api": {
+
+		"Blacklist":   "sorbet.api.remote.Blacklist",
+		"Debugger":    "sorbet.api.remote.Debugger",
+		"Log":         "sorbet.api.remote.Log",
+		"Project":     "sorbet.api.remote.Project",
+		"Server":      "sorbet.api.remote.Server",
+		"VirtualHost": "sorbet.api.remote.VirtualHost"
+
+	},
+
+	"module": {
+
+		"Blacklist":   "sorbet.module.Blacklist",
+		"Fertilizer":  "sorbet.module.Fertilizer",
+		"Log":         "sorbet.module.Log",
+		"Server":      "sorbet.module.Server",
+		"Honey":       "sorbet.module.Honey"
+
+	},
+
+	"vhosts": [{
+
+		"hosts": [
+			"lycheejs.org",
+			"www.lycheejs.org"
+		],
+		"config": {
+			"root": "%root%/projects/lycheeJS-website",
+			"redirects": {
+				"/slides/*": "http://slides.lycheejs.org/*"
+			}
+		}
+
+	}, {
+
+		"hosts": [
+			"slides.lycheejs.org"
+		],
+		"config": {
+			"root": "%root%/projects/lycheeJS-slides"
+		}
+
+	}, {
+
+		"hosts": [
+			"dashboard.lycheejs.org"
+		],
+		"config": {
+			"root": "%root%"
+		}
+
+	}, {
+
+		"hosts": [
+			"mode7.lycheejs.org"
+		],
+		"config": {
+			"root": "%root%/projects/mode7/source"
+		}
+
+	}]
+
+}

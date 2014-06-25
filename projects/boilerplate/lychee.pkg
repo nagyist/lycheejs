@@ -1,0 +1,63 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"entity": {
+				"Button":   [ "js" ],
+				"Circle":   [ "js", "snd" ],
+				"lycheeJS": [ "js", "png" ]
+			},
+
+			"net": {
+
+				"client": {
+					"Highscore": [ "js" ],
+					"Ping":      [ "js" ]
+				},
+
+				"remote": {
+					"Highscore": [ "js" ],
+					"Ping":      [ "js" ]
+				},
+
+				"Client": [ "js" ],
+				"Server": [ "js" ]
+
+			},
+
+			"state": {
+				"Game":      [ "js", "json", "headline.fnt", "normal.fnt" ],
+				"Highscore": [ "js", "json" ],
+				"Menu":      [ "js", "json", "headline.fnt", "normal.fnt" ]
+			},
+
+			"DeviceSpecificHacks": [ "js" ],
+			"Main":                [ "js" ]
+
+		}
+
+	}
+
+}

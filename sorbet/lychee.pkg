@@ -1,0 +1,161 @@
+{
+
+	"build": {
+
+		"environments": {
+
+			"html/api": {
+				"build":    "sorbet.api.Client",
+				"debug":    false,
+				"sandbox":  false,
+				"type":     "library",
+				"packages": [
+					[ "sorbet", "./lychee.pkg" ]
+				],
+				"tags":     {
+					"platform": [ "html" ]
+				}
+			},
+
+			"html/core": {
+				"build":    "sorbet.net.Client",
+				"debug":    false,
+				"sandbox":  false,
+				"type":     "library",
+				"packages": [
+					[ "sorbet", "./lychee.pkg" ]
+				],
+				"tags":     {
+					"platform": [ "html" ]
+				}
+			},
+
+			"nodejs/core": {
+				"build":    "sorbet.net.Client",
+				"debug":    false,
+				"sandbox":  false,
+				"type":     "library",
+				"packages": [
+					[ "sorbet", "./lychee.pkg" ]
+				],
+				"tags":     {
+					"platform": [ "nodejs" ]
+				}
+			}
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+			"platform": {
+
+				"html":         "platform/html",
+				"html-cordova": "platform/html-cordova",
+				"html-webgl":   "platform/html-webgl",
+				"nodejs":       "platform/nodejs",
+				"nodejs-sdl":   "platform/nodejs-sdl",
+				"nodejs-webgl": "platform/nodejs-webgl"
+
+			}
+
+		},
+
+		"files": {
+
+			"platform": {
+
+				"html": {
+
+					"api": {
+						"Client":  [ "js" ]
+					}
+
+				}
+
+			},
+
+			"api": {
+
+				"client": {
+					"Debugger":    [ "js" ],
+					"Log":         [ "js" ],
+					"Project":     [ "js" ],
+					"VirtualHost": [ "js" ]
+				},
+
+				"remote": {
+					"Service":     [ "js" ],
+					"Blacklist":   [ "js" ],
+					"Debugger":    [ "js" ],
+					"Log":         [ "js" ],
+					"Project":     [ "js" ],
+					"Server":      [ "js" ],
+					"VirtualHost": [ "js" ]
+				},
+
+				"Service": [ "js" ]
+
+			},
+
+			"data": {
+				"Filesystem": [ "js" ],
+				"Map":        [ "js" ],
+				"Queue":      [ "js" ],
+				"Template":   [ "js" ],
+				"VHost":      [ "js" ]
+			},
+
+			"module": {
+
+				"honey": {
+					"Admin":  [ "js", "index.php", "config.php.bak" ],
+					"Robots": [ "js" ]
+				},
+
+				"Blacklist":  [ "js" ],
+				"Error":      [ "js", "html.tpl", "json.tpl" ],
+				"File":       [ "js", "json" ],
+				"Honey":      [ "js" ],
+				"Log":        [ "js", "json" ],
+				"Fertilizer": [ "js" ],
+				"Redirect":   [ "js" ],
+				"Server":     [ "js" ]
+
+			},
+
+			"net": {
+
+				"client": {
+					"Debugger": [ "js" ],
+					"Session":  [ "js" ]
+				},
+
+				"remote": {
+					"Debugger": [ "js" ],
+					"Session":  [ "js" ]
+				},
+
+				"Client": [ "js" ],
+				"Server": [ "js" ]
+
+			},
+
+			"Main": [ "js" ]
+
+		}
+
+	}
+
+}

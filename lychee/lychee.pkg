@@ -1,0 +1,183 @@
+{
+
+	"build": {
+
+		"environments": {
+
+			"html/main": {
+				"build":    "lychee.game.Main",
+				"debug":    false,
+				"sandbox":  false,
+				"type":     "library",
+				"packages": [
+					[ "lychee", "./lychee.pkg" ]
+				],
+				"tags":     {
+					"platform": [ "html" ]
+				}
+			},
+
+			"nodejs/main": {
+				"build":    "lychee.game.Main",
+				"debug":    false,
+				"sandbox":  false,
+				"type":     "library",
+				"packages": [
+					[ "lychee", "./lychee.pkg" ]
+				],
+				"tags":     {
+					"platform": [ "nodejs" ]
+				}
+			}
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+			"platform": {
+
+				"html":         "platform/html",
+				"html-cordova": "platform/html-cordova",
+				"html-webgl":   "platform/html-webgl",
+				"nodejs":       "platform/nodejs",
+				"nodejs-sdl":   "platform/nodejs-sdl",
+				"nodejs-webgl": "platform/nodejs-webgl"
+
+			}
+
+		},
+
+		"files": {
+
+			"platform": {
+
+				"html": {
+
+					"net": {
+						"Client": [ "js" ],
+						"Remote": [ "js" ],
+						"Server": [ "js" ]
+					},
+
+					"Input":    [ "js" ],
+					"Renderer": [ "js" ],
+					"Storage":  [ "js" ],
+					"Viewport": [ "js" ]
+
+				},
+
+				"html-webgl": {
+
+					"Renderer": [
+						"js",
+						"Sprite.vs",
+						"Sprite.fs"
+					]
+
+				},
+
+				"nodejs": {
+
+					"net": {
+						"Client":   [ "js" ],
+						"Remote":   [ "js" ],
+						"Server":   [ "js" ]
+					},
+
+					"Input":    [ "js" ],
+					"Renderer": [ "js" ],
+					"Storage":  [ "js" ],
+					"Viewport": [ "js" ]
+
+				}
+
+			},
+
+			"data": {
+				"BitON": [ "js" ]
+			},
+
+			"event": {
+				"Bus":     [ "js" ],
+				"Emitter": [ "js" ],
+				"Promise": [ "js" ]
+			},
+
+			"game": {
+				"Background": [ "js" ],
+				"Entity":     [ "js" ],
+				"Jukebox":    [ "js" ],
+				"Layer":      [ "js" ],
+				"Loop":       [ "js" ],
+				"Main":       [ "js" ],
+				"Sprite":     [ "js" ],
+				"State":      [ "js" ]
+			},
+
+			"math": {
+				"Matrix4":    [ "js" ],
+				"Quaternion": [ "js" ],
+				"Vector2":    [ "js" ],
+				"Vector3":    [ "js" ],
+				"Vector4":    [ "js" ]
+			},
+
+			"net": {
+
+				"Protocol": [ "js" ],
+				"Service":  [ "js" ],
+
+				"client": {
+					"Chat":        [ "js" ],
+					"Multiplayer": [ "js" ],
+					"Session":     [ "js" ]
+				},
+
+				"remote": {
+					"Chat":        [ "js" ],
+					"Multiplayer": [ "js" ],
+					"Session":     [ "js" ]
+				}
+
+			},
+
+			"ui": {
+				"Button":    [ "js" ],
+				"Entity":    [ "js" ],
+				"Input":     [ "js" ],
+				"Joystick":  [ "js" ],
+				"Label":     [ "js" ],
+				"Layer":     [ "js" ],
+				"Select":    [ "js" ],
+				"Slider":    [ "js" ],
+				"Sprite":    [ "js" ],
+				"Switch":    [ "js" ],
+				"Textarea":  [ "js" ]
+			},
+
+			"verlet": {
+				"AngleConstraint":    [ "js" ],
+				"DistanceConstraint": [ "js" ],
+				"Particle":           [ "js" ],
+				"Tire":               [ "js" ],
+				"Vector2":            [ "js" ],
+				"World":              [ "js" ]
+			}
+
+		}
+
+	}
+
+}

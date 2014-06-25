@@ -1,0 +1,131 @@
+<!doctype html>
+<!-- <html manifest="index.appcache"> -->
+<html>
+<head>
+	<title>Welcome to lycheeJS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+	<script src="/lychee/build/html/main.js"></script>
+
+	<!-- SORBET INTEGRATION -->
+	<script src="/sorbet/build/html/core.js"></script>
+	<script src="/sorbet/build/html/api.js"></script>
+
+	<!-- MINIMALISTIC HTML UI -->
+	<link rel="stylesheet" href="/ui.css">
+
+</head>
+<body>
+
+	<h1 id="ui-logo"><a href="http://lycheeJS.org">lycheeJS</a></h1>
+
+	<menu id="ui-menu">
+		<li title="Toggle Menu">Menu</li>
+		<li title="Reload Projects and Settings via REST API">Reload</li>
+	</menu>
+
+	<main role="main" id="dashboard-Main">
+
+		<nav class="active">
+			<b>Projects</b>
+			<ul class="projects">
+				<li>(loading ...)</li>
+			</ul>
+			<b>Tools</b>
+			<ul class="tools">
+				<li data-identifier="debugger">Debugger</li>
+				<li data-identifier="fonteditor">Font Editor</li>
+			</ul>
+		</nav>
+
+		<section class="default">
+
+			<article>
+				<h1>Sorbet Dashboard</h1>
+				<p>
+					Welcome to the Sorbet Dashboard.
+				</p>
+				<p>
+					A heavy error occured, it seems as your Browser
+					is not supported!
+				</p>
+				<p>
+					Please use Google Chrome or SRWare Iron, as the
+					debugging features are way over the top compared
+					to other Browsers on the market.
+				</p>
+			</article> 
+
+		</section>
+
+	</main>
+
+	<footer id="ui-footer">
+		<ul id="ui-notifications" title="Notifications"></ul>
+	</footer>
+
+
+	<script src="/ui.js"></script>
+	<script>
+	(function(global, ui) {
+
+		var width = global.innerWidth;
+		if (width < 580) {
+			ui.toggle('main > nav, main > section', [ 'default', 'active' ]);
+		}
+
+		ui.notify('Booting Up...', 'notification');
+
+	})(this, this.ui);
+
+	(function(lychee, global) {
+
+		var environment = new lychee.Environment({
+			id:      'dashboard',
+			debug:   true,
+			sandbox: false,
+			build:   'dashboard.Main',
+			packages: [
+				new lychee.Package('dashboard', './lychee.pkg')
+			],
+			tags:     {
+				platform: [ 'html' ]
+			}
+		});
+
+		environment.inject(lychee.ENVIRONMENTS['lychee/html/main']);
+		environment.inject(lychee.ENVIRONMENTS['sorbet/html/core']);
+		environment.inject(lychee.ENVIRONMENTS['sorbet/html/api']);
+
+
+		lychee.setEnvironment(environment);
+
+		lychee.init(function(sandbox) {
+
+			var lychee    = sandbox.lychee;
+			var dashboard = sandbox.dashboard;
+			var sorbet    = sandbox.sorbet;
+			var ui        = global.ui;
+			var settings  = {
+				client: {
+					host: location.host.split(':')[0],
+					port: parseInt(location.host.split(':')[1] || '80', 10) || 80
+				}
+			};
+
+
+			// This allows using #MAIN in JSON files
+			sandbox.MAIN = new dashboard.Main(settings);
+			sandbox.MAIN.init();
+
+		});
+
+	})(lychee, typeof global !== 'undefined' ? global : this);
+	</script>
+</body>
+</html>

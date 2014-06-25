@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+	<title>LycheeJS Pong Game (Tutorial)</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+	<style>
+		.lychee-Renderer-canvas {
+			display: block;
+			margin: 20px auto;
+		}
+	</style>
+
+</head>
+<body>
+<script>
+/*
+ * INITIALIZATION
+ */
+
+(function(lychee, global) {
+
+	var environment = new lychee.Environment({
+		debug:    true,
+		sandbox:  false,
+		build:    'game.Main',
+		packages: [
+			new lychee.Package('game', '../lychee.pkg')
+		],
+		tags:     {
+			platform: [ 'html' ]
+		}
+	});
+
+
+	lychee.setEnvironment(environment);
+
+	lychee.init(function(sandbox) {
+
+		var lychee = sandbox.lychee;
+		var game   = sandbox.game;
+
+		// This allows using #MAIN in JSON files
+		sandbox.MAIN = new game.Main();
+		sandbox.MAIN.load();
+
+	});
+
+})(lychee, typeof global !== 'undefined' ? global : this);
+</script>
+</body>
+</html>    

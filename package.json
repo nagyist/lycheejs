@@ -1,0 +1,32 @@
+{
+	"name":        "lycheejs",
+	"author":      "LazerUnicorns Ltd.",
+	"license":     "MIT",
+	"version":     "0.8.2",
+	"description": "Environment-Independent Cross-Platform JavaScript engine (NodeJS, NodeJS SDL2, HTML5, Apache Cordova, WebGL, native OpenGL)",
+
+	"keywords": [
+		"game",
+		"engine",
+		"nodejs",
+		"webgl",
+		"opengl",
+		"cordova",
+		"android",
+		"ios",
+		"libsdl"
+	],
+
+	"main":           "./lychee/build/nodejs/core.js",
+	"readmeFilename": "README.md",
+
+	"scripts": {
+		"postinstall": "./tool/configure.js"
+	},
+
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/LazerUnicorns/lycheeJS"
+	}
+
+}

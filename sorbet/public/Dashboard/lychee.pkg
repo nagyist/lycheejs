@@ -1,0 +1,48 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"data": {
+				"Font": [ "js" ]
+			},
+
+			"net": {
+				"Client":  [ "js" ],
+				"Storage": [ "js" ]
+			},
+
+			"state": {
+				"Project":    [ "js", "tpl" ],
+				"FontEditor": [ "js", "settings.tpl", "preview.tpl" ],
+				"Welcome":    [ "js", "tpl" ]
+			},
+
+			"Main":   [ "js", "css" ]
+
+		}
+
+	}
+
+}

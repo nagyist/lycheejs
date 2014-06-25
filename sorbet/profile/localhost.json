@@ -1,0 +1,35 @@
+{
+
+	"port": 8080,
+
+	"api": {
+
+		"Blacklist":   "sorbet.api.remote.Blacklist",
+		"Debugger":    "sorbet.api.remote.Debugger",
+		"Log":         "sorbet.api.remote.Log",
+		"Project":     "sorbet.api.remote.Project",
+		"Server":      "sorbet.api.remote.Server",
+		"VirtualHost": "sorbet.api.remote.VirtualHost"
+
+	},
+
+	"module": {
+
+		"Blacklist":   "sorbet.module.Blacklist",
+		"Fertilizer":  "sorbet.module.Fertilizer",
+		"Log":         "sorbet.module.Log",
+		"Server":      "sorbet.module.Server",
+		"Honey":       "sorbet.module.Honey"
+
+	},
+
+	"vhosts": [{
+		"hosts": [
+			"localhost"
+		],
+		"config": {
+			"root": "%root%"
+		}
+	}]
+
+}
