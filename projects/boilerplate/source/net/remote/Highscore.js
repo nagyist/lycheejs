@@ -18,7 +18,15 @@ lychee.define('game.net.remote.Highscore').requires([
 	var _on_save = function(data) {
 
 		if (data instanceof Object) {
-			this.storage.insert(data);
+
+			var object = this.storage.create();
+
+			object.user  = data.user;
+			object.score = data.score;
+			object.time  = Date.now();
+
+			this.storage.insert(object);
+
 		}
 
 	};
@@ -50,28 +58,15 @@ lychee.define('game.net.remote.Highscore').requires([
 					event: 'sync'
 				});
 
+				this.multicast({
+					event:   'sync',
+					objects: objects
+				});
+
 			}
 
-		}, this, true);
-
-		this.storage.bind('sync', function(objects) {
-
-			this.multicast({
-				event:   'sync',
-				objects: objects
-			});
-
 		}, this);
 
-		this.storage.bind('insert', function(index, object) {
-
-			this.multicast({
-				event:  'insert',
-				index:  index,
-				object: object
-			});
-
-		}, this);
 
 		// Force new sync
 		this.storage.sync();

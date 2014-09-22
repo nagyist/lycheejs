@@ -54,6 +54,26 @@ lychee.define('game.Main').requires([
 
 		lychee.game.Main.call(this, settings);
 
+
+		this.bind('init', function() {
+
+			var settings = this.settings.gamerenderer;
+			if (settings instanceof Object) {
+				this.renderer = new game.Renderer(settings);
+			}
+
+			this.camera     = new game.Camera(this);
+			this.compositor = new game.Compositor(this);
+			this.reshape();
+
+			this.renderer.setCamera(this.camera);
+			this.renderer.setCompositor(this.compositor);
+
+			this.setState('game', new game.state.Game(this));
+			this.changeState('game', { track: 'valley' });
+
+		}, this, true);
+
 	};
 
 
@@ -63,34 +83,6 @@ lychee.define('game.Main').requires([
 
 			this.camera.reshape();
 			this.compositor.reshape();
-
-		},
-
-		init: function() {
-
-			lychee.game.Main.prototype.init.call(this);
-
-
-			var settings = this.settings.gamerenderer;
-			if (settings instanceof Object) {
-				this.renderer = new game.Renderer(settings);
-			}
-
-			this.camera     = new game.Camera(this);
-			this.compositor = new game.Compositor(this);
-
-			this.reshape();
-
-
-			this.renderer.setCamera(this.camera);
-			this.renderer.setCompositor(this.compositor);
-
-
-			this.setState('game', new game.state.Game(this));
-
-			this.changeState('game', {
-				track: 'valley'
-			});
 
 		}
 

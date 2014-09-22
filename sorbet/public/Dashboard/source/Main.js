@@ -2,8 +2,9 @@
 lychee.define('dashboard.Main').requires([
 	'dashboard.net.Client',
 	'dashboard.net.Storage',
-	'dashboard.state.FontEditor',
+	'dashboard.state.Font',
 	'dashboard.state.Project',
+	'dashboard.state.Sprite',
 	'dashboard.state.Welcome'
 ]).includes([
 	'lychee.game.Main'
@@ -157,9 +158,10 @@ lychee.define('dashboard.Main').requires([
 			lychee.game.Main.prototype.init.call(this);
 
 
-			this.setState('fonteditor', new dashboard.state.FontEditor(this));
-			this.setState('project',    new dashboard.state.Project(this));
-			this.setState('welcome',    new dashboard.state.Welcome(this));
+			this.setState('font',    new dashboard.state.Font(this));
+			this.setState('project', new dashboard.state.Project(this));
+			this.setState('sprite',  new dashboard.state.Sprite(this));
+			this.setState('welcome', new dashboard.state.Welcome(this));
 
 			this.changeState('welcome');
 			this.render();

@@ -179,10 +179,11 @@
 
 			var path    = _path.resolve(_root, './lychee/build/' + platform + '/core.js');
 			var message = 'Building "' + path + '"';
+			var result  = false;
 
 			if (_fs.existsSync(path) === true) {
 
-				var result = true;
+				result = true;
 
 				try {
 					_fs.writeFileSync(path, code, 'utf8');
@@ -196,7 +197,7 @@
 
 				if (_mkdir_p(_path.resolve(_root, './lychee/build/' + platform)) === true) {
 
-					var result = true;
+					result = true;
 
 					try {
 						_fs.writeFileSync(path, code, 'utf8');

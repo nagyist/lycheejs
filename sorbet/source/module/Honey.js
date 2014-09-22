@@ -53,7 +53,9 @@ lychee.define('sorbet.module.Honey').requires([
 
 			var module = _get_module(data);
 			if (module !== null) {
+
 				return module.process(vhost, response, data);
+
 			}
 
 

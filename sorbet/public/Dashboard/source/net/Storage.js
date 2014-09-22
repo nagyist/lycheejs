@@ -99,7 +99,7 @@ lychee.define('dashboard.net.Storage').requires([
 					service.bind('#sync', _on_sync, that);
 				}
 
-			};
+			}
 
 		}
 

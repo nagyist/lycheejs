@@ -204,7 +204,7 @@ lychee.define('Input').tags({
 			if (methods.length === 0) {
 				console.error('lychee.Input: Supported methods are NONE');
 			} else {
-				console.log('lychee.Input: Supported methods are ' + methods.join(', '));
+				console.info('lychee.Input: Supported methods are ' + methods.join(', '));
 			}
 
 		}

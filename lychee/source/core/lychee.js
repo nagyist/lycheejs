@@ -1,30 +1,4 @@
 
-/*
- * POLYFILLS
- */
-
-if (typeof console.log !== 'undefined') {
-
-	if (typeof console.group === 'undefined') {
-
-		console.group = function(title) {
-			this.log.call(this, '~ ~ ~ ' + title + ' ~ ~ ~');
-		};
-
-	}
-
-	if (typeof console.groupEnd === 'undefined') {
-
-		console.groupEnd = function() {
-			this.log.call(this, '~ ~ ~ ~ ~ ~');
-		};
-
-	}
-
-}
-
-
-
 lychee = typeof lychee !== 'undefined' ? lychee : (function(global) {
 
 	/*

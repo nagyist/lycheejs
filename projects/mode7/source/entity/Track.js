@@ -16,6 +16,11 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 	}
 
 
+
+	/*
+	 * HELPERS
+	 */
+
 	var _parse_track = function(track, data) {
 
 		if (data instanceof Object === false) {
@@ -26,7 +31,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 		var raw;
 
 
-		for (var p = 0, l = data.palette.length; p < l; p++) {
+		for (var p = 0, pl = data.palette.length; p < pl; p++) {
 
 			raw = data.palette[p];
 
@@ -46,7 +51,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 
 		var lastaltitude = 0;
 
-		for (var r = 0, l = data.route.length; r < l; r++) {
+		for (var r = 0, rl = data.route.length; r < rl; r++) {
 
 			var type     = data.route[r][0];
 			var length   = data.route[r][1] || 1;
@@ -90,6 +95,100 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 
 	};
 
+	var _render_segment = function(renderer, x1, y1, w1, x2, y2, w2, palette) {
+
+		var lanes = 4;
+
+		var r1 = w1 / Math.max(6,  2 * lanes);
+		var r2 = w2 / Math.max(6,  2 * lanes);
+		var l1 = w1 / Math.max(32, 8 * lanes);
+		var l2 = w2 / Math.max(32, 8 * lanes);
+
+
+		if (palette.terrain !== null) {
+
+			var width = renderer.width;
+
+			renderer.drawBox(
+				0,
+				y2,
+				0  + width,
+				y2 + (y1 - y2),
+				palette.terrain,
+				true
+			);
+
+		}
+
+
+		if (palette.rumble !== null) {
+
+			renderer.drawPolygon(
+				4,
+				x1 - w1 - r1, y1,
+				x1 - w1,      y1,
+				x2 - w2,      y2,
+				x2 - w2 - r2, y2,
+				palette.rumble,
+				true
+			);
+
+			renderer.drawPolygon(
+				4,
+				x1 + w1 + r1, y1,
+				x1 + w1,      y1,
+				x2 + w2,      y2,
+				x2 + w2 + r2, y2,
+				palette.rumble,
+				true
+			);
+
+		}
+
+		if (palette.road !== null) {
+
+			renderer.drawPolygon(
+				4,
+				x1 - w1, y1,
+				x1 + w1, y1,
+				x2 + w2, y2,
+				x2 - w2, y2,
+				palette.road,
+				true
+			);
+
+		}
+
+		if (palette.lane !== null) {
+
+			var lw1 = w1 * 2 / lanes;
+			var lw2 = w2 * 2 / lanes;
+			var lx1 = x1 - w1 + lw1;
+			var lx2 = x2 - w2 + lw2;
+
+			for (var l = 1; l < lanes; lx1 += lw1, lx2 += lw2, l++) {
+
+				renderer.drawPolygon(
+					4,
+					lx1 - l1/2, y1,
+					lx1 + l1/2, y1,
+					lx2 + l2/2, y2,
+					lx2 - l2/2, y2,
+					palette.lane,
+					true
+				);
+
+			}
+
+		}
+
+	};
+
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(id) {
 
@@ -137,10 +236,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 
 			var segments = this.__segments;
 
-			if (
-				   camera !== null
-				&& compositor !== null
-			) {
+			if (camera !== null && compositor !== null) {
 
 				var depth    = camera.depth;
 				var position = camera.position;
@@ -186,12 +282,9 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 					dx += segment.curviness;
 
 
-					if (
-						   from.y >= lasty
-						&& to.y <= lasty
-					) {
+					if (from.y >= lasty && to.y <= lasty) {
 
-						this.__renderSegment(
+						_render_segment(
 							renderer,
 							from.x, from.y, from.w,
 							to.x,   to.y,   to.w,
@@ -201,95 +294,6 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 						lasty = to.y;
 
 					}
-
-				}
-
-			}
-
-		},
-
-		__renderSegment: function(renderer, x1, y1, w1, x2, y2, w2, palette) {
-
-			var lanes = 4;
-
-			var r1 = w1 / Math.max(6,  2 * lanes);
-			var r2 = w2 / Math.max(6,  2 * lanes);
-			var l1 = w1 / Math.max(32, 8 * lanes);
-			var l2 = w2 / Math.max(32, 8 * lanes);
-
-
-			if (palette.terrain !== null) {
-
-				var width = renderer.width;
-
-				renderer.drawBox(
-					0,
-					y2,
-					0 + width,
-					y2 + (y1 - y2),
-					palette.terrain,
-					true
-				);
-
-			}
-
-
-			if (palette.rumble !== null) {
-
-				renderer.drawPolygon(
-					4,
-					x1 - w1 - r1, y1,
-					x1 - w1,      y1,
-					x2 - w2,      y2,
-					x2 - w2 - r2, y2,
-					palette.rumble,
-					true
-				);
-
-				renderer.drawPolygon(
-					4,
-					x1 + w1 + r1, y1,
-					x1 + w1,      y1,
-					x2 + w2,      y2,
-					x2 + w2 + r2, y2,
-					palette.rumble,
-					true
-				);
-
-			}
-
-			if (palette.road !== null) {
-
-				renderer.drawPolygon(
-					4,
-					x1 - w1,    y1,
-					x1 + w1,    y1,
-					x2 + w2,    y2,
-					x2 - w2,    y2,
-					palette.road,
-					true
-				);
-
-			}
-
-			if (palette.lane !== null) {
-
-				var lw1 = w1 * 2 / lanes;
-				var lw2 = w2 * 2 / lanes;
-				var lx1 = x1 - w1 + lw1;
-				var lx2 = x2 - w2 + lw2;
-
-				for (var l = 1; l < lanes; lx1 += lw1, lx2 += lw2, l++) {
-
-					renderer.drawPolygon(
-						4,
-						lx1 - l1/2, y1,
-						lx1 + l1/2, y1,
-						lx2 + l2/2, y2,
-						lx2 - l2/2, y2,
-						palette.lane,
-						true
-					);
 
 				}
 

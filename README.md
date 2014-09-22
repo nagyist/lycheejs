@@ -1,15 +1,5 @@
 
-### Work-in-progress features for next minor release v0.8.3
-
-- Debugger integration to Dashboard
-- html-webgl platform finalization (webgl2d refactor)
-- html-cordova platform finalization
-- Game Boilerplate needs broadcast demo *Touch to create random Highscore*
-- Automatized APIdoc generation
-- Automatized Fuzz test suite
-
-
-# lycheeJS (v0.8.2)
+# lycheeJS (v0.8.3)
 
 lycheeJS is a JavaScript Game library that offers a
 complete solution for prototyping and deployment
@@ -20,99 +10,139 @@ The development process is optimized for Google Chrome
 and its developer tools.
 
 
-# Installation
+## Installation
 
-- Download and install the newest stable release of NodeJS from [nodejs.org](http://nodejs.org).
+### 0. Requirements
 
-- Download lycheeJS via [zip-file](https://github.com/LazerUnicorns/lycheeJS/archive/master.zip)
+The *client-side* lycheeJS Engine Stack is supporting
+all Operating Systems that can execute JavaScript.
+
+The *server-side* CDN, CI-, Web-, and Websocket Stack though
+is only supporting Linux and Mac OSX due to sandboxing and
+cross-compilation reasons. Windows also can't support SPDY
+and WebSocket extensions without routing issues.
+
+Always remember, there's no client-side and server-side
+whatsoever, because all the network components can be used
+on either side and peer-to-peer.
+
+### 1. Download
+
+- Download and install the newest stable release of
+NodeJS from [nodejs.org](http://nodejs.org).
+
+- Install lycheeJS via [zip-file](https://github.com/LazerUnicorns/lycheeJS/archive/master.zip)
 and extract its contents to **~/lycheeJS**.
+Make sure the lycheeJS-master folder contained in the
+zip-file is renamed to lycheeJS to follow up with the
+tutorials.
 
-### < Important >
+### 2. Configuration
 
-The *nodejs* command on Linux is the new NodeJS version (with included npm).
-You should always use that on Linux, because *node* is probably an old NodeJS build.
-Other operating systems may use the *node* command, so you might to replace it there accordingly.
-
-The port range 0-1024 is reserved for root user. To prevent running nodejs as root
-(for exploit and remote shell prevention reasons), you might want to allow nodejs to
-bind to those ports in production to serve port 80 successfully without getting an
-*EACCESS* error.
+- The port range 0-1024 is reserved for root user by default.
+It is NOT recommended to run nodejs as root user in order to
+prevent exploits or remote shell processes. You need to
+allow nodejs to bind those ports in production to serve
+port 80 successfully without getting the **EACCESS** error.
 
 ```bash
-
-# DO NOT EXECUTE THIS IF YOU DON'T KNOW WHAT IT DOES. READ ABOVE
-
-user@box:~$ which nodejs
-/usr/bin/nodejs
-user@box:~$ sudo setcap cap_net_bind_service=+ep /usr/bin/nodejs
-user@box:~$ sudo getcap /usr/bin/nodejs
-/usr/bin/nodejs = cap_net_bind_service+ep
+user@box:~$ which node;
+/usr/bin/node
+user@box:~$ sudo setcap cap_net_bind_service=+ep /usr/bin/node;
+user@box:~$ sudo getcap /usr/bin/node;
+/usr/bin/node = cap_net_bind_service+ep
 ```
 
-### < / Important >
-
-
-- Navigate to the folder in the shell (or PowerShell) and execute the configure script
-to build the lycheeJS core:
+- Navigate to the **~/lycheeJS** folder in Bash and execute
+the configure script to build the lycheeJS core.
 
 ```bash
 cd ~/lycheeJS;
 nodejs ./tool/configure.js; # Important: current working directory is lycheeJS root folder
 ```
 
-- After building the core, you are ready to go. Start Sorbet via:
+### 3. Start Sorbet
+
+- After building the core, you are ready to go. Start Sorbet.
 
 ```bash
 cd ~/lycheeJS;
-nodejs ./tool/Sorbet.js localhost; # see ./sorbet/profile folder for alternative profiles
+npm start;
+
+# Using sorbet itself (identical to npm start):
+# nodejs ./tool/Sorbet.js start --profile="./sorbet/profile/localhost.json";
 ```
 
-- Open your Web Browser, navigate to **http://localhost:8080** or try out the Dashboard
-at [http://dashboard.lycheejs.org](http://dashboard.lycheejs.org) and have fun :)
+- Open your Web Browser and navigate to **http://localhost:8080**
+to open the lycheeJS Dashboard. Those games show you how
+to develop real cross-platform games and the best practices
+in JavaScript code. [Link to projects folder](./projects)
 
-Those games show you how to develop real cross-platform games and the best practices
-in high-performant JavaScript code. [Link to projects folder](./projects)
+- If you want to add a script to run the webserver forever,
+take a look at the *package.json / scripts* section.
+
+```bash
+# Don't execute this. It's identical with npm start, but will run forever
+# npm run-script localhost
+```
 
 
-# Getting Started
+## Getting Started
 
-**Note**: A project's server is a websocket server, no webserver.
-
+First of all, a project's server is a websocket server, not a webserver.
 The best way to get started is to clone the Boilerplate.
 
 ```bash
 cd ~/lycheeJS/projects;
-cp -R ./boilerplate ./myproject; # Replace myproject with your unique name
+cp -R ./boilerplate ./myproject; # Replace myproject with a unique name
 ```
 
-Each project has a unique identifier (e.g. /projects/boilerplate has the identifier **boilerplate**).
-This identifier is used to integrate the project with:
+Each project has a unique identifier (e.g. /projects/boilerplate has the
+identifier **boilerplate**). A project's folder name is equivalent to
+its unique identifier.
 
-- sorbet.net.remote.Debugger (Remote Debugger Service)
-- sorbet.net.remote.Session (Remote Session Service)
-- sorbet.module.Fertilizer (Continous Integration Cross-Compiler Build Service)
-- sorbet.module.Server (Server Auto-Configuration Service and REST API)
-- sorbet.module.Log (Project Statistics Service and REST API)
-
-In order to integrate your project with all these capabilities and the Dashboard,
-you will have to modify the game.Main's settings.client property accordingly.
-A project's folder name is equivalent to its unique identifier.
-
+This identifier is used to integrate the project with sorbet's remote
+debugging and continous integration components. In order to integrate
+your project with all these capabilities and the Dashboard, you will
+have to modify the game.Main's settings.client property accordingly.
 
 ```javascript
   var settings = {
-    // ./projects/myproject/source/Main.js#L19
-    client: '/api/server?identifier=myproject', // Replace myproject with the correct identifier
+    // ./projects/myproject/source/Main.js#L16
+    client: '/api/server?identifier=boilerplate', // Replace boilerplate with correct identifier
   };
 ```
 
+It is wise to change the identifier of the lychee.Environment
+in order to find debugging reports in the remote debugger and the
+lycheeJS Dashboard.
 
-# Documentation
+```html
+  var environment = new lychee.Environment({
+    // ./projects/myproject/source/index.html#L48
+	id: 'boilerplate', // Replace boilerplate with correct identifier
+  });
+```
+
+
+## Documentation
 
 The documentation is available online at [http://lycheejs.org/docs](http://lycheejs.org/docs).
 
 
-# Other (unsupported) JavaScript Runtimes
+## Roadmap
+
+You want to see what kind of fancy features will arrive next?
+Please take a look at the [ROADMAP.md](ROADMAP.md) file.
+
+
+## Contribution
+
+You want to contribute to the project?
+Please take a look at the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+
+## Other (unsupported) JavaScript Runtimes
 
 The lycheeJS architecture is independent of the environment which
 means it will run on any theoretical JavaScript environment.
@@ -130,18 +160,8 @@ These implementations are fully optional and only necessary if you are using
 them inside your Game or App.
 
 
-# Other (non-Sorbet) Web Server Environments
+## License
 
-The lycheeJS architecture depends on different file types served as **application/json**.
-These file types are:
-
-- **Attachment.fnt**: Font Serialization Objects
-- **lychee.env**: A Serialization Object used for [lychee.Enviroment](http://lycheejs.org/docs/api-lychee-Environment.html)
-- **lychee.pkg**: A Serialization Object used for [lychee.Package](http://lycheejs.org/docs/api-lychee-Package.html)
-- **lychee.store**: A Serialization Object used for [lychee.Storage](http://lycheejs.org/docs/api-lychee-Storage.html)
-
-
-# License
-
-The lycheeJS framework is licensed under MIT License.
+The lycheeJS framework is licensed under the MIT License.
+The projects and demos are licensed under the CC0 (public domain) License.
 

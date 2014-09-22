@@ -62,16 +62,16 @@ lychee.define('sorbet.module.honey.Robots').exports(function(lychee, sorbet, glo
 		}
 
 
+		content += '\n';
 		content += 'User-agent: *' + '\n';
 
 		for (var u = 0, ul = urls.length; u < ul; u++) {
 			content += 'Disallow: ' + urls[u] + '\n';
 		}
 
-		content += 'User-agent: Googlebot' + '\n';
-		content += 'Disallow: /Dashboard/*';
-
 		content += '\n';
+		content += 'User-agent: Googlebot'  + '\n';
+		content += 'Disallow: /Dashboard/*' + '\n';
 
 
 		response.status                 = 200;

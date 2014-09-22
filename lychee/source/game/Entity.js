@@ -2,6 +2,77 @@
 lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 
 	/*
+	 * HELPERS
+	 */
+
+	var _sphere_sphere = function(a, b) {
+
+		var dx  = Math.sqrt(Math.pow(b.position.x - a.position.x, 2));
+		var dy  = Math.sqrt(Math.pow(b.position.y - a.position.y, 2));
+		var dz  = Math.sqrt(Math.pow(b.position.z - a.position.z, 2));
+
+		var rxy = 0;
+		var rxz = 0;
+
+		if (a.shape === Class.SHAPE.sphere) {
+			rxy += a.radius;
+			rxz += a.radius;
+		}
+
+		if (b.shape === Class.SHAPE.sphere) {
+			rxy += b.radius;
+			rxz += b.radius;
+		}
+
+		return ((dx + dy) <= rxy && (dx + dz) <= rxz);
+
+	};
+
+	var _sphere_cuboid = function(a, b) {
+
+		var r  = a.radius;
+		var hw = b.width  / 2;
+		var hh = b.height / 2;
+		var hd = b.depth  / 2;
+
+		var ax = a.position.x;
+		var ay = a.position.y;
+		var az = a.position.z;
+
+		var bx = b.position.x;
+		var by = b.position.y;
+		var bz = b.position.z;
+
+		var colx = (ax + r >= bx - hw) && (ax - r <= bx + hw);
+		var coly = (ay + r >= by - hh) && (ay - r <= by + hh);
+
+		if (a.shape === Class.SHAPE.circle) {
+			r = 0;
+		}
+
+		var colz = (az + r >= bz - hd) && (az - r <= bz + hd);
+
+		return (colx && coly && colz);
+
+	};
+
+	var _cuboid_cuboid = function(a, b) {
+
+		var dx = Math.abs(b.position.x - a.position.x);
+		var dy = Math.abs(b.position.y - a.position.y);
+		var dz = Math.abs(b.position.z - a.position.z);
+
+		var hw = (a.width  + b.width)  / 2;
+		var hh = (a.height + b.height) / 2;
+		var hd = (a.depth  + b.depth)  / 2;
+
+		return (dx <= hw && dy <= hh && dz <= hd);
+
+	};
+
+
+
+	/*
 	 * IMPLEMENTATION
 	 */
 
@@ -18,21 +89,15 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 		this.depth  = typeof settings.depth  === 'number' ? settings.depth  : 0;
 		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
 
+		this.alpha     = 1;
 		this.collision = Class.COLLISION.none;
+		this.effects   = [];
 		this.shape     = Class.SHAPE.rectangle;
 		this.state     = _default_state;
 		this.position  = { x: 0, y: 0, z: 0 };
 		this.velocity  = { x: 0, y: 0, z: 0 };
 
 		this.__states  = _default_states;
-		this.__tween   = {
-			active:       false,
-			type:         Class.TWEEN.linear,
-			start:        null,
-			duration:     0,
-			fromposition: { x: 0, y: 0, z: 0 },
-			toposition:   { x: 0, y: 0, z: 0 }
-		};
 
 
 		if (settings.states instanceof Object) {
@@ -50,19 +115,13 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 		}
 
 
-		// Reuse this cache for performance relevant methods
-		this.__cache = {
-			tween:    { x: 0, y: 0, z: 0 },
-			velocity: { x: 0, y: 0, z: 0 }
-		};
-
-
+		this.setAlpha(settings.alpha);
 		this.setCollision(settings.collision);
 		this.setShape(settings.shape);
 		this.setState(settings.state);
 		this.setPosition(settings.position);
-		this.setTween(settings.tween);
 		this.setVelocity(settings.velocity);
+
 
 		settings = null;
 
@@ -81,19 +140,9 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 	// Same ENUM values as lychee.ui.Entity
 	Class.SHAPE = {
 		circle:    0,
-		sphere:    1,
-		rectangle: 2,
-		cuboid:    3,
-		polygon:   4
-	};
-
-
-	Class.TWEEN = {
-		linear:        0,
-		easein:        1,
-		easeout:       2,
-		bounceeasein:  3,
-		bounceeaseout: 4
+		rectangle: 1,
+		sphere:    2,
+		cuboid:    3
 	};
 
 
@@ -115,9 +164,10 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 			if (this.depth  !== 0) settings.depth  = this.depth;
 			if (this.radius !== 0) settings.radius = this.radius;
 
+			if (this.alpha !== 1)                         settings.alpha     = this.alpha;
 			if (this.collision !== Class.COLLISION.none)  settings.collision = this.collision;
-			if (this.shape     !== Class.SHAPE.rectangle) settings.shape     = this.shape;
-			if (this.state     !== _default_state)        settings.state     = this.state;
+			if (this.shape !== Class.SHAPE.rectangle)     settings.shape     = this.shape;
+			if (this.state !== _default_state)            settings.state     = this.state;
 			if (this.__states !== _default_states)        settings.states    = this.__states;
 
 
@@ -151,141 +201,57 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 		},
 
 		// HINT: Renderer skips if no render() method exists
-		// render: function(renderer, offsetX, offsetY) {},
+		render: function(renderer, offsetX, offsetY) {
+
+			var effects = this.effects;
+			for (var e = 0, el = this.effects.length; e < el; e++) {
+				this.effects[e].render(renderer, offsetX, offsetY);
+			}
+
+		},
 
 		update: function(clock, delta) {
 
-			// 1. Sync clocks initially
-			// (if Entity was created before loop started)
-			if (this.__tween.active === true && this.__tween.start === null) {
-				this.__tween.start = clock;
-			}
-
-
-			var cache;
-
-
-			var tween = this.__tween;
-
-			// 2. Tweening
-			if (tween.active === true) {
-
-				var t = (clock - tween.start) / tween.duration;
-				if (t <= 1) {
-
-					var type = tween.type;
-					var from = tween.fromposition;
-					var to   = tween.toposition;
-
-					var f  = 0;
-					var dx = to.x - from.x;
-					var dy = to.y - from.y;
-					var dz = to.z - from.z;
-
-
-					cache = this.__cache.tween;
-
-
-					if (type === Class.TWEEN.linear) {
-
-						cache.x = from.x + t * dx;
-						cache.y = from.y + t * dy;
-						cache.z = from.z + t * dz;
-
-					} else if (type === Class.TWEEN.easein) {
-
-						f = 1 * Math.pow(t, 3);
-
-						cache.x = from.x + f * dx;
-						cache.y = from.y + f * dy;
-						cache.z = from.z + f * dz;
-
-					} else if (type === Class.TWEEN.easeout) {
-
-						f = Math.pow(t - 1, 3) + 1;
-
-						cache.x = from.x + f * dx;
-						cache.y = from.y + f * dy;
-						cache.z = from.z + f * dz;
-
-					} else if (type === Class.TWEEN.bounceeasein) {
-
-						var k = 1 - t;
-
-						if ((k /= 1) < ( 1 / 2.75 )) {
-							f = 1 * ( 7.5625 * Math.pow(k, 2) );
-						} else if (k < ( 2 / 2.75 )) {
-							f = 7.5625 * ( k -= ( 1.5   / 2.75 )) * k + 0.75;
-						} else if (k < ( 2.5 / 2.75 )) {
-							f = 7.5625 * ( k -= ( 2.25  / 2.75 )) * k + 0.9375;
-						} else {
-							f = 7.5625 * ( k -= ( 2.625 / 2.75 )) * k + 0.984375;
-						}
-
-						cache.x = from.x + (1 - f) * dx;
-						cache.y = from.y + (1 - f) * dy;
-						cache.z = from.z + (1 - f) * dz;
-
-					} else if (type === Class.TWEEN.bounceeaseout) {
-
-						if ((t /= 1) < ( 1 / 2.75 )) {
-							f = 1 * ( 7.5625 * Math.pow(t, 2) );
-						} else if (t < ( 2 / 2.75 )) {
-							f = 7.5625 * ( t -= ( 1.5   / 2.75 )) * t + 0.75;
-						} else if (t < ( 2.5 / 2.75 )) {
-							f = 7.5625 * ( t -= ( 2.25  / 2.75 )) * t + 0.9375;
-						} else {
-							f = 7.5625 * ( t -= ( 2.625 / 2.75 )) * t + 0.984375;
-						}
-
-						cache.x = from.x + f * dx;
-						cache.y = from.y + f * dy;
-						cache.z = from.z + f * dz;
-
-					}
-
-
-					this.setPosition(cache);
-
-				} else {
-
-					this.setPosition(tween.toposition);
-					tween.active = false;
-
-				}
-
-			}
-
-
 			var velocity = this.velocity;
 
-			// 3. Velocity
 			if (velocity.x !== 0 || velocity.y !== 0 || velocity.z !== 0) {
 
-				cache = this.__cache.velocity;
-
-
-				cache.x = this.position.x;
-				cache.y = this.position.y;
-				cache.z = this.position.z;
+				var x = this.position.x;
+				var y = this.position.y;
+				var z = this.position.z;
 
 
 				var vt = delta / 1000;
 
 				if (velocity.x !== 0) {
-					cache.x += velocity.x * vt;
+					x += velocity.x * vt;
 				}
 
 				if (velocity.y !== 0) {
-					cache.y += velocity.y * vt;
+					y += velocity.y * vt;
 				}
 
 				if (velocity.z !== 0) {
-					cache.z += velocity.z * vt;
+					z += velocity.z * vt;
 				}
 
 
-				this.setPosition(cache);
+				this.position.x = x;
+				this.position.y = y;
+				this.position.z = z;
+
+			}
+
+
+			var effects = this.effects;
+			for (var e = 0, el = this.effects.length; e < el; e++) {
+
+				var effect = this.effects[e];
+				if (effect.update(this, clock, delta) === false) {
+					this.removeEffect(effect);
+					el--;
+					e--;
+				}
 
 			}
 
@@ -346,52 +312,44 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 			}
 
 
-			var shapeA = this.shape;
-			var shapeB = entity.shape;
-			var posA   = this.position;
-			var posB   = entity.position;
-			var colX   = false;
-			var colY   = false;
+			var circle    = Class.SHAPE.circle;
+			var sphere    = Class.SHAPE.sphere;
+			var rectangle = Class.SHAPE.rectangle;
+			var cuboid    = Class.SHAPE.cuboid;
+
+			var shapeA    = this.shape;
+			var shapeB    = entity.shape;
+
+			var issphereA = shapeA === circle    || shapeA === sphere;
+			var issphereB = shapeB === circle    || shapeB === sphere;
+			var iscuboidA = shapeA === rectangle || shapeA === cuboid;
+			var iscuboidB = shapeB === rectangle || shapeB === cuboid;
+
+			if (issphereA && issphereB) {
+				return _sphere_sphere(this, entity);
+			} else if (iscuboidA && iscuboidB) {
+				return _cuboid_cuboid(this, entity);
+			} else if (issphereA && iscuboidB) {
+				return _sphere_cuboid(this, entity);
+			} else if (iscuboidA && issphereB) {
+				return _sphere_cuboid(entity, this);
+			}
 
 
-			var radius  = 0;
-			var hwidth  = 0;
-			var hheight = 0;
+			return false;
 
-			if (shapeA === Class.SHAPE.circle && shapeB === Class.SHAPE.circle) {
+		},
 
-				if (Math.sqrt(Math.pow(posB.x - posA.x, 2) + Math.pow(posB.y - posA.y, 2)) <= (this.radius + entity.radius)) {
-					return true;
-				}
+		setAlpha: function(alpha) {
 
-			} else if (shapeA === Class.SHAPE.circle && shapeB === Class.SHAPE.rectangle) {
+			alpha = (typeof alpha === 'number' && alpha >= 0 && alpha <= 1) ? alpha : null;
 
-				radius  = this.radius;
-				hwidth  = entity.width  / 2;
-				hheight = entity.height / 2;
-				colX    = (posA.x + radius > posB.x - hwidth)  && (posA.x - radius < posB.x + hwidth);
-				colY    = (posA.y + radius > posB.y - hheight) && (posA.y - radius < posB.y + hheight);
 
-				return colX && colY;
+			if (alpha !== null) {
 
-			} else if (shapeA === Class.SHAPE.rectangle && shapeB === Class.SHAPE.circle) {
+				this.alpha = alpha;
 
-				radius  = entity.radius;
-				hwidth  = this.width  / 2;
-				hheight = this.height / 2;
-				colX    = (posB.x + radius > posA.x - hwidth)  && (posB.x - radius < posA.x + hwidth);
-				colY    = (posB.y + radius > posA.y - hheight) && (posB.y - radius < posA.y + hheight);
-
-				return colX && colY;
-
-			} else if (shapeA === Class.SHAPE.rectangle && shapeB === Class.SHAPE.rectangle) {
-
-				hwidth  = Math.abs(posA.x - posB.x);
-				hheight = Math.abs(posA.y - posB.y);
-				colX    = hwidth  * 2 < (this.width  + entity.width);
-				colY    = hheight * 2 < (this.height + entity.height);
-
-				return colX && colY;
+				return true;
 
 			}
 
@@ -405,6 +363,91 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 			if (lychee.enumof(Class.COLLISION, collision)) {
 
 				this.collision = collision;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		addEffect: function(effect) {
+
+			effect = effect instanceof Object && typeof effect.update === 'function' ? effect : null;
+
+
+			if (effect !== null) {
+
+				var index = this.effects.indexOf(effect);
+				if (index === -1) {
+
+					this.effects.push(effect);
+
+					return true;
+
+				}
+
+			}
+
+
+			return false;
+
+		},
+
+		removeEffect: function(effect) {
+
+			effect = effect instanceof Object && typeof effect.update === 'function' ? effect : null;
+
+
+			if (effect !== null) {
+
+				var index = this.effects.indexOf(effect);
+				if (index !== -1) {
+
+					this.effects.splice(index, 1);
+
+					return true;
+
+				}
+
+			}
+
+
+			return false;
+
+		},
+
+		removeEffects: function() {
+
+			var effects = this.effects;
+
+			for (var e = 0, el = effects.length; e < el; e++) {
+
+				effects[e].update(this, Infinity, 0);
+				this.removeEffect(effects[e]);
+
+				el--;
+				e--;
+
+			}
+
+
+			return true;
+
+		},
+
+		setPosition: function(position) {
+
+			position = position instanceof Object ? position : null;
+
+
+			if (position !== null) {
+
+				this.position.x = typeof position.x === 'number' ? position.x : this.position.x;
+				this.position.y = typeof position.y === 'number' ? position.y : this.position.y;
+				this.position.z = typeof position.z === 'number' ? position.z : this.position.z;
 
 				return true;
 
@@ -450,65 +493,6 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 
 			return false;
 
-		},
-
-		setPosition: function(position) {
-
-			position = position instanceof Object ? position : null;
-
-
-			if (position !== null) {
-
-				this.position.x = typeof position.x === 'number' ? position.x : this.position.x;
-				this.position.y = typeof position.y === 'number' ? position.y : this.position.y;
-				this.position.z = typeof position.z === 'number' ? position.z : this.position.z;
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		setTween: function(settings) {
-
-			settings = settings instanceof Object ? settings : null;
-
-
-			if (settings !== null) {
-
-				var tween = this.__tween;
-
-				tween.type     = lychee.enumof(Class.TWEEN, settings.type) ? settings.type     : Class.TWEEN.linear;
-				tween.duration = typeof settings.duration === 'number'     ? settings.duration : 1000;
-
-				if (settings.position instanceof Object) {
-					tween.toposition.x = typeof settings.position.x === 'number' ? settings.position.x : this.position.x;
-					tween.toposition.y = typeof settings.position.y === 'number' ? settings.position.y : this.position.y;
-					tween.toposition.z = typeof settings.position.z === 'number' ? settings.position.z : this.position.z;
-				}
-
-				tween.fromposition.x = this.position.x;
-				tween.fromposition.y = this.position.y;
-				tween.fromposition.z = this.position.z;
-
-				tween.start  = null;
-				tween.active = true;
-
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		clearTween: function() {
-			this.__tween.active = false;
 		},
 
 		setVelocity: function(velocity) {

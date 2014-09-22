@@ -1,17 +1,17 @@
 
 /projects/*
 /projects/*/build
+/projects/*/lychee.store
 !/projects/README.md
+!/projects/blitzkrieg
 !/projects/boilerplate
-!/projects/dronecontrol
 !/projects/mode7
 !/projects/pong
 
 /lychee/build/*
 /lychee.store
 
-/sorbet/log
-/sorbet/pid
+/sorbet.log
 /sorbet/lychee.store
 /sorbet/build/*
 

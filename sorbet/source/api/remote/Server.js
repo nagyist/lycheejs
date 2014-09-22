@@ -15,8 +15,8 @@ lychee.define('sorbet.api.remote.Server').includes([
 
 		var server = project.server;
 		if (server !== null) {
-			host = server.host;
-			port = server.port;
+			host = server.host || null;
+			port = server.port || null;
 		}
 
 

@@ -107,7 +107,7 @@ lychee.define('lychee.game.Loop').includes([
 							);
 
 						} catch(err) {
-							lychee.Debugger.report(err, null);
+							lychee.Debugger.report(null, err, null);
 							this.stop();
 						} finally {
 							interval.clock = clock + interval.delta;
@@ -132,7 +132,7 @@ lychee.define('lychee.game.Loop').includes([
 							);
 
 						} catch(err) {
-							lychee.Debugger.report(err, null);
+							lychee.Debugger.report(null, err, null);
 							this.stop();
 						} finally {
 							delete this.__timeouts[tid];

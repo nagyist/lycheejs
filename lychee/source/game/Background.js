@@ -4,6 +4,27 @@ lychee.define('lychee.game.Background').includes([
 ]).exports(function(lychee, global) {
 
 	/*
+	 * HELPERS
+	 */
+
+	var _is_color = function(color) {
+
+		if (typeof color === 'string') {
+
+			if (color.match(/(#[AaBbCcDdEeFf0-9]{6})/) || color.match(/(#[AaBbCcDdEeFf0-9]{8})/)) {
+				return true;
+			}
+
+		}
+
+
+		return false;
+
+	};
+
+
+
+	/*
 	 * IMPLEMENTATION
 	 */
 
@@ -12,6 +33,7 @@ lychee.define('lychee.game.Background').includes([
 		var settings = lychee.extend({}, data);
 
 
+		this.color  = null;
 		this.origin = { x: 0, y: 0 };
 
 		this.__buffer  = null;
@@ -26,6 +48,7 @@ lychee.define('lychee.game.Background').includes([
 		 * INITIALIZATION
 		 */
 
+		this.setColor(settings.color);
 		this.setOrigin(settings.origin);
 
 		settings = null;
@@ -65,88 +88,113 @@ lychee.define('lychee.game.Background').includes([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var texture = this.texture;
-			var map     = this.getMap();
-			if (texture  === null || map === null) {
-				return;
+			var alpha    = this.alpha;
+			var color    = this.color;
+			var texture  = this.texture;
+			var position = this.position;
+			var map      = this.getMap();
+
+
+			var x1 = position.x + offsetX - this.width  / 2;
+			var y1 = position.y + offsetY - this.height / 2;
+			var x2 = x1 + this.width;
+			var y2 = y1 + this.height;
+
+
+			if (alpha !== 1) {
+				renderer.setAlpha(alpha);
 			}
 
 
-			if (this.__buffer === null) {
+			if (color !== null) {
 
-				this.__buffer = renderer.createBuffer(
-					this.width,
-					this.height
+				renderer.drawBox(
+					x1,
+					y1,
+					x2,
+					y2,
+					color,
+					true
 				);
 
-			}
+			} else if (texture !== null && map !== null) {
 
+				if (this.__buffer === null) {
 
-			var buffer = this.__buffer;
-
-			if (this.__isDirty === true) {
-
-				renderer.setBuffer(buffer);
-
-
-				if (map.w !== 0 && map.h !== 0 && (map.w <= this.width || map.h <= this.height)) {
-
-					var px = this.origin.x - map.w;
-					var py = this.origin.y - map.h;
-
-
-					while (px < this.width) {
-
-						py = this.origin.y - map.h;
-
-						while (py < this.height) {
-
-							renderer.drawSprite(
-								px,
-								py,
-								texture,
-								map
-							);
-
-							py += map.h;
-
-						}
-
-						px += map.w;
-
-					}
-
-				} else {
-
-					renderer.drawSprite(
-						0,
-						0,
-						texture,
-						map
+					this.__buffer = renderer.createBuffer(
+						this.width,
+						this.height
 					);
 
 				}
 
 
-				renderer.setBuffer(null);
+				var buffer = this.__buffer;
 
-				this.__buffer  = buffer;
-				this.__isDirty = false;
+				if (this.__isDirty === true) {
+
+					renderer.setBuffer(buffer);
+
+
+					if (map.w !== 0 && map.h !== 0 && (map.w <= this.width || map.h <= this.height)) {
+
+						var px = this.origin.x - map.w;
+						var py = this.origin.y - map.h;
+
+
+						while (px < this.width) {
+
+							py = this.origin.y - map.h;
+
+							while (py < this.height) {
+
+								renderer.drawSprite(
+									px,
+									py,
+									texture,
+									map
+								);
+
+								py += map.h;
+
+							}
+
+							px += map.w;
+
+						}
+
+					} else {
+
+						renderer.drawSprite(
+							0,
+							0,
+							texture,
+							map
+						);
+
+					}
+
+
+					renderer.setBuffer(null);
+
+					this.__buffer  = buffer;
+					this.__isDirty = false;
+
+				}
+
+
+				renderer.drawBuffer(
+					x1,
+					y1,
+					buffer
+				);
 
 			}
 
 
-			var position = this.position;
-
-			var x1 = position.x + offsetX - this.width / 2;
-			var y1 = position.y + offsetY - this.height / 2;
-
-
-			renderer.drawBuffer(
-				x1,
-				y1,
-				buffer
-			);
+			if (alpha !== 1) {
+				renderer.setAlpha(1);
+			}
 
 
 			if (lychee.debug === true) {
@@ -154,8 +202,8 @@ lychee.define('lychee.game.Background').includes([
 				renderer.drawBox(
 					x1,
 					y1,
-					x1 + this.width,
-					y1 + this.height,
+					x2,
+					y2,
 					'#ffff00',
 					false,
 					1
@@ -170,6 +218,24 @@ lychee.define('lychee.game.Background').includes([
 		/*
 		 * CUSTOM API
 		 */
+
+		setColor: function(color) {
+
+			color = _is_color(color) ? color : null;
+
+
+			if (color !== null) {
+
+				this.color = color;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
 
 		setOrigin: function(origin) {
 

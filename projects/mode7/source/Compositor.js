@@ -3,7 +3,7 @@ lychee.define('game.Compositor').exports(function(lychee, game, global, attachme
 
 	var Class = function(main) {
 
-		this.renderer = main.renderer || null;;
+		this.renderer = main.renderer || null;
 
 		this.__width  = 0;
 		this.__height = 0;

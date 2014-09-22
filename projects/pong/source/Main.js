@@ -1,7 +1,6 @@
 
 lychee.define('game.Main').requires([
 	'game.state.Game',
-	'game.state.Menu',
 	'game.DeviceSpecificHacks'
 ]).includes([
 	'lychee.game.Main'
@@ -35,6 +34,16 @@ lychee.define('game.Main').requires([
 
 		lychee.game.Main.call(this, settings);
 
+
+		this.bind('init', function() {
+
+			this.reshape();
+
+			this.setState('game', new game.state.Game(this));
+			this.changeState('game');
+
+		}, this, true);
+
 	};
 
 
@@ -45,19 +54,6 @@ lychee.define('game.Main').requires([
 			game.DeviceSpecificHacks.call(this);
 
 			lychee.game.Main.prototype.reshape.call(this, orientation, rotation);
-
-		},
-
-		init: function() {
-
-			lychee.game.Main.prototype.init.call(this);
-
-			this.reshape();
-
-
-			this.setState('game', new game.state.Game(this));
-			this.setState('menu', new game.state.Menu(this));
-			this.changeState('menu');
 
 		}
 

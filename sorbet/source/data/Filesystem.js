@@ -75,7 +75,7 @@ lychee.define('sorbet.data.Filesystem').includes([
 
 			});
 
-		};
+		}
 
 
 		if (trigger === true) {
@@ -133,7 +133,10 @@ lychee.define('sorbet.data.Filesystem').includes([
 		 * PUBLIC API
 		 */
 
-		refresh: function() {
+		refresh: function(force) {
+
+			force = force === false ? false : true;
+
 
 			var root = this.root;
 			if (root !== null) {
@@ -143,7 +146,7 @@ lychee.define('sorbet.data.Filesystem').includes([
 				}
 
 
-				_refresh_recursive.call(this, root, true);
+				_refresh_recursive.call(this, root, force);
 
 			}
 
@@ -269,6 +272,67 @@ lychee.define('sorbet.data.Filesystem').includes([
 
 		},
 
+		readchunk: function(path, from, to, callback, scope) {
+
+			from     = typeof from === 'number'     ? (from | 0) : 0;
+			to       = typeof to === 'number'       ? (to | 0)   : 0;
+			callback = callback instanceof Function ? callback   : null;
+			scope    = scope !== undefined          ? scope      : this;
+
+
+			var resolved = this.resolve(path);
+			if (resolved !== null) {
+
+				var size   = to - from;
+				var buffer = new Buffer(size);
+
+
+				if (callback !== null) {
+
+					_fs.open(resolved, 'r', function(err, fd) {
+
+						if (err) {
+							callback.call(scope, null);
+							return;
+						}
+
+						_fs.read(fd, buffer, 0, size, from, function(err) {
+
+							if (err) {
+								callback.call(scope, null);
+							} else {
+								callback.call(scope, buffer);
+							}
+
+						});
+
+						_fs.close(fd);
+
+					});
+
+				} else {
+
+					var fd = _fs.openSync(resolved, 'r');
+
+					_fs.readSync(fd, buffer, 0, size, from);
+					_fs.close(fd);
+
+					return buffer;
+
+				}
+
+			} else {
+
+				if (callback !== null) {
+					callback.call(scope, null);
+				} else {
+					return null;
+				}
+
+			}
+
+		},
+
 		read: function(path, callback, scope) {
 
 			callback = callback instanceof Function ? callback : null;
@@ -310,8 +374,6 @@ lychee.define('sorbet.data.Filesystem').includes([
 				}
 
 			} else {
-
-				this.refresh();
 
 				if (callback !== null) {
 					callback.call(scope, null);
@@ -504,11 +566,9 @@ lychee.define('sorbet.data.Filesystem').includes([
 				if (raw !== null) {
 
 					return {
-						index: raw.ino,
-						size:  raw.size,
-						atime: raw.atime,
-						ctime: raw.ctime,
-						mtime: raw.mtime
+						index:  raw.ino,
+						length: raw.size,
+						time:   raw.mtime
 					};
 
 				}

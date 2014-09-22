@@ -433,7 +433,7 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 
 
 		// 6: Custom High-Level Implementation
-		} else if (typeof data.serialize === 'function') {
+		} else if (data instanceof Object && typeof data.serialize === 'function') {
 
 			stream.write(6, 3);
 

@@ -33,7 +33,7 @@ lychee.define('lychee.game.Main').requires([
 					that.settings.client = lychee.extend({}, this.buffer);
 				}
 
-				that.init();
+				_initialize.call(that);
 
 			};
 
@@ -46,6 +46,60 @@ lychee.define('lychee.game.Main').requires([
 	var _load_server = function(url) {
 
 		// TODO: Server or Router initialization
+
+	};
+
+	var _initialize = function() {
+
+		this.trigger('load', []);
+
+
+		var settings = this.settings;
+
+		if (settings.client !== null) {
+
+			this.client = new lychee.net.Client(settings.client);
+
+
+			var port = settings.client.port || null;
+			var host = settings.client.host || null;
+			if (port !== null && host !== null) {
+				this.client.listen(port, host);
+			}
+
+		}
+
+		if (settings.input !== null) {
+			this.input = new lychee.Input(settings.input);
+		}
+
+		if (settings.jukebox !== null) {
+			this.jukebox = new lychee.game.Jukebox(settings.jukebox);
+		}
+
+		if (settings.loop !== null) {
+			this.loop = new lychee.game.Loop(settings.loop);
+			this.loop.bind('render', this.render, this);
+			this.loop.bind('update', this.update, this);
+		}
+
+		if (settings.renderer !== null) {
+			this.renderer = new lychee.Renderer(settings.renderer);
+		}
+
+		if (settings.viewport !== null) {
+
+			this.viewport = new lychee.Viewport();
+			this.viewport.bind('reshape', this.reshape, this);
+			this.viewport.bind('hide',    this.hide,    this);
+			this.viewport.bind('show',    this.show,    this);
+
+			this.viewport.setFullscreen(settings.viewport.fullscreen);
+
+		}
+
+
+		this.trigger('init', []);
 
 	};
 
@@ -269,7 +323,7 @@ lychee.define('lychee.game.Main').requires([
 		 * INITIALIZATION
 		 */
 
-		load: function() {
+		init: function() {
 
 			var async      = false;
 			var clientdata = this.settings.client;
@@ -287,59 +341,8 @@ lychee.define('lychee.game.Main').requires([
 
 
 			if (async === false) {
-				this.init();
+				_initialize.call(this);
 			}
-
-		},
-
-		init: function() {
-
-			var settings = this.settings;
-
-			if (settings.client !== null) {
-
-				this.client = new lychee.net.Client(settings.client);
-
-
-				var port = settings.client.port || null;
-				var host = settings.client.host || null;
-				if (port !== null && host !== null) {
-					this.client.listen(port, host);
-				}
-
-			}
-
-			if (settings.input !== null) {
-				this.input = new lychee.Input(settings.input);
-			}
-
-			if (settings.jukebox !== null) {
-				this.jukebox = new lychee.game.Jukebox(settings.jukebox);
-			}
-
-			if (settings.loop !== null) {
-				this.loop = new lychee.game.Loop(settings.loop);
-				this.loop.bind('render', this.render, this);
-				this.loop.bind('update', this.update, this);
-			}
-
-			if (settings.renderer !== null) {
-				this.renderer = new lychee.Renderer(settings.renderer);
-			}
-
-			if (settings.viewport !== null) {
-
-				this.viewport = new lychee.Viewport();
-				this.viewport.bind('reshape', this.reshape, this);
-				this.viewport.bind('hide',    this.hide,    this);
-				this.viewport.bind('show',    this.show,    this);
-
-				this.viewport.setFullscreen(settings.viewport.fullscreen);
-
-			}
-
-
-			this.trigger('init', []);
 
 		},
 

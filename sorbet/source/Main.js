@@ -1,5 +1,6 @@
 
 lychee.define('sorbet.Main').requires([
+	'lychee.Input',
 	'sorbet.api.remote.Debugger',
 	'sorbet.api.remote.Log',
 	'sorbet.api.remote.Project',
@@ -15,6 +16,7 @@ lychee.define('sorbet.Main').requires([
 	'sorbet.module.Server',
 	'sorbet.data.Filesystem',
 	'sorbet.data.Map',
+	'sorbet.data.Storage',
 	'sorbet.data.VHost'
 ]).exports(function(lychee, sorbet, global, attachments) {
 
@@ -107,39 +109,49 @@ lychee.define('sorbet.Main').requires([
 
 	var _response_handler = function(request, response, data) {
 
-		var accept_encoding = request.headers['accept-encoding'] || "";
-		if (accept_encoding.match(/\bgzip\b/)) {
+		if (data.status === 304) {
 
-			zlib.gzip(data.content, function(err, buffer) {
-
-				if (!err) {
-
-					data.header['Content-Encoding'] = 'gzip';
-					data.header['Content-Length']   = buffer.length;
-
-					response.writeHead(data.status, data.header);
-					response.write(buffer);
-
-				} else {
-
-					data.header['Content-Length'] = data.content.length;
-
-					response.writeHead(data.status, data.header);
-					response.write(data.content);
-
-				}
-
-				response.end();
-
-			});
+			response.writeHead(data.status);
+			response.end();
 
 		} else {
 
-			data.header['Content-Length'] = data.content.length;
+			var accept_encoding = request.headers['accept-encoding'] || "";
+			if (accept_encoding.match(/\bgzip\b/)) {
 
-			response.writeHead(data.status, data.header);
-			response.write(data.content);
-			response.end();
+				zlib.gzip(data.content, function(err, buffer) {
+
+					if (!err) {
+
+						data.header['Content-Encoding'] = 'gzip';
+						data.header['Content-Length']   = buffer.length;
+
+						response.writeHead(data.status, data.header);
+						response.write(buffer);
+
+					} else {
+
+						data.header['Content-Length'] = data.content.length;
+
+						response.writeHead(data.status, data.header);
+						response.write(data.content);
+
+					}
+
+					response.end();
+
+				});
+
+			} else {
+
+				data.header['Content-Length'] = data.content.length;
+
+				response.writeHead(data.status, data.header);
+				response.write(data.content);
+
+				response.end();
+
+			}
 
 		}
 
@@ -156,17 +168,22 @@ lychee.define('sorbet.Main').requires([
 
 		rawrequest.on('end', function() {
 
-			var response = that.process(rawrequest, rawbody);
-			if (response.async === true) {
-
-				response.ready = function() {
+			var response = {
+				async:   false,
+				status:  0,
+				header:  {},
+				content: '',
+				ready:   function() {
 					_response_handler(rawrequest, rawresponse, response);
-				};
+				}
+			};
 
-			} else {
 
-				_response_handler(rawrequest, rawresponse, response);
+			that.process(rawrequest, response, rawbody);
 
+
+			if (response.async === false) {
+				response.ready();
 			}
 
 		});
@@ -179,15 +196,18 @@ lychee.define('sorbet.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(root, profile, config) {
-
-		root   = typeof root === 'string' ? root   : '/var/www';
-		config = config instanceof Object ? config : {};
+	var _cmd  = 'sorbet ' + [].slice.call(process.argv, 2).join(' ');
+	var _root = require('path').resolve(__dirname, '../../');
 
 
-		this.fs      = new _filesystem(root);
+	var Class = function(profile) {
+
+		profile = profile instanceof Object ? profile : {};
+
+
+		this.fs      = new _filesystem(_root);
 		this.port    = null;
-		this.root    = root;
+		this.root    = _root;
 		this.servers = new _map();
 
 		this.vhosts  = new _map();
@@ -197,14 +217,34 @@ lychee.define('sorbet.Main').requires([
 
 
 		/*
+		 * PID STORAGE
+		 */
+
+		this.storage = new sorbet.data.Storage({
+			id: 'servers'
+		});
+
+
+		this.status      = this.storage.create();
+		this.status.id   = 'sorbet';
+		this.status.type = 'web';
+		this.status.pid  = process.pid;
+		this.status.cmd  = _cmd;
+
+
+		this.storage.insert(this.status);
+
+
+
+		/*
 		 * DYNAMIC VHOSTS
 		 */
 
-		if (config.vhosts instanceof Array) {
+		if (profile.vhosts instanceof Array) {
 
-			for (var v = 0, vl = config.vhosts.length; v < vl; v++) {
+			for (var v = 0, vl = profile.vhosts.length; v < vl; v++) {
 
-				var blob       = config.vhosts[v];
+				var blob       = profile.vhosts[v];
 				var identifier = blob.hosts[0] || null;
 				if (identifier !== null) {
 
@@ -214,6 +254,7 @@ lychee.define('sorbet.Main').requires([
 						redirects: blob.config.redirects || {},
 						aliases:   [].slice.call(blob.hosts, 1)
 					}, this);
+
 
 					this.vhosts.set(identifier, vhost);
 
@@ -244,17 +285,17 @@ lychee.define('sorbet.Main').requires([
 		 * DYNAMIC MODULES
 		 */
 
-		if (config.api instanceof Object) {
+		if (profile.api instanceof Object) {
 
-			for (var aid in config.api) {
+			for (var aid in profile.api) {
 
-				var apiconstruct = _resolve_constructor(config.api[aid], global);
+				var apiconstruct = _resolve_constructor(profile.api[aid], global);
 				if (apiconstruct instanceof Function) {
 
 					if (this.apis.get(aid) === null) {
 
 						if (lychee.debug === true) {
-							console.log('sorbet.Main: Spawning API "' + aid + '" from "' + config.api[aid] + '"');
+							console.info('sorbet.Main: Spawning API "' + aid + '" from "' + profile.api[aid] + '"');
 						}
 
 						this.apis.set(aid.toLowerCase(), new apiconstruct(this));
@@ -268,17 +309,17 @@ lychee.define('sorbet.Main').requires([
 		}
 
 
-		if (config.module instanceof Object) {
+		if (profile.module instanceof Object) {
 
-			for (var mid in config.module) {
+			for (var mid in profile.module) {
 
-				var modconstruct = _resolve_constructor(config.module[mid], global);
+				var modconstruct = _resolve_constructor(profile.module[mid], global);
 				if (modconstruct instanceof Function) {
 
 					if (this.modules.get(mid) === null) {
 
 						if (lychee.debug === true) {
-							console.log('sorbet.Main: Spawning Module "' + mid + '" from "' + config.module[mid] + '"');
+							console.info('sorbet.Main: Spawning Module "' + mid + '" from "' + profile.module[mid] + '"');
 						}
 
 						this.modules.set(mid, new modconstruct(this));
@@ -309,8 +350,13 @@ lychee.define('sorbet.Main').requires([
 
 		refresh: function() {
 
+			this.fs.refresh(false);
+			this.storage.trigger('sync', []);
+
+
 			var vhosts = this.vhosts.values();
 			for (var v = 0, vl = vhosts.length; v < vl; v++) {
+				vhosts[v].fs.refresh(false);
 				vhosts[v].refresh();
 			}
 
@@ -341,20 +387,16 @@ lychee.define('sorbet.Main').requires([
 
 			server.listen(port);
 
+
 			this.port = port;
 			this.servers.set(null, server);
 
+			this.status.port = this.port;
+			this.storage.update(this.status);
+
 		},
 
-		process: function(request, blob) {
-
-			var response = {
-				async:   false,
-				status:  0,
-				header:  {},
-				content: ''
-			};
-
+		process: function(request, response, blob) {
 
 			var _blacklist = this.modules.get('Blacklist');
 			var _error     = this.modules.get('Error');
@@ -459,7 +501,7 @@ lychee.define('sorbet.Main').requires([
 						if (module !== null) {
 
 							if (lychee.debug === true) {
-								console.log('sorbet.Main: Calling API "' + moduleid + '"');
+								console.info('sorbet.Main: Calling API "' + moduleid + '"');
 							}
 
 							if (module.process(vhost, response, {
@@ -543,10 +585,11 @@ lychee.define('sorbet.Main').requires([
 					} else if (fs.isFile(resolved) === true) {
 
 						if (_file.process(vhost, response, {
-							url:      url,
-							resolved: resolved,
-							range:    request.headers.range || null,
-							version:  parseFloat(request.httpVersion, 10) || 1.0
+							url:       url,
+							resolved:  resolved,
+							range:     request.headers.range || null,
+							version:   parseFloat(request.httpVersion, 10) || 1.0,
+							timestamp: request.headers['if-modified-since'] || null
 						})) {
 							return response;
 						}
@@ -650,7 +693,7 @@ lychee.define('sorbet.Main').requires([
 				if (server !== null) {
 
 					if (lychee.debug === true) {
-						console.log('sorbet.Main: Terminating Server "' + server.id + '" (' + server.pid + ')');
+						console.warn('sorbet.Main: Terminating Server "' + server.status.id + '" (' + server.status.pid + ')');
 					}
 
 
@@ -672,7 +715,7 @@ lychee.define('sorbet.Main').requires([
 				if (module !== null) {
 
 					if (lychee.debug === true) {
-						console.log('sorbet.Main: Terminating Module "' + module.id + '"');
+						console.warn('sorbet.Main: Terminating Module "' + module.id + '"');
 					}
 
 
@@ -684,6 +727,9 @@ lychee.define('sorbet.Main').requires([
 
 			}
 
+
+			this.storage.remove(null, this.status);
+			this.storage.trigger('sync', []);
 
 		}
 

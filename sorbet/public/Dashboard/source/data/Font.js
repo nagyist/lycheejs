@@ -83,21 +83,21 @@ lychee.define('dashboard.data.Font').tags({
 		y2 = typeof y2 === 'number' ? y2 : 0;
 
 
-		var data      = this.getImageData(x1, y1, x2, y2);
+		var data      = this.getImageData(x1, y1, x2 - x1, y2 - y1);
 		var baselines = [];
 		var margin    = settings.spacing;
 
 		for (var c = 0; c < charset.length; c++) {
 
-			var baseline = y2;
+			var baseline = data.height;
 
 			for (var x = margin; x < margin + widthmap[c]; x++) {
 
-				for (var y = y1; y < (y2 - y1) / 2; y++) {
+				for (var y = y1; y < data.height / 2; y++) {
 
 					if (baseline > y) {
 
-						if (data.data[y * (y2 - y1) * 4 + x * 4 + 3]) {
+						if (data.data[y * data.height * 4 + x * 4 + 3]) {
 							baseline = y;
 							break;
 						}
@@ -116,39 +116,15 @@ lychee.define('dashboard.data.Font').tags({
 		}
 
 
-		var rating = {};
-		for (var b = 0; b < baselines.length; b++) {
-
-			if (rating[baselines[b]] === undefined) {
-				rating[baselines[b]] = 0;
-			} else {
-				rating[baselines[b]]++;
-			}
-
-		}
+		baselines.sort(function(a, b) {
+			if (a < b) return -1;
+			if (a > b) return  1;
+			return 0;
+		});
 
 
-		var amount  = 0;
-		var current = 0;
-
-		for (var r in rating) {
-
-			var baseline = parseInt(r, 10);
-
-			if (rating[r] > amount) {
-				amount  = rating[r];
-				current = baseline;
-			} else if (
-				rating[r] === current
-				&& baseline < current
-			) {
-				current = baseline;
-			}
-
-		}
-
-
-		return current;
+		// returns the minimum baseline
+		return baselines[0];
 
 	};
 
@@ -160,61 +136,42 @@ lychee.define('dashboard.data.Font').tags({
 		y2 = typeof y2 === 'number' ? y2 : 0;
 
 
-		var margin = {
-			top:    0,
-			bottom: 0
-		};
-
-
-		var data  = this.getImageData(x1, y1, x2, y2);
-		var x     = 0;
-		var y     = 0;
+		var data  = this.getImageData(x1, y1, x2 - x1, y2 - y1);
 		var found = false;
 
+		var mtop    = 96;
+		var mbottom = 0;
 
-		for (y = y1; y < y2; y++) {
+		var d, dl, y;
 
-			found = false;
+		for (d = 0, dl = data.data.length; d < dl; d += 4) {
 
-			for (x = x1; x < x2; x++) {
+			// var x = (d / 4) % data.width;
+			y = Math.floor((d / 4) / data.width);
 
-				if (data.data[y * (y2 - y1) * 4 + x * 4 + 3]) {
-					found = true;
-					break;
-				}
-
+			if (y < mtop && data.data[d + 3] > 0) {
+				mtop = y;
 			}
 
-			if (found === true) {
-				margin.top = y;
+		}
+
+		for (d = data.data.length - 1; d >= 0; d -= 4) {
+
+			// var x = (d / 4) % data.width;
+			y = Math.floor((d / 4) / data.width);
+
+			if (y > mbottom && data.data[d + 3] > 0) {
+				mbottom = y;
 				break;
 			}
 
 		}
 
 
-		for (y = y2 - 1; y >= 0; y--) {
-
-			found = false;
-
-			for (x = x1; x < x2; x++) {
-
-				if (data.data[y * (y2 - y1) * 4 + x * 4 + 3]) {
-					found = true;
-					break;
-				}
-
-			}
-
-			if (found === true) {
-				margin.bottom = y + 1;
-				break;
-			}
-
-		}
-
-
-		return margin;
+		return {
+			top:    y1 + mtop,
+			bottom: y2 - mbottom
+		};
 
 	};
 
@@ -253,25 +210,39 @@ lychee.define('dashboard.data.Font').tags({
 
 	};
 
-	var _render_font = function(settings, charset, widthmap, offset) {
+	var _render_font = function(settings, charset, widthmap, offset, debug) {
 
 		offset = typeof offset === 'number' ? offset : 0;
 
 
 		this.font         = settings.style + ' ' + settings.size + 'px ' + '"' + settings.family + '"';
 		this.textBaseline = 'top';
-		this.fillStyle    = settings.color;
 
 
 		var margin = settings.spacing;
 
 		for (var c = 0; c < charset.length; c++) {
 
+			this.fillStyle = settings.color;
 			this.fillText(
 				charset[c],
 				margin,
 				offset
 			);
+
+
+			if (debug === true) {
+
+				this.strokeStyle = '#00ff00';
+				this.strokeRect(
+					margin,
+					offset,
+					widthmap[c],
+					settings.size
+				);
+
+			}
+
 
 			margin += widthmap[c] + settings.spacing * 2;
 
@@ -279,7 +250,7 @@ lychee.define('dashboard.data.Font').tags({
 
 	};
 
-	var _render = function(settings) {
+	var _parse = function(settings) {
 
 		var charset = [];
 		for (var c = settings.charset[0]; c < settings.charset[1]; c++) {
@@ -301,12 +272,21 @@ lychee.define('dashboard.data.Font').tags({
 		 * 2. Render Font + Outline
 		 */
 
-		var buffer = new _buffer(width, height);
+		var texture = new _buffer(width, height);
+		var preview = new _buffer(width, height);
 
 		if (settings.outline > 0) {
 
 			_render_outline.call(
-				buffer.ctx,
+				texture.ctx,
+				settings,
+				charset,
+				widthmap,
+				settings.size
+			);
+
+			_render_outline.call(
+				preview.ctx,
 				settings,
 				charset,
 				widthmap,
@@ -316,11 +296,21 @@ lychee.define('dashboard.data.Font').tags({
 		}
 
 		_render_font.call(
-			buffer.ctx,
+			texture.ctx,
 			settings,
 			charset,
 			widthmap,
-			settings.size
+			settings.size,
+			false
+		);
+
+		_render_font.call(
+			preview.ctx,
+			settings,
+			charset,
+			widthmap,
+			settings.size,
+			true
 		);
 
 
@@ -329,17 +319,27 @@ lychee.define('dashboard.data.Font').tags({
 		 * 4. Render Font + Outline again
 		 */
 
-		var margin = _measure_margin.call(buffer.ctx, 0, 0, width, height);
+		var margin = _measure_margin.call(texture.ctx, 0, 0, width, height);
 		if (margin.top > 0 || margin.bottom > 0) {
 
-			var h  = height - margin.top - (height - margin.bottom);
-			height = h;
-			buffer = new _buffer(width, height);
+			var h   = height - margin.top - margin.bottom;
+			height  = h;
+			texture = new _buffer(width, height);
+			preview = new _buffer(width, height);
+
 
 			if (settings.outline > 0) {
 
 				_render_outline.call(
-					buffer.ctx,
+					texture.ctx,
+					settings,
+					charset,
+					widthmap,
+					settings.size - margin.top
+				);
+
+				_render_outline.call(
+					preview.ctx,
 					settings,
 					charset,
 					widthmap,
@@ -349,11 +349,20 @@ lychee.define('dashboard.data.Font').tags({
 			}
 
 			_render_font.call(
-				buffer.ctx,
+				texture.ctx,
 				settings,
 				charset,
 				widthmap,
 				settings.size - margin.top
+			);
+
+			_render_font.call(
+				preview.ctx,
+				settings,
+				charset,
+				widthmap,
+				settings.size - margin.top,
+				true
 			);
 
 		}
@@ -364,7 +373,7 @@ lychee.define('dashboard.data.Font').tags({
 		 */
 
 		var baseline = _measure_baseline.call(
-			buffer.ctx,
+			texture.ctx,
 			settings,
 			charset,
 			widthmap,
@@ -375,15 +384,17 @@ lychee.define('dashboard.data.Font').tags({
 		);
 
 
+
 		/*
 		 * Export Settings
 		 */
 
-		this.texture    = buffer.toString();
+		this.texture    = texture.toString();
+		this.preview    = preview.toString();
 		this.charset    = charset.join('');
 		this.map        = widthmap;
 		this.baseline   = baseline;
-		this.lineheight = buffer.height;
+		this.lineheight = texture.height;
 		this.kerning    = 0;
 		this.spacing    = settings.spacing;
 
@@ -410,6 +421,7 @@ lychee.define('dashboard.data.Font').tags({
 
 
 		this.texture    = null;
+		this.preview    = null;
 		this.charset    = '';
 		this.map        = [];
 		this.baseline   = 0;
@@ -418,7 +430,7 @@ lychee.define('dashboard.data.Font').tags({
 		this.spacing    = 0;
 
 
-		_render.call(this, settings);
+		_parse.call(this, settings);
 
 		settings = null;
 
@@ -431,6 +443,7 @@ lychee.define('dashboard.data.Font').tags({
 
 			return {
 				texture:    this.texture,
+				preview:    this.preview,
 				charset:    this.charset,
 				map:        this.map,
 				baseline:   this.baseline,

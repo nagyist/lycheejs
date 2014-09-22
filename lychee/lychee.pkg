@@ -109,6 +109,17 @@
 				"BitON": [ "js" ]
 			},
 
+			"effect": {
+				"Alpha":     [ "js" ],
+				"Color":     [ "js" ],
+				"Lightning": [ "js" ],
+				"Offset":    [ "js" ],
+				"Position":  [ "js" ],
+				"Radius":    [ "js" ],
+				"Shake":     [ "js" ],
+				"Velocity":  [ "js" ]
+			},
+
 			"event": {
 				"Bus":     [ "js" ],
 				"Emitter": [ "js" ],
@@ -117,11 +128,14 @@
 
 			"game": {
 				"Background": [ "js" ],
+				"Emitter":    [ "js" ],
 				"Entity":     [ "js" ],
 				"Jukebox":    [ "js" ],
 				"Layer":      [ "js" ],
+				"Logic":      [ "js" ],
 				"Loop":       [ "js" ],
 				"Main":       [ "js" ],
+				"Physic":     [ "js" ],
 				"Sprite":     [ "js" ],
 				"State":      [ "js" ]
 			},

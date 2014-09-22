@@ -17,9 +17,9 @@
 
 		"Blacklist":   "sorbet.module.Blacklist",
 		"Fertilizer":  "sorbet.module.Fertilizer",
+		"Honey":       "sorbet.module.Honey",
 		"Log":         "sorbet.module.Log",
-		"Server":      "sorbet.module.Server",
-		"Honey":       "sorbet.module.Honey"
+		"Server":      "sorbet.module.Server"
 
 	},
 

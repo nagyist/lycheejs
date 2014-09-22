@@ -115,7 +115,7 @@ lychee.define('Storage').tags({
 			if (methods.length === 0) {
 				console.error('lychee.Storage: Supported methods are NONE');
 			} else {
-				console.log('lychee.Storage: Supported methods are ' + methods.join(', '));
+				console.info('lychee.Storage: Supported methods are ' + methods.join(', '));
 			}
 
 		}
@@ -455,8 +455,8 @@ lychee.define('Storage').tags({
 
 					this.__operations.push({
 						type:   'insert',
-						object: object,
-						index:  this.__objects.length
+						index:  this.__objects.length,
+						object: object
 					});
 
 
@@ -486,8 +486,8 @@ lychee.define('Storage').tags({
 
 					this.__operations.push({
 						type:   'update',
-						object: object,
-						index:  index
+						index:  index,
+						object: object
 					});
 
 
@@ -506,7 +506,7 @@ lychee.define('Storage').tags({
 
 		get: function(index) {
 
-			index  = typeof index === 'number' ? (index | 0) : null;
+			index = typeof index === 'number' ? (index | 0) : null;
 
 
 			if (index !== null) {
@@ -523,26 +523,23 @@ lychee.define('Storage').tags({
 
 		},
 
-		remove: function(index) {
+		remove: function(index, object) {
 
-			index  = typeof index === 'number' ? (index | 0) : null;
-
-
-			if (index !== null) {
-
-				if (index >= 0 && index < this.__objects.length) {
-
-					this.__operations.push({
-						type: 'remove',
-						index: index
-					});
+			index = typeof index === 'number' ? (index | 0) : this.__objects.indexOf(object);
 
 
-					_write_storage.call(this);
+			if (index >= 0 && index < this.__objects.length) {
 
-					return true;
+				this.__operations.push({
+					type:   'remove',
+					index:  index,
+					object: this.__objects[index]
+				});
 
-				}
+
+				_write_storage.call(this);
+
+				return true;
 
 			}
 

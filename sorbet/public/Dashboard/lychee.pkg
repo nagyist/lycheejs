@@ -25,7 +25,8 @@
 		"files": {
 
 			"data": {
-				"Font": [ "js" ]
+				"Font":   [ "js" ],
+				"Sprite": [ "js" ]
 			},
 
 			"net": {
@@ -35,7 +36,8 @@
 
 			"state": {
 				"Project":    [ "js", "tpl" ],
-				"FontEditor": [ "js", "settings.tpl", "preview.tpl" ],
+				"Font":       [ "js", "settings.tpl", "preview.tpl" ],
+				"Sprite":     [ "js", "settings.tpl", "preview.tpl" ],
 				"Welcome":    [ "js", "tpl" ]
 			},
 

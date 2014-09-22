@@ -1,37 +1,66 @@
 {
 	"layers": {
+		"background": {
+			"constructor": "lychee.game.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.game.Background",
+					"arguments": [{
+						"color": "#3f7cb6"
+					}]
+				}],
+				"map": {
+					"background": 0
+				}
+			}
+		},
 		"ui": {
 			"constructor": "lychee.ui.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.ui.Label",
+					"constructor": "game.ui.Layer",
 					"arguments": [{
-						"label": "Game State active",
-						"position": {
-							"x": 0,
-							"y": -50
-						}
-					}],
-					"blob": {
-						"font": {
-							"constructor": "Font",
-							"arguments": [ "../source/state/Game.headline.fnt" ]
-						}
-					}
-				}, {
-					"constructor": "lychee.ui.Label",
-					"arguments": [{
-						"label": "Touch the circle to make Noise",
+						"label": "Game State",
 						"position": {
 							"x": 0,
 							"y": 0
 						}
 					}],
 					"blob": {
-						"font": {
-							"constructor": "Font",
-							"arguments": [ "../source/state/Game.normal.fnt" ]
+						"entities": [{
+							"constructor": "game.ui.Button",
+							"arguments": [{
+								"state": "back",
+								"position": {
+									"x": -192,
+									"y": -96
+								}
+							}]
+						}, {
+							"constructor": "lychee.ui.Label",
+							"arguments": [{
+								"label": "Ping: --- ms / --- ms",
+								"position": {
+									"x": 0,
+									"y": -16
+								}
+							}]
+						}, {
+							"constructor": "lychee.ui.Label",
+							"arguments": [{
+								"label": "Touch the Circle!",
+								"position": {
+									"x": 0,
+									"y": 48
+								}
+							}]
+						}],
+						"map": {
+							"back": 0,
+							"statistics": 1,
+							"message": 2
 						}
 					}
 				}, {
@@ -39,44 +68,13 @@
 					"arguments": [{
 						"position": {
 							"x": 0,
-							"y": 150
+							"y": 128
 						}
-					}, "#MAIN"]
-				}, {
-					"constructor": "lychee.ui.Label",
-					"arguments": [{
-						"label": "Ping: - ms / - ms",
-						"position": {
-							"x": 0,
-							"y": 50
-						}
-					}],
-					"blob": {
-						"font": {
-							"constructor": "Font",
-							"arguments": [ "../source/state/Game.normal.fnt" ]
-						}
-					}
-				}, {
-					"constructor": "game.entity.Button",
-					"arguments": [{
-						"label": "Exit to Menu",
-						"position": {
-							"x": 0,
-							"y": 0
-						}
-					}, "#MAIN"],
-					"blob": {
-						"font": {
-							"constructor": "Font",
-							"arguments": [ "../source/state/Game.normal.fnt" ]
-						}
-					}
+					}, "#MAIN" ]
 				}],
 				"map": {
-					"circle":     2,
-					"statistics": 3,
-					"button":     4
+					"help":   0,
+					"circle": 1
 				}
 			}
 		}

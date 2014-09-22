@@ -94,11 +94,11 @@ lychee.define('sorbet.module.Fertilizer').requires([
 		})));
 
 
-		var templatepath = this.main.root + '/templates/' + settings.tags.platform[0] + '/index.js';
-		if (_fs.existsSync(templatepath) === true) {
+		var fertilizerpath = this.main.root + '/fertilizers/' + settings.tags.platform[0] + '/index.js';
+		if (_fs.existsSync(fertilizerpath) === true) {
 
 			if (lychee.debug === true) {
-				console.log('sorbet.module.Fertilizer: Building Environment "' + project.id + '"');
+				console.log('sorbet.module.Fertilizer: Building Environment "' + project.id + '" as "' + mode + '"');
 			}
 
 
@@ -144,20 +144,21 @@ lychee.define('sorbet.module.Fertilizer').requires([
 
 		if ('platform' in data.environment.tags) {
 
-			var platform        = data.environment.tags.platform[0];
-			var fertilizerpath  = this.main.root    + '/tool/Fertilizer.js';
-			var environmentpath = data.project.root + '/build/' + data.project.name + '/lychee.env';
-			var sandboxpath     = data.project.root + '/build/' + data.project.name;
-			var templatepath    = this.main.root    + '/templates/' + platform + '/index.js';
+			var platform         = data.environment.tags.platform[0];
+			var fertilizerdaemon = this.main.root    + '/tool/Fertilizer.js';
+			var environmentpath  = data.project.root + '/build/' + data.project.name + '/lychee.env';
+			var sandboxpath      = data.project.root + '/build/' + data.project.name;
+			var fertilizerpath   = this.main.root    + '/fertilizers/' + platform;
 
 
 			data.project.vhost.fs.remove(sandboxpath);
 			data.project.vhost.fs.mkdir(sandboxpath);
 
 
-			if (_fs.existsSync(fertilizerpath) && _fs.existsSync(sandboxpath) && _fs.existsSync(templatepath)) {
+			if (_fs.existsSync(fertilizerdaemon) && _fs.existsSync(sandboxpath) && _fs.existsSync(fertilizerpath + '/index.js')) {
 
 				var that = this;
+				var root = this.main.root;
 				var json = JSON.stringify(data.environment.serialize(), null, '\t');
 
 
@@ -165,13 +166,14 @@ lychee.define('sorbet.module.Fertilizer').requires([
 				_fs.writeFileSync(environmentpath,             json);
 				_fs.writeFileSync(sandboxpath + '.lychee.env', json);
 
-				_child_process.fork(fertilizerpath, [
+				_child_process.fork(fertilizerdaemon, [
+					mode,
 					'--environment="' + environmentpath + '"',
-					'--template="'    + templatepath    + '"',
-					'--sandbox="'     + sandboxpath     + '"',
-					'--mode="'        + mode            + '"',
-					'--silent'
-				]).on('exit', function(code) {
+					'--fertilizer="'  + fertilizerpath  + '"',
+					'--sandbox="'     + sandboxpath     + '"'
+				], {
+					cwd: root
+				}).on('exit', function(code) {
 
 					if (code === 1) {
 

@@ -6,10 +6,6 @@ lychee.define('game.Renderer').includes([
 	'game.Compositor'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _camera     = game.Camera;
-	var _compositor = game.Compositor;
-
-
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
@@ -30,23 +26,37 @@ lychee.define('game.Renderer').includes([
 
 		setCamera: function(camera) {
 
-			if (
-				   camera instanceof _camera
-				|| camera === null
-			) {
+			camera = camera instanceof game.Camera ? camera : null;
+
+
+			if (camera !== null) {
+
 				this.camera = camera;
+
+				return true;
+
 			}
+
+
+			return false;
 
 		},
 
 		setCompositor: function(compositor) {
 
-			if (
-				   compositor instanceof _compositor
-				|| compositor === null
-			) {
+			compositor = compositor instanceof game.Compositor ? compositor : null;
+
+
+			if (compositor !== null) {
+
 				this.compositor = compositor;
+
+				return true;
+
 			}
+
+
+			return false;
 
 		},
 

@@ -26,13 +26,11 @@
 
 			"entity": {
 				"Ball":     [ "js", "json", "png" ],
-				"Paddle":   [ "js", "json", "enemy.png", "player.png" ],
-				"lycheeJS": [ "js", "png" ]
+				"Paddle":   [ "js", "json", "enemy.png", "player.png" ]
 			},
 
 			"state": {
-				"Game": [ "js", "json", "headline.fnt", "normal.fnt" ],
-				"Menu": [ "js", "json", "headline.fnt", "normal.fnt" ]
+				"Game": [ "js", "json", "headline.fnt", "normal.fnt" ]
 			},
 
 			"DeviceSpecificHacks": [ "js" ],

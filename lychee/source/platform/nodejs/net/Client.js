@@ -411,18 +411,18 @@ lychee.define('lychee.net.Client').tags({
 
 				for (var w = 0, wl = this.__services.waiting.length; w < wl; w++) {
 
-					var service = this.__services.waiting[w];
-					if (service.id === id) {
-						return service;
+					var wservice = this.__services.waiting[w];
+					if (wservice.id === id) {
+						return wservice;
 					}
 
 				}
 
 				for (var a = 0, al = this.__services.active.length; a < al; a++) {
 
-					var service = this.__services.active[a];
-					if (service.id === id) {
-						return service;
+					var aservice = this.__services.active[a];
+					if (aservice.id === id) {
+						return aservice;
 					}
 
 				}

@@ -1,11 +1,12 @@
 {
 	"name":        "lycheejs",
-	"author":      "LazerUnicorns Ltd.",
+	"homepage":    "http://lycheejs.org",
 	"license":     "MIT",
-	"version":     "0.8.2",
+	"version":     "0.8.3",
 	"description": "Environment-Independent Cross-Platform JavaScript engine (NodeJS, NodeJS SDL2, HTML5, Apache Cordova, WebGL, native OpenGL)",
 
 	"keywords": [
+		"lycheejs",
 		"game",
 		"engine",
 		"nodejs",
@@ -14,19 +15,37 @@
 		"cordova",
 		"android",
 		"ios",
-		"libsdl"
+		"libsdl",
+		"sdl"
 	],
 
 	"main":           "./lychee/build/nodejs/core.js",
 	"readmeFilename": "README.md",
 
 	"scripts": {
-		"postinstall": "./tool/configure.js"
+
+		"postinstall":  "node ./tool/configure.js",
+		"start":        "node ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\"",
+		"stop":         "node ./tool/Sorbet.js stop --pid=\"*\"",
+
+		"localhost":    "nohup node ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\" >> ./sorbet.log &",
+		"lycheejs.org": "nohup node ./tool/Sorbet.js start --profile=\"./sorbet/profile/lycheejs.org.json\" >> ./sorbet.log &"
+
+	},
+
+	"bin": {
+		"fertilizer": "./tool/Fertilizer.js",
+		"sorbet":     "./tool/Sorbet.js"
+	},
+
+	"author": {
+		"name":  "The lycheeJS project and its contributors",
+		"email": "support@lazerunicorns.com"
 	},
 
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/LazerUnicorns/lycheeJS"
+		"url":  "git://github.com/LazerUnicorns/lycheeJS"
 	}
 
 }

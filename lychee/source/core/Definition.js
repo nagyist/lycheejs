@@ -71,7 +71,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 			}
 
 
-			var tmp, bindargs;
+			var index1, index2, tmp, bindargs;
 
 			if (typeof blob.supports === 'string') {
 
@@ -80,8 +80,8 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 				bindargs = tmp.substr(1, tmp.length - 2).split(',');
 
 				// Function body
-				var index1 = blob.supports.indexOf('{') + 1;
-				var index2 = blob.supports.lastIndexOf('}') - 1;
+				index1 = blob.supports.indexOf('{') + 1;
+				index2 = blob.supports.lastIndexOf('}') - 1;
 				bindargs.push(blob.supports.substr(index1, index2 - index1));
 
 				this.supports(Function.apply(Function, bindargs));
@@ -95,8 +95,8 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 				bindargs = tmp.substr(1, tmp.length - 2).split(',');
 
 				// Function body
-				var index1 = blob.exports.indexOf('{') + 1;
-				var index2 = blob.exports.lastIndexOf('}') - 1;
+				index1 = blob.exports.indexOf('{') + 1;
+				index2 = blob.exports.lastIndexOf('}') - 1;
 				bindargs.push(blob.exports.substr(index1, index2 - index1));
 
 				this.exports(Function.apply(Function, bindargs));

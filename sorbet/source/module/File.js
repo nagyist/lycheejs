@@ -60,8 +60,10 @@ lychee.define('sorbet.module.File').exports(function(lychee, sorbet, global, att
 
 		process: function(vhost, response, data) {
 
+			var expires  = Date.now() + 1000 * 60 * 60 * 24 * 7; // 7 days
 			var range    = _parse_range(data.range);
 			var resolved = data.resolved;
+			var info     = vhost.fs.info(resolved);
 			var tmp1     = resolved.split('/');
 			var tmp2     = tmp1[tmp1.length - 1].split('.');
 			var ext      = tmp2[tmp2.length - 1];
@@ -81,87 +83,117 @@ lychee.define('sorbet.module.File').exports(function(lychee, sorbet, global, att
 			}
 
 
-			var expires = Date.now() + 1000 * 60 * 60 * 24 * 7; // 7 days
+			if (info === null) {
 
-			response.async                   = true;
-			response.status                  = 200;
-			response.header['Cache-Control'] = 'no-transform';
-			response.header['Content-Type']  = mime.type;
-			response.header['Expires']       = new Date(expires).toUTCString();
-			response.header['Vary']          = 'Accept-Encoding';
-			response.content                 = '';
+				this.main.modules.get('Error').process(vhost, response, {
+					status: 404,
+					host:   data.host,
+					url:    data.url
+				});
 
-			if (mime.type.substr(0, 4) === 'text') {
-				response.header['Content-Type'] = mime.type + '; charset=utf-8';
-			}
+			} else {
+
+				var timestamp = data.timestamp || null;
+				if (timestamp !== null) {
+
+					var modified = new Date(timestamp) > new Date(info.time);
+					if (modified === false) {
+
+						response.async   = false;
+						response.status  = 304;
+
+						return true;
+
+					}
+
+				}
+
+
+				response.async                   = true;
+				response.header['ETag']          = '"' + info.index + '-' + info.length + '-' + Date.parse(info.time) + '"';
+				response.header['Last-Modified'] = new Date(info.time).toUTCString();
+				response.header['Cache-Control'] = 'no-transform';
+				response.header['Content-Type']  = mime.type;
+				response.header['Expires']       = new Date(expires).toUTCString();
+				response.header['Vary']          = 'Accept-Encoding';
+				response.content                 = '';
+
+				if (mime.type.substr(0, 4) === 'text') {
+					response.header['Content-Type'] = mime.type + '; charset=utf-8';
+				}
 
 
 
-			// TODO: Use fs.read(resolved, frombyte, tobyte, function(partial) {}, this); for Range Requests
+				if (data.version >= 1.1) {
 
+					if (range === null) {
 
-			vhost.fs.read(resolved, function(buffer) {
+						vhost.fs.read(resolved, function(buffer) {
 
-				if (buffer === null) {
+							if (buffer !== null) {
 
-					this.main.modules.get('Error').process(vhost, response, {
-						status: 501,
-						host:   data.host,
-						url:    data.url
-					});
+								response.status  = 200;
+								response.content = buffer;
+
+							} else {
+
+								response.status  = 500;
+								response.content = '';
+
+							}
+
+							response.ready();
+
+						}, this);
+
+					} else {
+
+						range[1] = Math.min(range[1], info.length);
+
+						vhost.fs.readchunk(resolved, range[0], range[1], function(chunk) {
+
+							if (chunk !== null) {
+
+								response.status                  = 206;
+								response.header['Content-Range'] = 'bytes ' + range[0] + '-' + (range[1] - 1) + '/' + chunk.length;
+								response.content                 = chunk;
+
+							} else {
+
+								response.status  = 500;
+								response.content = '';
+
+							}
+
+							response.ready();
+
+						}, this);
+
+					}
 
 				} else {
 
-					var info = vhost.fs.info(resolved);
-					if (info !== null) {
-						response.header['ETag']          = '"' + info.index + '-' + info.size + '-' + Date.parse(info.mtime) + '"';
-						response.header['Last-Modified'] = new Date(info.mtime).toUTCString();
-					}
+					vhost.fs.read(resolved, function(buffer) {
 
+						if (buffer !== null) {
 
-					if (data.version >= 1.1) {
-
-						if (range !== null) {
-
-							range[1] = Math.min(range[1], buffer.length - 1);
-
-							response.status                  = 206;
-							response.header['Content-Range'] = 'bytes ' + range[0] + '-' + range[1] + '/' + buffer.length;
-							response.content = buffer.slice(range[0], range[1] + 1);
-
-						} else if (mime.stream === true) {
-
-							response.status                  = 206;
-							response.header['Content-Range'] = '0-' + (buffer.length - 1) + '/' + buffer.length;
+							response.status  = 200;
 							response.content = buffer;
 
 						} else {
 
-							if (mime.stream === true) {
-								response.header['Accept-Ranges'] = 'bytes';
-							}
-
-							response.content = buffer;
+							response.status  = 500;
+							response.content = '';
 
 						}
 
-					} else {
+						response.ready();
 
-						response.content = buffer;
-
-					}
+					}, this);
 
 				}
 
-
-				// Check if VFS cache was faster than the JS callstack.
-				if (typeof response.ready === 'function') {
-					response.ready();
-				} else {
-					response.async = false;
-				}
-
-			}, this);
+			}
 
 
 			return true;

@@ -26,23 +26,19 @@ lychee.define('Input').tags({
 
 	var _listeners = {
 
-		keyboard: function(chunk, key) {
+		keyboard: function(key) {
 
 			// This is apparently a hack to have a TTY conform behaviour
-			if (key && key.ctrl && key.name === 'c') {
+			if (key.ctrl === true && key.name === 'c') {
 
 				process.exit();
 
-			} else if (key.sequence !== undefined || key.name !== undefined) {
-
-				var k = key.name !== undefined ? key.name : key.sequence;
+			} else {
 
 				for (var i = 0, l = _instances.length; i < l; i++) {
-					_process_key.call(_instances[i], k, key.ctrl, key.meta, key.shift);
+					_process_key.call(_instances[i], key.name, key.ctrl, key.meta, key.shift);
 				}
 
-			} else if (lychee.debug === true) {
-				console.error('lychee.Input: INVALID KEY ', key);
 			}
 
 		}
@@ -57,20 +53,11 @@ lychee.define('Input').tags({
 
 	(function() {
 
-		process.stdin.on('keypress', _listeners.keyboard).resume();
-
-
-		if (typeof process.stdin.setRawMode === 'function') {
-			process.stdin.setRawMode(true);
-		}
-
-		if (typeof process.stdin.resume === 'function') {
-			process.stdin.resume();
-		}
+		process.stdin.on('keypress', _listeners.keyboard);
 
 
 		if (lychee.debug === true) {
-			console.log('lychee.Input: Supported methods are Keyboard');
+			console.info('lychee.Input: Supported methods are Keyboard');
 		}
 
 	})();

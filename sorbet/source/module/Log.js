@@ -31,6 +31,9 @@ lychee.define('sorbet.module.Log').requires([
 
 	var _get_os = function(ua) {
 
+		ua = typeof ua === 'string' ? ua : '';
+
+
 		var found = 'Unknown';
 
 		for (var name in _rules.os) {
@@ -47,6 +50,9 @@ lychee.define('sorbet.module.Log').requires([
 	};
 
 	var _get_device = function(ua) {
+
+		ua = typeof ua === 'string' ? ua : '';
+
 
 		var found = 'Unknown';
 
@@ -65,6 +71,9 @@ lychee.define('sorbet.module.Log').requires([
 
 	var _get_browser = function(ua) {
 
+		ua = typeof ua === 'string' ? ua : '';
+
+
 		var found = 'Unknown';
 
 		for (var name in _rules.browser) {
@@ -82,31 +91,39 @@ lychee.define('sorbet.module.Log').requires([
 
 	var _get_project = function(url, parameters) {
 
+		url        = typeof url === 'string'        ? url        : null;
+		parameters = typeof parameters === 'string' ? parameters : null;
+
+
 		var tmp, id;
 
-		if (url === '/api/Server') {
+		if (url !== null) {
 
-			tmp = parameters.split('identifier=')[1] || null;
-			if (tmp !== null) {
+			if (url === '/api/Server') {
 
-				id = tmp.split('&')[0] || null;
-				if (id !== null) {
+				tmp = parameters.split('identifier=')[1] || null;
+				if (tmp !== null) {
+
+					id = tmp.split('&')[0] || null;
+					if (id !== null) {
+						return id;
+					}
+
+				}
+
+			} else {
+
+				tmp = url.split('/');
+				if (tmp.pop() === 'index.html') {
+
+					id = tmp.pop();
+					if (id === 'source') {
+						id = tmp.pop();
+					}
+
 					return id;
 				}
 
-			}
-
-		} else {
-
-			tmp = url.split('/');
-			if (tmp.pop() === 'index.html') {
-
-				id = tmp.pop();
-				if (id === 'source') {
-					id = tmp.pop();
-				}
-
-				return id;
 			}
 
 		}

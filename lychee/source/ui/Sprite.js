@@ -109,28 +109,6 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		},
 
-		sync: function(clock, force) {
-
-			force = force === true;
-
-
-			if (force === true) {
-				this.__clock = clock;
-			}
-
-
-			if (this.__clock === null) {
-
-				if (this.__animation.active === true && this.__animation.start === null) {
-					this.__animation.start = clock;
-				}
-
-			}
-
-			lychee.ui.Entity.prototype.sync.call(this, clock, force);
-
-		},
-
 		render: function(renderer, offsetX, offsetY) {
 
 			if (this.visible === false) return;
@@ -139,10 +117,17 @@ lychee.define('lychee.ui.Sprite').includes([
 			var texture = this.texture;
 			if (texture !== null) {
 
+				var alpha    = this.alpha;
 				var position = this.position;
 
 				var x1 = 0;
 				var y1 = 0;
+
+
+				if (alpha !== 1) {
+					renderer.setAlpha(alpha);
+				}
+
 
 				var map = this.getMap();
 				if (map !== null) {
@@ -173,6 +158,11 @@ lychee.define('lychee.ui.Sprite').includes([
 
 				}
 
+
+				if (alpha !== 1) {
+					renderer.setAlpha(1);
+				}
+
 			}
 
 		},
@@ -185,20 +175,24 @@ lychee.define('lychee.ui.Sprite').includes([
 			var animation = this.__animation;
 
 			// 1. Animation (Interpolation)
-			if (animation.active === true && animation.start !== null) {
+			if (animation.active === true) {
 
-				var t = (this.__clock - animation.start) / animation.duration;
-				if (t <= 1) {
+				if (animation.start !== null) {
 
-					this.frame = Math.max(0, Math.ceil(t * animation.frames) - 1);
+					var t = (clock - animation.start) / animation.duration;
+					if (t <= 1) {
 
-				} else {
+						this.frame = Math.max(0, Math.ceil(t * animation.frames) - 1);
 
-					if (animation.loop === true) {
-						animation.start = this.__clock;
 					} else {
-						this.frame = animation.frames - 1;
-						animation.active = false;
+
+						if (animation.loop === true) {
+							animation.start = clock;
+						} else {
+							this.frame = animation.frames - 1;
+							animation.active = false;
+						}
+
 					}
 
 				}
@@ -225,7 +219,7 @@ lychee.define('lychee.ui.Sprite').includes([
 
 				var animation = this.__animation;
 
-				animation.start    = this.__clock;
+				animation.start    = null;
 				animation.active   = true;
 				animation.duration = duration;
 				animation.frames   = frames;

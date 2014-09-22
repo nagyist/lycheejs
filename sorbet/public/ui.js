@@ -3,13 +3,163 @@ var ui = (function(lychee, global) {
 
 	var _document      = global.document;
 	var _events        = [];
+	var _dropzones     = [];
 	var _notifications = _document.querySelector('ul#ui-notifications') || null;
 
+	var _stub = function(event) {
+		event.stopPropagation();
+		event.preventDefault();
+	};
 
 
 	/*
 	 * EVENTS
 	 */
+
+	var _on_drop = function(files, dropzone) {
+
+		if (files.length > 0) {
+
+			for (var f = 0, fl = files.length; f < fl; f++) {
+
+				(function(file, callback, scope) {
+
+					var reader = new FileReader();
+
+					reader.onload = function(event) {
+
+						callback.call(scope, {
+							name: file.name,
+							type: file.type,
+							blob: event.target.result
+						});
+
+					};
+
+					reader.readAsDataURL(file);
+
+				})(files[f], dropzone.callback, dropzone.scope);
+
+			}
+
+		}
+
+	};
+
+	var _unbind_dropzone = function(dropzone) {
+
+		var elements = dropzone.elements;
+
+		for (var e = 0, el = elements.length; e < el; e++) {
+			elements[e].removeEventListener('dragenter');
+			elements[e].removeEventListener('dragover');
+			elements[e].removeEventListener('drop');
+		}
+
+	};
+
+	var _bind_dropzone = function(dropzone) {
+
+		var elements = dropzone.elements;
+
+		for (var e = 0, el = elements.length; e < el; e++) {
+
+			elements[e].addEventListener('dragenter', _stub,    false);
+			elements[e].addEventListener('dragover',  _stub,    false);
+			elements[e].addEventListener('drop',      function(event) {
+				_stub(event);
+				_on_drop(event.dataTransfer.files || [], dropzone);
+			}, false);
+
+		}
+
+	};
+
+	var _refresh_dropzones = function() {
+
+		for (var d = 0, dl = _dropzones.length; d < dl; d++) {
+
+			var found = null;
+
+			for (var e = 0, el = _dropzones[d].elements.length; e < el; e++) {
+
+				var parent = _dropzones[d].elements[e].parentNode || null;
+				if (parent === null) {
+					found = _dropzones[d];
+					break;
+				}
+
+			}
+
+			if (found !== null) {
+
+				if (found.dynamic === true) {
+
+					_unbind_dropzone(found);
+
+					var elements = ui.query(found.query);
+					if (elements.length > 0) {
+						found.elements = elements;
+					} else {
+						found.elements = [];
+					}
+
+					_bind_dropzone(found);
+
+				} else {
+
+					_dropzones.splice(d, 1);
+					dl--;
+					d--;
+
+				}
+
+			}
+
+		}
+
+	};
+
+	var _refresh_events = function() {
+
+		for (var ev = 0, evl = _events.length; ev < evl; ev++) {
+
+			var found = null;
+
+			for (var el = 0, ell = _events[ev].elements.length; el < ell; el++) {
+
+				var parent = _events[ev].elements[el].parentNode || null;
+				if (parent === null) {
+					found = _events[ev];
+					break;
+				}
+
+			}
+
+			if (found !== null) {
+
+				if (found.dynamic === true) {
+
+					var elements = ui.query(found.query);
+					if (elements.length > 0) {
+						found.elements = elements;
+					} else {
+						found.elements = [];
+					}
+
+				} else {
+
+					_events.splice(ev, 1);
+					evl--;
+					ev--;
+
+				}
+
+			}
+
+		}
+
+	};
 
 	var _listeners = {
 
@@ -88,7 +238,7 @@ var ui = (function(lychee, global) {
 			if (methods.length === 0) {
 				console.error('ui: Supported methods are NONE');
 			} else {
-				console.log('ui: Supported methods are ' + methods.join(', '));
+				console.info('ui: Supported methods are ' + methods.join(', '));
 			}
 
 		}
@@ -238,6 +388,7 @@ var ui = (function(lychee, global) {
 		'nav':     'ul',
 		'menu':    'li',
 		'ul':      'li',
+		'ol':      'li',
 		'section': 'article'
 	};
 
@@ -482,8 +633,6 @@ var ui = (function(lychee, global) {
 	};
 
 
-global._EVENTS = _events;
-
 	return {
 
 		/*
@@ -499,7 +648,7 @@ global._EVENTS = _events;
 
 
 			var elements = ui.query(query);
-			if (elements.length !== 0 && callback !== null) {
+			if (elements.length > 0 && callback !== null) {
 
 				_events.push({
 					query:    query,
@@ -508,6 +657,8 @@ global._EVENTS = _events;
 					scope:    scope,
 					dynamic:  dynamic
 				});
+
+				_refresh_events();
 
 				return true;
 
@@ -560,6 +711,15 @@ global._EVENTS = _events;
 										data[name] = '' + value;
 									}
 
+								} else if (type === 'number') {
+
+									var val = parseInt(value, 10);
+									if (!isNaN(val)) {
+										data[name] = val;
+									} else {
+										delete data[name];
+									}
+
 								} else if (type === 'range') {
 
 									var min = parseInt(element.min, 10); min = isNaN(min) ? -Infinity : min;
@@ -567,6 +727,8 @@ global._EVENTS = _events;
 									var val = parseInt(value, 10);
 									if (val >= min && val <= max) {
 										data[name] = val;
+									} else {
+										delete data[name];
 									}
 
 								}
@@ -588,7 +750,14 @@ global._EVENTS = _events;
 							value = element.options[element.selectedIndex || 0].value;
 
 							if (options.indexOf(value) !== -1) {
-								data[name] = '' + value;
+
+								var val = parseInt(value, 10);
+								if (!isNaN(val)) {
+									data[name] = val;
+								} else {
+									data[name] = '' + value;
+								}
+
 							}
 
 						}
@@ -626,47 +795,8 @@ global._EVENTS = _events;
 
 		refresh: function() {
 
-			var found = null;
-
-			for (var ev = 0, evl = _events.length; ev < evl; ev++) {
-
-				for (var el = 0, ell = _events[ev].elements.length; el < ell; el++) {
-
-					var parent = _events[ev].elements[el].parentNode || null;
-					if (parent === null) {
-						found = _events[ev];
-						break;
-					}
-
-				}
-
-				if (found !== null) {
-
-					if (found.dynamic === true) {
-
-console.log(found.query);
-
-						var elements = ui.query(found.query);
-						if (elements.length > 0) {
-							found.elements = elements;
-						} else {
-							found.elements = [];
-						}
-
-					} else {
-
-						_events.splice(ev, 1);
-						evl--;
-						ev--;
-
-					}
-
-					found = null;
-
-				}
-
-			}
-
+			_refresh_dropzones();
+			_refresh_events();
 
 			return true;
 
@@ -699,7 +829,7 @@ console.log(found.query);
 
 
 			var elements = ui.query(query);
-			if (elements.length !== 0) {
+			if (elements.length > 0) {
 
 				for (var e = 0, el = elements.length; e < el; e++) {
 
@@ -727,7 +857,7 @@ console.log(found.query);
 
 
 			var elements = ui.query(query);
-			if (elements.length !== 0) {
+			if (elements.length > 0) {
 
 				for (var e = 0, el = elements.length; e < el; e++) {
 
@@ -763,7 +893,7 @@ console.log(found.query);
 
 
 			var elements = ui.query(query);
-			if (elements.length !== 0) {
+			if (elements.length > 0) {
 
 				var refresh = false;
 
@@ -810,7 +940,7 @@ console.log(found.query);
 
 
 			var elements = ui.query(query);
-			if (elements.length !== 0) {
+			if (elements.length > 0) {
 
 				var refresh = false;
 
@@ -884,6 +1014,42 @@ console.log(found.query);
 
 		},
 
+
+
+		/*
+		 * UI EVENTS
+		 */
+
+		upload: function(query, callback, scope, dynamic) {
+
+			query    = typeof query === 'string'    ? query    : null;
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : global;
+			dynamic  = dynamic === true;
+
+
+			var elements = ui.query(query);
+			if (elements.length > 0 && callback !== null) {
+
+				var length = _dropzones.push({
+					query:    query,
+					elements: elements,
+					callback: callback,
+					scope:    scope,
+					dynamic:  dynamic
+				});
+
+				_bind_dropzone(_dropzones[length - 1]);
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
 		download: function(filename, buffer) {
 
 			filename = typeof filename === 'string' ? filename : null;
@@ -893,78 +1059,43 @@ console.log(found.query);
 			if (filename !== null && buffer !== null) {
 
 				var ext  = filename.split('.').pop();
-				var type = null;
-				var url  = null;
-
-				switch(ext) {
-					case 'fnt': type = 'text/plain';               break;
-					case 'txt': type = 'application/json';         break;
-					case 'png': type = 'image/png';                break;
-					default:    type = 'application/octet-stream'; break;
+				var type = 'plain/text';
+				if (ext.match(/fnt|json/)) {
+					type = 'application/json';
+				} else if (ext.match(/png/)) {
+					type = 'image/png';
 				}
 
-
-				if (
-					   typeof Blob !== 'undefined'
-					&& typeof global.URL !== 'undefined'
-					&& typeof global.URL.createObjectURL === 'function'
-				) {
-
-					var blob = new Blob([ buffer.toString('utf8') ], {
-						type: type
-					});
-
-					url = global.URL.createObjectURL(blob);
-
-				} else {
-
-					url = 'data:' + type + ';base64,' + buffer.toString('base64');
-
-				}
+				var url     = 'data:' + type + ';base64,' + buffer.toString('base64');
+				var event   = _document.createEvent('MouseEvents');
+				var element = _document.createElement('a');
 
 
-				if (url !== null) {
+				element.download = filename;
+				element.href     = url;
 
-					var event   = _document.createEvent('MouseEvents');
-					var element = _document.createElement('a');
+				event.initMouseEvent(
+					'click',
+					true,
+					false,
+					window,
+					0,
+					0,
+					0,
+					0,
+					0,
+					false,
+					false,
+					false,
+					false,
+					0,
+					null
+				);
 
-					element.download = filename;
-					element.href     = url;
-
-					event.initMouseEvent(
-						'click',
-						true,
-						false,
-						window,
-						0,
-						0,
-						0,
-						0,
-						0,
-						false,
-						false,
-						false,
-						false,
-						0,
-						null
-					);
-
-					element.dispatchEvent(event);
+				element.dispatchEvent(event);
 
 
-					if (
-						   typeof global.URL !== 'undefined'
-						&& typeof global.URL.revokeObjectURL === 'function'
-					) {
-
-						global.URL.revokeObjectURL(url);
-
-					}
-
-
-					return true;
-
-				}
+				return true;
 
 			}
 

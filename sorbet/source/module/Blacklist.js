@@ -98,11 +98,11 @@ lychee.define('sorbet.module.Blacklist').requires([
 
 					if (object !== null) {
 
-						var url       = _is_blocked(object.blocked.urls,       data.url);
-						var remote    = _is_blocked(object.blocked.remotes,    data.remote);
-						var useragent = _is_blocked(object.blocked.useragents, data.useragent);
+						var isurl       = _is_blocked(object.blocked.urls,       data.url);
+						var isremote    = _is_blocked(object.blocked.remotes,    data.remote);
+						var isuseragent = _is_blocked(object.blocked.useragents, data.useragent);
 
-						if (url || remote || useragent) {
+						if (isurl || isremote || isuseragent) {
 
 							this.main.modules.get('Error').process(vhost, response, {
 								status: 418,

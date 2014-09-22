@@ -18,8 +18,31 @@ lychee.define('game.net.client.Highscore').requires([
 	var _on_sync = function(data) {
 
 		var objects = data.objects;
+
 		for (var o = 0, ol = objects.length; o < ol; o++) {
-			this.storage.update(o, objects[o]);
+
+			var update = objects[o];
+			var stored = this.storage.get(o);
+			if (stored === null) {
+
+				stored = this.storage.create();
+
+				stored.user  = update.user;
+				stored.time  = update.time;
+				stored.score = update.score;
+
+				this.storage.insert(stored);
+
+			} else {
+
+				stored.user  = update.user;
+				stored.time  = update.time;
+				stored.score = update.score;
+
+				this.storage.update(stored);
+
+			}
+
 		}
 
 	};
@@ -28,13 +51,7 @@ lychee.define('game.net.client.Highscore').requires([
 
 		var event = data.event;
 		if (event === 'sync') {
-
 			_on_sync.call(this, data);
-
-		} else if (event === 'insert') {
-
-			this.storage.insert(data.object);
-
 		}
 
 	};
@@ -52,15 +69,13 @@ lychee.define('game.net.client.Highscore').requires([
 
 		this.storage = new lychee.Storage({
 			id:    'boilerplate-highscore',
+			type:  lychee.Storage.TYPE.temporary,
 			model: _model
 		});
 
 
 		this.bind('sync',      _on_sync,      this);
 		this.bind('multicast', _on_multicast, this);
-
-
-window._SERVICE = this;
 
 	};
 
@@ -76,16 +91,16 @@ window._SERVICE = this;
 			if (this.tunnel !== null) {
 
 				var data   = this.storage.create();
+
 				data.user  = user;
 				data.score = score;
+				data.time  = Date.now();
 
 
-				this.tunnel.send(data, {
+				this.tunnel.send(lychee.extend({}, data), {
 					id:    this.id,
 					event: 'save'
 				});
-
-				this.storage.insert(data);
 
 
 				return true;

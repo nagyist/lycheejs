@@ -25,8 +25,8 @@
 		"files": {
 
 			"entity": {
-				"Button":   [ "js" ],
 				"Circle":   [ "js", "snd" ],
+				"Particle": [ "js" ],
 				"lycheeJS": [ "js", "png" ]
 			},
 
@@ -48,9 +48,14 @@
 			},
 
 			"state": {
-				"Game":      [ "js", "json", "headline.fnt", "normal.fnt" ],
-				"Highscore": [ "js", "json" ],
-				"Menu":      [ "js", "json", "headline.fnt", "normal.fnt" ]
+				"Game": [ "js", "json", "fnt" ],
+				"Menu": [ "js", "json" ]
+			},
+
+			"ui": {
+				"Button":     [ "js", "json", "png", "fnt" ],
+				"Highscores": [ "js", "fnt" ],
+				"Layer":      [ "js", "json", "png", "fnt" ]
 			},
 
 			"DeviceSpecificHacks": [ "js" ],

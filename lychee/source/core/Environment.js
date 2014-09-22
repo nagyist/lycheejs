@@ -279,7 +279,7 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 						) || null;
 
 					} catch(err) {
-						lychee.Debugger.report(err, this, definition);
+						lychee.Debugger.report(this, err, definition);
 					}
 
 				} else {
@@ -297,7 +297,7 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 						) || null;
 
 					} catch(err) {
-						lychee.Debugger.report(err, this, definition);
+						lychee.Debugger.report(this, err, definition);
 					}
 
 				}
@@ -539,9 +539,9 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 
 			},
 
-			error: function() {
+			info: function() {
 
-				var args = [ '(E)\t' ];
+				var args = [ '(I)\t' ];
 
 				for (var a = 0, al = arguments.length; a < al; a++) {
 					args.push(arguments[a]);
@@ -563,12 +563,16 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 
 			},
 
-			group: function(title) {
-				this.log.call(this, '~ ~ ~ ' + title + ' ~ ~ ~');
-			},
+			error: function() {
 
-			groupEnd: function() {
-				this.log.call(this, '~ ~ ~ ~ ~ ~');
+				var args = [ '(E)\t' ];
+
+				for (var a = 0, al = arguments.length; a < al; a++) {
+					args.push(arguments[a]);
+				}
+
+				this.log.apply(this, args);
+
 			}
 
 		};
@@ -582,20 +586,24 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 		this.Texture = global.Texture;
 
 
-		this.lychee = {};
+		this.lychee              = {};
+		this.lychee.ENVIRONMENTS = {};
+		this.lychee.VERSION      = global.lychee.VERSION;
 
-		for (var identifier in global.lychee) {
+		var identifiers = [
+			'debug', 'environment',
+			'diff', 'extend', 'extendsafe', 'extendunlink',
+			'enumof', 'interfaceof',
+			'serialize', 'deserialize',
+			'define', 'init', 'setEnvironment',
+			'Debugger', 'Definition', 'Environment', 'Package'
+		];
 
-			if ([
-				'debug', 'environment', 'VERSION',
-				'diff', 'extend', 'extendsafe', 'extendunlink',
-				'enumof', 'interfaceof',
-				'serialize', 'deserialize',
-				'define', 'init', 'setEnvironment',
-				'Debugger', 'Definition', 'Environment', 'Package'
-			].indexOf(identifier) !== -1) {
-				this.lychee[identifier] = global.lychee[identifier];
-			}
+
+		for (var i = 0, il = identifiers.length; i < il; i++) {
+
+			var identifier = identifiers[i];
+			this.lychee[identifier] = global.lychee[identifier];
 
 		}
 
@@ -690,11 +698,12 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 		}
 
 
+		this.setSandbox(settings.sandbox);
 		this.setDebug(settings.debug);
+
 		this.setDefinitions(settings.definitions);
 		this.setId(settings.id);
 		this.setPackages(settings.packages);
-		this.setSandbox(settings.sandbox);
 		this.setTags(settings.tags);
 		this.setTimeout(settings.timeout);
 
@@ -1086,7 +1095,7 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 								);
 
 							} catch(err) {
-								lychee.Debugger.report(err, this, null);
+								lychee.Debugger.report(this, err, null);
 							}
 
 						} else {

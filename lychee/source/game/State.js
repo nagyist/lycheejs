@@ -1,6 +1,7 @@
 
 lychee.define('lychee.game.State').requires([
 	'lychee.game.Layer',
+	'lychee.game.Logic',
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global) {
 
@@ -74,6 +75,7 @@ lychee.define('lychee.game.State').requires([
 
 
 		this.__layers  = {};
+		this.__logics  = [];
 		this.__focus   = null;
 		this.__touches = [
 			{ entity: null, layer: null, offset: { x: 0, y: 0 } },
@@ -99,8 +101,20 @@ lychee.define('lychee.game.State').requires([
 
 		deserialize: function(blob) {
 
-			for (var id in blob.layers) {
-				this.setLayer(id, lychee.deserialize(blob.layers[id]));
+			if (blob.layers) {
+
+				for (var laid in blob.layers) {
+					this.setLayer(laid, lychee.deserialize(blob.layers[laid]));
+				}
+
+			}
+
+			if (blob.logics) {
+
+				for (var l = 0, ll = blob.logics.length; b < bl; b++) {
+					this.addLogic(lychee.deserialize(blob.logics[l]));
+				}
+
 			}
 
 		},
@@ -115,8 +129,19 @@ lychee.define('lychee.game.State').requires([
 
 				blob.layers = {};
 
-				for (var id in this.__layers) {
-					blob.layers[id] = lychee.serialize(this.__layers[id]);
+				for (var lid in this.__layers) {
+					blob.layers[lid] = lychee.serialize(this.__layers[lid]);
+				}
+
+			}
+
+
+			if (this.__logics.length > 0) {
+
+				blob.logics = [];
+
+				for (var l = 0, ll = this.__logics.length; l < ll; l++) {
+					blob.logics.push(lychee.serialize(this.__logics[l]));
 				}
 
 			}
@@ -137,6 +162,11 @@ lychee.define('lychee.game.State').requires([
 				input.bind('key',   this.processKey,   this);
 				input.bind('touch', this.processTouch, this);
 				input.bind('swipe', this.processSwipe, this);
+			}
+
+			var logics = this.__logics;
+			for (var l = 0, ll = logics.length; l < ll; l++) {
+				logics[l].enter(data);
 			}
 
 		},
@@ -168,6 +198,11 @@ lychee.define('lychee.game.State').requires([
 				input.unbind('swipe', this.processSwipe, this);
 				input.unbind('touch', this.processTouch, this);
 				input.unbind('key',   this.processKey,   this);
+			}
+
+			var logics = this.__logics;
+			for (var l = 0, ll = logics.length; l < ll; l++) {
+				logics[l].leave();
 			}
 
 		},
@@ -243,6 +278,12 @@ lychee.define('lychee.game.State').requires([
 
 				layer.update(clock, delta);
 
+			}
+
+
+			var logics = this.__logics;
+			for (var l = 0, ll = logics.length; l < ll; l++) {
+				logics[l].update(clock, delta);
 			}
 
 		},
@@ -343,6 +384,101 @@ lychee.define('lychee.game.State').requires([
 			return false;
 
 		},
+
+		/*
+		 * LOGIC API
+		 */
+
+		addLogic: function(logic) {
+
+			logic = lychee.interfaceof(lychee.game.Logic, logic) ? logic : null;
+
+
+			if (logic !== null) {
+
+				var index = this.__logics.indexOf(logic);
+				if (index === -1) {
+
+					this.__logics.push(logic);
+
+					return true;
+
+				}
+
+			}
+
+
+			return false;
+
+		},
+
+		removeLogic: function(logic) {
+
+			logic = lychee.interfaceof(lychee.game.Logic, logic) ? logic : null;
+
+
+			if (logic !== null) {
+
+				var index = this.__logics.indexOf(logic);
+				if (index !== -1) {
+
+					this.__logics.splice(index, 1);
+
+					return true;
+
+				}
+
+			}
+
+
+			return false;
+
+		},
+
+		setLogics: function(logics) {
+
+			var all = true;
+
+			if (logics instanceof Array) {
+
+				for (var l = 0, ll = logics.length; l < ll; l++) {
+
+					var result = this.addLogic(logics[l]);
+					if (result === false) {
+						all = false;
+					}
+
+				}
+
+			}
+
+
+			return all;
+
+		},
+
+		removeLogics: function() {
+
+			var logics = this.__logics;
+
+			for (var l = 0, ll = logics.length; l < ll; l++) {
+
+				this.removeLogic(logics[l]);
+
+				ll--;
+				l--;
+
+			}
+
+			return true;
+
+		},
+
+
+
+		/*
+		 * EVENT API
+		 */
 
 		processKey: function(key, name, delta) {
 
@@ -531,31 +667,6 @@ lychee.define('lychee.game.State').requires([
 				}
 
 			}
-
-		},
-
-		// TODO: Remove legacy API simulateTouch(), not necessary anymore
-
-		simulateTouch: function(id, position, delta) {
-
-			id       = typeof id === 'number'     ? id       : 0;
-			position = position instanceof Object ? position : { x: 0, y: 0 };
-			delta    = typeof delta === 'number'  ? delta    : 0;
-
-
-			var renderer = this.renderer;
-			if (renderer !== null) {
-
-				position.x += renderer.width  / 2;
-				position.y += renderer.height / 2;
-
-				position.x += renderer.offset.x;
-				position.y += renderer.offset.y;
-
-			}
-
-
-			this.processTouch(id, position, delta);
 
 		}
 

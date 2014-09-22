@@ -2,13 +2,11 @@
 lychee.define('sorbet.module.honey.Admin').exports(function(lychee, sorbet, global, attachments) {
 
 	var _content = {
-		'/admin/':               attachments['index.php'],
-		'/admin/index.html':     attachments['index.php'],
-		'/admin/index.php':      attachments['index.php'],
-		'/admin/login.html':     attachments['index.php'],
-		'/admin/login.php':      attachments['index.php'],
-		'/admin/config.php':     '',
-		'/admin/config.php.bak': attachments['config.php.bak']
+		'/admin/':               attachments['index.php'].buffer,
+		'/admin/index.html':     attachments['index.php'].buffer,
+		'/admin/index.php':      attachments['index.php'].buffer,
+		'/admin/config.php':     '\n\n\n',
+		'/admin/config.php.bak': attachments['config.php.bak'].buffer
 	};
 
 
@@ -22,10 +20,9 @@ lychee.define('sorbet.module.honey.Admin').exports(function(lychee, sorbet, glob
 
 	Module.URLS = {
 		'/admin/':               true,
+		'/admin/*':              true,
 		'/admin/index.html':     false,
 		'/admin/index.php':      false,
-		'/admin/login.html':     false,
-		'/admin/login.php':      false,
 		'/admin/config.php':     false,
 		'/admin/config.php.bak': false
 	};
