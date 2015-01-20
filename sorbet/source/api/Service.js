@@ -7,19 +7,108 @@ lychee.define('sorbet.api.Service').includes([
 	 * HELPERS
 	 */
 
-	var _services = {};
+	var _dispatch_response = function(response, status, apidata, data) {
 
-	var _validate_tunnel = function(tunnel, type) {
+		if (data.method === 'OPTIONS') {
 
-		if (type === null) return false;
+			var origin = data.origin;
+			var port   = this.main.port || 80;
+			var tmp    = [];
+
+			for (var method in this.methods) {
+
+				if (this.methods[method] === true) {
+					tmp.push(method);
+				}
+
+			}
 
 
-		if (type === Class.TYPE.client) {
-			return lychee.interfaceof(sorbet.api.Client, tunnel);
+			var credentials = this.session === true ? 'true' : 'false';
+			var methods     = tmp.join(',');
+
+			response.header['Vary']                             = 'Origin';
+			response.header['Access-Control-Allow-Credentials'] = credentials;
+			response.header['Access-Control-Allow-Origin']      = 'http://' + origin + ':' + port;
+			response.header['Access-Control-Allow-Methods']     = methods;
+			response.header['Access-Control-Max-Age']           = 60 * 60;
+
 		}
 
 
-		return false;
+		response.status                 = status;
+		response.header['Content-Type'] = 'application/json';
+		response.content                = JSON.stringify(apidata, null, '\t');
+
+	};
+
+	var _parse_parameters = function(data) {
+
+		var parameters = {};
+
+
+		if (data.url.indexOf('?') !== -1) {
+
+			var tmp = data.url.substr(data.url.indexOf('?') + 1).split('&');
+			for (var t = 0, tl = tmp.length; t < tl; t++) {
+
+				var tmp2 = tmp[t].split('=');
+				parameters[tmp2[0]] = tmp2[1];
+
+			}
+
+		}
+
+		if (typeof data.blob === 'string') {
+
+			if (data.blob.length > 2) {
+
+				var tmp3 = null;
+
+				try {
+					tmp3 = JSON.parse(data.blob);
+				} catch(e) {
+					tmp3 = null;
+				}
+
+
+				if (tmp3 !== null) {
+
+					for (var prop in tmp3) {
+						parameters[prop] = tmp3[prop];
+					}
+
+				}
+
+			}
+
+		}
+
+		if (typeof data.identifier === 'string') {
+			parameters.identifier = data.identifier;
+		} else if (parameters.identifier === undefined) {
+			parameters.identifier = null;
+		}
+
+		if (typeof data.host === 'string') {
+			parameters.host = data.host;
+		}
+
+		if (typeof data.referer === 'string') {
+			parameters.referer = data.referer;
+		}
+
+
+		for (var p in parameters) {
+
+			if (parameters[p] === 'null' || parameters[p] === 'undefined') {
+				parameters[p] = null;
+			}
+
+		}
+
+
+		return parameters;
 
 	};
 
@@ -29,33 +118,16 @@ lychee.define('sorbet.api.Service').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(id, tunnel, type) {
+	var Class = function(data, session) {
 
-		id     = typeof id === 'string'          ? id     : null;
-		type   = lychee.enumof(Class.TYPE, type) ? type   : null;
-		tunnel = _validate_tunnel(tunnel, type)  ? tunnel : null;
-
-
-		this.id     = id;
-		this.tunnel = tunnel;
-		this.type   = type;
-
-
-		if (lychee.debug === true) {
-
-			if (this.id === null) {
-				console.error('sorbet.api.Service: Invalid (string) id. It has to be kept in sync with the sorbet.api.Client and server-side sorbet.api.<id> instance.');
-			}
-
-			if (this.tunnel === null) {
-				console.error('sorbet.api.Service: Invalid (sorbet.api.Client) tunnel.');
-			}
-
-			if (this.type === null) {
-				console.error('sorbet.api.Service: Invalid (sorbet.api.Service.TYPE) type.');
-			}
-
-		}
+		this.session = session === true;
+		this.methods = lychee.extend({
+			'GET':     true,
+			'OPTIONS': true,
+			'PATCH':   true,
+			'POST':    true,
+			'PUT':     true
+		}, data);
 
 
 		lychee.event.Emitter.call(this);
@@ -63,69 +135,49 @@ lychee.define('sorbet.api.Service').includes([
 	};
 
 
-	Class.TYPE = {
-		// 'default': 0, (deactivated)
-		'client': 1
-		// 'remote': 2
-	};
-
-
 	Class.prototype = {
 
-		/*
-		 * ENTITY API
-		 */
+		process: function(vhost, response, data) {
 
-		deserialize: function(blob) {
+			var parameters = _parse_parameters(data);
+			var origin     = this.main.vhosts.get(data.origin || data.host);
+			var method     = this.methods[data.method];
 
-			if (blob.tunnel instanceof Object) {
-				this.tunnel = lychee.deserialize(blob.tunnel);
+			if (origin !== null && method === true) {
+
+				var result = this.trigger(data.method, [ vhost, parameters, function(apiresult, apidata) {
+
+					if (apiresult === true) {
+
+						_dispatch_response.call(this, response, 200, apidata, data);
+
+					} else {
+
+						_dispatch_response.call(this, response, 404, apidata, data);
+
+					}
+
+					return true;
+
+				}]);
+
+
+				if (result === false) {
+
+					_dispatch_response.call(this, response, 500, {}, data);
+
+					return true;
+
+				}
+
+
+				return true;
+
 			}
 
-		},
 
-		serialize: function() {
-
-			var id     = null;
-			var tunnel = null;
-			var type   = null;
-
-			var blob = {};
-
-
-			if (this.id !== null)     id = this.id;
-			if (this.tunnel !== null) blob.tunnel = lychee.serialize(this.tunnel);
-			if (this.type !== null)   type = this.type;
-
-
-			return {
-				'constructor': 'sorbet.api.Service',
-				'arguments':   [ id, tunnel, type ],
-				'blob':        blob
-			};
-
-		},
-
-
-
-		/*
-		 * SERVICE API
-		 */
-
-		multicast: function(data, service) {
 			return false;
-		},
 
-		broadcast: function(data, service) {
-			return false;
-		},
-
-		report: function(message, blob) {
-			return false;
-		},
-
-		setMulticast: function(multicast) {
-			return false;
 		}
 
 	};

@@ -48,12 +48,12 @@
 
 			"platform": {
 
-				"html":         "platform/html",
-				"html-cordova": "platform/html-cordova",
-				"html-webgl":   "platform/html-webgl",
-				"nodejs":       "platform/nodejs",
-				"nodejs-sdl":   "platform/nodejs-sdl",
-				"nodejs-webgl": "platform/nodejs-webgl"
+				"html":          "platform/html",
+				"html-webgl":    "platform/html-webgl",
+				"html-nw":       "platform/html-nw",
+				"nodejs":        "platform/nodejs",
+				"nodejs-sdl":    "platform/nodejs-sdl",
+				"nodejs-webgl":  "platform/nodejs-webgl"
 
 			}
 
@@ -78,16 +78,6 @@
 
 				},
 
-				"html-webgl": {
-
-					"Renderer": [
-						"js",
-						"Sprite.vs",
-						"Sprite.fs"
-					]
-
-				},
-
 				"nodejs": {
 
 					"net": {
@@ -106,7 +96,8 @@
 			},
 
 			"data": {
-				"BitON": [ "js" ]
+				"BitON": [ "js" ],
+				"JSON":  [ "js" ]
 			},
 
 			"effect": {
@@ -152,6 +143,7 @@
 
 				"Protocol": [ "js" ],
 				"Service":  [ "js" ],
+				"Tunnel":   [ "js" ],
 
 				"client": {
 					"Chat":        [ "js" ],

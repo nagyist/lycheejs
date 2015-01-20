@@ -45,10 +45,33 @@ lychee.define('game.ui.Button').includes([
 		 * ENTITY API
 		 */
 
+		deserialize: function(blob) {
+
+			if (blob.font instanceof Object) {
+				this.font = lychee.deserialize(blob.font);
+			}
+
+		},
+
 		serialize: function() {
 
 			var data = lychee.ui.Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.ui.Button';
+
+			var settings = data['arguments'][0] || {};
+			var blob     = data['blob'] || {};
+
+
+			if (this.label !== null) settings.label = this.label;
+
+
+			if (this.font !== null) {
+				blob.font = lychee.serialize(this.font);
+			}
+
+
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

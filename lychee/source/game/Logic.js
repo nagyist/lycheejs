@@ -337,12 +337,12 @@ lychee.define('lychee.game.Logic').requires([
 				position.z = z;
 
 
-				return false;
+				return true;
 
 			}
 
 
-			return true;
+			return false;
 
 		},
 
@@ -391,12 +391,12 @@ lychee.define('lychee.game.Logic').requires([
 				position.z = z;
 
 
-				return false;
+				return true;
 
 			}
 
 
-			return true;
+			return false;
 
 		}
 

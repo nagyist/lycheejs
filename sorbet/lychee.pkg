@@ -4,19 +4,6 @@
 
 		"environments": {
 
-			"html/api": {
-				"build":    "sorbet.api.Client",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "library",
-				"packages": [
-					[ "sorbet", "./lychee.pkg" ]
-				],
-				"tags":     {
-					"platform": [ "html" ]
-				}
-			},
-
 			"html/core": {
 				"build":    "sorbet.net.Client",
 				"debug":    false,
@@ -59,50 +46,14 @@
 
 		"tags": {
 
-			"platform": {
-
-				"html":         "platform/html",
-				"html-cordova": "platform/html-cordova",
-				"html-webgl":   "platform/html-webgl",
-				"nodejs":       "platform/nodejs",
-				"nodejs-sdl":   "platform/nodejs-sdl",
-				"nodejs-webgl": "platform/nodejs-webgl"
-
-			}
-
 		},
 
 		"files": {
 
-			"platform": {
-
-				"html": {
-
-					"api": {
-						"Client":  [ "js" ]
-					}
-
-				}
-
-			},
-
 			"api": {
 
-				"client": {
-					"Debugger":    [ "js" ],
-					"Log":         [ "js" ],
-					"Project":     [ "js" ],
-					"VirtualHost": [ "js" ]
-				},
-
 				"remote": {
-					"Service":     [ "js" ],
-					"Blacklist":   [ "js" ],
-					"Debugger":    [ "js" ],
-					"Log":         [ "js" ],
-					"Project":     [ "js" ],
-					"Server":      [ "js" ],
-					"VirtualHost": [ "js" ]
+					"Server": [ "js" ]
 				},
 
 				"Service": [ "js" ]
@@ -140,12 +91,12 @@
 
 				"client": {
 					"Debugger": [ "js" ],
-					"Session":  [ "js" ]
+					"Service":  [ "js" ]
 				},
 
 				"remote": {
 					"Debugger": [ "js" ],
-					"Session":  [ "js" ]
+					"Service":  [ "js" ]
 				},
 
 				"Client": [ "js" ],

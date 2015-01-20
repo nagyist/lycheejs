@@ -34,8 +34,15 @@ lychee.define('sorbet.data.Filesystem').includes([
 
 			if (err.code === 'ENOENT') {
 
-				_mkdir_p(_path.dirname(path), mode);
-				_fs.mkdirSync(path, mode);
+				try {
+
+					_mkdir_p(_path.dirname(path), mode);
+					_fs.mkdirSync(path, mode);
+
+				} catch(e) {
+					return false;
+				}
+
 
 				return true;
 
@@ -272,20 +279,19 @@ lychee.define('sorbet.data.Filesystem').includes([
 
 		},
 
-		readchunk: function(path, from, to, callback, scope) {
+		readrange: function(path, range, callback, scope) {
 
-			from     = typeof from === 'number'     ? (from | 0) : 0;
-			to       = typeof to === 'number'       ? (to | 0)   : 0;
+			range    = range instanceof Object      ? range      : null;
 			callback = callback instanceof Function ? callback   : null;
 			scope    = scope !== undefined          ? scope      : this;
 
 
 			var resolved = this.resolve(path);
-			if (resolved !== null) {
+			var size     = range.to - range.from + 1;
 
-				var size   = to - from;
+			if (resolved !== null && range !== null) {
+
 				var buffer = new Buffer(size);
-
 
 				if (callback !== null) {
 
@@ -296,7 +302,7 @@ lychee.define('sorbet.data.Filesystem').includes([
 							return;
 						}
 
-						_fs.read(fd, buffer, 0, size, from, function(err) {
+						_fs.read(fd, buffer, 0, size, range.from, function(err) {
 
 							if (err) {
 								callback.call(scope, null);
@@ -312,12 +318,19 @@ lychee.define('sorbet.data.Filesystem').includes([
 
 				} else {
 
-					var fd = _fs.openSync(resolved, 'r');
+					try {
 
-					_fs.readSync(fd, buffer, 0, size, from);
-					_fs.close(fd);
+						var fd = _fs.openSync(resolved, 'r');
 
-					return buffer;
+						_fs.readSync(fd, buffer, 0, size, range.from);
+						_fs.close(fd);
+
+						return buffer;
+
+					} catch(e) {
+					}
+
+					return null;
 
 				}
 

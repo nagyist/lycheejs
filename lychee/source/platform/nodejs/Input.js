@@ -31,14 +31,16 @@ lychee.define('Input').tags({
 			// This is apparently a hack to have a TTY conform behaviour
 			if (key.ctrl === true && key.name === 'c') {
 
-				process.exit();
+				key.name  = 'escape';
+				key.ctrl  = false;
+				key.alt   = false
+				key.shift = false;
 
-			} else {
+			}
 
-				for (var i = 0, l = _instances.length; i < l; i++) {
-					_process_key.call(_instances[i], key.name, key.ctrl, key.meta, key.shift);
-				}
 
+			for (var i = 0, l = _instances.length; i < l; i++) {
+				_process_key.call(_instances[i], key.name, key.ctrl, key.meta, key.shift);
 			}
 
 		}
@@ -111,15 +113,6 @@ lychee.define('Input').tags({
 			handled = this.trigger('key', [ key, name, delta ]) || handled;
 			handled = this.trigger(name,  [ delta ])            || handled;
 
-
-			if (handled === true) {
-
-				if (lychee.debug === true) {
-					this.__history.key.push([ Date.now(), key, name, delta ]);
-				}
-
-			}
-
 		}
 
 
@@ -151,11 +144,6 @@ lychee.define('Input').tags({
 			key:   Date.now(),
 			touch: Date.now(),
 			swipe: Date.now()
-		};
-		this.__history = {
-			key:   [],
-			touch: [],
-			swipe: []
 		};
 
 
@@ -209,8 +197,10 @@ lychee.define('Input').tags({
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.Input';
+
 			var settings = {};
-			var blob     = {};
 
 
 			if (this.delay !== 0)           settings.delay       = this.delay;
@@ -220,48 +210,10 @@ lychee.define('Input').tags({
 			if (this.swipe !== false)       settings.swipe       = this.swipe;
 
 
-			if (this.__history.key.length > 0 || this.__history.touch.length > 0 || this.__history.swipe.length > 0) {
-
-				blob.history = {};
-
-				if (this.__history.key.length > 0) {
-
-					blob.history.key = [];
-
-					for (var k = 0, kl = this.__history.key.length; k < kl; k++) {
-						blob.history.key.push(this.__history.key[k]);
-					}
-
-				}
-
-				if (this.__history.touch.length > 0) {
-
-					blob.history.touch = [];
-
-					for (var t = 0, tl = this.__history.touch.length; t < tl; t++) {
-						blob.history.touch.push(this.__history.touch[t]);
-					}
-
-				}
-
-				if (this.__history.swipe.length > 0) {
-
-					blob.history.swipe = [];
-
-					for (var s = 0, sl = this.__history.swipe.length; s < sl; s++) {
-						blob.history.swipe.push(this.__history.swipe[s]);
-					}
-
-				}
-
-			}
+			data['arguments'][0] = settings;
 
 
-			return {
-				'constructor': 'lychee.Input',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			return data;
 
 		},
 
@@ -320,11 +272,23 @@ lychee.define('Input').tags({
 		},
 
 		setTouch: function(touch) {
+
+			if (touch === true || touch === false) {
+				return false;
+			}
+
 			return false;
+
 		},
 
 		setSwipe: function(swipe) {
+
+			if (swipe === true || swipe === false) {
+				return false;
+			}
+
 			return false;
+
 		}
 
 	};

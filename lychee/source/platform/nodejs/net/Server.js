@@ -2,6 +2,8 @@
 lychee.define('lychee.net.Server').tags({
 	platform: 'nodejs'
 }).requires([
+	'lychee.data.BitON',
+	'lychee.data.JSON',
 	'lychee.net.Remote'
 ]).includes([
 	'lychee.event.Emitter'
@@ -14,12 +16,13 @@ lychee.define('lychee.net.Server').tags({
 
 	return false;
 
-}).exports(function(lychee, global) {
+}).exports(function(lychee, global, attachments) {
 
 	var http    = require('http');
 	var crypto  = require('crypto');
 
-	var _remote = lychee.net.Remote;
+	var _BitON  = lychee.data.BitON;
+	var _JSON   = lychee.data.JSON;
 
 
 
@@ -27,51 +30,34 @@ lychee.define('lychee.net.Server').tags({
 	 * HELPERS
 	 */
 
-	var _get_websocket_headers = function(httpheaders) {
-
-		var wsheaders = {
-			host:    httpheaders.host,
-			origin:  httpheaders.origin || null,
-			version: +httpheaders.version || 0
-		};
-
-
-		for (var prop in httpheaders) {
-
-			if (prop.substr(0, 14) === 'sec-websocket-') {
-				wsheaders[prop.substr(14)] = httpheaders[prop];
-			}
-
-		}
-
-
-		if (wsheaders.version) {
-			return wsheaders;
-		}
-
-
-		return null;
-
-	};
-
 	var _get_websocket_handshake = function(request) {
 
-		var headers = _get_websocket_headers(request.headers);
-		if (headers !== null && headers.origin !== null) {
+		var origin   = request.headers.origin || null;
+		var host     = request.headers.host   || null;
+		var nonce    = request.headers['sec-websocket-key'] || null;
 
-			var sha1 = crypto.createHash('sha1');
-			sha1.update(headers.key + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
+		if (origin !== null && nonce !== null) {
+
+			var handshake = '';
+			var accept    = (function(nonce) {
+
+				var sha1 = crypto.createHash('sha1');
+				sha1.update(nonce + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
+				return sha1.digest('base64');
+
+			})(nonce);
 
 
 			// HEAD
-			var handshake = '';
+
 			handshake += 'HTTP/1.1 101 WebSocket Protocol Handshake\r\n';
 			handshake += 'Upgrade: WebSocket\r\n';
 			handshake += 'Connection: Upgrade\r\n';
 
-			handshake += 'Sec-WebSocket-Version: ' + headers.version       + '\r\n';
-			handshake += 'Sec-WebSocket-Origin: '  + headers.origin        + '\r\n';
-			handshake += 'Sec-WebSocket-Accept: '  + sha1.digest('base64') + '\r\n';
+			handshake += 'Sec-WebSocket-Version: '  + '13'       + '\r\n';
+			handshake += 'Sec-WebSocket-Origin: '   + origin     + '\r\n';
+			handshake += 'Sec-WebSocket-Protocol: ' + 'lycheejs' + '\r\n';
+			handshake += 'Sec-WebSocket-Accept: '   + accept     + '\r\n';
 
 
 			// BODY
@@ -89,38 +75,30 @@ lychee.define('lychee.net.Server').tags({
 
 	var _upgrade_to_websocket = function(request, socket, head) {
 
-		var reqheaders = request.headers;
-		if (typeof reqheaders.upgrade === 'string' && reqheaders.upgrade.toLowerCase() === 'websocket') {
+		var connection = (request.headers.connection || '').toLowerCase();
+		var upgrade    = (request.headers.upgrade    || '').toLowerCase();
+		var protocol   = (request.headers['sec-websocket-protocol'] || '').toLowerCase();
 
-			if (typeof reqheaders.connection === 'string' && reqheaders.connection.toLowerCase().indexOf('upgrade') !== -1) {
+		if (connection === 'upgrade' && upgrade === 'websocket' && protocol === 'lycheejs') {
 
-				var handshake = _get_websocket_handshake(request);
-				if (handshake !== null) {
+			var handshake = _get_websocket_handshake(request);
+			if (handshake !== null) {
 
-					socket.write(handshake, 'ascii');
-					socket.setTimeout(0);
-					socket.setNoDelay(true);
-					socket.setKeepAlive(true, 0);
-					socket.removeAllListeners('timeout');
+				socket.write(handshake, 'ascii');
+				socket.setTimeout(0);
+				socket.setNoDelay(true);
+				socket.setKeepAlive(true, 0);
+				socket.removeAllListeners('timeout');
 
-
-					var remote = new _remote(
-						socket,
-						this.__encoder,
-						this.__decoder
-					);
-
-					this.connect(remote);
-
-
-					return true;
-
-				}
+				return true;
 
 			}
 
 		}
 
+
+		socket.end();
+		socket.destroy();
 
 		return false;
 
@@ -137,11 +115,16 @@ lychee.define('lychee.net.Server').tags({
 		var settings = lychee.extend({}, data);
 
 
-		this.remotes = [];
+		this.host = null;
+		this.port = 1337;
 
-		this.__encoder = settings.encoder instanceof Function ? settings.encoder : JSON.stringify;
-		this.__decoder = settings.decoder instanceof Function ? settings.decoder : JSON.parse;
-		this.__socket  = null;
+
+		this.__codec  = lychee.interfaceof(settings.codec, _JSON) ? settings.codec : _JSON;
+		this.__socket = null;
+
+
+		this.setHost(settings.host);
+		this.setPort(settings.port);
 
 
 		lychee.event.Emitter.call(this);
@@ -153,82 +136,91 @@ lychee.define('lychee.net.Server').tags({
 
 	Class.prototype = {
 
-		listen: function(port, host) {
+		/*
+		 * ENTITY API
+		 */
 
-			if (this.__socket !== null) return false;
+		// deserialize: function(blob) {},
 
+		serialize: function() {
 
-			port = typeof port === 'number' ? port : 1337;
-			host = typeof host === 'string' ? host : null;
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.net.Server';
 
-
-			if (lychee.debug === true) {
-				console.log('lychee.net.Server: Listening on ' + host + ':' + port);
-			}
-
-
-			var that = this;
+			var settings = {};
 
 
-			this.__socket = new http.Server();
+			if (this.host !== 'localhost') settings.host = this.host;
+			if (this.port !== 1337)        settings.port = this.port;
 
-			this.__socket.on('upgrade', function(request, socket, headers) {
 
-				if (_upgrade_to_websocket.call(that, request, socket, headers) === false) {
-					socket.end();
-					socket.destroy();
-				}
+			data['arguments'][0] = settings;
 
-			});
 
-			this.__socket.on('error', function(err) {
-
-				console.error('lychee.net.Server: Error "' + err + '" on ' + host + ':' + port);
-
-				try {
-					that.__socket.close();
-				} catch(e) {
-				}
-
-			});
-
-			this.__socket.on('close', function() {
-				that.__socket = null;
-			});
-
-			this.__socket.listen(port, host);
+			return data;
 
 		},
 
 
 
 		/*
-		 * REMOTE INTEGRATION API
+		 * CUSTOM API
 		 */
 
-		connect: function(remote) {
+		connect: function() {
 
-			var found = false;
-			for (var r = 0, rl = this.remotes.length; r < rl; r++) {
-
-				if (this.remotes[r] === remote) {
-					found = true;
-					break;
-				}
-
-			}
-
-
-			if (found === false) {
+			if (this.__socket === null) {
 
 				if (lychee.debug === true) {
-					console.log('lychee.net.Server: Connected lychee.Remote (' + remote.id + ')');
+					console.log('lychee.net.Server: Connected to ' + this.host + ':' + this.port);
 				}
 
-				remote.bind('#destroy', this.disconnect, this);
 
-				this.remotes.push(remote);
-				this.trigger('connect', [ remote ]);
+				var that = this;
+
+
+				this.__socket = new http.Server();
+
+				this.__socket.on('upgrade', function(request, socket, headers) {
+
+					if (_upgrade_to_websocket.call(that, request, socket, headers) === true) {
+
+						var host = socket.remoteAddress || socket.server._connectionKey.split(':')[1];
+						var port = socket.remotePort    || socket.server._connectionKey.split(':')[2];
+
+
+						var remote = new lychee.net.Remote({
+							host:  host,
+							port:  port,
+							codec: that.__codec
+						});
+
+						remote.bind('connect', function() {
+							that.trigger('connect', [ this ]);
+						}, remote);
+
+						remote.bind('disconnect', function() {
+							that.trigger('disconnect', [ this ]);
+						}, remote);
+
+						remote.connect(socket);
+						remote.trigger('connect', []);
+
+					}
+
+				});
+
+				this.__socket.on('error', function(err) {
+
+					console.error('lychee.net.Server: Error "' + err + '" on ' + that.host + ':' + that.port);
+
+				});
+
+				this.__socket.on('close', function() {
+					that.__socket = null;
+				});
+
+				this.__socket.listen(this.port, this.host);
 
 
 				return true;
@@ -240,29 +232,49 @@ lychee.define('lychee.net.Server').tags({
 
 		},
 
-		disconnect: function(remote) {
+		disconnect: function() {
 
-			var found = false;
-			for (var r = 0, rl = this.remotes.length; r < rl; r++) {
+			if (this.__socket !== null) {
+				this.__socket.close();
+			}
 
-				if (this.remotes[r] === remote) {
-					found = true;
-					this.remotes.splice(r, 1);
-					rl--;
-					r--;
-				}
+
+			return true;
+
+		},
+
+
+
+		/*
+		 * TUNNEL API
+		 */
+
+		setHost: function(host) {
+
+			host = typeof host === 'string' ? host : null;
+
+
+			if (host !== null) {
+
+				this.host = host;
+
+				return true;
 
 			}
 
 
-			if (found === true) {
+			return false;
 
-				if (lychee.debug === true) {
-					console.log('lychee.net.Server: Disconnected lychee.Remote (' + remote.id + ')');
-				}
+		},
 
-				this.trigger('disconnect', [ remote ]);
+		setPort: function(port) {
 
+			port = typeof port === 'number' ? (port | 0) : null;
+
+
+			if (port !== null) {
+
+				this.port = port;
 
 				return true;
 

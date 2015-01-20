@@ -195,6 +195,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 		id = typeof id === 'string' ? id : 'valley';
 
 
+		this.id         = id;
 		this.length     = 0;
 
 		this.__palette  = [];
@@ -231,6 +232,15 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 		/*
 		 * ENTITY API
 		 */
+
+		serialize: function() {
+
+			return {
+				'constructor': 'game.entity.Track',
+				'arguments':   [ this.id ]
+			};
+
+		},
 
 		render: function(renderer, offsetX, offsetY, camera, compositor) {
 

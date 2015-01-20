@@ -1,0 +1,18 @@
+
+section.inspector-State {
+	display: none;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+}
+
+section.inspector-State.active {
+	display: block;
+}
+
+section.inspector-State > article.hidden {
+	display: none;
+}
+

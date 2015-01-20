@@ -41,8 +41,10 @@ require(_root + '/lychee/build/nodejs/core.js')(_root);
 		var lychee = sandbox.lychee;
 		var sorbet = sandbox.sorbet;
 
-		sandbox.SERVER = new sorbet.net.Server();
-		sandbox.SERVER.listen(_port, _host);
+		sandbox.SERVER = new sorbet.net.Server({
+			host: _host,
+			port: _port
+		});
 
 	});
 

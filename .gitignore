@@ -3,13 +3,18 @@
 /projects/*/build
 /projects/*/lychee.store
 !/projects/README.md
-!/projects/blitzkrieg
 !/projects/boilerplate
+!/projects/cultivator
 !/projects/mode7
 !/projects/pong
 
 /lychee/build/*
+/lychee/docs/*
 /lychee.store
+
+/fertilizers/*
+!/fertilizers/html
+!/fertilizers/nodejs
 
 /sorbet.log
 /sorbet/lychee.store

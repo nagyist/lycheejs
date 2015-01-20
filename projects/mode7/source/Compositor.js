@@ -23,6 +23,25 @@ lychee.define('game.Compositor').exports(function(lychee, game, global, attachme
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			return {
+				'constructor': 'game.Compositor',
+				'arguments':   [ '#MAIN' ]
+			};
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
 		reshape: function() {
 
 			var renderer = this.renderer;

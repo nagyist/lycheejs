@@ -36,6 +36,12 @@
 		"stream":   false
 	},
 
+	"md": {
+		"encoding": "utf8",
+		"type":     "text/x-markdown",
+		"stream":   false
+	},
+
 	"mf": {
 		"encoding": "utf8",
 		"type":     "text/cache-manifest",
@@ -69,6 +75,12 @@
 	"mp3": {
 		"encoding": "binary",
 		"type":     "audio/mp3",
+		"stream":   true
+	},
+
+	"mp4": {
+		"encoding": "binary",
+		"type":     "video/mp4",
 		"stream":   true
 	},
 

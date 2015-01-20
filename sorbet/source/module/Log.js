@@ -97,7 +97,7 @@ lychee.define('sorbet.module.Log').requires([
 
 		var tmp, id;
 
-		if (url !== null) {
+		if (url !== null && parameters !== null) {
 
 			if (url === '/api/Server') {
 
@@ -140,7 +140,7 @@ lychee.define('sorbet.module.Log').requires([
 
 		if (remote !== null) {
 
-			var regexp  = new RegExp("(^127\.*)|(^10\.*)|(^192\.168\.*)|(^172\.(1[6-9]|2[0-9]|3[01]))", "g");
+			var regexp  = new RegExp("(^127\\.*)|(^10\\.*)|(^192\\.168\\.*)|(^172\\.(1[6-9]|2[0-9]|3[01]))", "g");
 			if (regexp.test(remote) === false) {
 				return true;
 			}

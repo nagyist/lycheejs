@@ -1,6 +1,6 @@
 
 lychee.define('sorbet.api.remote.Server').includes([
-	'sorbet.api.remote.Service'
+	'sorbet.api.Service'
 ]).exports(function(lychee, sorbet, global, attachments) {
 
 	/*
@@ -86,10 +86,10 @@ lychee.define('sorbet.api.remote.Server').includes([
 		this.main = main;
 
 
-		sorbet.api.remote.Service.call(this, {
-			'PATCH':   false,
-			'POST':    false,
-			'PUT':     false
+		sorbet.api.Service.call(this, {
+			'PATCH': false,
+			'POST':  false,
+			'PUT':   false
 		});
 
 

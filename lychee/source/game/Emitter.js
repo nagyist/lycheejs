@@ -55,6 +55,9 @@ lychee.define('lychee.game.Emitter').requires([
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.game.Emitter';
+
 			var settings = {};
 
 
@@ -87,10 +90,10 @@ lychee.define('lychee.game.Emitter').requires([
 			}
 
 
-			return {
-				'constructor': 'lychee.game.Emitter',
-				'arguments':   [ settings ]
-			};
+			data['arguments'][0] = settings;
+
+
+			return data;
 
 		},
 

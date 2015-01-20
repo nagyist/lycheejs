@@ -177,28 +177,43 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 
 	var _load_candidate = function(classId, candidates) {
 
-		var map = {
-			classId:      classId,
-			candidate:    null,
-			attachments:  [],
-			dependencies: [],
-			loading:      candidates.length + 1
-		};
+		if (candidates.length > 0) {
 
-		this.requests[classId] = map;
+			var map = {
+				classId:      classId,
+				candidate:    null,
+				attachments:  [],
+				dependencies: [],
+				loading:      candidates.length
+			};
+
+			this.requests[classId] = map;
 
 
-		for (var c = 0, cl = candidates.length; c < cl; c++) {
+			var candidate = candidates.shift();
 
-			var candidate = candidates[c];
-			if (this.__blacklist[candidate] === 1) continue;
+			while (candidate !== undefined) {
 
-			var url            = _resolve_root.call(this) + '/' + candidates[c] + '.js';
-			var implementation = lychee.Environment.createAsset(url);
-			var attachments    = _resolve_attachments.call(this, candidate);
+				if (this.__blacklist[candidate] === 1) {
+					candidate = candidates.shift();
+					map.loading--;
+				} else {
+					break;
+				}
 
-			if (implementation !== null) {
-				_load_candidate_implementation.call(this, candidate, implementation, attachments, map);
+			}
+
+
+			if (candidate !== undefined) {
+
+				var url            = _resolve_root.call(this) + '/' + candidate + '.js';
+				var implementation = lychee.Environment.createAsset(url);
+				var attachments    = _resolve_attachments.call(this, candidate);
+
+				if (implementation !== null) {
+					_load_candidate_implementation.call(this, candidate, implementation, attachments, map);
+				}
+
 			}
 
 		}
@@ -210,6 +225,7 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 		var that       = this;
 		var identifier = this.id + '.' + map.classId;
 
+
 		implementation.onload = function(result) {
 
 			map.loading--;
@@ -217,10 +233,13 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 
 			// Fastest path, file doesn't exist
 			if (result === false) {
-				that.__blacklist[candidate] = 1;
-				return;
-			}
 
+				delete that.environment.definitions[identifier];
+				that.__blacklist[candidate] = 1;
+
+				return;
+
+			}
 
 
 			var environment = that.environment;
@@ -232,45 +251,52 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 
 				var attachmentIds = Object.keys(attachments);
 
+
 				// Temporary delete definition from environment and re-define it after attachments are all loaded
 				if (attachmentIds.length > 0) {
+
 					delete environment.definitions[identifier];
-				}
+
+					map.loading += attachmentIds.length;
 
 
-				attachmentIds.forEach(function(assetId) {
+					attachmentIds.forEach(function(assetId) {
 
-					var url   = attachments[assetId];
-					var asset = lychee.Environment.createAsset(url);
-					if (asset !== null) {
+						var url   = attachments[assetId];
+						var asset = lychee.Environment.createAsset(url);
+						if (asset !== null) {
 
-						map.loading++;
+							asset.onload = function(result) {
 
-						asset.onload = function(result) {
+								map.loading--;
+
+								var tmp = {};
+								if (result === true) {
+									tmp[assetId] = this;
+								} else {
+									tmp[assetId] = null;
+								}
+
+								definition.attaches(tmp);
+
+
+								if (map.loading === 0) {
+									environment.definitions[identifier] = definition;
+								}
+
+							};
+
+							asset.load();
+
+						} else {
 
 							map.loading--;
 
-							var tmp = {};
-							if (result === true) {
-								tmp[assetId] = this;
-							} else {
-								tmp[assetId] = null;
-							}
+						}
 
-							definition.attaches(tmp);
+					});
 
-
-							if (map.loading === 0) {
-								environment.definitions[identifier] = definition;
-							}
-
-						};
-
-						asset.load();
-
-					}
-
-				});
+				}
 
 
 				for (var i = 0, il = definition._includes.length; i < il; i++) {
@@ -281,16 +307,10 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 					environment.load(definition._requires[r]);
 				}
 
-
-				map.loading--;
-
-
-				if (map.loading === 0) {
-					environment.definitions[identifier] = definition;
-				}
-
 			} else {
+
 				that.__blacklist[candidate] = 1;
+
 			}
 
 		};

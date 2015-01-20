@@ -18,6 +18,7 @@ lychee.define('lychee.net.remote.Session').includes([
 			var session = _cache[sid] || null;
 			if (session === null) {
 
+				var autoadmin = data.autoadmin === true      ? true     : false;
 				var autolock  = data.autolock === false      ? false    : true;
 				var autostart = data.autostart === false     ? false    : true;
 				var min       = typeof data.min === 'number' ? data.min : 2;
@@ -29,6 +30,7 @@ lychee.define('lychee.net.remote.Session').includes([
 					sid:       sid,
 					min:       min,
 					max:       max,
+					admin:     autoadmin === true ? this.tunnel : null,
 					tunnels:   [],
 					active:    false
 				};
@@ -61,7 +63,7 @@ lychee.define('lychee.net.remote.Session').includes([
 
 					} else if (session.active === true) {
 
-						this.report('Session is already running.', {
+						this.report('Session is active', {
 							sid: sid,
 							min: session.min,
 							max: session.max
@@ -69,7 +71,7 @@ lychee.define('lychee.net.remote.Session').includes([
 
 					} else {
 
-						this.report('Session is full.', {
+						this.report('Session is full', {
 							sid: sid,
 							min: session.min,
 							max: session.max
@@ -129,11 +131,15 @@ lychee.define('lychee.net.remote.Session').includes([
 			var session = _cache[sid] || null;
 			if (session !== null) {
 
-				if (session.active === false) {
+				if (session.admin === null || session.admin === this.tunnel) {
 
-					session.autostart = true;
+					if (session.active === false) {
 
-					_sync_session.call(this, session);
+						session.autostart = true;
+
+						_sync_session.call(this, session);
+
+					}
 
 				}
 
@@ -171,11 +177,12 @@ lychee.define('lychee.net.remote.Session').includes([
 
 			var tunnels = [];
 			for (var t = 0, tl = session.tunnels.length; t < tl; t++) {
-				tunnels.push(session.tunnels[t].id);
+				tunnels.push(session.tunnels[t].host + ':' + session.tunnels[t].port);
 			}
 
 
 			var data = {
+				admin:   false,
 				type:    'update',
 				sid:     sid,
 				min:     min,
@@ -247,7 +254,14 @@ lychee.define('lychee.net.remote.Session').includes([
 				var tunnel = session.tunnels[st];
 				if (tunnel !== null) {
 
-					data.tid = tunnel.id;
+					if (session.admin !== null) {
+						data.admin = session.admin === tunnel;
+					} else {
+						data.admin = true;
+					}
+
+					data.tid = tunnel.host + ':' + tunnel.port;
+
 
 					tunnel.send(data, {
 						id:    this.id,

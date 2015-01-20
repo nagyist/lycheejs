@@ -50,46 +50,52 @@ lychee.define('sorbet.data.Storage').includes([
 
 	var _on_sync = function() {
 
+		var that  = this;
 		var path  = '/tmp/sorbet.store';
 		var cache = _read_cache.call(this, path);
-		var store = cache[this.id];
+		var cid   = this.id;
 
-		for (var s = 0, sl = store.length; s < sl; s++) {
 
-			var pid   = store[s].pid;
-			var index = this.__removals.indexOf(pid);
-			if (index !== -1) {
-				this.__removals.splice(index, 1);
-				store.splice(s, 1);
-				sl--;
-				s--;
+		// delete instruction
+		cache[cid] = cache[cid].filter(function(object) {
+
+			var pid = object.pid;
+			var r   = that.__removals.indexOf(pid);
+			if (r !== -1) {
+				that.__removals.splice(r, 1);
+				return false;
 			}
 
-		}
+			return true;
+
+		});
 
 
-		for (var o = 0, ol = this.__objects.length; o < ol; o++) {
+		this.__objects.forEach(function(object) {
 
-			var object = this.__objects[o];
-			var found  = false;
+			var found = false;
 
-			for (var s = 0, sl = store.length; s < sl; s++) {
+			// update instruction
+			cache[cid].forEach(function(item) {
 
-				if (store[s].pid === object.pid) {
-					store[s].id   = object.id;
-					store[s].type = object.type;
-					store[s].port = object.port;
+				if (item.pid === object.pid) {
+
+					item.id   = object.id;
+					item.type = object.type;
+					item.port = object.port;
+
 					found = true;
-					break;
+
 				}
 
-			}
+			});
 
+			// insert instruction
 			if (found === false) {
-				store.push(JSON.parse(JSON.stringify(object)));
+				cache[cid].push(JSON.parse(JSON.stringify(object)));
 			}
 
-		}
+		});
 
 
 		_write_cache.call(this, path, cache);

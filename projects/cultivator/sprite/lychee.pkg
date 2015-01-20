@@ -1,0 +1,45 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"data": {
+
+				"SPRITE": [ "js" ]
+
+			},
+
+			"ui": {
+
+				"Dropzone": [ "js", "css" ]
+
+			},
+
+			"Main": [ "js" ]
+
+		}
+
+	}
+
+}

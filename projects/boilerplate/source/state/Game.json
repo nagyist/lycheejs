@@ -41,7 +41,7 @@
 						}, {
 							"constructor": "lychee.ui.Label",
 							"arguments": [{
-								"label": "Ping: --- ms / --- ms",
+								"label": "Roundtrip: -- / -- ms",
 								"position": {
 									"x": 0,
 									"y": -16

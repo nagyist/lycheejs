@@ -4,22 +4,18 @@
 
 	"api": {
 
-		"Blacklist":   "sorbet.api.remote.Blacklist",
-		"Debugger":    "sorbet.api.remote.Debugger",
-		"Log":         "sorbet.api.remote.Log",
-		"Project":     "sorbet.api.remote.Project",
-		"Server":      "sorbet.api.remote.Server",
-		"VirtualHost": "sorbet.api.remote.VirtualHost"
+		"Server": true,
+		"Peers":  false
 
 	},
 
 	"module": {
 
-		"Blacklist":   "sorbet.module.Blacklist",
-		"Fertilizer":  "sorbet.module.Fertilizer",
-		"Honey":       "sorbet.module.Honey",
-		"Log":         "sorbet.module.Log",
-		"Server":      "sorbet.module.Server"
+		"Blacklist":  true,
+		"Fertilizer": true,
+		"Honey":      true,
+		"Log":        true,
+		"Server":     true
 
 	},
 
@@ -39,16 +35,16 @@
 	}, {
 
 		"hosts": [
-			"slides.lycheejs.org"
+			"lethalmaze.lycheejs.org"
 		],
 		"config": {
-			"root": "%root%/projects/lycheeJS-slides"
+			"root": "%root%/projects/lethalmaze"
 		}
 
 	}, {
 
 		"hosts": [
-			"dashboard.lycheejs.org"
+			"cultivator.lycheejs.org"
 		],
 		"config": {
 			"root": "%root%"

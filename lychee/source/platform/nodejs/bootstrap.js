@@ -327,6 +327,12 @@
 	 * FEATURE DETECTION
 	 */
 
+	var _codecs = {
+		aac: true,
+		ogg: true,
+		mp3: true
+	};
+
 	(function() {
 
 		var consol  = 'console' in global;
@@ -353,6 +359,37 @@
 		}
 
 	})();
+
+
+
+	/*
+	 * BUFFER IMPLEMENTATION
+	 */
+
+	Buffer.prototype.serialize = function() {
+
+		return {
+			'constructor': 'Buffer',
+			'arguments':   [ this.toString('base64'), 'base64' ]
+		};
+
+	};
+
+	Buffer.prototype.map = function(callback) {
+
+		callback = callback instanceof Function ? callback : function(value) { return value; };
+
+
+		var clone = new Buffer(this.length);
+
+		for (var b = 0; b < this.length; b++) {
+			clone[b] = callback(this[b], b);
+		}
+
+		return clone;
+
+	};
+
 
 
 
@@ -406,7 +443,7 @@
 		deserialize: function(blob) {
 
 			if (typeof blob.buffer === 'string') {
-				this.buffer = JSON.parse(new Buffer(blob.buffer, 'base64').toString('utf8'));
+				this.buffer = JSON.parse(new Buffer(blob.buffer.substr(29), 'base64').toString('utf8'));
 			}
 
 		},
@@ -417,7 +454,7 @@
 
 
 			if (this.buffer !== null) {
-				blob.buffer = new Buffer(JSON.stringify(this.buffer), 'utf8').toString('base64');
+				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.buffer), 'utf8').toString('base64');
 			}
 
 
@@ -486,7 +523,9 @@
 	 * FONT IMPLEMENTATION
 	 */
 
-	var _parse_font = function(data) {
+	var _parse_font = function() {
+
+		var data = this.__buffer;
 
 		if (typeof data.kerning === 'number' && typeof data.spacing === 'number') {
 
@@ -512,18 +551,6 @@
 
 		if (data.map instanceof Array) {
 
-			this.__buffer     = {};
-			this.__buffer[''] = {
-				width:      0,
-				height:     this.lineheight,
-				realwidth:  0,
-				realheight: this.lineheight,
-				x:          0,
-				y:          0
-			};
-
-
-
 			var offset = this.spacing;
 
 			for (var c = 0, cl = this.charset.length; c < cl; c++) {
@@ -542,14 +569,14 @@
 				offset += chr.width;
 
 
-				this.__buffer[id] = chr;
+				this.__charset[id] = chr;
 
 			}
 
 		}
 
 
-		if (this.texture === null || this.__buffer === null) {
+		if (this.texture === null) {
 
 			if (lychee.debug === true) {
 				console.error('bootstrap.js: Font at "' + this.url + '" is invalid (No FNT file)');
@@ -565,18 +592,12 @@
 
 	var _clone_font = function(origin, clone) {
 
-		if (origin.__buffer !== null && origin.texture !== null) {
+		if (origin.__buffer !== null) {
 
-			clone.texture    = origin.texture;
+			clone.__buffer = origin.__buffer;
+			clone.__load   = false;
 
-			clone.baseline   = origin.baseline;
-			clone.charset    = origin.charset;
-			clone.spacing    = origin.spacing;
-			clone.kerning    = origin.kerning;
-			clone.lineheight = origin.lineheight;
-
-			clone.__buffer   = origin.__buffer;
-			clone.__load     = false;
+			_parse_font.call(clone);
 
 		}
 
@@ -601,6 +622,16 @@
 		this.__buffer   = null;
 		this.__load     = true;
 
+		this.__charset     = {};
+		this.__charset[''] = {
+			width:      0,
+			height:     this.lineheight,
+			realwidth:  0,
+			realheight: this.lineheight,
+			x:          0,
+			y:          0
+		};
+
 
 		if (url !== null) {
 
@@ -621,10 +652,7 @@
 
 			if (typeof blob.buffer === 'string') {
 				this.__buffer = JSON.parse(new Buffer(blob.buffer.substr(29), 'base64').toString('utf8'));
-			}
-
-			if (blob.texture instanceof Object) {
-				this.texture = lychee.deserialize(blob.texture);
+				_parse_font.call(this);
 			}
 
 		},
@@ -636,10 +664,6 @@
 
 			if (this.__buffer !== null) {
 				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.__buffer), 'utf8').toString('base64');
-			}
-
-			if (this.texture instanceof Texture) {
-				blob.texture = lychee.serialize(this.texture);
 			}
 
 
@@ -660,13 +684,13 @@
 
 				if (text.length === 1) {
 
-					if (this.__buffer[text] !== undefined) {
-						return this.__buffer[text];
+					if (this.__charset[text] !== undefined) {
+						return this.__charset[text];
 					}
 
 				} else if (text.length > 1) {
 
-					var data = this.__buffer[text] || null;
+					var data = this.__charset[text] || null;
 					if (data === null) {
 
 						var width = 0;
@@ -679,7 +703,7 @@
 
 						// TODO: Embedded Font ligatures will set x and y values based on settings.map
 
-						data = this.__buffer[text] = {
+						data = this.__charset[text] = {
 							width:      width,
 							height:     this.lineheight,
 							realwidth:  width,
@@ -698,7 +722,7 @@
 			}
 
 
-			return this.__buffer[''];
+			return this.__charset[''];
 
 		},
 
@@ -729,8 +753,12 @@
 
 
 				if (data !== null) {
-					_parse_font.call(this, data);
-					this.__load = false;
+
+					this.__buffer = data;
+					this.__load   = false;
+
+					_parse_font.call(this);
+
 				}
 
 
@@ -756,11 +784,11 @@
 
 	var _clone_music = function(origin, clone) {
 
-		if (origin.buffer !== null) {
+		if (origin.__buffer.ogg !== null || origin.__buffer.mp3 !== null) {
 
-			clone.buffer = origin.buffer;
-
-			clone.__load = false;
+			clone.__buffer.ogg = origin.__buffer.ogg;
+			clone.__buffer.mp3 = origin.__buffer.mp3;
+			clone.__load       = false;
 
 		}
 
@@ -772,14 +800,14 @@
 		url = typeof url === 'string' ? url : null;
 
 
-		this.url       = url;
-		this.onload    = null;
-		this.buffer    = null;
-		this.volume    = 0.0;
-		this.isIdle    = true;
-		this.isLooping = false;
+		this.url      = url;
+		this.onload   = null;
+		this.buffer   = null;
+		this.volume   = 0.0;
+		this.isIdle   = true;
 
-		this.__load    = true;
+		this.__buffer = { ogg: null, mp3: null };
+		this.__load   = true;
 
 
 		if (url !== null) {
@@ -799,8 +827,16 @@
 
 		deserialize: function(blob) {
 
-			if (typeof blob.buffer === 'string') {
-				this.buffer = new Buffer(blob.buffer, 'base64');
+			if (blob.buffer instanceof Object) {
+
+				if (typeof blob.buffer.ogg === 'string') {
+					this.__buffer.ogg = new Buffer(blob.buffer.substr(28), 'base64');
+				}
+
+				if (typeof blob.buffer.mp3 === 'string') {
+					this.__buffer.mp3 = new Buffer(blob.buffer.substr(22), 'base64');
+				}
+
 			}
 
 		},
@@ -809,8 +845,19 @@
 
 			var blob = {};
 
-			if (this.buffer !== null) {
-				blob.buffer = new Buffer(this.buffer, 'binary').toString('base64');
+
+			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
+
+				blob.buffer = {};
+
+				if (this.__buffer.ogg !== null) {
+					blob.buffer.ogg = 'data:application/ogg;base64,' + new Buffer(this.__buffer.ogg, 'binary').toString('base64');
+				}
+
+				if (this.__buffer.mp3 !== null) {
+					blob.buffer.mp3 = 'data:audio/mp3;base64,' + new Buffer(this.__buffer.mp3, 'binary').toString('base64');
+				}
+
 			}
 
 
@@ -837,19 +884,33 @@
 
 
 			_load_asset({
-				url:      this.url,
+				url:      this.url + '.ogg',
 				encoding: 'binary'
-			}, function(raw) {
+			}, function(rawogg) {
 
-				if (raw !== null) {
-					this.buffer = new Buffer(raw, 'binary');
-				}
+				_load_asset({
+					url:      this.url + '.mp3',
+					encoding: 'binary'
+				}, function(rawmp3) {
+
+					if (rawogg !== null) {
+						this.__buffer.ogg = new Buffer(rawogg, 'binary');
+					}
+
+					if (rawmp3 !== null) {
+						this.__buffer.mp3 = new Buffer(rawmp3, 'binary');
+					}
 
 
-				if (this.onload instanceof Function) {
-					this.onload(raw !== null);
-					this.onload = null;
-				}
+					this.__load = false;
+
+
+					if (this.onload instanceof Function) {
+						this.onload(rawogg !== null || rawmp3 !== null);
+						this.onload = null;
+					}
+
+				}, this);
 
 			}, this);
 
@@ -897,11 +958,11 @@
 
 	var _clone_sound = function(origin, clone) {
 
-		if (origin.buffer !== null) {
+		if (origin.__buffer.ogg !== null || origin.__buffer.mp3 !== null) {
 
-			clone.buffer = origin.buffer;
-
-			clone.__load = false;
+			clone.__buffer.ogg = origin.__buffer.ogg;
+			clone.__buffer.mp3 = origin.__buffer.mp3;
+			clone.__load       = false;
 
 		}
 
@@ -913,13 +974,14 @@
 		url = typeof url === 'string' ? url : null;
 
 
-		this.url    = url;
-		this.onload = null;
-		this.buffer = null;
-		this.volume = 0.0;
-		this.isIdle = true;
+		this.url      = url;
+		this.onload   = null;
+		this.buffer   = null;
+		this.volume   = 0.0;
+		this.isIdle   = true;
 
-		this.__load = true;
+		this.__buffer = { ogg: null, mp3: null };
+		this.__load   = true;
 
 
 		if (url !== null) {
@@ -939,8 +1001,16 @@
 
 		deserialize: function(blob) {
 
-			if (typeof blob.buffer === 'string') {
-				this.buffer = new Buffer(blob.buffer, 'base64');
+			if (blob.buffer instanceof Object) {
+
+				if (typeof blob.buffer.ogg === 'string') {
+					this.__buffer.ogg = new Buffer(blob.buffer.substr(28), 'base64');
+				}
+
+				if (typeof blob.buffer.mp3 === 'string') {
+					this.__buffer.mp3 = new Buffer(blob.buffer.substr(22), 'base64');
+				}
+
 			}
 
 		},
@@ -949,8 +1019,19 @@
 
 			var blob = {};
 
-			if (this.buffer !== null) {
-				blob.buffer = new Buffer(this.buffer, 'binary').toString('base64');
+
+			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
+
+				blob.buffer = {};
+
+				if (this.__buffer.ogg !== null) {
+					blob.buffer.ogg = 'data:application/ogg;base64,' + new Buffer(this.__buffer.ogg, 'binary').toString('base64');
+				}
+
+				if (this.__buffer.mp3 !== null) {
+					blob.buffer.mp3 = 'data:audio/mp3;base64,' + new Buffer(this.__buffer.mp3, 'binary').toString('base64');
+				}
+
 			}
 
 
@@ -977,19 +1058,33 @@
 
 
 			_load_asset({
-				url:      this.url,
+				url:      this.url + '.ogg',
 				encoding: 'binary'
-			}, function(raw) {
+			}, function(rawogg) {
 
-				if (raw !== null) {
-					this.buffer = new Buffer(raw, 'binary');
-				}
+				_load_asset({
+					url:      this.url + '.mp3',
+					encoding: 'binary'
+				}, function(rawmp3) {
+
+					if (rawogg !== null) {
+						this.__buffer.ogg = new Buffer(rawogg, 'binary');
+					}
+
+					if (rawmp3 !== null) {
+						this.__buffer.mp3 = new Buffer(rawmp3, 'binary');
+					}
 
 
-				if (this.onload instanceof Function) {
-					this.onload(raw !== null);
-					this.onload = null;
-				}
+					this.__load = false;
+
+
+					if (this.onload instanceof Function) {
+						this.onload(rawogg !== null || rawmp3 !== null);
+						this.onload = null;
+					}
+
+				}, this);
 
 			}, this);
 
@@ -1129,20 +1224,27 @@
 			}
 
 
-			if (this.url.substr(0, 5) === 'data:') {
+			var url = this.url;
+			if (url.substr(0, 5) === 'data:') {
 
-				if (this.url.substr(0, 15) === 'data:image/png;') {
+				if (url.substr(0, 15) === 'data:image/png;') {
 
-					var b64data = this.url.substr(15, this.url.length - 15);
+					var b64data = url.substr(15, url.length - 15);
 					this.buffer = new Buffer(b64data, 'base64');
 					this.__load = false;
 
 					_parse_texture.call(this, this.buffer.slice(16, 24));
 
+
+					var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+					if (lychee.debug === true && is_power_of_two === false) {
+						console.warn('bootstrap.js: Texture at data:image/png; is NOT power-of-two');
+					}
+
 				} else {
 
 					if (lychee.debug === true) {
-						console.error('bootstrap.js: Texture at "' + this.url.substr(0, 15) + '" is invalid (no PNG file)');
+						console.error('bootstrap.js: Texture at "' + url.substr(0, 15) + '" is invalid (no PNG file)');
 					}
 
 				}
@@ -1155,10 +1257,10 @@
 
 			} else {
 
-				if (this.url.split('.').pop() === 'png') {
+				if (url.split('.').pop() === 'png') {
 
 					_load_asset({
-						url:      this.url,
+						url:      url,
 						encoding: 'binary'
 					}, function(raw) {
 
@@ -1169,6 +1271,12 @@
 
 							_parse_texture.call(this, this.buffer.slice(16, 24));
 
+						}
+
+
+  						var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						if (lychee.debug === true && is_power_of_two === false) {
+							console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
 						}
 
 
@@ -1195,16 +1303,6 @@
 
 			}
 
-
-			var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
-			if (is_power_of_two === false) {
-
-				if (lychee.debug === true) {
-					console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
-				}
-
-			}
-
 		}
 
 	};
@@ -1227,9 +1325,18 @@
 
 		serialize: function() {
 
+			// var buffer = null;
+			// if (this.buffer !== null) {
+			//	buffer = lychee.serialize(new Buffer(this.buffer, 'utf8'));
+			// }
+
+
 			return {
-				'url':    this.url,
-				'buffer': this.buffer !== null ? this.buffer.toString() : null
+				'constructor': 'Object',
+				'arguments':   [{
+					'url':    this.url,
+					'buffer': this.buffer
+				}]
 			};
 
 		},
@@ -1295,14 +1402,6 @@
 					}
 
 				});
-
-			} else if (type === 'css') {
-
-				// CSS files can't fail and can't influence the NodeJS application
-				if (this.onload instanceof Function) {
-					this.onload(true);
-					this.onload = null;
-				}
 
 			} else {
 

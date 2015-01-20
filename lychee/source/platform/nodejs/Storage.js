@@ -363,8 +363,11 @@ lychee.define('Storage').tags({
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.Storage';
+
 			var settings = {};
-			var blob     = {};
+			var blob     = data['blob'] || {};
 
 
 			if (this.id.substr(0, 15) !== 'lychee-Storage-') settings.id    = this.id;
@@ -396,11 +399,11 @@ lychee.define('Storage').tags({
 			}
 
 
-			return {
-				'constructor': 'lychee.Storage',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
 
 		},
 

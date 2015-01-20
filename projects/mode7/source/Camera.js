@@ -19,6 +19,25 @@ lychee.define('game.Camera').exports(function(lychee, game, global, attachments)
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			return {
+				'constructor': 'game.Camera',
+				'arguments':   [ '#MAIN' ]
+			};
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
 		reshape: function() {
 
 			var renderer = this.renderer;

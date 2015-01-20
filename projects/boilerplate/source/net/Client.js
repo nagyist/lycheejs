@@ -12,14 +12,21 @@ lychee.define('game.net.Client').requires([
 	var _ping      = game.net.client.Ping;
 
 
-	var Class = function(settings, main) {
+	var Class = function(data, main) {
 
-		lychee.net.Client.call(this, {
-			encoder:   _BitON.encode,
-			decoder:   _BitON.decode,
+		var settings = lychee.extend({
+			codec:     _BitON,
 			reconnect: 10000
-		});
+		}, data);
 
+
+		lychee.net.Client.call(this, settings);
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
 
 		this.bind('connect', function() {
 
@@ -32,16 +39,16 @@ lychee.define('game.net.Client').requires([
 
 		}, this);
 
-		this.bind('disconnect', function(code, reason) {
+		this.bind('disconnect', function(code) {
 
 			if (lychee.debug === true) {
-				console.log('(Boilerplate) game.net.Client: Remote disconnected (' + code + ' | ' + reason + ')');
+				console.log('(Boilerplate) game.net.Client: Remote disconnected (' + code + ')');
 			}
 
 		}, this);
 
 
-		this.listen(settings.port, settings.host);
+		this.connect();
 
 	};
 

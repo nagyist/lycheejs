@@ -52,6 +52,34 @@ lychee.define('game.ui.Highscores').requires([
 		 * ENTITY API
 		 */
 
+		deserialize: function(blob) {
+
+			if (blob.font instanceof Object) {
+				this.font = lychee.deserialize(blob.font);
+			}
+
+		},
+
+		serialize: function() {
+
+			var data = lychee.ui.Entity.prototype.serialize.call(this);
+			data['constructor'] = 'game.ui.Highscores';
+
+			var blob = data['blob'] || {};
+
+
+			if (this.font !== null) {
+				blob.font = lychee.serialize(this.font);
+			}
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
+
+		},
+
 		render: function(renderer, offsetX, offsetY) {
 
 			if (this.visible === false) return;

@@ -1,10 +1,11 @@
 
 lychee.define('lychee.net.Client').tags({
 	platform: 'html'
-}).includes([
-	'lychee.event.Emitter'
-]).requires([
-	'lychee.net.Service'
+}).requires([
+	'lychee.data.BitON',
+	'lychee.data.JSON'
+]).includes([
+	'lychee.net.Tunnel'
 ]).supports(function(lychee, global) {
 
 	if (typeof WebSocket !== 'undefined') {
@@ -14,256 +15,10 @@ lychee.define('lychee.net.Client').tags({
 
 	return false;
 
-}).exports(function(lychee, global) {
+}).exports(function(lychee, global, attachments) {
 
-	/*
-	 * HELPERS
-	 */
-
-	var _socket_handler = function(url) {
-
-		var that = this;
-
-
-		this.__socket = new WebSocket(url);
-
-
-		if (typeof ArrayBuffer !== 'undefined' && typeof this.__socket.binaryType !== 'undefined') {
-			this.__socket.binaryType = 'arraybuffer';
-			this.__isBinary = true;
-		}
-
-
-		this.__socket.onopen = function() {
-
-			that.__isRunning = true;
-			that.trigger('connect');
-
-		};
-
-		this.__socket.onmessage = function(event) {
-
-			var blob = null;
-			if (that.__isBinary === true && event.data instanceof ArrayBuffer) {
-
-				var bytes = new Uint8Array(event.data);
-				blob = String.fromCharCode.apply(null, bytes);
-
-				_receive_handler.call(that, blob, true);
-
-			} else {
-
-				blob = event.data;
-
-				_receive_handler.call(that, blob, false);
-
-			}
-
-		};
-
-
-		// WebSocket Close frame is standardized,
-		// no deserialization required.
-
-		this.__socket.onclose = function(event) {
-
-			that.__socket    = null;
-			that.__isRunning = false;
-			_cleanup_services.call(that);
-
-			that.trigger('disconnect', [ event.code, event.reason ]);
-
-
-			if (that.reconnect > 0) {
-
-				setTimeout(function() {
-					that.listen(that.port, that.host);
-				}, that.reconnect);
-
-			}
-
-		};
-
-	};
-
-	var _receive_handler = function(blob, isBinary) {
-
-		var data = null;
-		try {
-			data = this.__decoder(blob);
-		} catch(e) {
-			// Unsupported data encoding
-			return false;
-		}
-
-
-		if (data instanceof Object && typeof data._serviceId === 'string') {
-
-			var service = this.getService(data._serviceId);
-			var event   = data._serviceEvent  || null;
-			var method  = data._serviceMethod || null;
-
-
-			if (method !== null) {
-
-				if (method.charAt(0) === '@') {
-
-					if (method === '@plug') {
-						_plug_service.call(this,   data._serviceId, service);
-					} else if (method === '@unplug') {
-						_unplug_service.call(this, data._serviceId, service);
-					}
-
-				} else if (service !== null && typeof service[method] === 'function') {
-
-					// Remove data frame service header
-					delete data._serviceId;
-					delete data._serviceMethod;
-
-					service[method](data);
-
-				}
-
-			} else if (event !== null) {
-
-				if (service !== null && typeof service.trigger === 'function') {
-
-					// Remove data frame service header
-					delete data._serviceId;
-					delete data._serviceEvent;
-
-					service.trigger(event, [ data ]);
-
-				}
-
-			}
-
-		} else {
-
-			this.trigger('receive', [ data ]);
-
-		}
-
-
-		return true;
-
-	};
-
-	var _is_service_waiting = function(service) {
-
-		for (var w = 0, wl = this.__services.waiting.length; w < wl; w++) {
-
-			if (this.__services.waiting[w] === service) {
-				return true;
-			}
-
-		}
-
-
-		return false;
-
-	};
-
-	var _is_service_active = function(service) {
-
-		for (var a = 0, al = this.__services.active.length; a < al; a++) {
-
-			if (this.__services.active[a] === service) {
-				return true;
-			}
-
-		}
-
-
-		return false;
-
-	};
-
-	var _plug_service = function(id, service) {
-
-		id = typeof id === 'string' ? id : null;
-
-		if (id === null || service === null) {
-			return;
-		}
-
-
-		var found = false;
-
-		for (var w = 0, wl = this.__services.waiting.length; w < wl; w++) {
-
-			if (this.__services.waiting[w] === service) {
-				this.__services.waiting.splice(w, 1);
-				found = true;
-				wl--;
-				w--;
-			}
-
-		}
-
-
-		if (found === true) {
-
-			this.__services.active.push(service);
-
-			service.trigger('plug', []);
-
-			if (lychee.debug === true) {
-				console.log('lychee.net.Client: Remote plugged in Service (' + id + ')');
-			}
-
-		}
-
-	};
-
-	var _unplug_service = function(id, service) {
-
-		id = typeof id === 'string' ? id : null;
-
-		if (id === null || service === null) {
-			return;
-		}
-
-
-		var found = false;
-
-		for (var a = 0, al = this.__services.active.length; a < al; a++) {
-
-			if (this.__services.active[a] === service) {
-				this.__services.active.splice(a, 1);
-				found = true;
-				al--;
-				a--;
-			}
-
-		}
-
-
-		if (found === true) {
-
-			service.trigger('unplug', []);
-
-			if (lychee.debug === true) {
-				console.log('lychee.net.Client: Remote unplugged Service (' + id + ')');
-			}
-
-		}
-
-	};
-
-	var _cleanup_services = function() {
-
-		var services = this.__services.active;
-
-		for (var s = 0; s < services.length; s++) {
-			services[s].trigger('unplug', []);
-		}
-
-
-		this.__services.active  = [];
-		this.__services.waiting = [];
-
-	};
+	var _BitON = lychee.data.BitON;
+	var _JSON  = lychee.data.JSON;
 
 
 
@@ -276,103 +31,98 @@ lychee.define('lychee.net.Client').tags({
 		var settings = lychee.extend({}, data);
 
 
-		this.port      = 1337;
-		this.host      = 'localhost';
-		this.reconnect = 0;
+		this.__socket      = null;
+		this.__isConnected = false;
 
 
-		this.__encoder = settings.encoder instanceof Function ? settings.encoder : JSON.stringify;
-		this.__decoder = settings.decoder instanceof Function ? settings.decoder : JSON.parse;
-		this.__socket  = null;
-		this.__services  = {
-			waiting: [], // Waiting Services need to be verified from Remote
-			active:  []  // Active Services for allowed interaction
-		};
-
-		this.__isBinary  = false;
-		this.__isRunning = false;
-
-
-		lychee.event.Emitter.call(this);
+		lychee.net.Tunnel.call(this, settings);
 
 		settings = null;
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
+
+		this.bind('connect', function() {
+			this.__isConnected = true;
+		}, this);
+
+		this.bind('disconnect', function() {
+			this.__isConnected = false;
+		}, this);
+
+		this.bind('send', function(blob) {
+
+			if (this.__socket !== null) {
+				this.__socket.send(blob);
+			}
+
+		}, this);
 
 	};
 
 
 	Class.prototype = {
 
-		listen: function(port, host) {
+		/*
+		 * ENTITY API
+		 */
 
-			if (this.__socket !== null) return false;
+		// deserialize: function(blob) {},
 
+		serialize: function() {
 
-			this.port = typeof port === 'number' ? port : this.port;
-			this.host = typeof host === 'string' ? host : this.host;
-
-
-			if (this.__isRunning === true) {
-				return false;
-			}
+			var data = lychee.net.Tunnel.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.net.Client';
 
 
-			if (lychee.debug === true) {
-				console.log('lychee.net.Client: Listening on ' + this.host + ':' + this.port);
-			}
-
-
-			var url = 'ws://' + this.host + ':' + this.port;
-
-			_socket_handler.call(this, url);
+			return data;
 
 		},
 
-		send: function(data, service) {
-
-			data    = data instanceof Object    ? data    : null;
-			service = service instanceof Object ? service : null;
 
 
-			if (data === null || this.__isRunning === false) {
-				return false;
-			}
-
-
-			if (service !== null) {
-
-				if (typeof service.id     === 'string') data._serviceId     = service.id;
-				if (typeof service.event  === 'string') data._serviceEvent  = service.event;
-				if (typeof service.method === 'string') data._serviceMethod = service.method;
-
-			}
-
-
-			var blob = this.__encoder(data);
-			if (this.__isBinary === true) {
-
-				var bl    = blob.length;
-				var bytes = new Uint8Array(bl);
-
-				for (var b = 0; b < bl; b++) {
-					bytes[b] = blob.charCodeAt(b);
-				}
-
-				blob = bytes.buffer;
-
-			}
-
-
-			this.__socket.send(blob);
-
-
-			return true;
-
-		},
+		/*
+		 * CUSTOM API
+		 */
 
 		connect: function() {
 
-			if (this.__isRunning === false) {
-				return this.listen(this.port, this.host);
+			if (this.__isConnected === false) {
+
+				var that = this;
+
+
+				this.__socket = new WebSocket('ws://' + this.host + ':' + this.port, [ 'lycheejs' ]);
+
+				this.__socket.onopen = function() {
+					that.trigger('connect', []);
+				};
+
+				this.__socket.onmessage = function(event) {
+					that.receive(event.data);
+				};
+
+				this.__socket.onclose = function(event) {
+					that.__socket = null;
+					that.trigger('disconnect', [ event.code || null ]);
+				};
+
+				this.__socket.onerror = function(event) {
+					that.setReconnect(0);
+					this.close();
+				};
+
+
+				if (lychee.debug === true) {
+					console.log('lychee.net.Client: Connected to ' + this.host + ':' + this.port);
+				}
+
+
+				return true;
+
 			}
 
 
@@ -382,115 +132,14 @@ lychee.define('lychee.net.Client').tags({
 
 		disconnect: function() {
 
-			if (this.__isRunning === true) {
+			if (this.__isConnected === true) {
 
-				this.__socket.close();
+				if (this.__socket !== null) {
+					this.__socket.close();
+				}
+
 
 				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		setReconnect: function(reconnect) {
-
-			reconnect = typeof reconnect === 'number' ? (reconnect | 0) : null;
-
-
-			if (reconnect !== null) {
-
-				this.reconnect = reconnect;
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
-		addService: function(service) {
-
-			service = lychee.interfaceof(lychee.net.Service, service) ? service : null;
-
-
-			if (service !== null) {
-
-				if (_is_service_waiting.call(this, service) === false && _is_service_active.call(this, service) === false) {
-
-					this.__services.waiting.push(service);
-
-					// Please, Remote, plug Service! PING
-					this.send({}, {
-						id:     service.id,
-						method: '@plug'
-					});
-
-					return true;
-
-				}
-
-			}
-
-
-			return false;
-
-		},
-
-		getService: function(id) {
-
-			id = typeof id === 'string' ? id : null;
-
-
-			if (id !== null) {
-
-				for (var w = 0, wl = this.__services.waiting.length; w < wl; w++) {
-
-					var wservice = this.__services.waiting[w];
-					if (wservice.id === id) {
-						return wservice;
-					}
-
-				}
-
-				for (var a = 0, al = this.__services.active.length; a < al; a++) {
-
-					var aservice = this.__services.active[a];
-					if (aservice.id === id) {
-						return aservice;
-					}
-
-				}
-
-			}
-
-
-			return null;
-
-		},
-
-		removeService: function(service) {
-
-			service = lychee.interfaceof(lychee.net.Service, service) ? service : null;
-
-
-			if (service !== null) {
-
-				if (_is_service_waiting.call(this, service) === true || _is_service_active.call(this, service) === true) {
-
-					// Please, Remote, unplug Service! PING
-					this.send({}, {
-						id:     service.id,
-						method: '@unplug'
-					});
-
-					return true;
-
-				}
 
 			}
 

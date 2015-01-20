@@ -2,8 +2,8 @@
 	"name":        "lycheejs",
 	"homepage":    "http://lycheejs.org",
 	"license":     "MIT",
-	"version":     "0.8.3",
-	"description": "Environment-Independent Cross-Platform JavaScript engine (NodeJS, NodeJS SDL2, HTML5, Apache Cordova, WebGL, native OpenGL)",
+	"version":     "0.8.4",
+	"description": "Free HTML5 + native OpenGL Game Engine for Embedded, Console, Mobile, Server and Desktop",
 
 	"keywords": [
 		"lycheejs",
@@ -12,11 +12,13 @@
 		"nodejs",
 		"webgl",
 		"opengl",
-		"cordova",
+		"libsdl",
+		"sdl2",
 		"android",
 		"ios",
-		"libsdl",
-		"sdl"
+		"linux",
+		"macosx",
+		"windows"
 	],
 
 	"main":           "./lychee/build/nodejs/core.js",
@@ -24,12 +26,12 @@
 
 	"scripts": {
 
-		"postinstall":  "node ./tool/configure.js",
-		"start":        "node ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\"",
-		"stop":         "node ./tool/Sorbet.js stop --pid=\"*\"",
+		"postinstall":         "nodejs ./tool/configure.js",
+		"start":               "nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\"",
+		"stop":                "nodejs ./tool/Sorbet.js stop --pid=\"*\"",
 
-		"localhost":    "nohup node ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\" >> ./sorbet.log &",
-		"lycheejs.org": "nohup node ./tool/Sorbet.js start --profile=\"./sorbet/profile/lycheejs.org.json\" >> ./sorbet.log &"
+		"localhost":           "nohup nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\" >> ./sorbet.log &",
+		"lycheejs.org":        "nohup nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/lycheejs.org.json\" >> ./sorbet.log &"
 
 	},
 

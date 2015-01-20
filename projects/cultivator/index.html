@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+	<title>Welcome to lycheeJS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="./_design/index.css">
+	<script src="./_design/index.js"></script>
+
+</head>
+<body>
+
+	<menu>
+		<li><del><a href="./editor/index.html" title="Game Editor (released soon)">Editor</a></del></li>
+		<li><a href="./inspector/index.html" title="Environment Inspector">Inspector</a></li>
+		<li><a href="./font/index.html" title="Font Tool">Font&nbsp;Tool</a></li>
+		<li><del><a href="./project/index.html" title="Project Tool (released soon)">Project&nbsp;Tool</a></del></li>
+		<li><a href="./sprite/index.html" title="Sprite Tool">Sprite&nbsp;Tool</a></li>
+	</menu>
+
+	<article>
+		<h2>1. Play with the Nursery Garden</h2>
+		<p class="center">
+			Play around with existing Projects and learn
+			how they are integrated with the engine.
+		</p>
+		<ul class="teaser-List">
+			<li>
+				<a href="../boilerplate/source/index.html">
+					<img src="./welcome/boilerplate.png">
+					<span>Boilerplate</span>
+				</a>
+			</li>
+			<li>
+				<a href="../mode7/source/index.html">
+					<img src="./welcome/mode7.png">
+					<span>Mode7</span>
+				</a>
+			</li>
+			<li>
+				<a href="../pong/source/index.html">
+					<img src="./welcome/pong.png">
+					<span>Pong (Minigame)</span>
+				</a>
+			</li>
+		</ul>
+	</article>
+
+	<article>
+		<h2>2. Learn from the Nursery Garden</h2>
+		<p class="center">
+			Inspect existing Projects and learn how
+			environment snapshots and builds work.
+		</p>
+		<ul class="teaser-List">
+			<li>
+				<a href="./inspector/index.html?url=/projects/boilerplate/build/html/main.lychee.env">
+					<img src="./welcome/boilerplate.png">
+					<span>Boilerplate&nbsp;(HTML)</span>
+				</a>
+			</li>
+			<li>
+				<a href="./inspector/index.html?url=/projects/mode7/build/html/main.lychee.env">
+					<img src="./welcome/mode7.png">
+					<span>Mode7&nbsp;(HTML)</span>
+				</a>
+			</li>
+			<li>
+				<a href="./inspector/index.html?url=/projects/pong/build/html/main.lychee.env">
+					<img src="./welcome/pong.png">
+					<span>Pong&nbsp;(HTML)</span>
+				</a>
+			</li>
+		</ul>
+	</article>
+
+	<article>
+		<h2>3. Plant your own Project</h2>
+		<p>
+			Start a new project from the boilerplate by copying its
+			contents into a new folder.
+		</p>
+		<pre class="bash">
+cd ~/lycheeJS/projects;
+cp -R ./boilerplate ./myproject; # Replace myproject with unique identifier
+		</pre>
+		<br>
+		<p>
+			Modify the unique identifier of the lychee.Environment in
+			the index.html, so that the project is now integrated with
+			the remote debugging features and the lycheeJS Inspector.
+		</p>
+		<pre class="javascript" title="/projects/myproject/source/index.html#L48">
+var environment = new lychee.Environment({
+	id: 'boilerplate', // Replace boilerplate with unique identifier
+});
+		</pre>
+		<br>
+		<p>
+			Modify the lychee.net.Client's settings, so that it can
+			connect to the lychee.net.Server.
+		</p>
+		<p>
+			The API call should be replaced by an API call String (e.g.
+			<em>"/api/Server/?identifier=myproject"</em>) in order to
+			be automatically integrated with the Sorbet WebSocket server
+			balancer.
+		<p>
+		<p>
+			Alternatively you can manually start your WebSocket server
+			and/or use a fixed configuration for both the lychee.net.Server
+			and lychee.net.Client (e.g. <em>{ host: 'myproject.lycheejs.org', port: 1337 }</em>).
+		</p>
+		<pre class="javascript" title="/projects/myproject/source/Main.js#L16">
+var settings = {
+	client: '/api/Server/?identifier=boilerplate', // Replace boilerplate with unique identifier
+};
+		</pre>
+	</article>
+
+	<article>
+		<h2>4. Become a Gardening Master</h2>
+		<p class="center">
+			Watch the <a href="http://www.youtube.com/embed/videoseries?list=PLN8QSMXLHp7Q8FcbqSS7MJkqvsE8_CSHw">Playlist on YouTube</a>
+			and learn from the Tutorials.
+		</p>
+		<br>
+		<p class="center">
+			<iframe width="100%" height="480" src="http://www.youtube.com/embed/videoseries?list=PLN8QSMXLHp7Q8FcbqSS7MJkqvsE8_CSHw" frameborder="0" allowfullscreen></iframe>
+		</p>
+	</article>
+
+	<article>
+		<h2>5. Cultivate your Project</h2>
+		<p class="center">
+			Use the Tools of the Cultivator Project
+			to water and fertilize your new plant.
+		</p>
+		<ul class="teaser-List">
+			<li>
+				<a href="./inspector/index.html">
+					<img src="./welcome/inspector.png">
+					<span>Inspector</span>
+				</a>
+			</li>
+			<li>
+				<a href="./font/index.html">
+					<img src="./welcome/font.png">
+					<span>Font Tool</span>
+				</a>
+			</li>
+			<li>
+				<a href="./sprite/index.html">
+					<img src="./welcome/sprite.png">
+					<span>Sprite Tool</span>
+				</a>
+			</li>
+		</ul>
+	</article>
+
+	<article>
+		<h2>Need Help?</h2>
+		<p class="center">
+			Check out the <a href="http://lycheejs.org/tutorials/index.html">Tutorials</a>
+			or contact us on <a href="https://facebook.com/lycheeJS">Facebook</a>
+			or <a href="https://youtube.com/lycheeJS">YouTube</a>!
+		</p>
+		<br>
+		<ul class="teaser-List">
+			<li>
+				<a href="http://lycheejs.org/tutorials/index.html">
+					<img src="./welcome/tutorials.png">
+					<span>Tutorials</span>
+				</a>
+			</li>
+			<li>
+				<a href="https://facebook.com/lycheeJS">
+					<img src="./welcome/facebook.png">
+					<span>Facebook</span>
+				</a>
+			</li>
+			<li>
+				<a href="https://youtube.com/lycheeJS">
+					<img src="./welcome/youtube.png">
+					<span>YouTube</span>
+				</a>
+			</li>
+		</ul>
+	</article>
+
+	<footer>lycheeJS is (c) 2014 by LazerUnicorns Ltd. and released under MIT license.</footer>
+
+</body>
+</html>    

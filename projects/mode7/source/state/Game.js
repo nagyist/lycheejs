@@ -31,6 +31,20 @@ lychee.define('game.state.Game').requires([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.game.State.prototype.serialize.call(this);
+			data['constructor'] = 'game.state.Game';
+
+
+			return data;
+
+		},
+
 		deserialize: function() {
 
 			var renderer = this.renderer;
@@ -62,6 +76,12 @@ lychee.define('game.state.Game').requires([
 			}
 
 		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
 
 		enter: function(data) {
 

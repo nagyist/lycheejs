@@ -7,7 +7,13 @@ lychee.define('Storage').tags({
 
 	if (typeof Storage !== 'undefined') {
 
-		if (typeof global.localStorage === 'object' && typeof global.sessionStorage === 'object') {
+		try {
+
+			if (typeof global.localStorage === 'object' && typeof global.sessionStorage === 'object') {
+				return true;
+			}
+
+		} catch(e) {
 			return true;
 		}
 
@@ -33,14 +39,44 @@ lychee.define('Storage').tags({
 
 	(function() {
 
-		var local = 'localStorage' in global;
-		if (local === true) {
-			_persistent = global.localStorage;
-		}
+		var local   = false;
+		var session = false;
 
-		var session = 'sessionStorage' in global;
-		if (session === true) {
-			_temporary = global.sessionStorage;
+
+		try {
+
+			local = 'localStorage' in global;
+
+			if (local === true) {
+				_persistent = global.localStorage;
+			}
+
+			session = 'sessionStorage' in global;
+
+			if (session === true) {
+				_temporary = global.sessionStorage;
+			}
+
+		} catch(e) {
+
+			local   = false;
+			session = true;
+
+			_persistent = null;
+			_temporary  = {
+
+				data: {},
+
+				getItem: function(id) {
+					return this.data[id] || null;
+				},
+
+				setItem: function(id, data) {
+					this.data[id] = data;
+				}
+
+			};
+
 		}
 
 
@@ -302,8 +338,11 @@ lychee.define('Storage').tags({
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.Storage';
+
 			var settings = {};
-			var blob     = {};
+			var blob     = data['blob'] || {};
 
 
 			if (this.id.substr(0, 15) !== 'lychee-Storage-') settings.id    = this.id;
@@ -335,11 +374,11 @@ lychee.define('Storage').tags({
 			}
 
 
-			return {
-				'constructor': 'lychee.Storage',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
 
 		},
 

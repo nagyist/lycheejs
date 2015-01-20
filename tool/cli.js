@@ -3,25 +3,56 @@
  * POLYFILLS
  */
 
-String.prototype.replacetemplate = function(key, value) {
+if (typeof String.prototype.replacetemplate !== 'function') {
 
-	key   = typeof key === 'string'   ? key   : null;
-	value = typeof value === 'string' ? value : '';
+	String.prototype.replacetemplate = function(key, value) {
+
+		key   = typeof key === 'string'   ? key   : null;
+		value = typeof value === 'string' ? value : '';
 
 
-	if (key !== null) {
+		if (key !== null) {
 
-		var keyl = key.length;
-		var keyi = this.indexOf(key);
-		if (keyi !== -1) {
-			return '' + this.substr(0, keyi) + value + this.substr(keyi + keyl);
+			var indexes = [];
+			var index   = this.indexOf(key);
+
+			while (index !== -1) {
+				indexes.push(index);
+				index = this.indexOf(key, index + 1);
+			}
+
+
+			var keyo   = 0;
+			var keyl   = key.length;
+			var vall   = value.length;
+			var buffer = '' + this;
+
+			indexes.forEach(function(keyi) {
+
+				buffer  = buffer.substr(0, keyi + keyo) + value + buffer.substr(keyi + keyo + keyl);
+				keyo   += (vall - keyl);
+
+			});
+
+
+			return buffer;
+
 		}
 
-	}
 
-	return this;
+		return this;
 
-};
+	};
+
+}
+
+if (typeof String.prototype.trim !== 'function') {
+
+	String.prototype.trim = function() {
+		return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, "");
+	};
+
+}
 
 
 
@@ -36,8 +67,49 @@ var _root = require('path').resolve(__dirname, '../');
 
 	var _child_process = require('child_process');
 	var _self_process  = process.argv[0] || 'nodejs';
+	var _exec          = require('child_process').exec;
 	var _fs            = require('fs');
+	var _http          = require('http');
+	var _https         = require('https');
 	var _path          = require('path');
+
+
+
+	/*
+	 * HELPERS
+	 */
+
+	var _mkdir_p = function(path, mode) {
+
+		path = _path.resolve(path);
+
+		if (mode === undefined) {
+			mode = 0777 & (~process.umask());
+		}
+
+
+		try {
+
+			if (_fs.statSync(path).isDirectory()) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch(err) {
+
+			if (err.code === 'ENOENT') {
+
+				_mkdir_p(_path.dirname(path), mode);
+				_fs.mkdirSync(path, mode);
+
+				return true;
+
+			}
+
+		}
+
+	};
 
 
 
@@ -132,6 +204,55 @@ var _root = require('path').resolve(__dirname, '../');
 
 		},
 
+		copylychee: function(path1, path2) {
+
+			path1 = typeof path1 === 'string' ? path1 : null;
+			path2 = typeof path2 === 'string' ? path2 : null;
+
+
+			if (path1 !== null && path2 !== null) {
+
+				var result = false;
+				try {
+
+					if (_fs.existsSync(_root + '/lychee/build/' + path1)) {
+
+						var tmp2    = path2.split('/'); tmp2.pop();
+						var folder2 = tmp2.join('/');
+						if (folder2 !== '') {
+							_mkdir_p(this.__sandbox + '/' + folder2);
+						}
+
+						var buffer = _fs.readFileSync(_root + '/lychee/build/' + path1);
+						_fs.writeFileSync(this.__sandbox + '/' + path2, buffer);
+
+						result = true;
+
+					}
+
+				} catch(e) {
+
+				}
+
+
+				if (result === true) {
+
+					var index = this.__cache.indexOf(path2);
+					if (index === -1) {
+						this.__cache.push(path2);
+					}
+
+					return true;
+
+				}
+
+			}
+
+
+			return false;
+
+		},
+
 		copytemplate: function(path1, path2) {
 
 			path1 = typeof path1 === 'string' ? path1 : null;
@@ -144,6 +265,12 @@ var _root = require('path').resolve(__dirname, '../');
 				try {
 
 					if (_fs.existsSync(this.__fertilizer + '/' + path1)) {
+
+						var tmp2    = path2.split('/'); tmp2.pop();
+						var folder2 = tmp2.join('/');
+						if (folder2 !== '') {
+							_mkdir_p(this.__sandbox + '/' + folder2);
+						}
 
 						var buffer = _fs.readFileSync(this.__fertilizer + '/' + path1);
 						_fs.writeFileSync(this.__sandbox + '/' + path2, buffer);
@@ -337,6 +464,144 @@ var _root = require('path').resolve(__dirname, '../');
 	};
 
 
+	var Shell = function(sandbox) {
+
+		this.__sandbox = '/tmp/lycheejs';
+
+
+		if (typeof sandbox === 'string') {
+
+			try {
+
+				var stat = _fs.statSync(sandbox);
+
+				if (stat.isDirectory()) {
+					this.__sandbox = sandbox;
+				}
+
+			} catch(e) {
+			}
+
+		}
+
+	};
+
+
+	Shell.prototype = {
+
+		download: function(url, path, callback, scope) {
+
+			url      = typeof url === 'string'      ? url      : null;
+			path     = typeof path === 'string'     ? path     : null;
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : this;
+
+
+			if (url !== null && path !== null) {
+
+				var file       = _fs.createWriteStream(this.__sandbox + '/' + path);
+				var downloader = _http;
+				if (url.substr(0, 5) === 'https') {
+					downloader = _https;
+				}
+
+
+				downloader.get(url, function(response) {
+
+					response.pipe(file);
+
+					file.on('finish', function() {
+
+						file.close(function() {
+
+							if (callback !== null) {
+								callback.call(scope, true);
+							}
+
+						});
+
+					});
+
+				}).on('error', function() {
+
+					if (callback !== null) {
+						callback.call(scope, false);
+					}
+
+				});
+
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		move: function(path, callback, scope) {
+
+			path     = typeof path === 'string'     ? path     : null;
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : this;
+
+
+			_exec('cd ' + this.__sandbox + ' && mv ' + this.__sandbox + '/' + path + ' ' + this.__sandbox + '/', function(err, stdout, stderr) {
+
+				if (callback !== null) {
+
+					if (err) {
+						callback.call(scope, false);
+					} else {
+						callback.call(scope, true);
+					}
+
+				}
+
+			});
+
+
+			return true;
+
+		},
+
+		unzip: function(path, callback, scope) {
+
+			path     = typeof path === 'string'     ? path     : null;
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : this;
+
+
+			if (_fs.existsSync(this.__sandbox + '/' + path)) {
+
+				_exec('cd ' + this.__sandbox + ' && unzip ' + path, function(err, stdout, stderr) {
+
+					if (callback !== null) {
+
+						if (err) {
+							callback.call(scope, false);
+						} else {
+							callback.call(scope, true);
+						}
+
+					}
+
+				});
+
+
+				return true;
+
+			}
+
+
+			return false;
+
+		}
+
+	};
+
+
 
 	/*
 	 * EXPORTS
@@ -348,6 +613,7 @@ var _root = require('path').resolve(__dirname, '../');
 		global:  global,
 
 		Filesystem: Filesystem,
+		Shell:      Shell,
 
 		include: function(path, identifier) {
 
@@ -528,45 +794,42 @@ var _root = require('path').resolve(__dirname, '../');
 			var keys = Object.keys(array[0]);
 			if (keys.length > 0) {
 
-				var table  = [];
-				var map    = [];
+				var k, kl;
+				var table   = [ [] ];
+				var lengths = [];
 
 
-				var header = [];
-				for (var k = 0, kl = keys.length; k < kl; k++) {
-					header.push(keys[k]);
-					map[k] = keys[k].length;
-				}
+				keys.forEach(function(value, v) {
+					table[0].push(value);
+					lengths[v] = value.length;
+				});
 
 
-				table.push(header);
-
-
-				for (var a = 0, al = array.length; a < al; a++) {
+				array.forEach(function(values) {
 
 					var row = [];
 
-					for (var k = 0, kl = keys.length; k < kl; k++) {
-						var val = '' + array[a][keys[k]];
-						row.push(val);
-						map[k] = Math.max(map[k], val.length);
-					}
+					keys.forEach(function(key, k) {
+						var value  = '' + values[key];
+						lengths[k] = Math.max(lengths[k], value.length);
+						row.push(value);
+					});
 
 					table.push(row);
 
-				}
+				});
 
 
-				for (var t = 0, tl = table.length; t < tl; t++) {
+				table.forEach(function(row, r, self) {
 
-					for (var k = 0, kl = keys.length; k < kl; k++) {
-						var space   = '                        '.substr(0, map[k] - table[t][k].length);
-						table[t][k] = table[t][k] + space;
-					}
+					keys.forEach(function(key, k) {
+						var space = '                        '.substr(0, lengths[k] - row[k].length);
+						row[k]    = row[k] + space;
+					});
 
-					table[t] = ' ' + table[t].join(' | ');
+					self[r] = ' ' + row.join(' | ');
 
-				}
+				});
 
 				console.log('\n' + table.join('\n') + '\n');
 

@@ -9,22 +9,6 @@ lychee.define('lychee.net.Service').includes([
 
 	var _services = {};
 
-	var _validate_tunnel = function(tunnel, type) {
-
-		if (type === null) return false;
-
-
-		if (type === Class.TYPE.client) {
-			return lychee.interfaceof(lychee.net.Client, tunnel);
-		} else if (type === Class.TYPE.remote) {
-			return lychee.interfaceof(lychee.net.Remote, tunnel);
-		}
-
-
-		return false;
-
-	};
-
 	var _plug_broadcast = function() {
 
 		var id = this.id;
@@ -90,9 +74,9 @@ lychee.define('lychee.net.Service').includes([
 
 	var Class = function(id, tunnel, type) {
 
-		id     = typeof id === 'string'          ? id     : null;
-		type   = lychee.enumof(Class.TYPE, type) ? type   : null;
-		tunnel = _validate_tunnel(tunnel, type)  ? tunnel : null;
+		id     = typeof id === 'string'                        ? id     : null;
+		tunnel = lychee.interfaceof(lychee.net.Tunnel, tunnel) ? tunnel : null;
+		type   = lychee.enumof(Class.TYPE, type)               ? type   : null;
 
 
 		this.id     = id;
@@ -109,7 +93,7 @@ lychee.define('lychee.net.Service').includes([
 			}
 
 			if (this.tunnel === null) {
-				console.error('lychee.net.Service: Invalid (lychee.net.Client || lychee.net.Remote) tunnel.');
+				console.error('lychee.net.Service: Invalid (lychee.net.Tunnel) tunnel.');
 			}
 
 			if (this.type === null) {
@@ -160,11 +144,13 @@ lychee.define('lychee.net.Service').includes([
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.net.Service';
+
 			var id     = null;
 			var tunnel = null;
 			var type   = null;
-
-			var blob = {};
+			var blob   = data['blob'] || {};
 
 
 			if (this.id !== null)     id = this.id;
@@ -172,11 +158,13 @@ lychee.define('lychee.net.Service').includes([
 			if (this.type !== null)   type = this.type;
 
 
-			return {
-				'constructor': 'lychee.net.Service',
-				'arguments':   [ id, tunnel, type ],
-				'blob':        blob
-			};
+			data['arguments'][0] = id;
+			data['arguments'][1] = null;
+			data['arguments'][2] = type;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
 
 		},
 
@@ -233,7 +221,7 @@ lychee.define('lychee.net.Service').includes([
 						var tunnel = this.__multicast[m];
 						if (tunnel !== this.tunnel) {
 
-							data.data.tid = this.tunnel.id;
+							data.data.tid = this.tunnel.host + ':' + this.tunnel.port;
 
 							tunnel.send(
 								data.data,
@@ -305,7 +293,7 @@ lychee.define('lychee.net.Service').includes([
 							var tunnel = broadcast[b].tunnel;
 							if (tunnel !== this.tunnel) {
 
-								data.data.tid = this.tunnel.id;
+								data.data.tid = this.tunnel.host + ':' + this.tunnel.port;
 
 								tunnel.send(
 									data.data,
@@ -362,7 +350,7 @@ lychee.define('lychee.net.Service').includes([
 
 				for (var m = 0, ml = multicast.length; m < ml; m++) {
 
-					if (_validate_tunnel(multicast[m], type) === false) {
+					if (lychee.interfaceof(lychee.net.Tunnel, multicast[m]) === false) {
 						valid = false;
 						break;
 					}

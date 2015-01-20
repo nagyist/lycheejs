@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Sprite Tool</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="../_design/index.css">
+	<script src="../_design/index.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+</head>
+<body>
+
+	<menu id="title">
+		<h1>Sprite Tool</h1>
+	</menu>
+
+	<article>
+		<h2>1. Images</h2>
+		<p class="center">
+			Upload all required frames or animations for the lychee.game.Sprite.
+		</p>
+		<p class="center">
+			Animated states are triggered if the filenames are containing an underscore.<br>
+			Examples: default.png, another-state.png, fancy_01.png, fancy_02.png
+		</p>
+		<div class="center">
+			<div id="dropzone"></div>
+		</div>
+	</article>
+
+	<article>
+		<h2>2. Settings</h2>
+		<p class="center">
+			Modify the settings for the new Sprite here.<br>
+			The preview will be automatically refreshed.
+		</p>
+		<form id="settings" enctype="application/json" action="MAIN" method="javascript">
+			<table>
+				<tr>
+					<th>Texture Size</th>
+					<td>
+						<select name="texturesize">
+							<option value="128">128 x 128</option>
+							<option value="256">256 x 256</option>
+							<option value="512" selected>512 x 512</option>
+							<option value="1024">1024 x 1024</option>
+							<option value="2048">2048 x 2048</option>
+							<option value="4096">4096 x 4096</option>
+							<option value="8192">8192 x 8192</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>Frame Size</th>
+					<td>
+						<select name="framesize">
+							<option value="image" selected>use image size</option>
+							<option value="32">32 x 32</option>
+							<option value="64">64 x 64</option>
+							<option value="128">128 x 128</option>
+							<option value="256">256 x 256</option>
+							<option value="512">512 x 512</option>
+							<option value="1024">1024 x 1024</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>Frame Alignment</th>
+					<td>
+						<select name="framealignment">
+							<option value="center-center" selected>center center</option>
+							<option value="top-left">top left</option>
+							<option value="top-center">top center</option>
+							<option value="top-right">top right</option>
+							<option value="center-right">center right</option>
+							<option value="bottom-right">bottom right</option>
+							<option value="bottom-center">bottom center</option>
+							<option value="bottom-left">bottom left</option>
+							<option value="center-left">center left</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<th>Static Bounding Box</th>
+					<td>
+						<input type="number" name="width" value="" placeholder="width">
+						<input type="number" name="height" value="" placeholder="height"><br>
+						<input type="number" name="depth" value="" placeholder="depth">
+						<input type="number" name="radius" value="" placeholder="radius">
+					</td>
+				</tr>
+				<tr>
+					<th>Dynamic Bounding Box</th>
+					<td>
+						<select name="boundingbox">
+							<option value="frame" selected>use frame size</option>
+							<option value="none">no bounding box</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<th>State Map</th>
+					<td>
+						<select name="statemap">
+							<option value="image" selected>use image name</option>
+							<option value="none">no state map</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>State Animation</th>
+					<td>
+						<select name="stateanimation">
+							<option value="image" selected>use image name</option>
+							<option value="none">no state animations</option>
+						</select>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</article>
+
+	<article>
+		<h2>3. Preview &amp; Export</h2>
+		<div class="center">
+			<figure class="texture">
+				<img id="preview-texture" src="data:image/png;base64,">
+			</figure>
+		</div>
+		<p class="center">
+			<button id="preview-download-config">Download Entity.json</button>
+			<button id="preview-download-texture">Download Entity.png</button>
+		</p>
+	</article>
+
+	<article>
+		<h2>4. Usage</h2>
+		<p class="center">
+			The generated Entity.js is an implementation that you can use directly.<br>
+			Make sure to rename the files and make them available in the <em>lychee.pkg</em> file.
+		</p>
+	</article>
+
+	<footer>lycheeJS is (c) 2014 by LazerUnicorns Ltd. and released under MIT license.</footer>
+
+	<script>
+	/*
+	 * INITIALIZATION
+	 */
+
+	(function(lychee, global) {
+
+		var environment = new lychee.Environment({
+			id:      'sprite',
+			debug:   false,
+			sandbox: false,
+			build:   'tool.Main',
+			packages: [
+				new lychee.Package('tool', './lychee.pkg')
+			],
+			tags:     {
+				platform: [ 'html' ]
+			}
+		});
+
+
+		lychee.setEnvironment(environment);
+
+		lychee.init(function(sandbox) {
+
+			var lychee = sandbox.lychee;
+			var tool   = sandbox.tool;
+
+			sandbox.MAIN = new tool.Main({
+				dropzone: {
+					element:    document.querySelector('#dropzone'),
+					extensions: {
+						png: true
+					}
+				}
+			});
+			sandbox.MAIN.init();
+
+		});
+
+	})(lychee, typeof global !== 'undefined' ? global : this);
+	</script>
+
+</body>
+</html>    

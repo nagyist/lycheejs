@@ -23,6 +23,8 @@ lychee.define('lychee.net.client.Session').includes([
 		var settings = lychee.extend({}, data);
 
 
+		this.admin     = false;
+		this.autoadmin = true;
 		this.autolock  = true;
 		this.autostart = true;
 		this.sid       = 'session-' + _id++;
@@ -31,6 +33,7 @@ lychee.define('lychee.net.client.Session').includes([
 		this.max       = 4;
 
 
+		this.setAutoadmin(settings.autoadmin);
 		this.setAutolock(settings.autolock);
 		this.setAutostart(settings.autostart);
 		this.setSid(settings.sid);
@@ -57,9 +60,10 @@ lychee.define('lychee.net.client.Session').includes([
 			var type = data.type;
 			if (type === 'update') {
 
-				this.sid = data.sid;
-				this.min = data.min;
-				this.max = data.max;
+				this.admin = data.admin;
+				this.sid   = data.sid;
+				this.min   = data.min;
+				this.max   = data.max;
 
 			}
 
@@ -107,6 +111,7 @@ lychee.define('lychee.net.client.Session').includes([
 
 
 					this.tunnel.send({
+						autoadmin: this.autoadmin,
 						autolock:  this.autolock,
 						autostart: this.autostart,
 						sid:       this.sid,
@@ -182,6 +187,21 @@ lychee.define('lychee.net.client.Session').includes([
 				}
 
 			}
+
+		},
+
+		setAutoadmin: function(autoadmin) {
+
+			if (autoadmin === true || autoadmin === false) {
+
+				this.autoadmin = autoadmin;
+
+				return true;
+
+			}
+
+
+			return false;
 
 		},
 

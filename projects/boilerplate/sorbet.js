@@ -41,8 +41,10 @@ require(_root + '/lychee/build/nodejs/core.js')(_root);
 		var lychee = sandbox.lychee;
 		var game   = sandbox.game;
 
-		sandbox.SERVER = new game.net.Server();
-		sandbox.SERVER.listen(_port, _host);
+		sandbox.SERVER = new game.net.Server({
+			host: _host,
+			port: _port
+		});
 
 	});
 

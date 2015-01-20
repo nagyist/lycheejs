@@ -84,9 +84,9 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 		var settings = lychee.extend({}, data);
 
 
-		this.width  = typeof settings.width  === 'number' ? settings.width  : 0;
+		this.width  = typeof settings.width === 'number'  ? settings.width  : 0;
 		this.height = typeof settings.height === 'number' ? settings.height : 0;
-		this.depth  = typeof settings.depth  === 'number' ? settings.depth  : 0;
+		this.depth  = typeof settings.depth === 'number'  ? settings.depth  : 0;
 		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
 
 		this.alpha     = 1;
@@ -195,7 +195,8 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 
 			return {
 				'constructor': 'lychee.game.Entity',
-				'arguments':   [ settings ]
+				'arguments':   [ settings ],
+				'blob':        null
 			};
 
 		},
@@ -204,8 +205,8 @@ lychee.define('lychee.game.Entity').exports(function(lychee, global) {
 		render: function(renderer, offsetX, offsetY) {
 
 			var effects = this.effects;
-			for (var e = 0, el = this.effects.length; e < el; e++) {
-				this.effects[e].render(renderer, offsetX, offsetY);
+			for (var e = 0, el = effects.length; e < el; e++) {
+				effects[e].render(renderer, offsetX, offsetY);
 			}
 
 		},

@@ -75,7 +75,7 @@ lychee.define('game.entity.Circle').requires([
 				}));
 
 				this.addEffect(new lychee.effect.Radius({
-					type:     lychee.effect.Color.TYPE.bounceeaseout,
+					type:     lychee.effect.Radius.TYPE.bounceeaseout,
 					duration: 500,
 					radius:   24 + ((Math.random() * 48) | 0)
 				}));

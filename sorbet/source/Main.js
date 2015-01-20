@@ -1,11 +1,7 @@
 
 lychee.define('sorbet.Main').requires([
 	'lychee.Input',
-	'sorbet.api.remote.Debugger',
-	'sorbet.api.remote.Log',
-	'sorbet.api.remote.Project',
 	'sorbet.api.remote.Server',
-	'sorbet.api.remote.VirtualHost',
 	'sorbet.module.Blacklist',
 	'sorbet.module.Error',
 	'sorbet.module.Fertilizer',
@@ -85,9 +81,9 @@ lychee.define('sorbet.Main').requires([
 
 	};
 
-	var _parse_host = function() {
+	var _parse_host = function(str) {
 
-		var tmp = (this + '').split(':');
+		var tmp = (str + '').split(':');
 		if (tmp[0] === 'http' || tmp[0] === 'https') {
 			return tmp[1].substr(2);
 		} else {
@@ -96,9 +92,9 @@ lychee.define('sorbet.Main').requires([
 
 	};
 
-	var _parse_port = function() {
+	var _parse_port = function(str) {
 
-		var tmp = (this + '').split(':');
+		var tmp = (str + '').split(':');
 		if (tmp[0] === 'http' || tmp[0] === 'https') {
 			return parseInt(tmp[2] || '80', 10);
 		} else {
@@ -112,6 +108,8 @@ lychee.define('sorbet.Main').requires([
 		if (data.status === 304) {
 
 			response.writeHead(data.status);
+
+			data = null;
 			response.end();
 
 		} else {
@@ -138,6 +136,7 @@ lychee.define('sorbet.Main').requires([
 
 					}
 
+					data = null;
 					response.end();
 
 				});
@@ -149,6 +148,7 @@ lychee.define('sorbet.Main').requires([
 				response.writeHead(data.status, data.header);
 				response.write(data.content);
 
+				data = null;
 				response.end();
 
 			}
@@ -289,16 +289,20 @@ lychee.define('sorbet.Main').requires([
 
 			for (var aid in profile.api) {
 
-				var apiconstruct = _resolve_constructor(profile.api[aid], global);
-				if (apiconstruct instanceof Function) {
+				if (profile.api[aid] === true) {
 
-					if (this.apis.get(aid) === null) {
+					var apiconstruct = _resolve_constructor('sorbet.api.remote.' + aid, global);
+					if (apiconstruct instanceof Function) {
 
-						if (lychee.debug === true) {
-							console.info('sorbet.Main: Spawning API "' + aid + '" from "' + profile.api[aid] + '"');
+						if (this.apis.get(aid) === null) {
+
+							if (lychee.debug === true) {
+								console.info('sorbet.Main: Spawning API "' + aid + '"');
+							}
+
+							this.apis.set(aid, new apiconstruct(this));
+
 						}
-
-						this.apis.set(aid.toLowerCase(), new apiconstruct(this));
 
 					}
 
@@ -313,16 +317,20 @@ lychee.define('sorbet.Main').requires([
 
 			for (var mid in profile.module) {
 
-				var modconstruct = _resolve_constructor(profile.module[mid], global);
-				if (modconstruct instanceof Function) {
+				if (profile.module[mid] === true) {
 
-					if (this.modules.get(mid) === null) {
+					var modconstruct = _resolve_constructor('sorbet.module.' + mid, global);
+					if (modconstruct instanceof Function) {
 
-						if (lychee.debug === true) {
-							console.info('sorbet.Main: Spawning Module "' + mid + '" from "' + profile.module[mid] + '"');
+						if (this.modules.get(mid) === null) {
+
+							if (lychee.debug === true) {
+								console.info('sorbet.Main: Spawning Module "' + mid + '"');
+							}
+
+							this.modules.set(mid, new modconstruct(this));
+
 						}
-
-						this.modules.set(mid, new modconstruct(this));
 
 					}
 
@@ -406,11 +414,11 @@ lychee.define('sorbet.Main').requires([
 			var _redirect  = this.modules.get('Redirect');
 
 
-			var rawhost    = _parse_host.call(request.headers.host || '');
-			var rawport    = _parse_port.call(request.headers.host || '');
+			var rawhost    = _parse_host(request.headers.host || '');
+			var rawport    = _parse_port(request.headers.host || '');
 			var rawreferer = request.headers.referer || null;
 			var rawremote  = request.connection.remoteAddress || null;
-			var raworigin  = _parse_host.call(request.headers.origin || '');
+			var raworigin  = _parse_host(request.headers.origin || '');
 
 			var vhost      = this.vhosts.get(rawhost);
 			var url        = request.url.split('?')[0];
@@ -495,8 +503,6 @@ lychee.define('sorbet.Main').requires([
 					var moduleid = url.split('/')[2] || null;
 					if (moduleid !== null) {
 
-						moduleid = moduleid.toLowerCase();
-
 						var module = this.apis.get(moduleid);
 						if (module !== null) {
 
@@ -532,13 +538,13 @@ lychee.define('sorbet.Main').requires([
 					}
 
 
-				// 1.2b Dashboard Integration and static assets
+				// 1.2b Welcome Page and static assets
 				} else if (vhost.root === this.root) {
 
 					if (url === '/') {
 
 						if (_redirect.process(vhost, response, {
-							url: vhost.root + '/Dashboard/index.html'
+							url: vhost.root + '/projects/cultivator/index.html'
 						})) {
 							return response;
 						}

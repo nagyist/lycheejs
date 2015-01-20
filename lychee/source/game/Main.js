@@ -5,6 +5,7 @@ lychee.define('lychee.game.Main').requires([
 	'lychee.Storage',
 	'lychee.Viewport',
 	'lychee.game.Jukebox',
+	'lychee.game.Logic',
 	'lychee.game.Loop',
 	'lychee.game.State',
 	'lychee.net.Client'
@@ -77,6 +78,10 @@ lychee.define('lychee.game.Main').requires([
 			this.jukebox = new lychee.game.Jukebox(settings.jukebox);
 		}
 
+		if (settings.logic !== null) {
+			this.logic = new lychee.game.Logic(settings.logic);
+		}
+
 		if (settings.loop !== null) {
 			this.loop = new lychee.game.Loop(settings.loop);
 			this.loop.bind('render', this.render, this);
@@ -126,6 +131,10 @@ lychee.define('lychee.game.Main').requires([
 			sound:    true
 		},
 
+		logic: {
+			projection: lychee.game.Logic.PROJECTION.pixel
+		},
+
 		loop: {
 			render: 60,
 			update: 60
@@ -167,13 +176,14 @@ lychee.define('lychee.game.Main').requires([
 		this.client   = null;
 		this.input    = null;
 		this.jukebox  = null;
+		this.logic    = null;
 		this.loop     = null;
 		this.renderer = null;
 		this.storage  = null;
 		this.viewport = null;
 
+		this.state    = null;
 		this.__states = {};
-		this.__state  = null;
 
 
 		lychee.event.Emitter.call(this);
@@ -207,8 +217,11 @@ lychee.define('lychee.game.Main').requires([
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.game.Main';
+
 			var settings = lychee.extendunlink({}, this.settings);
-			var blob     = {};
+			var blob     = data['blob'] || {};
 
 
 			if (this.input !== null)    blob.input    = lychee.serialize(this.input);
@@ -226,11 +239,11 @@ lychee.define('lychee.game.Main').requires([
 			}
 
 
-			return {
-				'constructor': 'lychee.game.Main',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
 
 		},
 
@@ -242,16 +255,16 @@ lychee.define('lychee.game.Main').requires([
 
 		render: function(clock, delta) {
 
-			if (this.__state !== null) {
-				this.__state.render(clock, delta);
+			if (this.state !== null) {
+				this.state.render(clock, delta);
 			}
 
 		},
 
 		update: function(clock, delta) {
 
-			if (this.__state !== null) {
-				this.__state.update(clock, delta);
+			if (this.state !== null) {
+				this.state.update(clock, delta);
 			}
 
 		},
@@ -269,7 +282,7 @@ lychee.define('lychee.game.Main').requires([
 				loop.resume();
 			}
 
-			var state = this.getState();
+			var state = this.state;
 			if (state !== null) {
 				state.show();
 			}
@@ -283,7 +296,7 @@ lychee.define('lychee.game.Main').requires([
 				loop.pause();
 			}
 
-			var state = this.getState();
+			var state = this.state;
 			if (state !== null) {
 				state.hide();
 			}
@@ -379,26 +392,12 @@ lychee.define('lychee.game.Main').requires([
 			id = typeof id === 'string' ? id : null;
 
 
-			if (id !== null) {
-				return this.__states[id] || null;
+			if (id !== null && this.__states[id] !== undefined) {
+				return this.__states[id];
 			}
 
 
-			return this.__state || null;
-
-		},
-
-		isState: function(id) {
-
-			id = typeof id === 'string' ? id : null;
-
-
-			if (id !== null) {
-				return this.__state === this.__states[id];
-			}
-
-
-			return false;
+			return null;
 
 		},
 
@@ -411,7 +410,7 @@ lychee.define('lychee.game.Main').requires([
 
 				delete this.__states[id];
 
-				if (this.__state === this.__states[id]) {
+				if (this.state === this.__states[id]) {
 					this.changeState(null);
 				}
 
@@ -430,7 +429,7 @@ lychee.define('lychee.game.Main').requires([
 			data = data instanceof Object ? data : null;
 
 
-			var oldstate = this.__state;
+			var oldstate = this.state;
 			var newstate = this.__states[id] || null;
 
 			if (newstate !== null) {
@@ -443,7 +442,7 @@ lychee.define('lychee.game.Main').requires([
 					newstate.enter(data);
 				}
 
-				this.__state = newstate;
+				this.state = newstate;
 
 			} else {
 
@@ -451,7 +450,7 @@ lychee.define('lychee.game.Main').requires([
 					oldstate.leave();
 				}
 
-				this.__state = null;
+				this.state = null;
 
 			}
 

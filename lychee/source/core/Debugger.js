@@ -82,7 +82,7 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 		}
 
 
-		console.error('lychee.Debugger: Report', data);
+		console.error('lychee.Debugger: Report from ' + data.file + '#L' + data.line + ' in ' + data.method + ': "' + data.message + '"');
 
 	};
 
@@ -104,8 +104,6 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 
 
 			var project = environment instanceof lychee.Environment ? environment.id : null;
-
-
 			if (project !== null) {
 
 				if (lychee.diff(environment.global, _environment.global) === true) {
@@ -129,48 +127,54 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 			_bootstrap_environment();
 
 
-			var project = environment instanceof lychee.Environment ? environment.id          : null;
-
-			environment = environment instanceof lychee.Environment ? environment.serialize() : null;
-			definition  = definition instanceof lychee.Definition   ? definition.id           : null;
-
-
-			var data = {
-				project:     project,
-				definition:  definition,
-				environment: environment,
-				file:        null,
-				line:        null,
-				method:      null,
-				type:        error.toString().split(':')[0],
-				message:     error.message
-			};
+			environment = environment instanceof lychee.Environment ? environment : null;
+			error       = error instanceof Error                    ? error       : null;
+			definition  = definition instanceof lychee.Definition   ? definition  : null;
 
 
-			if (typeof Error.captureStackTrace === 'function') {
+			if (environment !== null && error !== null) {
 
-				var orig = Error.prepareStackTrace;
+				var data = {
+					project:     environment.id,
+					definition:  definition !== null ? definition.id : null,
+					environment: environment.serialize(),
+					file:        null,
+					line:        null,
+					method:      null,
+					type:        error.toString().split(':')[0],
+					message:     error.message
+				};
 
-				Error.prepareStackTrace = function(err, stack) { return stack; };
-				Error.captureStackTrace(new Error());
+
+				if (typeof Error.captureStackTrace === 'function') {
+
+					var orig = Error.prepareStackTrace;
+
+					Error.prepareStackTrace = function(err, stack) { return stack; };
+					Error.captureStackTrace(new Error());
 
 
-				var callsite = error.stack[0];
+					var callsite = error.stack[0];
 
-				data.file   = callsite.getFileName();
-				data.line   = callsite.getLineNumber();
-				data.method = callsite.getFunctionName() || callsite.getMethodName();
+					data.file   = callsite.getFileName();
+					data.line   = callsite.getLineNumber();
+					data.method = callsite.getFunctionName() || callsite.getMethodName();
 
 
-				Error.prepareStackTrace = orig;
+					Error.prepareStackTrace = orig;
+
+				}
+
+
+				_report(data);
+
+
+				return true;
 
 			}
 
 
-			_report(data);
-
-
-			return true;
+			return false;
 
 		}
 

@@ -49,6 +49,16 @@ lychee.define('game.Main').requires([
 
 	Class.prototype = {
 
+		serialize: function() {
+
+			var data = lychee.game.Main.prototype.serialize.call(this);
+			data['constructor'] = 'game.Main';
+
+
+			return data;
+
+		},
+
 		reshape: function(orientation, rotation) {
 
 			game.DeviceSpecificHacks.call(this);

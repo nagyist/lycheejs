@@ -70,6 +70,7 @@ lychee.define('lychee.game.State').requires([
 		this.client   = main.client   || null;
 		this.input    = main.input    || null;
 		this.jukebox  = main.jukebox  || null;
+		this.logic    = main.logic    || null;
 		this.loop     = main.loop     || null;
 		this.renderer = main.renderer || null;
 

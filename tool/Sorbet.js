@@ -13,9 +13,9 @@ var _print_help = function() {
 	console.log('                                                                                            ');
 	console.log('============================================================================================');
 	console.log('                   _                                                                        ');
-	console.log('              {+~/`o;==-    ,_(+--,                 lycheeJS v0.8 Sorbet                    ');
+	console.log('              {+~/`o;==-    ,_(+--,                     lycheeJS v0.8 Sorbet                ');
 	console.log('         .----+-/`-/          (+--; ,--+)_,                                                 ');
-	console.log('          `+-..-| /               | ;--+)     @   (Web-, WS- & CI-Server, CDN)              ');
+	console.log('          `+-..-| /               | ;--+)     @      (Web-, WS- & CI-Server, CDN)           ');
 	console.log('               /|/|           .-. |.| .-.    <|>                                            ');
 	console.log('               `--`              ~| |~        |                                             ');
 	console.log('    ^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^=^-.-^     ');
@@ -218,28 +218,26 @@ var _profile  = null;
 
 			main.listen(profile.port);
 
-			process.on('exit', function() {
 
-				if (lychee.debug === true) {
-					console.log('sorbet.Main: Killed Server');
-				}
+			process.on('SIGHUP',  function() { main.destroy(); this.exit(0); });
+			process.on('SIGINT',  function() { main.destroy(); this.exit(0); });
+			process.on('SIGQUIT', function() { main.destroy(); this.exit(0); });
+			process.on('SIGABRT', function() { main.destroy(); this.exit(0); });
+			process.on('SIGTERM', function() { main.destroy(); this.exit(0); });
+			process.on('error',   function() { main.destroy(); this.exit(0); });
 
-				main.destroy();
 
-			});
+			new lychee.Input({
+				key:         true,
+				keymodifier: true
+			}).bind('escape', function() {
 
-			process.on('SIGHUP',  function() { this.exit(0); });
-			process.on('SIGINT',  function() { this.exit(0); });
-			process.on('SIGQUIT', function() { this.exit(0); });
-			process.on('SIGABRT', function() { this.exit(0); });
-			process.on('SIGTERM', function() { this.exit(0); });
-
-			process.on('error', function() {
+				console.log('sorbet.Main: [ESC] pressed, exiting Sorbet ...');
 
 				main.destroy();
-				this.exit(0);
+				process.exit(0);
 
-			});
+			}, this);
 
 		});
 
@@ -283,8 +281,8 @@ var _profile  = null;
 
 					for (var f = 0, fl = found.length; f < fl; f++) {
 
-						var pid = found[f].pid;
-						if (pid > 0) {
+						var f_pid = found[f].pid;
+						if (f_pid > 0) {
 
 							try {
 								process.kill(pid, 'SIGINT');
@@ -320,6 +318,8 @@ var _profile  = null;
 	 * INITIALIZATION
 	 */
 
+	var result = false;
+
 	switch(command) {
 
 		case 'start':
@@ -330,7 +330,8 @@ var _profile  = null;
 
 				console.log('Starting Instance ... ');
 
-				var result = _start_server(profile);
+				result = _start_server(profile);
+
 				if (result === true) {
 					console.info('SUCCESS');
 				} else {
@@ -353,10 +354,7 @@ var _profile  = null;
 
 			if (id !== null || pid !== null) {
 
-
 				console.log('Stopping Instances ... ');
-
-				var result = false;
 
 				if (pid === '*') {
 
@@ -404,7 +402,7 @@ var _profile  = null;
 
 		break;
 
-	};
+	}
 
 })(_cli, _command, _settings);
 

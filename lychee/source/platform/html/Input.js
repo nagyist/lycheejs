@@ -217,299 +217,7 @@ lychee.define('Input').tags({
 	 * HELPERS
 	 */
 
-	var _process_key = function(code, ctrl, alt, shift) {
-
-		if (this.key === false) return false;
-
-
-		// 1. Validate key event
-		if (Class.KEYMAP[code] === undefined && Class.SPECIALMAP[code] === undefined) {
-			return false;
-		}
-
-
-		ctrl  =  ctrl === true;
-		alt   =   alt === true;
-		shift = shift === true;
-
-
-		// 2. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.key;
-		if (delta < this.delay) {
-			return true;
-		}
-
-
-		// 3. Check for current key being a modifier
-		if (this.keymodifier === false) {
-
-			if (code === 16 && shift === true) {
-				return true;
-			}
-
-			if (code === 17 && ctrl === true) {
-				return true;
-			}
-
-			if (code === 18 && alt === true) {
-				return true;
-			}
-
-		}
-
-
-		var key  = null;
-		var name = null;
-		var tmp  = null;
-
-		// 3a. Check for special characters (that can be shifted)
-		if (Class.SPECIALMAP[code] !== undefined) {
-
-			tmp  = Class.SPECIALMAP[code];
-			key  = shift === true ? tmp[1] : tmp[0];
-			name = '';
-
-			if (ctrl  === true) name += 'ctrl-';
-			if (alt   === true) name += 'alt-';
-			if (shift === true) name += 'shift-';
-
-			name += tmp[0];
-
-
-		// 3b. Check for normal characters
-		} else if (Class.KEYMAP[code] !== undefined) {
-
-			key  = Class.KEYMAP[code];
-			name = '';
-
-			if (ctrl  === true && key !== 'ctrl')  name += 'ctrl-';
-			if (alt   === true && key !== 'alt')   name += 'alt-';
-			if (shift === true && key !== 'shift') name += 'shift-';
-
-
-			if (shift === true && key !== 'ctrl' && key !== 'alt' && key !== 'shift') {
-
-				tmp = String.fromCharCode(code);
-				key = tmp !== '' ? tmp : key;
-
-			}
-
-			name += key.toLowerCase();
-
-		}
-
-
-		var handled = false;
-
-		if (key !== null) {
-
-			// bind('key') and bind('ctrl-a');
-			// bind('!')   and bind('shift-1');
-
-			handled = this.trigger('key', [ key, name, delta ]) || handled;
-			handled = this.trigger(name,  [ delta ])            || handled;
-
-
-			if (handled === true) {
-
-				if (lychee.debug === true) {
-					this.__history.key.push([ Date.now(), key, name, delta ]);
-				}
-
-			}
-
-		}
-
-
-		this.__clock.key = Date.now();
-
-
-		return handled;
-
-	};
-
-	var _process_touch = function(id, x, y) {
-
-		if (this.touch === false && this.swipe === true) {
-
-			if (this.__swipes[id] === null) {
-				_process_swipe.call(this, id, 'start', x, y);
-			}
-
-			return true;
-
-		} else if (this.touch === false) {
-
-			return false;
-
-		}
-
-
-		// 1. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.touch;
-		if (delta < this.delay) {
-			return true;
-		}
-
-
-		var handled = false;
-
-		handled = this.trigger('touch', [ id, { x: x, y: y }, delta ]) || handled;
-
-
-		if (handled === true) {
-
-			if (lychee.debug === true) {
-				this.__history.touch.push([ Date.now(), id, { x: x, y: y }, delta ]);
-			}
-
-		}
-
-
-		this.__clock.touch = Date.now();
-
-
-		// 2. Fire Swipe Start, but only for tracked touches
-		if (this.__swipes[id] === null) {
-			handled = _process_swipe.call(this, id, 'start', x, y) || handled;
-		}
-
-
-		return handled;
-
-	};
-
-	var _process_swipe = function(id, state, x, y) {
-
-		if (this.swipe === false) return false;
-
-
-		// 1. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.swipe;
-		if (delta < this.delay) {
-			return true;
-		}
-
-
-		var position = { x: x, y: y };
-		var swipe    = { x: 0, y: 0 };
-
-		if (this.__swipes[id] !== null) {
-
-			// FIX for touchend events
-			if (state === 'end' && x === 0 && y === 0) {
-				position.x = this.__swipes[id].x;
-				position.y = this.__swipes[id].y;
-			}
-
-			swipe.x = x - this.__swipes[id].x;
-			swipe.y = y - this.__swipes[id].y;
-
-		}
-
-
-		var handled = false;
-
-
-		if (state === 'start') {
-
-			handled = this.trigger(
-				'swipe',
-				[ id, 'start', position, delta, swipe ]
-			) || handled;
-
-			this.__swipes[id] = {
-				x: x, y: y
-			};
-
-		} else if (state === 'move') {
-
-			handled = this.trigger(
-				'swipe',
-				[ id, 'move', position, delta, swipe ]
-			) || handled;
-
-		} else if (state === 'end') {
-
-			handled = this.trigger(
-				'swipe',
-				[ id, 'end', position, delta, swipe ]
-			) || handled;
-
-			this.__swipes[id] = null;
-
-		}
-
-
-		if (handled === true) {
-
-			if (lychee.debug === true) {
-				this.__history.swipe.push([ Date.now(), id, state, { x: position.x, y: position.y }, delta, { x: swipe.x, y: swipe.y }]);
-			}
-
-		}
-
-
-		this.__clock.swipe = Date.now();
-
-
-		return handled;
-
-	};
-
-
-
-	/*
-	 * IMPLEMENTATION
-	 */
-
-	var Class = function(data) {
-
-		var settings = lychee.extend({}, data);
-
-
-		this.delay       = 0;
-		this.key         = false;
-		this.keymodifier = false;
-		this.touch       = false;
-		this.swipe       = false;
-
-		this.__clock   = {
-			key:   Date.now(),
-			touch: Date.now(),
-			swipe: Date.now()
-		};
-		this.__history = {
-			key:   [],
-			touch: [],
-			swipe: []
-		};
-		this.__swipes  = {
-			0: null, 1: null,
-			2: null, 3: null,
-			4: null, 5: null,
-			6: null, 7: null,
-			8: null, 9: null
-		};
-
-
-		this.setDelay(settings.delay);
-		this.setKey(settings.key);
-		this.setKeyModifier(settings.keymodifier);
-		this.setTouch(settings.touch);
-		this.setSwipe(settings.swipe);
-
-
-		lychee.event.Emitter.call(this);
-
-		_instances.push(this);
-
-		settings = null;
-
-	};
-
-
-	Class.KEYMAP = {
+	var _KEYMAP = {
 
 		 8:  'backspace',
 		 9:  'tab',
@@ -596,7 +304,7 @@ lychee.define('Input').tags({
 
 	};
 
-	Class.SPECIALMAP = {
+	var _SPECIALMAP = {
 
 		48:  [ '0', ')' ],
 		49:  [ '1', '!' ],
@@ -621,6 +329,265 @@ lychee.define('Input').tags({
 		220: [ '\\', '|' ],
 		221: [ ']',  '}' ],
 		222: [ '\'', '"' ]
+
+	};
+
+	var _process_key = function(code, ctrl, alt, shift) {
+
+		if (this.key === false) return false;
+
+
+		// 1. Validate key event
+		if (_KEYMAP[code] === undefined && _SPECIALMAP[code] === undefined) {
+			return false;
+		}
+
+
+		ctrl  =  ctrl === true;
+		alt   =   alt === true;
+		shift = shift === true;
+
+
+		// 2. Only fire after the enforced delay
+		var delta = Date.now() - this.__clock.key;
+		if (delta < this.delay) {
+			return true;
+		}
+
+
+		// 3. Check for current key being a modifier
+		if (this.keymodifier === false) {
+
+			if (code === 16 && shift === true) {
+				return true;
+			}
+
+			if (code === 17 && ctrl === true) {
+				return true;
+			}
+
+			if (code === 18 && alt === true) {
+				return true;
+			}
+
+		}
+
+
+		var key  = null;
+		var name = null;
+		var tmp  = null;
+
+		// 3a. Check for special characters (that can be shifted)
+		if (_SPECIALMAP[code] !== undefined) {
+
+			tmp  = _SPECIALMAP[code];
+			key  = shift === true ? tmp[1] : tmp[0];
+			name = '';
+
+			if (ctrl  === true) name += 'ctrl-';
+			if (alt   === true) name += 'alt-';
+			if (shift === true) name += 'shift-';
+
+			name += tmp[0];
+
+
+		// 3b. Check for normal characters
+		} else if (_KEYMAP[code] !== undefined) {
+
+			key  = _KEYMAP[code];
+			name = '';
+
+			if (ctrl  === true && key !== 'ctrl')  name += 'ctrl-';
+			if (alt   === true && key !== 'alt')   name += 'alt-';
+			if (shift === true && key !== 'shift') name += 'shift-';
+
+
+			if (shift === true && key !== 'ctrl' && key !== 'alt' && key !== 'shift') {
+
+				tmp = String.fromCharCode(code);
+				key = tmp !== '' ? tmp : key;
+
+			}
+
+			name += key.toLowerCase();
+
+		}
+
+
+		var handled = false;
+
+		if (key !== null) {
+
+			// bind('key') and bind('ctrl-a');
+			// bind('!')   and bind('shift-1');
+
+			handled = this.trigger('key', [ key, name, delta ]) || handled;
+			handled = this.trigger(name,  [ delta ])            || handled;
+
+		}
+
+
+		this.__clock.key = Date.now();
+
+
+		return handled;
+
+	};
+
+	var _process_touch = function(id, x, y) {
+
+		if (this.touch === false && this.swipe === true) {
+
+			if (this.__swipes[id] === null) {
+				_process_swipe.call(this, id, 'start', x, y);
+			}
+
+			return true;
+
+		} else if (this.touch === false) {
+
+			return false;
+
+		}
+
+
+		// 1. Only fire after the enforced delay
+		var delta = Date.now() - this.__clock.touch;
+		if (delta < this.delay) {
+			return true;
+		}
+
+
+		var handled = false;
+
+		handled = this.trigger('touch', [ id, { x: x, y: y }, delta ]) || handled;
+
+
+		this.__clock.touch = Date.now();
+
+
+		// 2. Fire Swipe Start, but only for tracked touches
+		if (this.__swipes[id] === null) {
+			handled = _process_swipe.call(this, id, 'start', x, y) || handled;
+		}
+
+
+		return handled;
+
+	};
+
+	var _process_swipe = function(id, state, x, y) {
+
+		if (this.swipe === false) return false;
+
+
+		// 1. Only fire after the enforced delay
+		var delta = Date.now() - this.__clock.swipe;
+		if (delta < this.delay) {
+			return true;
+		}
+
+
+		var position = { x: x, y: y };
+		var swipe    = { x: 0, y: 0 };
+
+		if (this.__swipes[id] !== null) {
+
+			// FIX for touchend events
+			if (state === 'end' && x === 0 && y === 0) {
+				position.x = this.__swipes[id].x;
+				position.y = this.__swipes[id].y;
+			}
+
+			swipe.x = x - this.__swipes[id].x;
+			swipe.y = y - this.__swipes[id].y;
+
+		}
+
+
+		var handled = false;
+
+
+		if (state === 'start') {
+
+			handled = this.trigger(
+				'swipe',
+				[ id, 'start', position, delta, swipe ]
+			) || handled;
+
+			this.__swipes[id] = {
+				x: x, y: y
+			};
+
+		} else if (state === 'move') {
+
+			handled = this.trigger(
+				'swipe',
+				[ id, 'move', position, delta, swipe ]
+			) || handled;
+
+		} else if (state === 'end') {
+
+			handled = this.trigger(
+				'swipe',
+				[ id, 'end', position, delta, swipe ]
+			) || handled;
+
+			this.__swipes[id] = null;
+
+		}
+
+
+		this.__clock.swipe = Date.now();
+
+
+		return handled;
+
+	};
+
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	var Class = function(data) {
+
+		var settings = lychee.extend({}, data);
+
+
+		this.delay       = 0;
+		this.key         = false;
+		this.keymodifier = false;
+		this.touch       = false;
+		this.swipe       = false;
+
+		this.__clock   = {
+			key:   Date.now(),
+			touch: Date.now(),
+			swipe: Date.now()
+		};
+		this.__swipes  = {
+			0: null, 1: null,
+			2: null, 3: null,
+			4: null, 5: null,
+			6: null, 7: null,
+			8: null, 9: null
+		};
+
+
+		this.setDelay(settings.delay);
+		this.setKey(settings.key);
+		this.setKeyModifier(settings.keymodifier);
+		this.setTouch(settings.touch);
+		this.setSwipe(settings.swipe);
+
+
+		lychee.event.Emitter.call(this);
+
+		_instances.push(this);
+
+		settings = null;
 
 	};
 
@@ -659,8 +626,10 @@ lychee.define('Input').tags({
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.Input';
+
 			var settings = {};
-			var blob     = {};
 
 
 			if (this.delay !== 0)           settings.delay       = this.delay;
@@ -670,48 +639,10 @@ lychee.define('Input').tags({
 			if (this.swipe !== false)       settings.swipe       = this.swipe;
 
 
-			if (this.__history.key.length > 0 || this.__history.touch.length > 0 || this.__history.swipe.length > 0) {
-
-				blob.history = {};
-
-				if (this.__history.key.length > 0) {
-
-					blob.history.key = [];
-
-					for (var k = 0, kl = this.__history.key.length; k < kl; k++) {
-						blob.history.key.push(this.__history.key[k]);
-					}
-
-				}
-
-				if (this.__history.touch.length > 0) {
-
-					blob.history.touch = [];
-
-					for (var t = 0, tl = this.__history.touch.length; t < tl; t++) {
-						blob.history.touch.push(this.__history.touch[t]);
-					}
-
-				}
-
-				if (this.__history.swipe.length > 0) {
-
-					blob.history.swipe = [];
-
-					for (var s = 0, sl = this.__history.swipe.length; s < sl; s++) {
-						blob.history.swipe.push(this.__history.swipe[s]);
-					}
-
-				}
-
-			}
+			data['arguments'][0] = settings;
 
 
-			return {
-				'constructor': 'lychee.Input',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			return data;
 
 		},
 

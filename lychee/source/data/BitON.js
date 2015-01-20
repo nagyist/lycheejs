@@ -46,31 +46,50 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 
 
 
-	var _stream = function(buffer, mode) {
+	var _Stream = function(buffer, mode) {
 
 		this.__buffer    = typeof buffer === 'string' ? buffer : '';
-		this.__mode      = typeof mode === 'number' ? mode : null;
+		this.__mode      = typeof mode === 'number'   ? mode   : 0;
 
 		this.__pointer   = 0;
 		this.__value     = 0;
 		this.__remaining = 8;
 		this.__index     = 0;
 
-		if (this.__mode === _stream.MODE.read) {
+		if (this.__mode === _Stream.MODE.read) {
 			this.__value = this.__buffer.charCodeAt(this.__index);
 		}
 
 	};
 
-	_stream.MODE = {
+
+	_Stream.MODE = {
 		read:  0,
 		write: 1
 	};
 
-	_stream.prototype = {
 
-		buffer: function() {
+	_Stream.prototype = {
+
+		toString: function() {
+
+			if (this.__mode === _Stream.MODE.write) {
+
+				if (this.__value > 0) {
+					this.__buffer += CHAR_TABLE[this.__value];
+					this.__value   = 0;
+				}
+
+
+				// 0: Boolean or Null or EOS
+				this.write(0, 3);
+				// 00: EOS
+				this.write(0, 2);
+
+			}
+
 			return this.__buffer;
+
 		},
 
 		pointer: function() {
@@ -185,25 +204,6 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 
 				this.__buffer  += buffer;
 				this.__pointer += buffer.length * 8;
-
-			}
-
-		},
-
-		close: function() {
-
-			if (this.__mode === _stream.MODE.write) {
-
-				if (this.__value > 0) {
-					this.__buffer += CHAR_TABLE[this.__value];
-					this.__value   = 0;
-				}
-
-
-				// 0: Boolean or Null or EOS
-				this.write(0, 3);
-				// 00: EOS
-				this.write(0, 2);
 
 			}
 
@@ -402,7 +402,6 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 		} else if (data instanceof Array) {
 
 			stream.write(4, 3);
-
 
 			for (var d = 0, dl = data.length; d < dl; d++) {
 				stream.write(0, 3);
@@ -627,31 +626,57 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {};
+	var Module = {
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			return {
+				'reference': '#lychee.data.BitON',
+				'blob':      null
+			};
+
+		},
+
+		encode: function(data) {
+
+			data = data instanceof Object ? data : null;
 
 
-	Module.encode = function(data) {
+			if (data !== null) {
 
-		var stream = new _stream('', _stream.MODE.write);
+				var stream = new _Stream('', _Stream.MODE.write);
 
-		_encode(stream, data);
+				_encode(stream, data);
 
-		stream.close();
+				return stream.toString();
 
-		return stream.buffer();
-
-	};
+			}
 
 
-	Module.decode = function(data) {
-
-		var stream = new _stream(data, _stream.MODE.read);
-
-		var value = _decode(stream);
-		if (value === undefined) {
 			return null;
-		} else {
-			return value;
+
+		},
+
+		decode: function(data) {
+
+			data = typeof data === 'string' ? data : null;
+
+
+			if (data !== null) {
+
+				var stream = new _Stream(data, _Stream.MODE.read);
+				var object = _decode(stream);
+				if (object !== undefined) {
+					return object;
+				}
+
+			}
+
+
+			return null;
+
 		}
 
 	};

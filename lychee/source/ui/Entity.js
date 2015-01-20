@@ -69,7 +69,9 @@ lychee.define('lychee.ui.Entity').includes([
 	// Same ENUM values as lychee.game.Entity
 	Class.SHAPE = {
 		circle:    0,
-		rectangle: 2
+		rectangle: 1,
+		sphere:    2,
+		cuboid:    3
 	};
 
 

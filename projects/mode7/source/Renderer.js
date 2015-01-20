@@ -21,6 +21,22 @@ lychee.define('game.Renderer').includes([
 	Class.prototype = {
 
 		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.Renderer.prototype.serialize.call(this);
+			data['constructor'] = 'game.Renderer';
+
+
+			return data;
+
+		},
+
+
+
+		/*
 		 * CUSTOM API
 		 */
 

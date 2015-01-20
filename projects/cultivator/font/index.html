@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Font Tool</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="../_design/index.css">
+	<script src="../_design/index.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+</head>
+<body>
+
+	<menu id="title">
+		<h1>Font Tool</h1>
+	</menu>
+
+	<article>
+		<h2>1. Settings</h2>
+		<p class="center">
+			Modify the settings for the new Font here.<br>
+			The preview will be automatically refreshed.
+		</p>
+		<form id="settings" enctype="application/json" action="MAIN" method="javascript">
+			<table>
+				<tr>
+					<th>Family</th>
+					<td><input type="text" name="family" value="Ubuntu Mono"></td>
+				</tr>
+				<tr>
+					<th>Style</th>
+					<td>
+						<select name="style">
+							<option>normal</option>
+							<option>bold</option>
+							<option>italic</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>Size</th>
+					<td><input type="range" name="size" min="8" max="128" value="64"></td>
+				</tr>
+				<tr>
+					<th>Spacing</th>
+					<td><input type="range" name="spacing" min="0" max="64" value="0"></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<th>Color</th>
+					<td><input type="text" name="color" pattern="\#[0-9a-f]{6}" value="#ffffff"></td>
+				</tr>
+				<tr>
+					<th>Outline</th>
+					<td><input type="range" name="outline" min="0" max="32" value="4"></td>
+				</tr>
+				<tr>
+					<th>Outline Color</th>
+					<td><input type="text" name="outlinecolor" pattern="\#[0-9a-f]{6}" value="#000000"></td>
+				</tr>
+			</table>
+		</form>
+	</article>
+
+	<article>
+		<h2>2. Preview &amp; Export</h2>
+		<div class="center">
+			<figure class="texture">
+				<img id="preview-texture" src="data:image/png;base64,">
+			</figure>
+		</div>
+		<p class="center">
+			<button id="preview-download">Download Unknown.fnt</button>
+		</p>
+	</article>
+
+	<article>
+		<h2>3. Usage</h2>
+		<p>
+			You can attach the Font file as an attachment to a specific
+			Definition by modifying the <em>lychee.pkg</em> file.
+		</p>
+		<p>
+			In this example, we have two different files, the Definition
+			<em>source/Example.js</em> and the Font <em>source/Example.fnt</em>.
+		</p>
+		<pre class="json" title="/projects/example/lychee.pkg">
+{
+	"source": {
+		"files": {
+			"Example": [ "js", "fnt" ]
+		}
+	}
+}
+		</pre>
+		<br>
+		<pre class="javascript" title="/projects/example/source/Example.js">
+lychee.define('game.Example').exports(function(lychee, game, global, attachments) {
+
+	var font = attachments['fnt'];
+	if (font instanceof Font) {
+		console.log('Yay, font available!');
+	}
+
+
+	return {}; // This is a stub Module
+
+});
+		</pre>
+	</article>
+
+	<footer>lycheeJS is (c) 2014 by LazerUnicorns Ltd. and released under MIT license.</footer>
+
+	<script>
+	/*
+	 * INITIALIZATION
+	 */
+
+	(function(lychee, global) {
+
+		var environment = new lychee.Environment({
+			id:      'font',
+			debug:   false,
+			sandbox: false,
+			build:   'tool.Main',
+			packages: [
+				new lychee.Package('tool', './lychee.pkg')
+			],
+			tags:     {
+				platform: [ 'html' ]
+			}
+		});
+
+
+		lychee.setEnvironment(environment);
+
+		lychee.init(function(sandbox) {
+
+			var lychee = sandbox.lychee;
+			var tool   = sandbox.tool;
+
+			sandbox.MAIN = new tool.Main();
+			sandbox.MAIN.init();
+
+		});
+
+	})(lychee, typeof global !== 'undefined' ? global : this);
+	</script>
+
+</body>
+</html>    

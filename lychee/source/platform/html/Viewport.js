@@ -254,41 +254,13 @@ lychee.define('Viewport').tags({
 
 	var _process_show = function() {
 
-		var handled = false;
-
-		handled = this.trigger('show', []) || handled;
-
-
-		if (handled === true) {
-
-			if (lychee.debug === true) {
-				this.__history.show.push([ Date.now() ]);
-			}
-
-		}
-
-
-		return handled;
+		return this.trigger('show', []);
 
 	};
 
 	var _process_hide = function() {
 
-		var handled = false;
-
-		handled = this.trigger('hide', []) || handled;
-
-
-		if (handled === true) {
-
-			if (lychee.debug === true) {
-				this.__history.hide.push([ Date.now() ]);
-			}
-
-		}
-
-
-		return handled;
+		return this.trigger('hide', []);
 
 	};
 
@@ -428,22 +400,7 @@ lychee.define('Viewport').tags({
 		}
 
 
-
-		var handled = false;
-
-		handled = this.trigger('reshape', [ orientation, rotation ]) || handled;
-
-
-		if (handled === true) {
-
-			if (lychee.debug === true) {
-				this.__history.reshape.push([ Date.now(), orientation, rotation ]);
-			}
-
-		}
-
-
-		return handled;
+		return this.trigger('reshape', [ orientation, rotation ]);
 
 	};
 
@@ -463,11 +420,6 @@ lychee.define('Viewport').tags({
 		this.height     = global.innerHeight;
 
 		this.__orientation = typeof global.orientation === 'number' ? global.orientation : 0;
-		this.__history     = {
-			show:    [],
-			hide:    [],
-			reshape: []
-		};
 
 
 		lychee.event.Emitter.call(this);
@@ -516,55 +468,19 @@ lychee.define('Viewport').tags({
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.Viewport';
+
 			var settings = {};
-			var blob     = {};
 
 
 			if (this.fullscreen !== false) settings.fullscreen = this.fullscreen;
 
 
-			if (this.__history.show.length > 0 || this.__history.hide.length > 0 || this.__history.reshape.length > 0) {
-
-				blob.history = {};
-
-				if (this.__history.show.length > 0) {
-
-					blob.history.show = [];
-
-					for (var s = 0, sl = this.__history.show.length; s < sl; s++) {
-						blob.history.show.push(this.__history.show[s]);
-					}
-
-				}
-
-				if (this.__history.hide.length > 0) {
-
-					blob.history.hide = [];
-
-					for (var h = 0, hl = this.__history.hide.length; h < hl; h++) {
-						blob.history.hide.push(this.__history.hide[h]);
-					}
-
-				}
-
-				if (this.__history.reshape.length > 0) {
-
-					blob.history.reshape = [];
-
-					for (var r = 0, rl = this.__history.reshape.length; r < rl; r++) {
-						blob.history.reshape.push(this.__history.reshape[r]);
-					}
-
-				}
-
-			}
+			data['arguments'][0] = settings;
 
 
-			return {
-				'constructor': 'lychee.Viewport',
-				'arguments':   [ settings ],
-				'blob':        Object.keys(blob).length > 0 ? blob : null
-			};
+			return data;
 
 		},
 

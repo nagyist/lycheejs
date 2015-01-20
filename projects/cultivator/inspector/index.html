@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Inspector</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<link rel="stylesheet" href="../_design/index.css">
+	<script src="../_design/index.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+</head>
+<body>
+
+	<menu>
+		<li><a onclick="MAIN.changeState('overview')">Overview</a></li>
+		<li><a onclick="MAIN.changeState('asset')">Assets</a></li>
+		<li><a onclick="MAIN.changeState('definition')">Definitions</a></li>
+	</menu>
+
+	<main id="inspector-Main">
+
+		<section id="inspector-state-Overview" class="inspector-State">
+			<menu>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/boilerplate/build/html/main.lychee.env">Boilerplate&nbsp;(html/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/boilerplate/build/html-nw/main.lychee.env">Boilerplate&nbsp;(html-nw/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/boilerplate/build/nodejs/server.lychee.env">Boilerplate&nbsp;(nodejs/server)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/color/build/html/main.lychee.env">Color&nbsp;(html/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/color/build/html-nw/main.lychee.env">Color&nbsp;(html-nw/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/color/build/nodejs/server.lychee.env">Color&nbsp;(nodejs/server)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/mode7/build/html/main.lychee.env">Mode7&nbsp;(html/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/mode7/build/html-nw/main.lychee.env">Mode7&nbsp;(html-nw/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/pong/build/html/main.lychee.env">Pong&nbsp;(html/main)</li>
+				<li onclick="MAIN.state.view(this.getAttribute('data-id'));" data-id="/projects/pong/build/html-nw/main.lychee.env">Pong&nbsp;(html-nw/main)</li>
+			</menu>
+			<article>
+				<h2>Corrupt Environment</h2>
+				<h3>Overview</h3>
+				<div class="center"><p class="error"><b>Error</b>: The current Environment is corrupt or not available.</p></div>
+				<p class="center">
+					Please select an Environment from the Menu or modify<br>
+					the <em>url</em> parameter to point to a <em>lychee.env</em> file.
+					<br>
+					<br>
+					<b>Example</b>:<br>
+					<em>index.html?url=/projects/boilerplate/build/html/main.lychee.env</em>
+				</p>
+			</article>
+		</section>
+
+		<section id="inspector-state-Asset" class="inspector-State">
+			<menu></menu>
+			<article></article>
+		</section>
+
+		<section id="inspector-state-Definition" class="inspector-State">
+			<menu></menu>
+			<article></article>
+		</section>
+
+	</main>
+
+	<script>
+	(function(lychee, global) {
+	
+		var environment = new lychee.Environment({
+			id:       'inspector',
+			debug:    true,
+			sandbox:  false,
+			build:    'inspector.Main',
+			packages: [
+				new lychee.Package('inspector', './lychee.pkg')
+			],
+			tags:     {
+				platform: [ 'html' ]
+			}
+		});
+
+
+		var parameters = {};
+
+		if (document.location.search.indexOf('?') !== -1) {
+
+			var tmp = document.location.search.substr(1).split('&');
+			if (tmp.length > 0) {
+
+				tmp.forEach(function(item) {
+
+					var key = item.split('=')[0];
+					var val = item.split('=')[1];
+
+					parameters[key] = val;
+
+				});
+
+			}
+
+		}
+
+
+		lychee.setEnvironment(environment);
+
+		lychee.init(function(sandbox) {
+
+			var lychee    = sandbox.lychee;
+			var inspector = sandbox.inspector;
+
+			sandbox.MAIN = new inspector.Main(parameters);
+			sandbox.MAIN.init();
+
+		});
+
+	})(lychee, typeof global !== 'undefined' ? global : this);
+	</script>
+
+</body>
+</html>

@@ -12,42 +12,43 @@ lychee.define('game.net.Server').requires([
 	var _ping      = game.net.remote.Ping;
 
 
-	var Class = function() {
+	var Class = function(data) {
 
-		lychee.net.Server.call(this, {
-			encoder: _BitON.encode,
-			decoder: _BitON.decode
-		});
+		var settings = lychee.extend({
+			codec: _BitON
+		}, data);
 
+
+		lychee.net.Server.call(this, settings);
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
 
 		this.bind('connect', function(remote) {
 
-			console.log('(Boilerplate) game.net.Server: Remote connected (' + remote.id + ')');
+			console.log('(Boilerplate) game.net.Server: Remote connected (' + remote.host + ':' + remote.port + ')');
 
-			remote.register('highscore', _highscore);
-			remote.register('ping',      _ping);
-			remote.accept();
+			remote.addService(new _highscore(remote));
+			remote.addService(new _ping(remote));
 
 		}, this);
 
 		this.bind('disconnect', function(remote) {
 
-			console.log('(Boilerplate) game.net.Server: Remote disconnected (' + remote.id + ')');
+			console.log('(Boilerplate) game.net.Server: Remote disconnected (' + remote.host + ':' + remote.port + ')');
 
 		}, this);
+
+
+		this.connect();
 
 	};
 
 
 	Class.prototype = {
-
-		listen: function(port, host) {
-
-			console.log('(Boilerplate) game.net.Server: Listening on ' + host + ':' + port);
-
-			lychee.net.Server.prototype.listen.call(this, port, host);
-
-		}
 
 	};
 

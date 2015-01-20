@@ -79,6 +79,26 @@ lychee.define('game.Main').requires([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.game.Main.prototype.serialize.call(this);
+			data['constructor'] = 'game.Main';
+
+
+			return data;
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
 		reshape: function() {
 
 			this.camera.reshape();

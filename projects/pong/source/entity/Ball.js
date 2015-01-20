@@ -24,6 +24,20 @@ lychee.define('game.entity.Ball').includes([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.game.Sprite.prototype.serialize.call(this);
+			data['constructor'] = 'game.entity.Ball';
+
+
+			return data;
+
+		}
+
 	};
 
 

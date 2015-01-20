@@ -1,0 +1,39 @@
+{
+
+	"build": {
+
+		"environments": {
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"data": {
+
+				"FNT": [ "js" ]
+
+			},
+
+			"Main": [ "js" ]
+
+		}
+
+	}
+
+}

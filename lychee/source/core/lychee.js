@@ -304,18 +304,37 @@ lychee = typeof lychee !== 'undefined' ? lychee : (function(global) {
 			definition = definition !== undefined ? definition : null;
 
 
+			var data = null;
+
 			if (definition !== null) {
 
-				if (typeof definition.serialize === 'function') {
-					return definition.serialize();
-				} else {
-					return JSON.parse(JSON.stringify(definition));
+				if (typeof definition === 'object') {
+
+					if (typeof definition.serialize === 'function') {
+
+						data = definition.serialize();
+
+					} else {
+
+						var data = null;
+						try {
+							data = JSON.parse(JSON.stringify(definition));
+						} catch(e) {
+							data = null;
+						}
+
+					}
+
+				} else if (typeof definition === 'function') {
+
+					data = definition.toString();
+
 				}
 
 			}
 
 
-			return null;
+			return data;
 
 		},
 
@@ -326,67 +345,81 @@ lychee = typeof lychee !== 'undefined' ? lychee : (function(global) {
 
 			if (data !== null) {
 
-				if (typeof data.constructor === 'string' && data.arguments instanceof Array) {
-
-					var construct = _resolve_constructor.call(this.environment.global, data.constructor);
-					if (typeof construct === 'function') {
-
-						var bindargs = [].splice.call(data.arguments, 0);
-						bindargs.reverse();
-						bindargs.push(construct);
-						bindargs.reverse();
+				var instance = null;
+				var scope    = this.environment.global;
 
 
-						for (var b = 0, bl = bindargs.length; b < bl; b++) {
+				if (typeof data.reference === 'string' && data.reference.charAt(0) === '#') {
 
-							var value = bindargs[b];
+					var resolved_module = _resolve_constructor.call(scope, data.reference.substr(1));
+					if (typeof resolved_module === 'object') {
+						instance = resolved_module;
+					}
+
+				} else if (typeof data.constructor === 'string' && data.arguments instanceof Array) {
+
+					var resolved_class = _resolve_constructor.call(scope, data.constructor);
+					if (typeof resolved_class === 'function') {
+
+						var bindargs = [].splice.call(data.arguments, 0).map(function(value) {
+
 							if (typeof value === 'string' && value.charAt(0) === '#') {
 
 								if (lychee.debug === true) {
 									console.log('lychee.deserialize: Injecting "' + value + '" from environment.global');
 								}
 
-
-								var resolved = _resolve_constructor.call(this.environment.global, value.substr(1));
+								var resolved = _resolve_constructor.call(scope, value.substr(1));
 								if (resolved !== null) {
-									bindargs[b] = resolved;
+									value = resolved;
 								}
 
 							}
 
-						}
+							return value;
+
+						});
 
 
-						var instance = new (
-							construct.bind.apply(
-								construct,
+						bindargs.reverse();
+						bindargs.push(resolved_class);
+						bindargs.reverse();
+
+
+						instance = new (
+							resolved_class.bind.apply(
+								resolved_class,
 								bindargs
 							)
 						)();
 
+					}
 
-						// High-Level ENTITY API
-						if (typeof instance.deserialize === 'function') {
+				}
 
-							var blob = data.blob || null;
-							if (blob !== null) {
-								instance.deserialize(blob);
-							}
 
-						// Low-Level ASSET API
-						} else if (typeof instance.load === 'function') {
-							instance.load();
+				if (instance !== null) {
+
+					// High-Level ENTITY API
+					if (typeof instance.deserialize === 'function') {
+
+						var blob = data.blob || null;
+						if (blob !== null) {
+							instance.deserialize(blob);
 						}
 
+					// Low-Level ASSET API
+					} else if (typeof instance.load === 'function') {
+						instance.load();
+					}
 
-						return instance;
 
-					} else {
+					return instance;
 
-						if (lychee.debug === true) {
-							console.warn('lychee.deserialize: Require ' + data.constructor + ' to deserialize it.');
-						}
+				} else {
 
+					if (lychee.debug === true) {
+						console.warn('lychee.deserialize: Require ' + (data.reference || data.constructor) + ' to deserialize it.');
 					}
 
 				}

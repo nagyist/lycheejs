@@ -127,28 +127,10 @@
 	 * FEATURE DETECTION
 	 */
 
-	var _codecs = {};
+	var _audio_supports_ogg = false;
+	var _audio_supports_mp3 = false;
 
 	(function() {
-
-		var mime = {
-			'ogg':  [ 'application/ogg', 'audio/ogg', 'audio/ogg; codecs=theora, vorbis' ],
-			'mp3':  [ 'audio/mpeg' ]
-
-// TODO: Evaluate if other formats are necessary
-/*
-			'aac':  [ 'audio/aac', 'audio/aacp' ],
-			'caf':  [ 'audio/x-caf', 'audio/x-aiff; codecs="IMA-ADPCM, ADPCM"' ],
-
-			'webm': [ 'audio/webm', 'audio/webm; codecs=vorbis' ]
-			'3gp':  [ 'audio/3gpp', 'audio/3gpp2'],
-			'amr':  [ 'audio/amr' ],
-			'm4a':  [ 'audio/mp4; codecs=mp4a' ],
-			'mp4':  [ 'audio/mp4' ],
-			'wav':  [ 'audio/wave', 'audio/wav', 'audio/wav; codecs="1"', 'audio/x-wav', 'audio/x-pn-wav' ],
-*/
-		};
-
 
 		var _buffer_cache = {};
 		var _load_buffer  = function(url) {
@@ -200,19 +182,21 @@
 
 			var audiotest = new Audio();
 
-			for (var ext in mime) {
+			[ 'application/ogg', 'audio/ogg', 'audio/ogg; codecs=theora, vorbis' ].forEach(function(variant) {
 
-				var variants = mime[ext];
-				for (var v = 0, vl = variants.length; v < vl; v++) {
-
-					if (audiotest.canPlayType(variants[v])) {
-						_codecs[ext] = ext;
-						break;
-					}
-
+				if (audiotest.canPlayType(variant)) {
+					_audio_supports_ogg = true;
 				}
 
-			}
+			});
+
+			[ 'audio/mpeg' ].forEach(function(variant) {
+
+				if (audiotest.canPlayType(variant)) {
+					_audio_supports_mp3 = true;
+				}
+
+			});
 
 		} else {
 
@@ -241,12 +225,15 @@
 				},
 
 				play: function() {
+
 				},
 
 				pause: function() {
+
 				},
 
 				addEventListener: function() {
+
 				}
 
 			};
@@ -349,10 +336,10 @@
 
 			var methods = [];
 
-			if (consol)  methods.push('console');
-			if (audio)   methods.push('Audio');
-			if (buffer)  methods.push('Buffer');
-			if (image)   methods.push('Image');
+			if (consol) methods.push('console');
+			if (audio)  methods.push('Audio');
+			if (buffer) methods.push('Buffer');
+			if (image)  methods.push('Image');
 
 			if (methods.length === 0) {
 				console.error('bootstrap.js: Supported methods are NONE');
@@ -687,6 +674,15 @@
 
 	Buffer.prototype = {
 
+		serialize: function() {
+
+			return {
+				'constructor': 'Buffer',
+				'arguments':   [ this.toString('base64'), 'base64' ]
+			};
+
+		},
+
 		copy: function(target, target_start, start, end) {
 
 			target_start = typeof target_start === 'number' ? (target_start | 0) : 0;
@@ -711,6 +707,21 @@
 			for (var b = 0; b < diff; b++) {
 				target[b + target_start] = this[b + start];
 			}
+
+		},
+
+		map: function(callback) {
+
+			callback = callback instanceof Function ? callback : function(value) { return value; };
+
+
+			var clone = new Buffer(this.length);
+
+			for (var b = 0; b < this.length; b++) {
+				clone[b] = callback(this[b], b);
+			}
+
+			return clone;
 
 		},
 
@@ -845,11 +856,28 @@
 
 	Config.prototype = {
 
+		deserialize: function(blob) {
+
+			if (typeof blob.buffer === 'string') {
+				this.buffer = JSON.parse(new Buffer(blob.buffer.substr(29), 'base64').toString('utf8'));
+			}
+
+		},
+
 		serialize: function() {
+
+			var blob = {};
+
+
+			if (this.buffer !== null) {
+				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.buffer), 'utf8').toString('base64');
+			}
+
 
 			return {
 				'constructor': 'Config',
-				'arguments':   [ this.url ]
+				'arguments':   [ this.url ],
+				'blob':        Object.keys(blob).length > 0 ? blob : null
 			};
 
 		},
@@ -914,7 +942,9 @@
 	 * FONT IMPLEMENTATION
 	 */
 
-	var _parse_font = function(data) {
+	var _parse_font = function() {
+
+		var data = this.__buffer;
 
 		if (typeof data.kerning === 'number' && typeof data.spacing === 'number') {
 
@@ -940,24 +970,11 @@
 
 		if (data.map instanceof Array) {
 
-			this.__buffer     = {};
-			this.__buffer[''] = {
-				width:      0,
-				height:     this.lineheight,
-				realwidth:  0,
-				realheight: this.lineheight,
-				x:          0,
-				y:          0
-			};
-
-
-
 			var offset = this.spacing;
 
 			for (var c = 0, cl = this.charset.length; c < cl; c++) {
 
-				var id = this.charset[c];
-
+				var id  = this.charset[c];
 				var chr = {
 					width:      data.map[c] + this.spacing * 2,
 					height:     this.lineheight,
@@ -970,14 +987,14 @@
 				offset += chr.width;
 
 
-				this.__buffer[id] = chr;
+				this.__charset[id] = chr;
 
 			}
 
 		}
 
 
-		if (this.texture === null || this.__buffer === null) {
+		if (this.texture === null) {
 
 			if (lychee.debug === true) {
 				console.error('bootstrap.js: Font at "' + this.url + '" is invalid (No FNT file)');
@@ -993,18 +1010,12 @@
 
 	var _clone_font = function(origin, clone) {
 
-		if (origin.__buffer !== null && origin.texture !== null) {
+		if (origin.__buffer !== null) {
 
-			clone.texture    = origin.texture;
+			clone.__buffer = origin.__buffer;
+			clone.__load   = false;
 
-			clone.baseline   = origin.baseline;
-			clone.charset    = origin.charset;
-			clone.spacing    = origin.spacing;
-			clone.kerning    = origin.kerning;
-			clone.lineheight = origin.lineheight;
-
-			clone.__buffer   = origin.__buffer;
-			clone.__load     = false;
+			_parse_font.call(clone);
 
 		}
 
@@ -1029,6 +1040,16 @@
 		this.__buffer   = null;
 		this.__load     = true;
 
+		this.__charset     = {};
+		this.__charset[''] = {
+			width:      0,
+			height:     this.lineheight,
+			realwidth:  0,
+			realheight: this.lineheight,
+			x:          0,
+			y:          0
+		};
+
 
 		if (url !== null) {
 
@@ -1049,10 +1070,7 @@
 
 			if (typeof blob.buffer === 'string') {
 				this.__buffer = JSON.parse(new Buffer(blob.buffer.substr(29), 'base64').toString('utf8'));
-			}
-
-			if (blob.texture instanceof Object) {
-				this.texture = lychee.deserialize(blob.texture);
+				_parse_font.call(this);
 			}
 
 		},
@@ -1064,10 +1082,6 @@
 
 			if (this.__buffer !== null) {
 				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.__buffer), 'utf8').toString('base64');
-			}
-
-			if (this.texture instanceof Texture) {
-				blob.texture = lychee.serialize(this.texture);
 			}
 
 
@@ -1088,13 +1102,13 @@
 
 				if (text.length === 1) {
 
-					if (this.__buffer[text] !== undefined) {
-						return this.__buffer[text];
+					if (this.__charset[text] !== undefined) {
+						return this.__charset[text];
 					}
 
 				} else if (text.length > 1) {
 
-					var data = this.__buffer[text] || null;
+					var data = this.__charset[text] || null;
 					if (data === null) {
 
 						var width = 0;
@@ -1107,7 +1121,7 @@
 
 						// TODO: Embedded Font ligatures will set x and y values based on settings.map
 
-						data = this.__buffer[text] = {
+						data = this.__charset[text] = {
 							width:      width,
 							height:     this.lineheight,
 							realwidth:  width,
@@ -1126,7 +1140,7 @@
 			}
 
 
-			return this.__buffer[''];
+			return this.__charset[''];
 
 		},
 
@@ -1159,8 +1173,12 @@
 
 
 				if (data !== null) {
-					_parse_font.call(this, data);
-					this.__load = false;
+
+					this.__buffer = data;
+					this.__load   = false;
+
+					_parse_font.call(this);
+
 				}
 
 
@@ -1188,16 +1206,19 @@
 
 		if (origin.buffer !== null) {
 
-			clone.buffer = new Audio(origin.buffer.src);
+			clone.buffer            = new Audio();
 			clone.buffer.autobuffer = true;
 			clone.buffer.preload    = true;
+			clone.buffer.src        = origin.buffer.src;
 			clone.buffer.load();
 
 			clone.buffer.addEventListener('ended', function() {
 				clone.play();
 			}, true);
 
-			clone.__load = false;
+			clone.__buffer.ogg = origin.__buffer.ogg;
+			clone.__buffer.mp3 = origin.__buffer.mp3;
+			clone.__load       = false;
 
 		}
 
@@ -1209,14 +1230,14 @@
 		url = typeof url === 'string' ? url : null;
 
 
-		this.url       = url;
-		this.onload    = null;
-		this.buffer    = null;
-		this.volume    = 1.0;
-		this.isIdle    = true;
-		this.isLooping = false;
+		this.url      = url;
+		this.onload   = null;
+		this.buffer   = null;
+		this.volume   = 1.0;
+		this.isIdle   = true;
 
-		this.__load    = true;
+		this.__buffer = { ogg: null, mp3: null };
+		this.__load   = true;
 
 
 		if (url !== null) {
@@ -1236,21 +1257,47 @@
 
 		deserialize: function(blob) {
 
-			if (typeof blob.buffer === 'string') {
+			if (blob.buffer instanceof Object) {
 
-				this.buffer = new Audio();
-				this.buffer.src = blob.buffer;
-				this.__load = false;
+				var url  = null;
+				var type = null;
 
-				var that = this;
+				if (_audio_supports_ogg === true) {
 
-				this.buffer.addEventListener('ended', function() {
-					that.isIdle = true;
-					that.play();
-				}, true);
-				this.buffer.autobuffer = true;
-				this.buffer.preload    = true;
-				this.buffer.load();
+					if (typeof blob.buffer.ogg === 'string') {
+						url  = url  || blob.buffer.ogg;
+						type = type || 'ogg';
+					}
+
+				} else if (_audio_supports_mp3 === true) {
+
+					if (typeof blob.buffer.mp3 === 'string') {
+						url  = url  || blob.buffer.mp3;
+						type = type || 'mp3';
+					}
+
+				}
+
+
+				if (url !== null && type !== null) {
+
+					var that   = this;
+					var buffer = new Audio();
+
+					buffer.addEventListener('ended', function() {
+						that.play();
+					}, true);
+
+					buffer.autobuffer = true;
+					buffer.preload    = true;
+					buffer.src        = url;
+					buffer.load();
+
+					this.buffer         = buffer;
+					this.__buffer[type] = buffer;
+					this.__load         = false;
+
+				}
 
 			}
 
@@ -1261,12 +1308,16 @@
 			var blob = {};
 
 
-			if (this.buffer !== null) {
+			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
 
-				if (_codecs.ogg) {
-					blob.buffer = 'data:application/ogg;base64,' + this.buffer.toString('base64');
-				} else if (_codecs.mp3) {
-					blob.buffer = 'data:audio/mp3;base64,' + this.buffer.toString('base64');
+				blob.buffer = {};
+
+				if (this.__buffer.ogg !== null) {
+					blob.buffer.ogg = 'data:application/ogg;base64,' + this.__buffer.ogg.toString('base64');
+				}
+
+				if (this.__buffer.mp3 !== null) {
+					blob.buffer.mp3 = 'data:audio/mp3;base64,' + this.__buffer.mp3.toString('base64');
 				}
 
 			}
@@ -1294,46 +1345,66 @@
 			}
 
 
-			var that  = this;
-			var url   = this.url + '.' + (_codecs.ogg || _codecs.mp3);
-			var audio = new Audio();
+			var url  = this.url;
+			var type = null;
 
-			audio.onload = function() {
+			if (_audio_supports_ogg === true) {
+				type = type || 'ogg';
+			} else if (_audio_supports_mp3 === true) {
+				type = type || 'mp3';
+			}
 
-				that.buffer = this;
 
-				that.__load = false;
-				that.buffer.toString('base64');
+			if (url !== null && type !== null) {
 
-				if (that.onload instanceof Function) {
-					that.onload(true);
-					that.onload = null;
+				var that   = this;
+				var buffer = new Audio();
+
+				buffer.onload = function() {
+
+					that.buffer         = this;
+					that.__buffer[type] = this;
+
+					this.toString('base64');
+					this.__load = false;
+
+					if (that.onload instanceof Function) {
+						that.onload(true);
+						that.onload = null;
+					}
+
+				};
+
+				buffer.onerror = function() {
+
+					if (that.onload instanceof Function) {
+						that.onload(false);
+						that.onload = null;
+					}
+
+				};
+
+				buffer.addEventListener('ended', function() {
+					that.play();
+				}, true);
+
+				buffer.autobuffer = true;
+				buffer.preload    = true;
+				buffer.src        = url + '.' + type;
+				buffer.load();
+
+
+				// TODO: Evaluate if buffer.onload() is necessary
+				buffer.onload();
+
+			} else {
+
+				if (this.onload instanceof Function) {
+					this.onload(false);
+					this.onload = null;
 				}
 
-			};
-
-			audio.onerror = function() {
-
-				if (that.onload instanceof Function) {
-					that.onload(false);
-					that.onload = null;
-				}
-
-			};
-
-			audio.addEventListener('ended', function() {
-				that.isIdle = true;
-				that.play();
-			}, true);
-
-			audio.autobuffer = true;
-			audio.preload    = true;
-			audio.load();
-
-			audio.src = url;
-
-
-			audio.onload();
+			}
 
 		},
 
@@ -1429,16 +1500,20 @@
 
 		if (origin.buffer !== null) {
 
-			clone.buffer = new Audio(origin.buffer.src);
+			clone.buffer            = new Audio();
 			clone.buffer.autobuffer = true;
 			clone.buffer.preload    = true;
+			clone.buffer.src        = origin.buffer.src;
 			clone.buffer.load();
 
 			clone.buffer.addEventListener('ended', function() {
+				clone.isIdle = true;
 				clone.stop();
 			}, true);
 
-			clone.__load = false;
+			clone.__buffer.ogg = origin.__buffer.ogg;
+			clone.__buffer.mp3 = origin.__buffer.mp3;
+			clone.__load       = false;
 
 		}
 
@@ -1450,13 +1525,14 @@
 		url = typeof url === 'string' ? url : null;
 
 
-		this.url    = url;
-		this.onload = null;
-		this.buffer = null;
-		this.volume = 1.0;
-		this.isIdle = true;
+		this.url      = url;
+		this.onload   = null;
+		this.buffer   = null;
+		this.volume   = 1.0;
+		this.isIdle   = true;
 
-		this.__load = true;
+		this.__buffer = { ogg: null, mp3: null };
+		this.__load   = true;
 
 
 		if (url !== null) {
@@ -1476,20 +1552,47 @@
 
 		deserialize: function(blob) {
 
-			if (typeof blob.buffer === 'string') {
+			if (blob.buffer instanceof Object) {
 
-				this.buffer = new Audio();
-				this.buffer.src = blob.buffer;
-				this.__load = false;
+				var url  = null;
+				var type = null;
 
-				var that = this;
+				if (_audio_supports_ogg === true) {
 
-				this.buffer.addEventListener('ended', function() {
-					that.stop();
-				}, true);
-				this.buffer.autobuffer = true;
-				this.buffer.preload    = true;
-				this.buffer.load();
+					if (typeof blob.buffer.ogg === 'string') {
+						url  = url  || blob.buffer.ogg;
+						type = type || 'ogg';
+					}
+
+				} else if (_audio_supports_mp3 === true) {
+
+					if (typeof blob.buffer.mp3 === 'string') {
+						url  = url  || blob.buffer.mp3;
+						type = type || 'mp3';
+					}
+
+				}
+
+
+				if (url !== null && type !== null) {
+
+					var that   = this;
+					var buffer = new Audio();
+
+					buffer.addEventListener('ended', function() {
+						that.stop();
+					}, true);
+
+					buffer.autobuffer = true;
+					buffer.preload    = true;
+					buffer.src        = url;
+					buffer.load();
+
+					this.buffer         = buffer;
+					this.__buffer[type] = buffer;
+					this.__load         = false;
+
+				}
 
 			}
 
@@ -1500,12 +1603,16 @@
 			var blob = {};
 
 
-			if (this.buffer !== null) {
+			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
 
-				if (_codecs.ogg) {
-					blob.buffer = 'data:application/ogg;base64,' + this.buffer.toString('base64');
-				} else if (_codecs.mp3) {
-					blob.buffer = 'data:audio/mp3;base64,' + this.buffer.toString('base64');
+				blob.buffer = {};
+
+				if (this.__buffer.ogg !== null) {
+					blob.buffer.ogg = 'data:application/ogg;base64,' + this.__buffer.ogg.toString('base64');
+				}
+
+				if (this.__buffer.mp3 !== null) {
+					blob.buffer.mp3 = 'data:audio/mp3;base64,' + this.__buffer.mp3.toString('base64');
 				}
 
 			}
@@ -1533,45 +1640,67 @@
 			}
 
 
-			var that  = this;
-			var url   = this.url + '.' + (_codecs.ogg || _codecs.mp3);
-			var audio = new Audio();
+			var url  = this.url;
+			var type = null;
 
-			audio.onload = function() {
+			if (_audio_supports_ogg === true) {
+				type = type || 'ogg';
+			} else if (_audio_supports_mp3 === true) {
+				type = type || 'mp3';
+			}
 
-				that.buffer = this;
 
-				that.__load = false;
-				that.buffer.toString('base64');
+			if (url !== null && type !== null) {
 
-				if (that.onload instanceof Function) {
-					that.onload(true);
-					that.onload = null;
+				var that   = this;
+				var buffer = new Audio();
+
+				buffer.onload = function() {
+
+					that.buffer         = this;
+					that.__buffer[type] = this;
+
+					this.toString('base64');
+					this.__load = false;
+
+					if (that.onload instanceof Function) {
+						that.onload(true);
+						that.onload = null;
+					}
+
+				};
+
+				buffer.onerror = function() {
+
+					if (that.onload instanceof Function) {
+						that.onload(false);
+						that.onload = null;
+					}
+
+				};
+
+				buffer.addEventListener('ended', function() {
+					that.isIdle = true;
+					that.stop();
+				}, true);
+
+				buffer.autobuffer = true;
+				buffer.preload    = true;
+				buffer.src        = url + '.' + type;
+				buffer.load();
+
+
+				// TODO: Evaluate if buffer.onload() is necessary
+				buffer.onload();
+
+			} else {
+
+				if (this.onload instanceof Function) {
+					this.onload(false);
+					this.onload = null;
 				}
 
-			};
-
-			audio.onerror = function() {
-
-				if (that.onload instanceof Function) {
-					that.onload(false);
-					that.onload = null;
-				}
-
-			};
-
-			audio.addEventListener('ended', function() {
-				that.stop();
-			}, true);
-
-			audio.autobuffer = true;
-			audio.preload    = true;
-			audio.load();
-
-			audio.src = url;
-
-
-			audio.onload();
+			}
 
 		},
 
@@ -1588,8 +1717,10 @@
 				} catch(e) {
 				}
 
-				this.buffer.play();
-				this.isIdle = false;
+				if (this.buffer.currentTime === 0) {
+					this.buffer.play();
+					this.isIdle = false;
+				}
 
 			}
 
@@ -1714,9 +1845,19 @@
 		deserialize: function(blob) {
 
 			if (typeof blob.buffer === 'string') {
-				this.buffer = new Image();
-				this.buffer.src = blob.buffer;
+
+				var that  = this;
+				var image = new Image();
+
+				image.onload = function() {
+					that.buffer = this;
+					that.width  = this.width;
+					that.height = this.height;
+				};
+
+				image.src   = blob.buffer;
 				this.__load = false;
+
 			}
 
 		},
@@ -1753,63 +1894,118 @@
 			}
 
 
-			var that  = this;
-			var url   = this.url;
-			var image = new Image();
+			var url = this.url;
+			if (url.substr(0, 5) === 'data:') {
 
-			image.onload = function() {
+				if (url.substr(0, 15) === 'data:image/png;') {
 
-				that.buffer = this;
-				that.width  = this.width;
-				that.height = this.height;
+					var that   = this;
+					var buffer = new Image();
 
-				that.__load = false;
-				that.buffer.toString('base64');
+					buffer.onload = function() {
+
+						that.buffer = this;
+						that.width  = this.width;
+						that.height = this.height;
+
+						that.__load = false;
+						that.buffer.toString('base64');
 
 
-				var url = that.url;
-				var is_embedded = url.substr(0, 10) === 'data:image';
-				if (is_embedded === false) {
-
-					var ext = url.split('.').pop();
-					if (ext !== 'png') {
-
-						if (lychee.debug === true) {
-							console.error('bootstrap.js: Texture at "' + that.url + '" is invalid (No PNG file)');
+						var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						if (lychee.debug === true && is_power_of_two === false) {
+							console.warn('bootstrap.js: Texture at data:image/png; is NOT power-of-two');
 						}
 
-					}
 
-				}
+						if (that.onload instanceof Function) {
+							that.onload(true);
+							that.onload = null;
+						}
 
+					};
 
-				var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
-				if (is_power_of_two === false && is_embedded === false) {
+					buffer.onerror = function() {
+
+						if (that.onload instanceof Function) {
+							that.onload(false);
+							that.onload = null;
+						}
+
+					};
+
+					buffer.src = url;
+
+				} else {
 
 					if (lychee.debug === true) {
-						console.warn('bootstrap.js: Texture at "' + that.url + '" is NOT power-of-two');
+						console.error('bootstrap.js: Texture at "' + url.substr(0, 15) + '" is invalid (no PNG file)');
+					}
+
+
+					if (this.onload instanceof Function) {
+						this.onload(false);
+						this.onload = null;
 					}
 
 				}
 
+			} else {
 
-				if (that.onload instanceof Function) {
-					that.onload(true);
-					that.onload = null;
+				if (url.split('.').pop() === 'png') {
+
+					var that   = this;
+					var buffer = new Image();
+
+					buffer.onload = function() {
+
+						that.buffer = this;
+						that.width  = this.width;
+						that.height = this.height;
+
+						that.__load = false;
+						that.buffer.toString('base64');
+
+
+						var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						if (lychee.debug === true && is_power_of_two === false) {
+							console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
+						}
+
+
+						if (that.onload instanceof Function) {
+							that.onload(true);
+							that.onload = null;
+						}
+
+					};
+
+					buffer.onerror = function() {
+
+						if (that.onload instanceof Function) {
+							that.onload(false);
+							that.onload = null;
+						}
+
+					};
+
+					buffer.src = url;
+
+				} else {
+
+					if (lychee.debug === true) {
+						console.error('bootstrap.js: Texture at "' + this.url + '" is invalid (no PNG file)');
+					}
+
+
+					if (this.onload instanceof Function) {
+						this.onload(false);
+						this.onload = null;
+					}
+
 				}
 
-			};
-
-			image.onerror = function() {
-
-				if (that.onload instanceof Function) {
-					that.onload(false);
-					that.onload = null;
-				}
-
-			};
-
-			image.src = url;
+			}
 
 		}
 
@@ -1833,9 +2029,18 @@
 
 		serialize: function() {
 
+			// var buffer = null;
+			// if (this.buffer !== null) {
+			// 	buffer = lychee.serialize(new Buffer(this.buffer, 'utf8'));
+			// }
+
+
 			return {
-				'url':    this.url,
-				'buffer': this.buffer !== null ? this.buffer.toString() : null
+				'constructor': 'Object',
+				'arguments':   [{
+					'url':    this.url,
+					'buffer': this.buffer
+				}]
 			};
 
 		},
@@ -1857,30 +2062,55 @@
 
 				this.buffer.onload = function() {
 
+					that.buffer = '';
+
 					if (that.onload instanceof Function) {
 						that.onload(true);
 						that.onload = null;
 					}
 
+					// Don't move this, it's causing serious bugs in Blink
+					document.body.removeChild(this);
+
 				};
 				this.buffer.onerror = function() {
+
+					that.buffer = '';
 
 					if (that.onload instanceof Function) {
 						that.onload(false);
 						that.onload = null;
 					}
 
+					// Don't move this, it's causing serious bugs in Blink
+					document.body.removeChild(this);
+
 				};
 				this.buffer.src = this.url;
 
 				document.body.appendChild(this.buffer);
-				document.body.removeChild(this.buffer);
 
 			} else if (type === 'css') {
 
 				this.buffer = document.createElement('link');
 				this.buffer.rel  = 'stylesheet';
 				this.buffer.href = this.url;
+				this.buffer.onload = function() {
+
+					var rules = [].slice.call(this.sheet.rules);
+					if (rules.length > 0) {
+
+						var buffer = '';
+
+						rules.forEach(function(rule) {
+							buffer += rule.cssText + '\n';
+						});
+
+						that.buffer = buffer;
+
+					}
+
+				};
 
 				document.head.appendChild(this.buffer);
 

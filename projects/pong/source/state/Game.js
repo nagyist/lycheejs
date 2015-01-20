@@ -31,6 +31,7 @@ lychee.define('game.state.Game').requires([
 				x: 0,
 				y: 0
 			};
+
 			var velocity = {
 				x: 150 + Math.random() * 100,
 				y: 100 + Math.random() * 100
@@ -72,11 +73,12 @@ lychee.define('game.state.Game').requires([
 		lychee.game.State.call(this, main);
 
 
-		this.__enemy = {
+		this.__ai = {
 			clock:  null,
 			delta:  500,
 			target: { y: 0 }
 		};
+
 		this.__player = {
 			target: { y: 0 }
 		};
@@ -94,6 +96,16 @@ lychee.define('game.state.Game').requires([
 
 
 	Class.prototype = {
+
+		serialize: function() {
+
+			var data = lychee.game.State.prototype.serialize.call(this);
+			data['constructor'] = 'game.state.Game';
+
+
+			return data;
+
+		},
 
 		deserialize: function(blob) {
 
@@ -138,9 +150,9 @@ lychee.define('game.state.Game').requires([
 
 		enter: function() {
 
-			this.__score.enemy    = 0;
-			this.__score.player   = 0;
-			this.__enemy.target.y = 0;
+			this.__score.enemy  = 0;
+			this.__score.player = 0;
+			this.__ai.target.y  = 0;
 
 
 			_reset_game.call(this, null);
@@ -214,36 +226,32 @@ lychee.define('game.state.Game').requires([
 
 
 			/*
-			 * 3: ENEMY (AI) LOGIC
+			 * 3: AI LOGIC
 			 */
 
-			var data   = this.__enemy;
-			var target = this.__enemy.target;
+			var ai = this.__ai;
 
-			if (data.clock === null) {
-				data.clock = clock;
+			if (ai.clock === null) {
+				ai.clock = clock;
 			}
 
-			if ((clock - data.clock) > data.delta) {
+			if ((clock - ai.clock) > ai.delta) {
 
-				target.y   = position.y;
-				data.clock = clock;
+				ai.target.y = position.y;
+				ai.clock    = clock;
 
-				if (
-					   target.y > enemy.position.y - 10
-					&& target.y < enemy.position.y + 10
-				) {
+				if (ai.target.y > enemy.position.y - 10 && ai.target.y < enemy.position.y + 10) {
 
-					target.y = enemy.position.y;
+					ai.target.y = enemy.position.y;
 					enemy.setVelocity({ y: 0 });
 
 				} else {
 
-					if (target.y > enemy.position.y - 10) {
+					if (ai.target.y > enemy.position.y - 10) {
 						enemy.setVelocity({ y:  200 });
 					}
 
-					if (target.y < enemy.position.y + 10) {
+					if (ai.target.y < enemy.position.y + 10) {
 						enemy.setVelocity({ y: -200 });
 					}
 
@@ -260,10 +268,7 @@ lychee.define('game.state.Game').requires([
 			var target = this.__player.target;
 			if (target.y !== null) {
 
-				if (
-					   target.y > player.position.y - 10
-					&& target.y < player.position.y + 10
-				) {
+				if (target.y > player.position.y - 10 && target.y < player.position.y + 10) {
 
 					player.setVelocity({ y: 0 });
 					target.y = null;

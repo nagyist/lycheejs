@@ -27,6 +27,20 @@ lychee.define('game.entity.Paddle').includes([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.game.Sprite.prototype.serialize.call(this);
+			data['constructor'] = 'game.entity.Paddle';
+
+
+			return data;
+
+		}
+
 	};
 
 
