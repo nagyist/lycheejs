@@ -7,45 +7,55 @@
 
 	var _load_asset = function(settings, callback, scope) {
 
-		var xhr = new XMLHttpRequest();
+		var proto = settings.url.split(':')[0];
+		if (proto === 'file') {
 
-		xhr.open('GET', settings.url, true);
+			callback.call(scope, null);
+
+		} else {
+
+			var xhr = new XMLHttpRequest();
+
+			xhr.open('GET', settings.url, true);
 
 
-		if (settings.headers instanceof Object) {
+			if (settings.headers instanceof Object) {
 
-			for (var header in settings.headers) {
-				xhr.setRequestHeader(header, settings.headers[header]);
+				for (var header in settings.headers) {
+					xhr.setRequestHeader(header, settings.headers[header]);
+				}
+
 			}
+
+
+			xhr.onload = function() {
+
+				try {
+					callback.call(scope, xhr.responseText || xhr.responseXML);
+				} catch(err) {
+					lychee.Debugger.report(lychee.environment, err, null);
+				} finally {
+					xhr = null;
+				}
+
+			};
+
+			xhr.onerror = xhr.ontimeout = function() {
+
+				try {
+					callback.call(scope, null);
+				} catch(err) {
+					lychee.Debugger.report(lychee.environment, err, null);
+				} finally {
+					xhr = null;
+				}
+
+			};
+
+
+			xhr.send(null);
 
 		}
-
-
-		xhr.onload = function() {
-
-			try {
-				callback.call(scope, xhr.responseText || xhr.responseXML);
-			} catch(err) {
-				lychee.Debugger.report(lychee.environment, err, null);
-			} finally {
-				xhr = null;
-			}
-
-		};
-
-		xhr.onerror = xhr.ontimeout = function() {
-
-			try {
-				callback.call(scope, null);
-			} catch(err) {
-				lychee.Debugger.report(lychee.environment, err, null);
-			} finally {
-				xhr = null;
-			}
-
-		};
-
-		xhr.send(null);
 
 	};
 
@@ -1894,13 +1904,15 @@
 			}
 
 
-			var url = this.url;
+			var buffer;
+			var that = this;
+
+			var url  = this.url;
 			if (url.substr(0, 5) === 'data:') {
 
 				if (url.substr(0, 15) === 'data:image/png;') {
 
-					var that   = this;
-					var buffer = new Image();
+					buffer = new Image();
 
 					buffer.onload = function() {
 
@@ -1954,8 +1966,7 @@
 
 				if (url.split('.').pop() === 'png') {
 
-					var that   = this;
-					var buffer = new Image();
+					buffer = new Image();
 
 					buffer.onload = function() {
 
@@ -2017,7 +2028,7 @@
 	 * PRELOADER IMPLEMENTATION
 	 */
 
-	var _Wildcard = function(url) {
+	var Stuff = function(url) {
 
 		this.url    = url;
 		this.onload = null;
@@ -2025,7 +2036,8 @@
 
 	};
 
-	_Wildcard.prototype = {
+
+	Stuff.prototype = {
 
 		serialize: function() {
 
@@ -2155,13 +2167,7 @@
 	global.Sound   = Sound;
 	global.Texture = Texture;
 
-	lychee.Environment.setAssetType('json', Config);
-	lychee.Environment.setAssetType('fnt',  Font);
-	lychee.Environment.setAssetType('msc',  Music);
-	lychee.Environment.setAssetType('snd',  Sound);
-	lychee.Environment.setAssetType('png',  Texture);
-	lychee.Environment.setAssetType('*',    _Wildcard);
-
+	global.Stuff   = Stuff;
 
 
 	Object.defineProperty(lychee.Environment, '__FILENAME', {

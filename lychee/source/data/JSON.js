@@ -5,6 +5,19 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 	 * HELPERS
 	 */
 
+	var _sanitize_string = function(str) {
+
+		var san = str;
+
+		san = san.replace(/\\/g, '\\\\');
+		san = san.replace(/\n/g, '\\n');
+		san = san.replace(/\t/g, '\\t');
+		san = san.replace(/"/g,  '\\"');
+
+		return san;
+
+	};
+
 	var _Stream = function(buffer, mode) {
 
 		this.__buffer = typeof buffer === 'string' ? buffer : '';
@@ -138,7 +151,7 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 
 			stream.writeRAW('"');
 
-			stream.writeRAW(data.replace(/\\/g, '\\\\').replace('"', '\\"'));
+			stream.writeRAW(_sanitize_string(data));
 
 			stream.writeRAW('"');
 
@@ -230,6 +243,8 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 					value = true;
 				}
 
+
+			// 123: Number
 			} else if (!isNaN(parseInt(seek, 10))) {
 
 				size = stream.seek([ ',', ']', '}' ]);
@@ -259,12 +274,27 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 					value = '';
 				}
 
+
 				check = stream.readRAW(1);
 
 
 				while (check === '\\') {
 
 					value[value.length - 1] = check;
+
+					var special = stream.seekRAW(1);
+					if (special === 'n') {
+
+						stream.readRAW(1);
+						value += '\n';
+
+					} else if (special === 't') {
+
+						stream.readRAW(1);
+						value += '\t';
+
+					}
+
 
 					size   = stream.seek([ '\\', '"' ]);
 					value += stream.readRAW(size);
@@ -311,12 +341,18 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 				while (errors === 0) {
 
 					var object_key = _decode(stream);
-					stream.readRAW(1);
+					check = stream.readRAW(1);
+
+					if (check !== ':') {
+						errors++;
+					}
 
 					var object_value = _decode(stream);
 					check = stream.seekRAW(1);
 
+
 					value[object_key] = object_value;
+
 
 					if (check === ',') {
 						stream.readRAW(1);
@@ -344,6 +380,13 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 					value = undefined;
 				}
 
+			} else {
+
+				// Invalid seek, assume it's a space character
+
+				stream.readRAW(1);
+				return _decode(stream);
+
 			}
 
 		}
@@ -366,7 +409,7 @@ lychee.define('lychee.data.JSON').exports(function(lychee, global) {
 		serialize: function() {
 
 			return {
-				'reference': '#lychee.data.JSON',
+				'reference': 'lychee.data.JSON',
 				'blob':      null
 			};
 

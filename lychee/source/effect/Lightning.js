@@ -126,6 +126,10 @@ lychee.define('lychee.effect.Lightning').exports(function(lychee, global, attach
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

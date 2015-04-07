@@ -134,13 +134,7 @@ lychee.define('lychee.net.Service').includes([
 		 * ENTITY API
 		 */
 
-		deserialize: function(blob) {
-
-			if (blob.tunnel instanceof Object) {
-				this.tunnel = lychee.deserialize(blob.tunnel);
-			}
-
-		},
+		// deserialize: function(blob) {},
 
 		serialize: function() {
 
@@ -150,16 +144,21 @@ lychee.define('lychee.net.Service').includes([
 			var id     = null;
 			var tunnel = null;
 			var type   = null;
-			var blob   = data['blob'] || {};
+			var blob   = (data['blob'] || {});
 
 
-			if (this.id !== null)     id = this.id;
-			if (this.tunnel !== null) blob.tunnel = lychee.serialize(this.tunnel);
-			if (this.type !== null)   type = this.type;
+			if (this.id !== null)   id   = this.id;
+			if (this.type !== null) type = this.type;
+
+			if (this.type === Class.TYPE.client) {
+				tunnel = '#MAIN.client';
+			} else {
+				tunnel = null;
+			}
 
 
 			data['arguments'][0] = id;
-			data['arguments'][1] = null;
+			data['arguments'][1] = tunnel;
 			data['arguments'][2] = type;
 			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
 

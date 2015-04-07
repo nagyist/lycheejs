@@ -41,6 +41,23 @@ lychee.define('game.net.remote.Ping').includes([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var data = lychee.net.Service.prototype.serialize.call(this);
+			data['constructor'] = 'game.net.remote.Ping';
+			data['arguments']   = [ null ];
+
+
+			return data;
+
+		}
+
 	};
 
 

@@ -29,10 +29,31 @@ new lychee.Definition('foo.Bar').requires([
 });
 ```
 
-## Implementation Notes:
+#### Implementation Notes
 
 The unique identifier is used for determination of all dependencies
-in the current [lychee.environment](lychee.html#properties-environment).
+in the current [lychee.environment](lychee#properties-environment).
+
+
+
+={methods-deserialize}
+
+### (void) lychee.Definition.prototype.deserialize(blob);
+
+- *(Object) blob* is an Object that is part of the Serialization Object.
+
+This method returns nothing.
+It is not intended for direct usage. You can deserialize an
+object using the [lychee.deserialize()](lychee#methods-deserialize) method.
+
+```javascript
+var Foo1 = new lychee.Definition('foo.Foo');
+var data = lychee.serialize(Foo1);
+var Foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Definition', arguments: [ 'foo.Foo' ]}
+Foo2; // lychee.Definition instance
+```
 
 
 
@@ -43,6 +64,17 @@ in the current [lychee.environment](lychee.html#properties-environment).
 - This method has no arguments.
 
 This method returns the *Serialization Object* of the instance.
+It is not intended for direct usage. You can serialize an
+object using the [lychee.serialize()](lychee#methods-serialize) method.
+
+```javascript
+var Foo1 = new lychee.Definition('foo.Foo');
+var data = lychee.serialize(Foo1);
+var Foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Definition', arguments: [ 'foo.Foo' ]}
+Foo2; // lychee.Definition instance
+```
 
 
 
@@ -109,11 +141,37 @@ This method returns *true* on success and *false* on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
+var Bar = new lychee.Definition('foo.Bar');
 
-Foo.includes([
+
+Foo.exports(function(lychee, foo, global, attachments) {
+
+	var Class = function() {};
+	Class.prototype = { doStuff: function() { console.log('doStuff() from Foo'); } };
+	return Class;
+
+});
+
+Bar.includes([
 	'foo.Bar',
 	'foo.Qux'
 ]);
+ 
+Bar.exports(function(lychee, foo, global, attachments) {
+
+	var _Foo  = foo.Foo;
+	var Class = function() {};
+
+	Class.prototype = {
+		doStuff: function() {
+			_Foo.doStuff();
+			console.log('doStuff() from Bar');
+		}
+	};
+
+	return Class;
+
+});
 ```
 
 
@@ -128,11 +186,37 @@ This method returns *true* on success and *false* on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
+var Bar = new lychee.Definition('foo.Bar');
 
-Foo.requires([
+
+Foo.exports(function(lychee, foo, global, attachments) {
+
+	var Class = function() {};
+	Class.prototype = { doStuff: function() { console.log('doStuff() from Foo'); } };
+	return Class;
+
+});
+
+Bar.requires([
 	'foo.Bar',
 	'foo.Qux'
 ]);
+ 
+Bar.exports(function(lychee, foo, global, attachments) {
+
+	var _Foo  = foo.Foo;
+	var Class = function() {};
+
+	Class.prototype = {
+		doStuff: function() {
+			_Foo.doStuff();
+			console.log('doStuff() from Bar');
+		}
+	};
+
+	return Class;
+
+});
 ```
 
 

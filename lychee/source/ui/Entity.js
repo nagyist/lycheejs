@@ -1,7 +1,7 @@
 
 lychee.define('lychee.ui.Entity').includes([
 	'lychee.event.Emitter'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
 
 	/*
 	 * HELPERS
@@ -85,7 +85,11 @@ lychee.define('lychee.ui.Entity').includes([
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.ui.Entity';
+
 			var settings = {};
+			var blob     = (data['blob'] || {});
 
 
 			if (this.width  !== 0) settings.width  = this.width;
@@ -109,11 +113,11 @@ lychee.define('lychee.ui.Entity').includes([
 			}
 
 
-			return {
-				'constructor': 'lychee.ui.Entity',
-				'arguments':   [ settings ],
-				'blob':        null
-			};
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
 
 		},
 

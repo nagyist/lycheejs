@@ -16,6 +16,7 @@ lychee.define('game.Main').requires([
 			title:  'Mode7 Game',
 
 			client: null,
+			server: null,
 
 			input:  {
 				delay:       0,
@@ -55,6 +56,11 @@ lychee.define('game.Main').requires([
 		lychee.game.Main.call(this, settings);
 
 
+
+		/*
+		 * INITIALIZATION
+		 */
+
 		this.bind('init', function() {
 
 			var settings = this.settings.gamerenderer;
@@ -64,13 +70,20 @@ lychee.define('game.Main').requires([
 
 			this.camera     = new game.Camera(this);
 			this.compositor = new game.Compositor(this);
-			this.reshape();
 
 			this.renderer.setCamera(this.camera);
 			this.renderer.setCompositor(this.compositor);
 
 			this.setState('game', new game.state.Game(this));
 			this.changeState('game', { track: 'valley' });
+
+
+			this.viewport.bind('reshape', function() {
+
+				this.camera.reshape();
+				this.compositor.reshape();
+
+			}, this);
 
 		}, this, true);
 
@@ -90,19 +103,6 @@ lychee.define('game.Main').requires([
 
 
 			return data;
-
-		},
-
-
-
-		/*
-		 * CUSTOM API
-		 */
-
-		reshape: function() {
-
-			this.camera.reshape();
-			this.compositor.reshape();
 
 		}
 

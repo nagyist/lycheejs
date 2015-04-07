@@ -1,7 +1,6 @@
 
 lychee.define('game.Main').requires([
-	'game.state.Game',
-	'game.DeviceSpecificHacks'
+	'game.state.Game'
 ]).includes([
 	'lychee.game.Main'
 ]).exports(function(lychee, game, global, attachments) {
@@ -10,7 +9,8 @@ lychee.define('game.Main').requires([
 
 		var settings = lychee.extend({
 
-			title: 'Pong Game (Tutorial)',
+			client: null,
+			server: null,
 
 			input: {
 				delay:       0,
@@ -18,6 +18,11 @@ lychee.define('game.Main').requires([
 				keymodifier: false,
 				touch:       true,
 				swipe:       false
+			},
+
+			jukebox: {
+				music: true,
+				sound: true
 			},
 
 			renderer: {
@@ -35,9 +40,16 @@ lychee.define('game.Main').requires([
 		lychee.game.Main.call(this, settings);
 
 
-		this.bind('init', function() {
 
-			this.reshape();
+		/*
+		 * INITIALIZATION
+		 */
+
+		this.bind('load', function(oncomplete) {
+			oncomplete(true);
+		}, this);
+
+		this.bind('init', function() {
 
 			this.setState('game', new game.state.Game(this));
 			this.changeState('game');
@@ -56,14 +68,6 @@ lychee.define('game.Main').requires([
 
 
 			return data;
-
-		},
-
-		reshape: function(orientation, rotation) {
-
-			game.DeviceSpecificHacks.call(this);
-
-			lychee.game.Main.prototype.reshape.call(this, orientation, rotation);
 
 		}
 

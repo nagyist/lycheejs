@@ -17,16 +17,16 @@ lychee.define('tool.data.SPRITE').requires([
 
 	(function(defaults) {
 
-		defaults.texturesize    = 512;
-		defaults.framesize      = 'image';
-		defaults.framealignment = 'center-center';
-		defaults.width          = null;
-		defaults.height         = null;
-		defaults.depth          = null;
-		defaults.radius         = null;
-		defaults.boundingbox    = 'frame';
-		defaults.statemap       = 'image';
-		defaults.stateanimation = 'image';
+		defaults.texture     = 512;
+		defaults.frame       = 'power-of-two';
+		defaults.boundingbox = 'auto';
+		defaults.width       = null;
+		defaults.height      = null;
+		defaults.depth       = null;
+		defaults.radius      = null;
+		defaults.states      = 'auto';
+		defaults.statemap    = 'image';
+		defaults.files       = [];
 
 	})(_defaults);
 
@@ -157,37 +157,40 @@ lychee.define('tool.data.SPRITE').requires([
 
 		(function(files) {
 
-			var framealignment_x = settings.framealignment.split('-')[1] || 'center';
-			var framealignment_y = settings.framealignment.split('-')[0] || 'center';
-
 			var frame_width  = 0;
 			var frame_height = 0;
 			var size_x       = 0;
 			var size_y       = 0;
 
-
-			if (settings.framesize === 'image') {
+			if (settings.frame === 'original') {
 
 				files.forEach(function(file) {
 					frame_width  = Math.max(frame_width,  file.data.width);
 					frame_height = Math.max(frame_height, file.data.height);
 				});
 
-				size_x = Math.floor(settings.texturesize / frame_width);
-				size_y = Math.floor(settings.texturesize / frame_height);
+				size_x = Math.floor(settings.texture / frame_width);
+				size_y = Math.floor(settings.texture / frame_height);
 
-			} else if (typeof settings.framesize === 'number') {
+			} else if (settings.frame === 'power-of-two') {
 
-				var size = Math.round(Math.sqrt(files.length));
-				if (size % 2 !== 0) {
-					size++;
+				files.forEach(function(file) {
+					frame_width  = Math.max(frame_width,  file.data.width);
+					frame_height = Math.max(frame_height, file.data.height);
+				});
+
+				var tmp_w = Math.round(Math.sqrt(frame_width));
+				if (tmp_w % 2 !== 0) {
+					frame_width = Math.pow(tmp_w++, 2);
 				}
 
-				frame_width  = settings.framesize;
-				frame_height = settings.framesize;
+				var tmp_h = Math.round(Math.sqrt(frame_height));
+				if (tmp_h % 2 !== 0) {
+					frame_height = Math.pow(tmp_h++, 2);
+				}
 
-				size_x = size;
-				size_y = size;
+				size_x = Math.floor(settings.texture / frame_width);
+				size_y = Math.floor(settings.texture / frame_height);
 
 			}
 
@@ -200,25 +203,8 @@ lychee.define('tool.data.SPRITE').requires([
 
 				var mapx    = ( index % size_x)      * frame_width;
 				var mapy    = ((index / size_x) | 0) * frame_height;
-				var renderx = 0;
-				var rendery = 0;
-
-
-				if (framealignment_x === 'left') {
-					renderx = mapx;
-				} else if (framealignment_x === 'center') {
-					renderx = mapx + (frame_width / 2) - (texture.width / 2);
-				} else if (framealignment_x === 'right') {
-					renderx = mapx + (frame_width - texture.width);
-				}
-
-				if (framealignment_y === 'top') {
-					rendery = mapy;
-				} else if (framealignment_y === 'center') {
-					rendery = mapy + (frame_height / 2) - (texture.height / 2);
-				} else if (framealignment_y === 'bottom') {
-					rendery = mapy + (frame_height - texture.height);
-				}
+				var renderx = mapx + (frame_width / 2) - (texture.width / 2);
+				var rendery = mapy + (frame_height / 2) - (texture.height / 2);
 
 
 				var data = {
@@ -239,7 +225,7 @@ lychee.define('tool.data.SPRITE').requires([
 				};
 
 
-				if (settings.boundingbox === 'frame') {
+				if (settings.boundingbox === 'auto') {
 					data.map.width  = frame_width;
 					data.map.height = frame_height;
 				}
@@ -259,7 +245,7 @@ lychee.define('tool.data.SPRITE').requires([
 
 		(function(files) {
 
-			if (settings.statemap === 'image') {
+			if (settings.states === 'auto') {
 
 				files.forEach(function(file) {
 
@@ -272,32 +258,29 @@ lychee.define('tool.data.SPRITE').requires([
 
 					} else if (states[state].animation === false) {
 
-						if (settings.stateanimation === 'image') {
-
-							states[state].animation = true;
-							states[state].duration  = 1000;
-							states[state].loop      = true;
-
-						}
+						states[state].animation = true;
+						states[state].duration  = 1000;
+						states[state].loop      = true;
 
 					}
 
 				});
 
-			} else if (settings.statemap === 'none') {
+			} else if (settings.states === 'none') {
 
-				states['default'] = {
-					animation: false
-				};
+				if (files.length > 1) {
 
+					states['default'] = {
+						animation: true,
+						duration:  1000,
+						loop:      true
+					};
 
-				if (files.length > 0) {
+				} else {
 
-					if (settings.stateanimation === 'image') {
-						states['default'].animation = true;
-						states['default'].duration  = 1000;
-						states['default'].loop      = true;
-					}
+					states['default'] = {
+						animation: false
+					};
 
 				}
 
@@ -419,8 +402,8 @@ lychee.define('tool.data.SPRITE').requires([
 
 			var canvas = document.createElement('canvas');
 
-			canvas.width  = settings.texturesize;
-			canvas.height = settings.texturesize;
+			canvas.width  = settings.texture;
+			canvas.height = settings.texture;
 
 
 			var render_frame = function(frame) {

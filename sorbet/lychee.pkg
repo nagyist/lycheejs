@@ -4,30 +4,13 @@
 
 		"environments": {
 
-			"html/core": {
-				"build":    "sorbet.net.Client",
+			"nodejs/main": {
+				"build":    "sorbet.Main",
 				"debug":    false,
 				"sandbox":  false,
-				"type":     "library",
-				"packages": [
-					[ "sorbet", "./lychee.pkg" ]
-				],
-				"tags":     {
-					"platform": [ "html" ]
-				}
-			},
-
-			"nodejs/core": {
-				"build":    "sorbet.net.Client",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "library",
-				"packages": [
-					[ "sorbet", "./lychee.pkg" ]
-				],
-				"tags":     {
-					"platform": [ "nodejs" ]
-				}
+				"packages": [ [ "sorbet", "./lychee.pkg" ] ],
+				"tags":     { "platform": [ "nodejs" ] },
+				"variant":  "application"
 			}
 
 		},
@@ -50,58 +33,36 @@
 
 		"files": {
 
-			"api": {
-
-				"remote": {
-					"Server": [ "js" ]
-				},
-
-				"Service": [ "js" ]
-
-			},
-
 			"data": {
+				"Host":       [ "js" ],
 				"Filesystem": [ "js" ],
-				"Map":        [ "js" ],
-				"Queue":      [ "js" ],
-				"Storage":    [ "js" ],
-				"Template":   [ "js" ],
-				"VHost":      [ "js" ]
+				"Package":    [ "js" ],
+				"Project":    [ "js" ],
+				"Server":     [ "js" ]
 			},
 
-			"module": {
-
-				"honey": {
-					"Admin":  [ "js", "index.php", "config.php.bak" ],
-					"Robots": [ "js" ]
-				},
-
-				"Blacklist":  [ "js" ],
-				"Error":      [ "js", "html.tpl", "json.tpl" ],
-				"File":       [ "js", "json" ],
-				"Honey":      [ "js" ],
-				"Log":        [ "js", "json" ],
+			"mod": {
 				"Fertilizer": [ "js" ],
-				"Redirect":   [ "js" ],
+				"Package":    [ "js" ],
 				"Server":     [ "js" ]
-
 			},
 
 			"net": {
-
-				"client": {
-					"Debugger": [ "js" ],
-					"Service":  [ "js" ]
-				},
-
-				"remote": {
-					"Debugger": [ "js" ],
-					"Service":  [ "js" ]
-				},
-
-				"Client": [ "js" ],
+				"Remote": [ "js" ],
 				"Server": [ "js" ]
+			},
 
+			"serve": {
+
+				"api": {
+					"Profile": [ "js" ],
+					"Project": [ "js" ],
+					"Server":  [ "js" ]
+				},
+
+				"API":      [ "js" ],
+				"File":     [ "js" ],
+				"Redirect": [ "js" ]
 			},
 
 			"Main": [ "js" ]

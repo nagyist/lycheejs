@@ -70,6 +70,10 @@ lychee.define('lychee.effect.Alpha').exports(function(lychee, global, attachment
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

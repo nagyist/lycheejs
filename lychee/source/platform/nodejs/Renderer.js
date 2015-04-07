@@ -619,7 +619,7 @@ lychee.define('Renderer').tags({
 				var ctx = this.__ctx;
 				var margin  = 0;
 				var texture = font.texture;
-				if (texture !== null) {
+				if (texture !== null && texture.buffer !== null) {
 
 					for (t = 0, l = text.length; t < l; t++) {
 

@@ -2,9 +2,8 @@
 lychee.define('lychee.net.Remote').tags({
 	platform: 'html'
 }).requires([
-	'lychee.data.BitON',
-	'lychee.data.JSON',
-	'lychee.net.Protocol'
+	'lychee.net.protocol.HTTP',
+	'lychee.net.protocol.WS'
 ]).includes([
 	'lychee.net.Tunnel'
 ]).exports(function(lychee, global, attachments) {
@@ -107,6 +106,10 @@ lychee.define('lychee.net.Remote').tags({
 		disconnect: function() {
 
 			if (this.__isConnected === true) {
+
+				if (lychee.debug === true) {
+					console.log('lychee.net.Remote: Disconnected from ' + this.host + ':' + this.port);
+				}
 
 				if (this.__socket !== null) {
 					// TODO: Close HTTP Socket

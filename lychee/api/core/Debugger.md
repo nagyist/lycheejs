@@ -6,15 +6,19 @@
 This implementation is a Module and has no constructor.
 
 ```javascript
-var dbg = lychee.Debugger;
-
-console.log(dbg); // lychee.Debugger
+console.log(lychee.Debugger); // lychee.Debugger
 ```
 
-## Implementation Notes:
+#### Implementation Notes
 
-The unique identifier is used for determination of all dependencies
-in the current [lychee.environment](lychee.html#properties-environment).
+The Debugger offers an integration with a server-side
+[lychee.net.Service](lychee.net.Service) with
+the identifier *debugger*.
+
+For easier integration with the Sorbet Stack, you
+can simply include the *sorbet/build/<platform>/core.js*
+file and the Debugger will automatically report
+errors and bugs to the server.
 
 
 

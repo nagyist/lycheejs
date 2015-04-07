@@ -2,9 +2,8 @@
 lychee.define('lychee.net.Remote').tags({
 	platform: 'nodejs'
 }).requires([
-	'lychee.data.BitON',
-	'lychee.data.JSON',
-	'lychee.net.Protocol'
+	'lychee.net.protocol.HTTP',
+	'lychee.net.protocol.WS'
 ]).includes([
 	'lychee.net.Tunnel'
 ]).supports(function(lychee, global) {
@@ -96,7 +95,7 @@ lychee.define('lychee.net.Remote').tags({
 				var that = this;
 
 
-				this.__socket = new lychee.net.Protocol(socket, lychee.net.Protocol.TYPE.remote);
+				this.__socket = new lychee.net.protocol.WS(socket, lychee.net.protocol.WS.TYPE.remote);
 
 				this.__socket.ondata = function(blob) {
 					that.receive(blob);
@@ -125,6 +124,10 @@ lychee.define('lychee.net.Remote').tags({
 		disconnect: function() {
 
 			if (this.__isConnected === true) {
+
+				if (lychee.debug === true) {
+					console.log('lychee.net.Remote: Disconnected from ' + this.host + ':' + this.port);
+				}
 
 				if (this.__socket !== null) {
 					this.__socket.close();

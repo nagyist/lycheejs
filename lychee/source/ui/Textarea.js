@@ -131,7 +131,7 @@ lychee.define('lychee.ui.Textarea').includes([
 			data['constructor'] = 'lyche.ui.Textarea';
 
 			var settings = data['arguments'][0];
-			var blob     = data['blob'] = (data['blob'] || {});
+			var blob     = (data['blob'] || {});
 
 
 			if (this.width !== 140)  settings.width  = this.width;
@@ -140,6 +140,9 @@ lychee.define('lychee.ui.Textarea').includes([
 
 
 			if (this.font !== null) blob.font = lychee.serialize(this.font);
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

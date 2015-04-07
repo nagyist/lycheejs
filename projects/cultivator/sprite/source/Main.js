@@ -1,76 +1,23 @@
 
 lychee.define('tool.Main').requires([
 	'lychee.data.JSON',
-	'tool.data.SPRITE',
-	'tool.ui.Dropzone'
+	'tool.data.SPRITE'
 ]).includes([
 	'lychee.game.Main'
 ]).tags({
 	platform: 'html'
 }).exports(function(lychee, tool, global, attachments) {
 
-	var _SPRITE = tool.data.SPRITE;
-	var _JSON   = lychee.data.JSON;
+	var _SPRITE     = tool.data.SPRITE;
+	var _JSON       = lychee.data.JSON;
+
+	var _definition = attachments["Entity.tpl"];
 
 
 
 	/*
 	 * HELPERS
 	 */
-
-	var _download = function(filename, buffer) {
-
-		filename = typeof filename === 'string' ? filename : null;
-		buffer   = buffer instanceof Buffer     ? buffer   : null;
-
-
-		if (filename !== null && buffer !== null) {
-
-			var ext  = filename.split('.').pop();
-			var type = 'plain/text';
-			if (ext.match(/fnt|json/)) {
-				type = 'application/json';
-			} else if (ext.match(/png/)) {
-				type = 'image/png';
-			}
-
-			var url     = 'data:' + type + ';base64,' + buffer.toString('base64');
-			var event   = document.createEvent('MouseEvents');
-			var element = document.createElement('a');
-
-
-			element.download = filename;
-			element.href     = url;
-
-			event.initMouseEvent(
-				'click',
-				true,
-				false,
-				window,
-				0,
-				0,
-				0,
-				0,
-				0,
-				false,
-				false,
-				false,
-				false,
-				0,
-				null
-			);
-
-			element.dispatchEvent(event);
-
-
-			return true;
-
-		}
-
-
-		return false;
-
-	};
 
 	var _update_preview = function(blob) {
 
@@ -87,24 +34,17 @@ lychee.define('tool.Main').requires([
 			}
 
 
-			var button1 = document.querySelector('button#preview-download-config');
-			if (button1 !== null) {
+			var button = document.querySelector('button#preview-download');
+			if (button !== null) {
 
-				var buffer1 = new Buffer(data.config.substr(29), 'base64');
+				var buffer1 = new Buffer(_definition.buffer, 'utf8');
+				var buffer2 = new Buffer(data.config.substr(29), 'base64');
+				var buffer3 = new Buffer(data.texture.substr(22), 'base64');
 
-				button1.onclick = function() {
-					_download('Entity.json', buffer1);
-				};
-
-			}
-
-			var button2 = document.querySelector('button#preview-download-texture');
-			if (button2 !== null) {
-
-				var buffer2 = new Buffer(data.texture.substr(22), 'base64');
-
-				button2.onclick = function() {
-					_download('Entity.png', buffer2);
+				button.onclick = function() {
+					ui.download('Entity.js',   buffer1);
+					ui.download('Entity.json', buffer2);
+					ui.download('Entity.png',  buffer3);
 				};
 
 			}
@@ -119,6 +59,17 @@ lychee.define('tool.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
+	var _SIZES = {
+		1: 64,
+		2: 128,
+		3: 256,
+		4: 512,
+		5: 1024,
+		6: 2048,
+		7: 4096,
+		8: 8192
+	};
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({
@@ -128,13 +79,6 @@ lychee.define('tool.Main').requires([
 			jukebox:  null,
 			renderer: null,
 			server:   null,
-
-			dropzone: {
-				element:    null,
-				extensions: {
-					'png': true
-				}
-			},
 
 			viewport: {
 				fullscreen: false
@@ -154,38 +98,18 @@ lychee.define('tool.Main').requires([
 		 * INITIALIZATION
 		 */
 
-		this.bind('init', function() {
-
-			var settings = this.settings;
-			if (settings.dropzone !== null) {
-
-				this.dropzone = new tool.ui.Dropzone(settings.dropzone);
-				this.dropzone.bind('change', function() {
-
-					var onsubmit = document.querySelector('form').onsubmit;
-					if (onsubmit instanceof Function) {
-						onsubmit();
-					}
-
-				}, this);
-
-			}
-
-		}, this, true);
-
-
 		this.bind('submit', function(id, settings) {
 
 			if (id === 'settings') {
-
-				settings.files = this.dropzone.files;
-
 
 				if (this.locked === false) {
 
 					this.locked = true;
 
 					this.loop.setTimeout(100, function() {
+
+						settings.texture = _SIZES[settings.size];
+
 
 						var sprite = _SPRITE.encode(settings);
 						if (sprite !== null) {

@@ -1,107 +1,139 @@
 {
-
 	"build": {
-
 		"environments": {
-
-			"html-nw/main": {
-				"build":    "game.Main",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "folder",
+			"html-nwjs/main": {
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
 				"packages": [
-					[ "game", "./lychee.pkg" ]
+					[
+						"game",
+						"./lychee.pkg"
+					]
 				],
 				"tags": {
-					"platform": [ "html-nw", "html" ]
-				}
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application"
 			},
-
 			"html/main": {
-				"build":    "game.Main",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "folder",
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
 				"packages": [
-					[ "game", "./lychee.pkg" ]
+					[
+						"game",
+						"./lychee.pkg"
+					]
 				],
 				"tags": {
-					"platform": [ "html" ]
-				}
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application"
 			},
-
 			"nodejs/server": {
-				"build":    "game.net.Server",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "file",
+				"build": "game.net.Server",
+				"debug": false,
+				"sandbox": false,
 				"packages": [
-					[ "game", "./lychee.pkg" ]
+					[
+						"game",
+						"./lychee.pkg"
+					]
 				],
 				"tags": {
-					"platform": [ "nodejs" ]
-				}
+					"platform": [
+						"nodejs"
+					]
+				},
+				"variant": "application"
 			}
-
-		},
-
-		"files": {
-
 		}
-
 	},
-
 	"source": {
-
-		"environments": {
-
-		},
-
-		"tags": {
-
-		},
-
+		"environments": {},
+		"tags": {},
 		"files": {
-
 			"entity": {
-				"Circle":   [ "js", "snd" ],
-				"Particle": [ "js" ],
-				"lycheeJS": [ "js", "png" ]
+				"Circle": [
+					"js",
+					"snd"
+				],
+				"Particle": [
+					"js"
+				],
+				"Emblem": [
+					"js",
+					"png"
+				]
 			},
-
 			"net": {
-
 				"client": {
-					"Highscore": [ "js" ],
-					"Ping":      [ "js" ]
+					"Highscore": [
+						"js"
+					],
+					"Ping": [
+						"js"
+					]
 				},
-
 				"remote": {
-					"Highscore": [ "js" ],
-					"Ping":      [ "js" ]
+					"Highscore": [
+						"js"
+					],
+					"Ping": [
+						"js"
+					]
 				},
-
-				"Client": [ "js" ],
-				"Server": [ "js" ]
-
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
 			},
-
 			"state": {
-				"Game": [ "js", "json", "fnt" ],
-				"Menu": [ "js", "json" ]
+				"Game": [
+					"js",
+					"json",
+					"fnt"
+				],
+				"Menu": [
+					"js",
+					"json"
+				]
 			},
-
 			"ui": {
-				"Button":     [ "js", "json", "png", "fnt" ],
-				"Highscores": [ "js", "fnt" ],
-				"Layer":      [ "js", "json", "png", "fnt" ]
+				"Button": [
+					"js",
+					"json",
+					"png",
+					"fnt"
+				],
+				"Highscores": [
+					"js",
+					"fnt"
+				],
+				"Layer": [
+					"js",
+					"json",
+					"png",
+					"fnt"
+				]
 			},
-
-			"DeviceSpecificHacks": [ "js" ],
-			"Main":                [ "js" ]
-
+			"DeviceSpecificHacks": [
+				"js"
+			],
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js"
+			]
 		}
-
 	}
-
 }

@@ -32,7 +32,7 @@ lychee.define('game.state.Game').requires([
 	Class.prototype = {
 
 		/*
-		 * ENTITY API
+		 * STATE API
 		 */
 
 		serialize: function() {
@@ -76,12 +76,6 @@ lychee.define('game.state.Game').requires([
 			}
 
 		},
-
-
-
-		/*
-		 * CUSTOM API
-		 */
 
 		enter: function(data) {
 

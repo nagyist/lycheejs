@@ -50,6 +50,10 @@ lychee.define('lychee.effect.Offset').exports(function(lychee, global, attachmen
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

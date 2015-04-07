@@ -1,5 +1,18 @@
 {
 	"layers": {
+		"background": {
+			"constructor": "lychee.game.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "game.entity.Background",
+					"arguments": [{}]
+				}],
+				"map": {
+					"background": 0
+				}
+			}
+		},
 		"game": {
 			"constructor": "lychee.game.Layer",
 			"arguments": [{}],
@@ -32,9 +45,9 @@
 					}]
 				}],
 				"map": {
-					"ball":   0,
-					"player": 1,
-					"enemy":  2
+					"ball":    0,
+					"player":  1,
+					"enemy":   2
 				}
 			}
 		},
@@ -57,9 +70,18 @@
 							"arguments": [ "../source/state/Game.headline.fnt" ]
 						}
 					}
+				}, {
+					"constructor": "game.ui.Welcome",
+					"arguments": [{
+						"position": {
+							"x": 0,
+							"y": 0
+						}
+					}]
 				}],
 				"map": {
-					"score": 0
+					"score":   0,
+					"welcome": 1
 				}
 			}
 		}

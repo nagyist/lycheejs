@@ -2,7 +2,6 @@
 lychee.define('lychee.net.Server').tags({
 	platform: 'nodejs'
 }).requires([
-	'lychee.data.BitON',
 	'lychee.data.JSON',
 	'lychee.net.Remote'
 ]).includes([
@@ -18,11 +17,9 @@ lychee.define('lychee.net.Server').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var http    = require('http');
-	var crypto  = require('crypto');
-
-	var _BitON  = lychee.data.BitON;
-	var _JSON   = lychee.data.JSON;
+	var http   = require('http');
+	var crypto = require('crypto');
+	var _JSON  = lychee.data.JSON;
 
 
 
@@ -115,11 +112,11 @@ lychee.define('lychee.net.Server').tags({
 		var settings = lychee.extend({}, data);
 
 
-		this.host = null;
-		this.port = 1337;
+		this.codec = lychee.interfaceof(settings.codec, _JSON) ? settings.codec : _JSON;
+		this.host  = null;
+		this.port  = 1337;
 
 
-		this.__codec  = lychee.interfaceof(settings.codec, _JSON) ? settings.codec : _JSON;
 		this.__socket = null;
 
 
@@ -150,8 +147,9 @@ lychee.define('lychee.net.Server').tags({
 			var settings = {};
 
 
-			if (this.host !== 'localhost') settings.host = this.host;
-			if (this.port !== 1337)        settings.port = this.port;
+			if (this.codec !== _JSON)      settings.codec = lychee.serialize(this.codec);
+			if (this.host !== 'localhost') settings.host  = this.host;
+			if (this.port !== 1337)        settings.port  = this.port;
 
 
 			data['arguments'][0] = settings;
@@ -192,7 +190,7 @@ lychee.define('lychee.net.Server').tags({
 						var remote = new lychee.net.Remote({
 							host:  host,
 							port:  port,
-							codec: that.__codec
+							codec: that.codec
 						});
 
 						remote.bind('connect', function() {
@@ -211,9 +209,7 @@ lychee.define('lychee.net.Server').tags({
 				});
 
 				this.__socket.on('error', function(err) {
-
 					console.error('lychee.net.Server: Error "' + err + '" on ' + that.host + ':' + that.port);
-
 				});
 
 				this.__socket.on('close', function() {

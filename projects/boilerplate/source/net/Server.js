@@ -50,6 +50,22 @@ lychee.define('game.net.Server').requires([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var data = lychee.net.Server.prototype.serialize.call(this);
+			data['constructor'] = 'game.net.Server';
+
+
+			return data;
+
+		}
+
 	};
 
 

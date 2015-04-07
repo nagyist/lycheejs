@@ -28,6 +28,21 @@ var storage = new lychee.Storage({
 
 
 
+={enums-TYPE}
+
+### (Enum) lychee.Storage.TYPE;
+
+The *(Enum) TYPE* enum consist of the following properties:
+
+- *(Number) persistent* that reflects a persistent storage.
+- *(Number) temporary* that reflects a temporary storage.
+
+If a storage is persistent, all objects will be stored forever.
+If a storage is temporary, all objects will be stored until the
+current session ends.
+
+
+
 ={properties-id}
 
 ### (String) new lychee.Storage().id;
@@ -52,13 +67,108 @@ storage.id;                    // 'more-awesome'
 
 
 
-// TODO: Document properties and custom methods
-
 ={properties-model}
+
+### (Object) new lychee.Storage().model;
+
+The *(Object) model* property is the object model
+of the storage instance.
+
+It influences how the [create()](#methods-create),
+[insert()](#methods-insert) and [update()](#methods-update)
+validate objects of the storage instance.
+
+It is set via *settings.model* in the [constructor](#constructor)
+or via [setModel()](#methods-setModel).
+
+```javascript
+var storage = new lychee.Storage();
+
+storage.model;                    // {}
+storage.setModel({ foo: 'bar' }); // true
+storage.model;                    // { foo: 'bar' }
+
+var object = storage.create();
+
+object;                     // { foo: 'bar' }
+object === storage.model;   // false
+object.foo === storage.foo; // true
+```
+
+
+
 ={properties-type}
 
-={methods-sync}
+### (Number) new lychee.Storage().type;
+
+The *(Number) type* property is the type
+of the storage instance.
+
+It influences how long created objects are stored.
+Possible values are all values of the [TYPE enum](#enums-TYPE).
+
+It is set via *settings.type* in the [constructor](#constructor)
+or via [setType()](#methods-setType).
+
+```javascript
+var storage = new lychee.Storage({
+	type: lychee.Storage.TYPE.persistent
+});
+
+storage.type;                                    // 0
+storage.type === lychee.Storage.TYPE.persistent; // true
+
+storage.setType(lychee.Storage.TYPE.temporary);  // true
+storage.type;                                    // 1
+storage.type === lychee.Storage.TYPE.temporary;  // true
+```
+
+
+
+={methods-deserialize}
+
+### (void) lychee.Storage.prototype.deserialize(blob);
+
+- *(Object) blob* is an Object that is part of the Serialization Object.
+
+This method returns nothing.
+It is not intended for direct usage. You can deserialize an
+object using the [lychee.deserialize()](lychee#methods-deserialize) method.
+
+```javascript
+var foo1 = new lychee.Storage({ id: 'foo' });
+var data = lychee.serialize(foo1);
+var foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Storage', arguments: [{ id: 'foo' }]}
+foo2; // lychee.Storage instance
+```
+
+
+
 ={methods-serialize}
+
+### (Serialization Object) lychee.Storage.prototype.serialize(void);
+
+- This method has no arguments.
+
+This method is not intended for direct usage. You can serialize an
+object using the [lychee.serialize()](lychee#methods-serialize) method.
+
+```javascript
+var foo1 = new lychee.Storage({ id: 'foo' });
+var data = lychee.serialize(foo1);
+var foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Storage', arguments: [{ id: 'foo' }]}
+foo2; // lychee.Storage instance
+```
+
+
+
+// TODO: Document properties and custom methods
+
+={methods-sync}
 ={methods-create}
 ={methods-filter}
 ={methods-insert}
@@ -119,7 +229,7 @@ storage.model === model;    // false
 
 ### (Boolean) lychee.Storage.prototype.setType(type);
 
-- *(Number) type* is an *enum of lychee.Storage.TYPE*.
+- *(Number) type* is an *enum of [lychee.Storage.TYPE](#enums-TYPE)*.
 It is defaulted with lychee.Storage.TYPE.persistent.
 
 This method returns *true* on success and *false* on failure.

@@ -158,7 +158,7 @@ lychee.define('lychee.ui.Layer').includes([
 			data['constructor'] = 'lychee.ui.Layer';
 
 			var settings = data['arguments'][0];
-			var blob     = data['blob'] = (data['blob'] || {});
+			var blob     = (data['blob'] || {});
 
 
 			if (this.offset.x !== 0 || this.offset.y !== 0) {
@@ -208,7 +208,7 @@ lychee.define('lychee.ui.Layer').includes([
 			}
 
 
-			data.blob = Object.keys(data.blob).length > 0 ? data.blob : null;
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

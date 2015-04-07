@@ -160,7 +160,6 @@ lychee.define('game.state.Game').requires([
 	 * IMPLEMENTATION
 	 */
 
-
 	var Class = function(main) {
 
 		lychee.game.State.call(this, main);
@@ -170,7 +169,35 @@ lychee.define('game.state.Game').requires([
 
 
 		this.deserialize(_blob);
-		this.reshape();
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
+
+		var viewport = this.viewport;
+		if (viewport !== null) {
+
+			viewport.bind('reshape', function(orientation, rotation) {
+
+				var renderer = this.renderer;
+				if (renderer !== null) {
+
+					var entity = null;
+					var width  = renderer.width;
+					var height = renderer.height;
+
+
+					entity = this.queryLayer('background', 'background');
+					entity.width  = width;
+					entity.height = height;
+
+				}
+
+			}, this);
+
+		}
 
 	};
 
@@ -271,27 +298,6 @@ lychee.define('game.state.Game').requires([
 		/*
 		 * CUSTOM API
 		 */
-
-		reshape: function(orientation, rotation) {
-
-			lychee.game.State.prototype.reshape.call(this, orientation, rotation);
-
-
-			var renderer = this.renderer;
-			if (renderer !== null) {
-
-				var entity = null;
-				var width  = renderer.width;
-				var height = renderer.height;
-
-
-				entity = this.queryLayer('background', 'background');
-				entity.width  = width;
-				entity.height = height;
-
-			}
-
-		},
 
 		update: function(clock, delta) {
 

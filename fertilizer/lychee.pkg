@@ -1,0 +1,67 @@
+{
+
+	"build": {
+
+		"environments": {
+
+			"nodejs/main": {
+				"build":    "fertilizer.Main",
+				"debug":    false,
+				"sandbox":  false,
+				"packages": [ [ "fertilizer", "./lychee.pkg" ] ],
+				"tags":     { "platform": [ "nodejs" ] },
+				"variant":  "application"
+			}
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"data": {
+				"Filesystem": [ "js" ],
+				"Shell":      [ "js" ]
+			},
+
+			"template": {
+
+				"html-nwjs": {
+					"Application": [ "js", "png", "config.tpl", "index.tpl", "main.tpl" ],
+					"Library":     [ "js", "tpl" ]
+				},
+
+				"html": {
+					"Application": [ "js", "index.tpl", "main.tpl" ],
+					"Library":     [ "js", "tpl" ]
+				},
+
+				"nodejs": {
+					"Application": [ "js", "tpl" ],
+					"Library":     [ "js", "tpl" ]
+				}
+
+			},
+
+			"Main":     [ "js" ],
+			"Template": [ "js" ]
+
+		}
+
+	}
+
+}

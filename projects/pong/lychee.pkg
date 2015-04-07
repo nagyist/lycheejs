@@ -1,69 +1,95 @@
 {
-
 	"build": {
-
 		"environments": {
-
-			"html-nw/main": {
-				"build":    "game.Main",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "folder",
+			"html-nwjs/main": {
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
 				"packages": [
-					[ "game", "./lychee.pkg" ]
+					[
+						"game",
+						"./lychee.pkg"
+					]
 				],
 				"tags": {
-					"platform": [ "html-nw", "html" ]
-				}
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application"
 			},
-
 			"html/main": {
-				"build":    "game.Main",
-				"debug":    false,
-				"sandbox":  false,
-				"type":     "folder",
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
 				"packages": [
-					[ "game", "./lychee.pkg" ]
+					[
+						"game",
+						"./lychee.pkg"
+					]
 				],
 				"tags": {
-					"platform": [ "html" ]
-				}
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application"
 			}
-
 		},
-
-		"files": {
-
-		}
-
+		"files": {}
 	},
-
 	"source": {
-
-		"environments": {
-
-		},
-
-		"tags": {
-
-		},
-
+		"environments": {},
+		"tags": {},
 		"files": {
-
 			"entity": {
-				"Ball":     [ "js", "json", "png" ],
-				"Paddle":   [ "js", "json", "enemy.png", "player.png" ]
+				"Background": [
+					"js",
+					"json",
+					"png"
+				],
+				"Ball": [
+					"js",
+					"json",
+					"png"
+				],
+				"Paddle": [
+					"js",
+					"json",
+					"enemy.png",
+					"player.png"
+				],
+				"lycheeJS": [
+					"js",
+					"png"
+				]
 			},
-
 			"state": {
-				"Game": [ "js", "json", "headline.fnt", "normal.fnt" ]
+				"Game": [
+					"js",
+					"json",
+					"boo.snd",
+					"cheer.snd",
+					"music.msc",
+					"ping.snd",
+					"pong.snd",
+					"headline.fnt",
+					"normal.fnt"
+				]
 			},
-
-			"DeviceSpecificHacks": [ "js" ],
-			"Main":                [ "js", "css" ]
-
+			"ui": {
+				"Welcome": [
+					"js",
+					"png"
+				]
+			},
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js"
+			]
 		}
-
 	}
-
 }

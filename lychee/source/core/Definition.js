@@ -284,5 +284,5 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 	return Class;
 
-})(typeof global !== 'undefined' ? global : this);
+})(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));
 

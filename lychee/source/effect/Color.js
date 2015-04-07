@@ -84,6 +84,10 @@ lychee.define('lychee.effect.Color').exports(function(lychee, global, attachment
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

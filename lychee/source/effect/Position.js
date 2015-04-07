@@ -51,6 +51,10 @@ lychee.define('lychee.effect.Position').exports(function(lychee, global, attachm
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

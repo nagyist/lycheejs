@@ -57,7 +57,7 @@ lychee.define('lychee.ui.Sprite').includes([
 			data['constructor'] = 'lyche.ui.Sprite';
 
 			var settings = data['arguments'][0];
-			var blob     = data['blob'] = (data['blob'] || {});
+			var blob     = (data['blob'] || {});
 
 
 			if (this.__animation.active === true) {
@@ -103,6 +103,9 @@ lychee.define('lychee.ui.Sprite').includes([
 
 
 			if (this.texture !== null) blob.texture = lychee.serialize(this.texture);
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

@@ -321,7 +321,17 @@ It will destroy the instance from any interaction bindings.
 
 - This method has no arguments.
 
-This method returns the *Serialization Object* of the instance.
+This method is not intended for direct usage. You can serialize an
+object using the [lychee.serialize()](lychee#methods-serialize) method.
+
+```javascript
+var foo1 = new lychee.Input({ delay: 5000 });
+var data = lychee.serialize(foo1);
+var foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Input', arguments: [{ delay: 5000 }]}
+foo2; // lychee.Input instance
+```
 
 
 

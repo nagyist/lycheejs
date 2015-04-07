@@ -16,7 +16,7 @@ var viewport = new lychee.Viewport({
 });
 ```
 
-## Implementation Notes:
+#### Implementation Notes
 
 Desktop systems are treated by their resolution, so if a
 monitor is rotated by 90 degrees, its *orientation* is *portrait*.
@@ -174,7 +174,17 @@ It will destroy the instance from any interaction bindings.
 
 - This method has no arguments.
 
-This method returns the *Serialization Object* of the instance.
+This method is not intended for direct usage. You can serialize an
+object using the [lychee.serialize()](lychee#methods-serialize) method.
+
+```
+var foo1 = new lychee.Viewport({ fullscreen: true });
+var data = lychee.serialize(foo1);
+var foo2 = lychee.deserialize(data);
+
+data; // { constructor: 'lychee.Viewport', arguments: [ { fullscreen: true }]}
+foo2; // lychee.Viewport instance
+```
 
 
 

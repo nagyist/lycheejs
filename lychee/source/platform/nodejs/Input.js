@@ -33,7 +33,7 @@ lychee.define('Input').tags({
 
 				key.name  = 'escape';
 				key.ctrl  = false;
-				key.alt   = false
+				key.alt   = false;
 				key.shift = false;
 
 			}

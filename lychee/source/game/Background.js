@@ -1,7 +1,7 @@
 
 lychee.define('lychee.game.Background').includes([
 	'lychee.game.Sprite'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
 
 	/*
 	 * HELPERS
@@ -67,7 +67,7 @@ lychee.define('lychee.game.Background').includes([
 		serialize: function() {
 
 			var data = lychee.game.Sprite.prototype.serialize.call(this);
-			data['constructor'] = 'lyche.game.Background';
+			data['constructor'] = 'lychee.game.Background';
 
 			var settings = data['arguments'][0];
 
@@ -117,7 +117,10 @@ lychee.define('lychee.game.Background').includes([
 					true
 				);
 
-			} else if (texture !== null && map !== null) {
+			}
+
+
+			if (texture !== null && map !== null) {
 
 				if (this.__buffer === null) {
 

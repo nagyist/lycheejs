@@ -83,6 +83,25 @@ lychee.define('game.net.client.Highscore').requires([
 	Class.prototype = {
 
 		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var data = lychee.net.Service.prototype.serialize.call(this);
+			data['constructor'] = 'game.net.client.Highscore';
+			data['arguments']   = [ '#MAIN.client' ];
+
+
+			return data;
+
+		},
+
+
+
+		/*
 		 * CUSTOM API
 		 */
 

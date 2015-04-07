@@ -49,6 +49,10 @@ lychee.define('lychee.effect.Radius').exports(function(lychee, global, attachmen
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		// deserialize: function(blob) {},
 
 		serialize: function() {

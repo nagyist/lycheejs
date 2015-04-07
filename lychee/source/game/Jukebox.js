@@ -1,5 +1,5 @@
 
-lychee.define('lychee.game.Jukebox').exports(function(lychee, global) {
+lychee.define('lychee.game.Jukebox').exports(function(lychee, global, attachments) {
 
 	/*
 	 * HELPERS
@@ -51,6 +51,36 @@ lychee.define('lychee.game.Jukebox').exports(function(lychee, global) {
 
 
 	Class.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var settings = {};
+
+
+			if (this.channels !== 8) settings.channels = this.channels;
+			if (this.music !== true) settings.music    = this.music;
+			if (this.sound !== true) settings.sound    = this.sound;
+
+
+			return {
+				'constructor': 'lychee.game.Jukebox',
+				'arguments':   [ settings ],
+				'blob':        null
+			};
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
 
 		play: function(track) {
 

@@ -367,7 +367,7 @@ lychee.define('Storage').tags({
 			data['constructor'] = 'lychee.Storage';
 
 			var settings = {};
-			var blob     = data['blob'] || {};
+			var blob     = (data['blob'] || {});
 
 
 			if (this.id.substr(0, 15) !== 'lychee-Storage-') settings.id    = this.id;
@@ -423,25 +423,16 @@ lychee.define('Storage').tags({
 			scope    = scope !== undefined          ? scope    : this;
 
 
-			var filtered = [];
+			if (callback !== null) {
 
-			for (var o = 0, ol = this.__objects.length; o < ol; o++) {
-
-				var object = this.__objects[o];
-				if (callback !== null) {
-
-					if (callback.call(scope, o, object) === true) {
-						filtered.push(object);
-					}
-
-				} else {
-					filtered.push(object);
-				}
+				return this.__objects.filter(function(object, o) {
+					return callback.call(scope, object, o) === true;
+				});
 
 			}
 
 
-			return filtered;
+			return this.__objects.slice();
 
 		},
 

@@ -8,26 +8,18 @@
 				"build":    "lychee.game.Main",
 				"debug":    false,
 				"sandbox":  false,
-				"type":     "library",
-				"packages": [
-					[ "lychee", "./lychee.pkg" ]
-				],
-				"tags":     {
-					"platform": [ "html" ]
-				}
+				"packages": [ [ "lychee", "./lychee.pkg" ] ],
+				"tags":     { "platform": [ "html" ] },
+				"variant":  "library"
 			},
 
 			"nodejs/main": {
 				"build":    "lychee.game.Main",
 				"debug":    false,
 				"sandbox":  false,
-				"type":     "library",
-				"packages": [
-					[ "lychee", "./lychee.pkg" ]
-				],
-				"tags":     {
-					"platform": [ "nodejs" ]
-				}
+				"packages": [ [ "lychee", "./lychee.pkg" ] ],
+				"tags":     { "platform": [ "nodejs" ] },
+				"variant":  "library"
 			}
 
 		},
@@ -50,7 +42,7 @@
 
 				"html":          "platform/html",
 				"html-webgl":    "platform/html-webgl",
-				"html-nw":       "platform/html-nw",
+				"html-nwjs":     "platform/html-nwjs",
 				"nodejs":        "platform/nodejs",
 				"nodejs-sdl":    "platform/nodejs-sdl",
 				"nodejs-webgl":  "platform/nodejs-webgl"
@@ -65,6 +57,8 @@
 
 				"html": {
 
+					"bootstrap": [ "js" ],
+
 					"net": {
 						"Client": [ "js" ],
 						"Remote": [ "js" ],
@@ -78,7 +72,19 @@
 
 				},
 
+				"html-webgl": {
+
+					"Renderer": [
+						"js",
+						"Sprite.vs",
+						"Sprite.fs"
+					]
+
+				},
+
 				"nodejs": {
+
+					"bootstrap": [ "js" ],
 
 					"net": {
 						"Client":   [ "js" ],
@@ -95,9 +101,19 @@
 
 			},
 
+			"core": {
+				"lychee":      [ "js" ],
+				"Asset":       [ "js" ],
+				"Debugger":    [ "js" ],
+				"Definition":  [ "js" ],
+				"Environment": [ "js" ],
+				"Package":     [ "js" ]
+			},
+
 			"data": {
-				"BitON": [ "js" ],
-				"JSON":  [ "js" ]
+				"BENCODE": [ "js" ],
+				"BitON":   [ "js" ],
+				"JSON":    [ "js" ]
 			},
 
 			"effect": {
@@ -112,9 +128,10 @@
 			},
 
 			"event": {
-				"Bus":     [ "js" ],
 				"Emitter": [ "js" ],
-				"Promise": [ "js" ]
+				"Flow":    [ "js" ],
+				"Promise": [ "js" ],
+				"Queue":   [ "js" ]
 			},
 
 			"game": {
@@ -141,19 +158,23 @@
 
 			"net": {
 
-				"Protocol": [ "js" ],
 				"Service":  [ "js" ],
 				"Tunnel":   [ "js" ],
 
 				"client": {
 					"Chat":        [ "js" ],
-					"Multiplayer": [ "js" ],
+					"Controller":  [ "js" ],
 					"Session":     [ "js" ]
+				},
+
+				"protocol": {
+					"HTTP": [ "js" ],
+					"WS":   [ "js" ]
 				},
 
 				"remote": {
 					"Chat":        [ "js" ],
-					"Multiplayer": [ "js" ],
+					"Controller":  [ "js" ],
 					"Session":     [ "js" ]
 				}
 

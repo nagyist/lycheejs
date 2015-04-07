@@ -1,22 +1,24 @@
 
+/bin/ranger
+/bin/runtime
+
 /projects/*
 /projects/*/build
+/projects/cultivator/ranger/build
 /projects/*/lychee.store
 !/projects/README.md
 !/projects/boilerplate
 !/projects/cultivator
 !/projects/mode7
 !/projects/pong
+!/projects/tictactoe
 
 /lychee/build/*
-/lychee/docs/*
 /lychee.store
 
-/fertilizers/*
-!/fertilizers/html
-!/fertilizers/nodejs
-
-/sorbet.log
 /sorbet/lychee.store
+/sorbet/.pid
 /sorbet/build/*
 
+.DS_Store
+npm-debug.log

@@ -12,7 +12,7 @@ lychee.define('game.net.Client').requires([
 	var _ping      = game.net.client.Ping;
 
 
-	var Class = function(data, main) {
+	var Class = function(data) {
 
 		var settings = lychee.extend({
 			codec:     _BitON,
@@ -54,6 +54,22 @@ lychee.define('game.net.Client').requires([
 
 
 	Class.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var data = lychee.net.Client.prototype.serialize.call(this);
+			data['constructor'] = 'game.net.Client';
+
+
+			return data;
+
+		}
 
 	};
 

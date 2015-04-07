@@ -7,11 +7,7 @@
 	<!-- BOOTSTRAP -->
 	<script src="/lychee/build/html/core.js"></script>
 
-	<!-- SORBET INTEGRATION -->
-	<script src="/sorbet/build/html/core.js"></script>
-
 	<style>
-
 		body {
 			margin: 0;
 			padding: 0;
@@ -19,7 +15,7 @@
 			background: #444;
 		}
 		
-		canvas#mode7-0 {
+		.lychee-Renderer-canvas {
 			display: block;
 			margin: 0 auto;
 			user-select: none;
@@ -27,46 +23,10 @@
 			-ms-user-select: none;
 			-webkit-user-select: none;
 		} 
-
 	</style>
 
 </head>
 <body>
-<script>
-/*
- * INITIALIZATION
- */
-
-(function(lychee, global) {
-
-	var environment = new lychee.Environment({
-		id:       'mode7',
-		debug:    false,
-		sandbox:  false,
-		build:    'game.Main',
-		packages: [
-			new lychee.Package('game', '../lychee.pkg')
-		],
-		tags:     {
-			platform: [ 'html' ]
-		}
-	});
-
-
-	lychee.setEnvironment(environment);
-
-	lychee.init(function(sandbox) {
-
-		var lychee = sandbox.lychee;
-		var game   = sandbox.game;
-
-		// This allows using #MAIN in JSON files
-		sandbox.MAIN = new game.Main({ id: 0 });
-		sandbox.MAIN.init();
-
-	});
-
-})(lychee, typeof global !== 'undefined' ? global : this);
-</script>
+	<script src="./index.js"></script>
 </body>
 </html>    

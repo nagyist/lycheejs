@@ -184,9 +184,9 @@ lychee.define('lychee.game.Layer').requires([
 
 
 			var entities = this.entities;
-			for (var e = 0, el = entities.length; e < el; e++) {
+			for (var en = 0, enl = entities.length; en < enl; en++) {
 
-				entities[e].render(
+				entities[en].render(
 					renderer,
 					ox,
 					oy
@@ -196,8 +196,8 @@ lychee.define('lychee.game.Layer').requires([
 
 
 			var effects = this.effects;
-			for (var e = 0, el = effects.length; e < el; e++) {
-				effects[e].render(renderer, offsetX, offsetY);
+			for (var ef = 0, efl = effects.length; ef < efl; ef++) {
+				effects[ef].render(renderer, offsetX, offsetY);
 			}
 
 

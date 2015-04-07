@@ -1,55 +1,8 @@
 {
-
 	"port": 80,
-
-	"api": {
-
-		"Server": true,
-		"Peers":  false
-
-	},
-
-	"module": {
-
-		"Blacklist":  true,
-		"Fertilizer": true,
-		"Honey":      true,
-		"Log":        true,
-		"Server":     true
-
-	},
-
-	"vhosts": [{
-
-		"hosts": [
-			"lycheejs.org",
-			"www.lycheejs.org"
-		],
-		"config": {
-			"root": "%root%/projects/lycheeJS-website",
-			"redirects": {
-				"/slides/*": "http://slides.lycheejs.org/*"
-			}
-		}
-
-	}, {
-
-		"hosts": [
-			"lethalmaze.lycheejs.org"
-		],
-		"config": {
-			"root": "%root%/projects/lethalmaze"
-		}
-
-	}, {
-
-		"hosts": [
-			"cultivator.lycheejs.org"
-		],
-		"config": {
-			"root": "%root%"
-		}
-
-	}]
-
+	"hosts": {
+		"lycheejs.org": "lycheeJS-website",
+		"www.lycheejs.org": "lycheeJS-website",
+		"cultivator.lycheejs.org": null
+	}
 }

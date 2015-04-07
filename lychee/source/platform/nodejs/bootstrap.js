@@ -51,8 +51,8 @@
 
 			try {
 				callback.call(scope, raw);
-			} catch(err) {
-				lychee.Debugger.report(lychee.environment, err, null);
+			} catch(error) {
+				lychee.Debugger.report(lychee.environment, error, null);
 			}
 
 		});
@@ -1313,7 +1313,7 @@
 	 * PRELOADER IMPLEMENTATION
 	 */
 
-	var _Wildcard = function(url) {
+	var Stuff = function(url) {
 
 		this.url    = url;
 		this.onload = null;
@@ -1321,7 +1321,8 @@
 
 	};
 
-	_Wildcard.prototype = {
+
+	Stuff.prototype = {
 
 		serialize: function() {
 
@@ -1448,13 +1449,7 @@
 	global.Sound   = Sound;
 	global.Texture = Texture;
 
-	lychee.Environment.setAssetType('json', Config);
-	lychee.Environment.setAssetType('fnt',  Font);
-	lychee.Environment.setAssetType('msc',  Music);
-	lychee.Environment.setAssetType('snd',  Sound);
-	lychee.Environment.setAssetType('png',  Texture);
-	lychee.Environment.setAssetType('*',    _Wildcard);
-
+	global.Stuff   = Stuff;
 
 
 	Object.defineProperty(lychee.Environment, '__FILENAME', {

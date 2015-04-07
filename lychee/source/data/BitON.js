@@ -633,7 +633,7 @@ lychee.define('lychee.data.BitON').exports(function(lychee, global) {
 		serialize: function() {
 
 			return {
-				'reference': '#lychee.data.BitON',
+				'reference': 'lychee.data.BitON',
 				'blob':      null
 			};
 

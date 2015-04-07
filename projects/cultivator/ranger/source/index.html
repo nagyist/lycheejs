@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Ranger</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<!-- DESIGN -->
+	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
+	<script src="/projects/cultivator/design/index.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+	<style>
+	#status article.hidden {
+		display: none;
+	}
+	#status table label.ico-online {
+		color: #32afe5;
+		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
+	}
+	#status div.wizard ul.select {
+		width: auto;
+		margin: 0px 16px;
+	}
+	#status div.wizard article label {
+		color: #32afe5;
+		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
+		-webkit-animation: textpulse 2000ms infinite;
+	}
+	#profiles div.main ul.select {
+		width: auto;
+		margin: 0px 16px;
+	}
+	#profiles table {
+		overflow: auto;
+		max-width: 512px;
+	}
+	#profiles table label.ico-okay {
+		color: #32afe5;
+		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
+	}
+	</style>
+</head>
+<body>
+<menu>
+	<b id="menu-toggle"></b>
+	<li class="ico-status active" onclick="ui.changeState('status');">Status</li>
+	<li class="ico-settings" onclick="ui.changeState('profiles');">Profiles</li>
+	<li class="ico-help" onclick="ui.changeState('help');">Help</li>
+</menu>
+<aside>
+	<button class="ico-exit" onclick="location.href='lycheejs://unboot=#';setTimeout(function(){ location.href='./index.html'; }, 0);">Shutdown</button>
+</aside>
+
+<section id="status" class="active">
+
+	<div class="wizard">
+
+		<article id="status-connect" class="hidden">
+			<div>
+				<label class="ico-refresh">Connecting ...</label>
+			</div>
+		</article>
+
+		<article id="status-bootup" class="hidden">
+			<h3>Boot lycheeJS</h3>
+			<p>
+				Select a Profile to boot lycheeJS Sorbet.<br>
+				If you have no clue, select <q>development</q>.
+			</p>
+			<div>
+				<ul class="select">
+					<li><input name="status-profile" type="radio" value="development" checked><span>development</span></li>
+					<li><input name="status-profile" type="radio" value="production"><span>production</span></li>
+				</ul>
+			</div>
+			<p class="center">
+				<button class="ico-boot" onclick="setTimeout(function() { MAIN.init(); }, 1000); location.href='lycheejs://boot=' + ui.value('#status input');">Boot Sorbet</button>
+			</p>
+		</article>
+
+	</div>
+
+</section>
+
+<section id="profiles">
+
+	<div class="main">
+
+		<article id="profiles-select">
+			<h3><b>1</b>Select Profile</h3>
+			<div>
+				<ul class="select">
+					<li><input name="profiles-profile" type="radio" value="development" checked><span>development</span></li>
+					<li><input name="profiles-profile" type="radio" value="production"><span>production</span></li>
+					<li><input name="profiles-profile" type="radio" value="new-profile"><span>new profile</span></li>
+				</ul>
+			</div>
+		</article>
+
+		<article id="profiles-settings">
+			<h3><b>2</b>Modify Profile</h3>
+			<form id="settings" enctype="application/json" action="MAIN.state" method="javascript">
+				<table>
+					<thead>
+						<tr>
+							<th>Host</th>
+							<th>Project</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><input type="text" value="localhost"></td>
+							<td><input type="text" value="*"></td>
+							<td><button class="ico-remove ico-only" onclick="ui.remove(this.parentNode.parentNode)"></button></td>
+						</tr>
+					</tbody>
+					<tfoot>
+						<tr class="div"><td colspan="4"></td></tr>
+						<tr class="div"><th colspan="4">Add new Project</th></tr>
+						<tr class="menu">
+							<td><input type="text" id="new-host" name="new-host" value="" placeholder="Host" onchange="return false;"></td>
+							<td><input type="text" id="new-project" name="new-project" value="" placeholder="Project" onchange="return false;"></td>
+							<td><button class="ico-add ico-only" onclick="MAIN.state.trigger('add', [ui.value('#new-host'), ui.value('#new-project')]);return false;"></button></td>
+						</tr>
+					</tfoot>
+				</table>
+			</form>
+		</article>
+
+		<article id="profiles-save">
+			<h3><b>3</b>Save and Boot Profile</h3>
+			<table class="vertical">
+				<tr>
+					<th>Profile</th>
+					<td><input id="profiles-save-identifier" type="text" value="development"></td>
+				</tr>
+				<tr>
+					<th>Port</th>
+					<td><input id="profiles-save-port" type="number" value="8080"></td>
+				</tr>
+			</table>
+			<p class="center">
+				<button id="profiles-save-save" class="ico-upload" onclick="MAIN.state.trigger('save', [ui.value('#profiles-save-identifier'), ui.value('#profiles-save-port')])">Save</button>
+				<button id="profiles-save-boot" class="ico-boot" onclick="location.href='lycheejs://boot=' + ui.value('#profiles-save-identifier');" disabled>Boot</button>
+			</p>
+		</article>
+
+	</div>
+
+</section>
+
+<section id="help">
+Help (coming soon...)
+</section>
+
+<footer>
+	lycheeJS is (c) 2012-2015 by LazerUnicorns and released under MIT license.
+</footer>
+<script src="./index.js"></script>
+</body>
+</html>    

@@ -1,7 +1,11 @@
 
 lychee.define('game.state.Game').requires([
+	'lychee.effect.Color',
+	'lychee.effect.Shake',
+	'game.entity.Background',
 	'game.entity.Ball',
 	'game.entity.Paddle',
+	'game.ui.Welcome',
 	'lychee.ui.Label'
 ]).includes([
 	'lychee.game.State'
@@ -13,11 +17,32 @@ lychee.define('game.state.Game').requires([
 		normal:   attachments["normal.fnt"]
 	};
 
+	var _boo   = attachments["boo.snd"];
+	var _cheer = attachments["cheer.snd"];
+	var _music = attachments["music.msc"];
+	var _ping  = attachments["ping.snd"];
+	var _pong  = attachments["pong.snd"];
+
 
 
 	/*
 	 * HELPERS
 	 */
+
+	var _on_touch = function(id, position, delta) {
+
+		var renderer = this.renderer;
+		if (renderer !== null) {
+
+			position.y -= renderer.offset.y;
+			position.y -= renderer.height / 2;
+
+		}
+
+
+		this.__player.target.y = position.y;
+
+	};
 
 	var _reset_game = function(winner) {
 
@@ -48,6 +73,13 @@ lychee.define('game.state.Game').requires([
 			ball.setPosition(position);
 			ball.setVelocity(velocity);
 
+		}
+
+
+		if (winner === 'player') {
+			this.jukebox.play(_cheer);
+		} else if (winner === 'enemy') {
+			this.jukebox.play(_boo);
 		}
 
 
@@ -90,12 +122,60 @@ lychee.define('game.state.Game').requires([
 
 
 		this.deserialize(_blob);
-		this.reshape();
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
+
+		var viewport = this.viewport;
+		if (viewport !== null) {
+
+			viewport.bind('reshape', function(orientation, rotation) {
+
+				var renderer = this.renderer;
+				if (renderer !== null) {
+
+					var entity = null;
+					var width  = renderer.width;
+					var height = renderer.height;
+
+
+					this.getLayer('ui').reshape();
+					this.getLayer('game').reshape();
+
+
+					entity = this.queryLayer('background', 'background');
+					entity.width  = width;
+					entity.height = height;
+
+					entity = this.queryLayer('ui', 'score');
+					entity.setPosition({
+						x: 0,
+						y: -1/2 * height + 42
+					});
+
+					entity = this.queryLayer('game', 'player');
+					entity.setPosition({ x: -1/2 * width + 42 });
+
+					entity = this.queryLayer('game', 'enemy');
+					entity.setPosition({ x:  1/2 * width - 42 });
+
+				}
+
+			}, this);
+
+		}
 
 	};
 
 
 	Class.prototype = {
+
+		/*
+		 * STATE API
+		 */
 
 		serialize: function() {
 
@@ -113,41 +193,6 @@ lychee.define('game.state.Game').requires([
 
 		},
 
-		reshape: function(orientation, rotation) {
-
-			lychee.game.State.prototype.reshape.call(this, orientation, rotation);
-
-
-			var entity = null;
-
-
-			var renderer = this.renderer;
-			if (renderer !== null) {
-
-				var width  = renderer.width;
-				var height = renderer.height;
-
-
-				this.getLayer('ui').reshape();
-				this.getLayer('game').reshape();
-
-
-				entity = this.queryLayer('ui', 'score');
-				entity.setPosition({
-					x: 0,
-					y: -1/2 * height + 42
-				});
-
-				entity = this.queryLayer('game', 'player');
-				entity.setPosition({ x: -1/2 * width + 20 });
-
-				entity = this.queryLayer('game', 'enemy');
-				entity.setPosition({ x:  1/2 * width - 40 });
-
-			}
-
-		},
-
 		enter: function() {
 
 			this.__score.enemy  = 0;
@@ -160,11 +205,40 @@ lychee.define('game.state.Game').requires([
 
 			lychee.game.State.prototype.enter.call(this);
 
+
+
+			// Allow AI playing while welcome dialog is visible
+
+			var welcome = this.queryLayer('ui', 'welcome');
+			if (welcome !== null) {
+
+				welcome.setVisible(true);
+				welcome.bind('#touch', function(entity) {
+
+					this.__score.enemy  = 0;
+					this.__score.player = 0;
+					this.__ai.target.y  = 0;
+
+					_reset_game.call(this, null);
+
+					entity.setVisible(false);
+
+					this.input.bind('touch', _on_touch, this);
+
+				}, this, true);
+
+			}
+
+
+			this.jukebox.play(_music);
+
 		},
 
 		leave: function() {
 
 			lychee.game.State.prototype.leave.call(this);
+
+			this.input.unbind('touch', _on_touch, this);
 
 		},
 
@@ -173,13 +247,17 @@ lychee.define('game.state.Game').requires([
 			lychee.game.State.prototype.update.call(this, clock, delta);
 
 
-			var ball   = this.queryLayer('game', 'ball');
-			var player = this.queryLayer('game', 'player');
-			var enemy  = this.queryLayer('game', 'enemy');
+			var jukebox    = this.jukebox;
+			var renderer   = this.renderer;
+			var background = this.queryLayer('background', 'background');
+			var gamelayer  = this.getLayer('game');
+			var uilayer    = this.getLayer('ui');
 
-			var hwidth  = this.renderer.width / 2;
-			var hheight = this.renderer.height / 2;
-
+			var ball     = this.queryLayer('game', 'ball');
+			var player   = this.queryLayer('game', 'player');
+			var enemy    = this.queryLayer('game', 'enemy');
+			var hwidth   = renderer.width / 2;
+			var hheight  = renderer.height / 2;
 			var position = ball.position;
 			var velocity = ball.velocity;
 
@@ -216,11 +294,67 @@ lychee.define('game.state.Game').requires([
 			 */
 
 			if (ball.collidesWith(player) === true) {
-				velocity.x = Math.abs(velocity.x);
-			}
 
-			if (ball.collidesWith(enemy) === true) {
+				position.x = player.position.x + 24;
+				velocity.x = Math.abs(velocity.x);
+				jukebox.play(_ping);
+
+				gamelayer.addEffect(new lychee.effect.Shake({
+					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+					duration: 300,
+					shake:    {
+						x: (Math.random() * 16) | 0,
+						y: (Math.random() * 16) | 0
+					}
+				}));
+
+				uilayer.addEffect(new lychee.effect.Shake({
+					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+					duration: 300,
+					shake:    {
+						x: (Math.random() * 16) | 0,
+						y: (Math.random() * 16) | 0
+					}
+				}));
+
+				background.setColor('#14a5e2');
+				background.addEffect(new lychee.effect.Color({
+					type:     lychee.effect.Color.TYPE.linear,
+					duration: 1000,
+					color:    '#050a0d'
+				}));
+
+			} else if (ball.collidesWith(enemy) === true) {
+
+				position.x = enemy.position.x - 24;
 				velocity.x = -1 * Math.abs(velocity.x);
+				jukebox.play(_pong);
+
+				gamelayer.addEffect(new lychee.effect.Shake({
+					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+					duration: 300,
+					shake:    {
+						x: (Math.random() * 16) | 0,
+						y: (Math.random() * 16) | 0
+					}
+				}));
+
+				uilayer.addEffect(new lychee.effect.Shake({
+					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+					duration: 300,
+					shake:    {
+						x: (Math.random() * 16) | 0,
+						y: (Math.random() * 16) | 0
+					}
+				}));
+
+				background.setColor('#de1010');
+				background.addEffect(new lychee.effect.Color({
+					type:     lychee.effect.Color.TYPE.easeout,
+					duration: 1000,
+					color:    '#050a0d'
+				}));
+
 			}
 
 
@@ -286,21 +420,6 @@ lychee.define('game.state.Game').requires([
 				}
 
 			}
-
-		},
-
-		processTouch: function(id, position, delta) {
-
-			var renderer = this.renderer;
-			if (renderer !== null) {
-
-				position.y -= renderer.offset.y;
-				position.y -= renderer.height / 2;
-
-			}
-
-
-			this.__player.target.y = position.y;
 
 		}
 

@@ -123,7 +123,7 @@ lychee.define('lychee.ui.Select').includes([
 			data['constructor'] = 'lyche.ui.Select';
 
 			var settings = data['arguments'][0];
-			var blob     = data['blob'] = (data['blob'] || {});
+			var blob     = (data['blob'] || {});
 
 
 			if (this.options.length !== 0) settings.options = [].slice.call(this.options, 0);
@@ -131,6 +131,9 @@ lychee.define('lychee.ui.Select').includes([
 
 
 			if (this.font !== null) blob.font = lychee.serialize(this.font);
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;
@@ -399,15 +402,14 @@ lychee.define('lychee.ui.Select').includes([
 
 		setOptions: function(options) {
 
-			if (options instanceof Array) {
+			options = options instanceof Array ? options : null;
 
-				var filtered = [];
 
-				for (var o = 0, ol = options.length; o < ol; o++) {
-					filtered.push(options[o] + '');
-				}
+			if (options !== null) {
 
-				this.options = filtered;
+				this.options = options.map(function(option) {
+					return '' + option;
+				});
 
 				return true;
 

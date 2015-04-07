@@ -2,12 +2,12 @@
 	"name":        "lycheejs",
 	"homepage":    "http://lycheejs.org",
 	"license":     "MIT",
-	"version":     "0.8.4",
-	"description": "Free HTML5 + native OpenGL Game Engine for Embedded, Console, Mobile, Server and Desktop",
+	"version":     "0.8.5",
+	"description": "Next-Gen Isomorphic Peer-to-Peer Application Engine for Embedded, Console, Mobile, Server and Desktop",
 
 	"keywords": [
 		"lycheejs",
-		"game",
+		"application",
 		"engine",
 		"nodejs",
 		"webgl",
@@ -26,18 +26,21 @@
 
 	"scripts": {
 
-		"postinstall":         "nodejs ./tool/configure.js",
-		"start":               "nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\"",
-		"stop":                "nodejs ./tool/Sorbet.js stop --pid=\"*\"",
+		"postinstall": "./bin/configure.sh",
 
-		"localhost":           "nohup nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/localhost.json\" >> ./sorbet.log &",
-		"lycheejs.org":        "nohup nodejs ./tool/Sorbet.js start --profile=\"./sorbet/profile/lycheejs.org.json\" >> ./sorbet.log &"
+		"start":       "./bin/sorbet.sh start development",
+		"stop":        "./bin/sorbet.sh stop",
+
+		"development": "./bin/sorbet.sh start development",
+		"production":  "./bin/sorbet.sh start production"
 
 	},
 
 	"bin": {
-		"fertilizer": "./tool/Fertilizer.js",
-		"sorbet":     "./tool/Sorbet.js"
+
+		"fertilizer": "./bin/fertilizer.sh",
+		"sorbet":     "./bin/sorbet.sh"
+
 	},
 
 	"author": {

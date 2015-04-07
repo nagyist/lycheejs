@@ -94,23 +94,37 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 
 	var Module = {
 
-		/*
-		 * CUSTOM API
-		 */
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			return {
+				'reference': 'lychee.Debugger',
+				'blob':      null
+			};
+
+		},
 
 		expose: function(environment) {
+
+			environment = environment instanceof lychee.Environment ? environment : null;
+
 
 			_bootstrap_environment();
 
 
-			var project = environment instanceof lychee.Environment ? environment.id : null;
-			if (project !== null) {
+			if (environment !== null) {
 
-				if (lychee.diff(environment.global, _environment.global) === true) {
+				var project = environment.id;
+				if (project !== null) {
 
-					var diff = _diff_environment(environment);
-					if (diff !== null) {
-						return diff;
+					if (lychee.diff(environment.global, _environment.global) === true) {
+
+						var diff = _diff_environment(environment);
+						if (diff !== null) {
+							return diff;
+						}
+
 					}
 
 				}
@@ -183,5 +197,5 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 
 	return Module;
 
-})(typeof global !== 'undefined' ? global : this);
+})(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));
 

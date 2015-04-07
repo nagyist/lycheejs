@@ -1,5 +1,6 @@
 
 lychee.define('lychee.net.Tunnel').requires([
+	'lychee.data.BENCODE',
 	'lychee.data.BitON',
 	'lychee.data.JSON',
 	'lychee.net.Service'
@@ -110,13 +111,13 @@ lychee.define('lychee.net.Tunnel').requires([
 		var settings = lychee.extend({}, data);
 
 
-		this.port        = 1337;
-		this.host        = 'localhost';
-		this.binary      = false;
-		this.reconnect   = 0;
+		this.codec     = lychee.interfaceof(_JSON, settings.codec) ? settings.codec : _JSON;
+		this.port      = 1337;
+		this.host      = 'localhost';
+		this.binary    = false;
+		this.reconnect = 0;
 
 
-		this.__codec     = lychee.interfaceof(_JSON, settings.codec) ? settings.codec : _JSON;
 		this.__services  = {
 			waiting: [],
 			active:  []
@@ -187,8 +188,12 @@ lychee.define('lychee.net.Tunnel').requires([
 
 		deserialize: function(blob) {
 
-			if (blob.codec instanceof Object) {
-				this.__codec = lychee.deserialize(blob.codec);
+			if (blob.services instanceof Array) {
+
+				for (var s = 0, sl = blob.services.length; s < sl; s++) {
+					this.addService(lychee.deserialize(blob.services[s]));
+				}
+
 			}
 
 		},
@@ -202,17 +207,25 @@ lychee.define('lychee.net.Tunnel').requires([
 			var blob     = data['blob'] = (data['blob'] || {});
 
 
-			if (this.binary !== false) settings.binary    = this.binary;
-			if (this.reconnect !== 0)  settings.reconnect = this.reconnect;
-
-
-			if (this.__codec !== _JSON) {
-				blob.codec = lychee.serialize(this.__codec);
-			}
+			if (this.codec !== _JSON)      settings.codec     = lychee.serialize(this.codec);
+			if (this.host !== 'localhost') settings.host      = this.host;
+			if (this.port !== 1337)        settings.port      = this.port;
+			if (this.binary !== false)     settings.binary    = this.binary;
+			if (this.reconnect !== 0)      settings.reconnect = this.reconnect;
 
 
 			if (this.__services.active.length > 0) {
-				// TODO: Serialize active services to data['blob']
+
+				blob.services = [];
+
+				for (var a = 0, al = this.__services.active.length; a < al; a++) {
+
+					var service = this.__services.active[a];
+
+					blob.services.push(lychee.serialize(service));
+
+				}
+
 			}
 
 
@@ -250,7 +263,7 @@ lychee.define('lychee.net.Tunnel').requires([
 			}
 
 
-			var blob = this.__codec.encode(data);
+			var blob = this.codec.encode(data);
 			if (blob !== null) {
 
 				if (this.binary === true) {
@@ -288,7 +301,7 @@ lychee.define('lychee.net.Tunnel').requires([
 			}
 
 
-			var data = this.__codec.decode(blob);
+			var data = this.codec.decode(blob);
 			if (data instanceof Object && typeof data._serviceId === 'string') {
 
 				var service = this.getService(data._serviceId);

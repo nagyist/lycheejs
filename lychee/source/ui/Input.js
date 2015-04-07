@@ -207,7 +207,7 @@ lychee.define('lychee.ui.Input').includes([
 			data['constructor'] = 'lyche.ui.Input';
 
 			var settings = data['arguments'][0];
-			var blob     = data['blob'] = (data['blob'] || {});
+			var blob     = (data['blob'] || {});
 
 
 			if (this.max !== Infinity)         settings.max   = this.max;
@@ -217,6 +217,9 @@ lychee.define('lychee.ui.Input').includes([
 
 
 			if (this.font !== null) blob.font = lychee.serialize(this.font);
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

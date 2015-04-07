@@ -2,8 +2,8 @@
 lychee.define('lychee.net.Client').tags({
 	platform: 'html'
 }).requires([
-	'lychee.data.BitON',
-	'lychee.data.JSON'
+	'lychee.net.protocol.HTTP',
+	'lychee.net.protocol.WS'
 ]).includes([
 	'lychee.net.Tunnel'
 ]).supports(function(lychee, global) {
@@ -16,11 +16,6 @@ lychee.define('lychee.net.Client').tags({
 	return false;
 
 }).exports(function(lychee, global, attachments) {
-
-	var _BitON = lychee.data.BitON;
-	var _JSON  = lychee.data.JSON;
-
-
 
 	/*
 	 * IMPLEMENTATION
@@ -133,6 +128,10 @@ lychee.define('lychee.net.Client').tags({
 		disconnect: function() {
 
 			if (this.__isConnected === true) {
+
+				if (lychee.debug === true) {
+					console.log('lychee.net.Client: Disconnected from ' + this.host + ':' + this.port);
+				}
 
 				if (this.__socket !== null) {
 					this.__socket.close();

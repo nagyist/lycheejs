@@ -245,8 +245,8 @@ lychee.define('lychee.game.Loop').includes([
 		this.__intervals = {};
 
 		this.__pause       = 0;
-		this.__state       = 1;
 		this.__start       = Date.now();
+		this.__state       = 1;
 		this.__renderclock = 0;
 		this.__renderdelay = 1000 / this.update;
 		this.__updateclock = 0;
@@ -272,15 +272,94 @@ lychee.define('lychee.game.Loop').includes([
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
+		deserialize: function(blob) {
+
+			if (typeof blob.state === 'number') {
+
+				this.__state = blob.state;
+				this.__pause = blob.pause;
+
+			}
+
+			if (typeof blob.updateclock === 'number') this.__updateclock = blob.updateclock;
+			if (typeof blob.renderclock === 'number') this.__renderclock = blob.renderclock;
+
+
+			if (blob.timeouts instanceof Array) {
+				// TODO: deserialize timeouts
+			}
+
+			if (blob.intervals instanceof Array) {
+				// TODO: deserialize intervals
+			}
+
+		},
 
 		serialize: function() {
 
+			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.game.Loop';
+
+
 			var settings = {};
+			var blob     = (data['blob'] || {});
 
 
 			if (this.update !== 40) settings.update = this.update;
 			if (this.render !== 40) settings.render = this.render;
+
+
+			if (Object.keys(this.__timeouts).length > 0) {
+
+				blob.timeouts = [];
+
+				for (var tid in this.__timeouts) {
+
+					var timeout = this.__timeouts[tid];
+
+					blob.timeouts.push({
+						delta:    timeout.clock - this.__updateclock,
+						callback: lychee.serialize(timeout.callback),
+						// scope:    lychee.serialize(timeout.scope)
+						scope:    null
+					});
+
+				}
+
+			}
+
+
+			if (Object.keys(this.__intervals).length > 0) {
+
+				blob.intervals = [];
+
+				for (var iid in this.__intervals) {
+
+					var interval = this.__intervals[iid];
+
+					blob.intervals.push({
+						clock:    interval.clock - this.__updateclock,
+						delta:    interval.delta,
+						step:     interval.step,
+						callback: lychee.serialize(interval.callback),
+						// scope:    lychee.serialize(interval.scope)
+						scope:    null
+					});
+
+				}
+
+			}
+
+
+			if (this.__state !== 1) {
+
+				blob.pause = this.__pause;
+				blob.state = this.__state;
+
+			}
+
+			blob.updateclock = this.__updateclock;
+			blob.renderclock = this.__renderclock;
 
 
 			return {
