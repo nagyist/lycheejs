@@ -1,9 +1,11 @@
 
 ={constructor}
 
-# new lychee.event.Queue(void);
+```javascript-constructor
+new lychee.event.Queue(void);
+```
 
-This constructor returns an instance of *lychee.event.Queue*.
+This constructor returns an instance of `lychee.event.Queue`.
 
 ```javascript
 var queue = new lychee.event.Queue();
@@ -37,7 +39,9 @@ queue.init();
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.event.Queue.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.event.Queue.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
@@ -57,11 +61,13 @@ foo2; // lychee.event.Queue instance
 
 ={methods-then}
 
-### (Boolean) lychee.event.Queue.prototype.then(data);
+```javascript-method
+(Boolean) lychee.event.Queue.prototype.then(data);
+```
 
-- *(Object) data* is an object that is passed to the update event.
+- `(Object) data` is an object that is passed to the update event.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to bind the data to the stack.
 
 ```javascript
@@ -88,11 +94,13 @@ queue.init();
 
 ={methods-init}
 
-### (Boolean) lychee.event.Queue.prototype.init(void);
+```javascript-method
+(Boolean) lychee.event.Queue.prototype.init(void);
+```
 
 - This method has no arguments.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to initialize the processing of the stack.
 
 ```javascript

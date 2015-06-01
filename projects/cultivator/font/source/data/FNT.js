@@ -553,29 +553,40 @@ lychee.define('tool.data.FNT').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {};
+	var Module = {
 
+		// deserialize: function(blob) {}
 
-	Module.encode = function(data) {
+		serialize: function() {
 
-		var buffer = new _Buffer('', _Buffer.MODE.write);
+			return {
+				'reference': 'tool.data.FNT',
+				'blob':      null
+			};
 
-		_encode(buffer, data);
+		},
 
-		return buffer.toString();
+		encode: function(data) {
 
-	};
+			var buffer = new _Buffer('', _Buffer.MODE.write);
 
+			_encode(buffer, data);
 
-	Module.decode = function(data) {
+			return buffer.toString();
 
-		var buffer = new _Buffer(data, _Buffer.MODE.read);
+		},
 
-		var value = _decode(buffer);
-		if (value === undefined) {
-			return null;
-		} else {
-			return value;
+		decode: function(data) {
+
+			var buffer = new _Buffer(data, _Buffer.MODE.read);
+
+			var value = _decode(buffer);
+			if (value === undefined) {
+				return null;
+			} else {
+				return value;
+			}
+
 		}
 
 	};

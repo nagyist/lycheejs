@@ -1,13 +1,15 @@
 
 ={constructor}
 
-# (null || Config || Font || Music || Sound || Texture || Stuff) new lychee.Asset(url [, type]);
+```javascript-constructor
+(null || Config || Font || Music || Sound || Texture || Stuff) new lychee.Asset(url [, type]);
+```
 
-- *(String) url* is the resource identifier of the asset.
-- *(String) type* is the type of the resource. Valid types
-are *json*, *fnt*, *msc*, *snd*, *png*.
+- `(String) url` is the resource identifier of the asset.
+- `(String) type` is the type of the resource. Valid types
+are `json`, `fnt`, `msc`, `snd`, `png`.
 
-This constructor returns an instance on success and *null* on failure.
+This constructor returns an instance on success and `null` on failure.
 It integrates the Assets of the [bootstrap](bootstrap) file with the core stack.
 
 ```javascript
@@ -26,9 +28,9 @@ Defaulted Asset type is [Stuff](bootstrap#constructor-Stuff).
 
 Other Supported Asset types are:
 
-- [Config](bootstrap#constructor-Config) (*json*)
-- [Font](bootstrap#constructor-Font) (*fnt*)
-- [Music](bootstrap#constructor-Music) (*msc*)
-- [Sound](bootstrap#constructor-Sound) (*snd*)
-- [Texture](bootstrap#constructor-Texture) (*png*)
+- [Config](bootstrap#constructor-Config) (`json`)
+- [Font](bootstrap#constructor-Font) (`fnt`)
+- [Music](bootstrap#constructor-Music) (`msc`)
+- [Sound](bootstrap#constructor-Sound) (`snd`)
+- [Texture](bootstrap#constructor-Texture) (`png`)
 

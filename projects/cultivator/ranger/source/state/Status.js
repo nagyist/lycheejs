@@ -148,7 +148,7 @@ lychee.define('tool.state.Status').includes([
 
 
 						if (project.filesystem !== null) {
-							project_actions.push('<a class="button ico-folder ico-only" href="lycheejs://file=' + project.filesystem + '"></a>');
+							project_actions.push('<a class="button ico-folder ico-only" href="lycheejs://file=' + project.identifier + '"></a>');
 						}
 
 

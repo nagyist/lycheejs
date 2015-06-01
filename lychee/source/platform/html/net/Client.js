@@ -3,7 +3,8 @@ lychee.define('lychee.net.Client').tags({
 	platform: 'html'
 }).requires([
 	'lychee.net.protocol.HTTP',
-	'lychee.net.protocol.WS'
+	'lychee.net.protocol.WS',
+	'lychee.net.client.Debugger'
 ]).includes([
 	'lychee.net.Tunnel'
 ]).supports(function(lychee, global) {
@@ -39,6 +40,15 @@ lychee.define('lychee.net.Client').tags({
 		/*
 		 * INITIALIZATION
 		 */
+
+		if (lychee.debug === true) {
+
+			this.bind('connect', function() {
+				this.addService(new lychee.net.client.Debugger(this));
+			}, this);
+
+		}
+
 
 		this.bind('connect', function() {
 			this.__isConnected = true;

@@ -1,27 +1,20 @@
 
 lychee.define('lychee.ui.Joystick').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
 
 	/*
 	 * HELPERS
 	 */
 
-	var _refresh_drag = function(x, y) {
+	var _refresh = function() {
 
-		var indexx = x / (this.width / 2);
-		var indexy = y / (this.height / 2);
-
-		var value = this.value;
-
-		value.x = indexx;
-		value.y = indexy;
+		var val = this.value;
+		var map = this.__cursor.map;
 
 
-		var result = this.setValue(value);
-		if (result === true) {
-			this.trigger('change', [ value ]);
-		}
+		map.x = (val.x / 2) * (this.width  - 44);
+		map.y = (val.y / 2) * (this.height - 44);
 
 	};
 
@@ -38,10 +31,20 @@ lychee.define('lychee.ui.Joystick').includes([
 
 		this.value = { x: 0, y: 0 };
 
-		this.__drag  = { x: 0, y: 0 };
+		this.__cursor = {
+			active:   false,
+			alpha:    0.0,
+			duration: 600,
+			start:    null,
+			pingpong: false,
+			map:      {
+				x: 0,
+				y: 0
+			}
+		};
 		this.__pulse = {
 			active:   false,
-			duration: 250,
+			duration: 300,
 			start:    null,
 			alpha:    0.0
 		};
@@ -66,15 +69,57 @@ lychee.define('lychee.ui.Joystick').includes([
 		 */
 
 		this.bind('touch', function(id, position, delta) {
-			_refresh_drag.call(this, position.x, position.y);
+
+			var val = { x: 0, y: 0 };
+			var qx  = Math.max(-0.5, Math.min(0.5, position.x / (this.width  - 44)));
+			var qy  = Math.max(-0.5, Math.min(0.5, position.y / (this.height - 44)));
+
+			val.x = qx * 2;
+			val.y = qy * 2;
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
+			}
+
 		}, this);
 
 		this.bind('swipe', function(id, state, position, delta, swipe) {
 
-			if (state === 'end') {
-				_refresh_drag.call(this, 0, 0);
-			} else {
-				_refresh_drag.call(this, position.x, position.y);
+			var val = { x: 0, y: 0 };
+			var qx  = Math.max(-0.5, Math.min(0.5, position.x / (this.width  - 44)));
+			var qy  = Math.max(-0.5, Math.min(0.5, position.y / (this.height - 44)));
+
+			val.x = qx * 2;
+			val.y = qy * 2;
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
+			}
+
+		}, this);
+
+		this.bind('key', function(key, name, delta) {
+
+			var val = { x: this.value.x, y: this.value.y };
+
+			if (key === 'arrow-left')  val.x = -1.0;
+			if (key === 'arrow-right') val.x =  1.0;
+			if (key === 'arrow-up')    val.y = -1.0;
+			if (key === 'arrow-down')  val.y =  1.0;
+
+			if (key === 'space') {
+				val.x = 0;
+				val.y = 0;
+			}
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
 			}
 
 		}, this);
@@ -107,9 +152,13 @@ lychee.define('lychee.ui.Joystick').includes([
 			data['constructor'] = 'lyche.ui.Joystick';
 
 			var settings = data['arguments'][0];
+			var blob     = (data['blob'] || {});
 
 
 			if (this.value !== 0) settings.value = this.value;
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;
@@ -127,10 +176,29 @@ lychee.define('lychee.ui.Joystick').includes([
 
 				var t = (clock - pulse.start) / pulse.duration;
 				if (t <= 1) {
-					pulse.alpha = (1 - t) * 0.6;
+					pulse.alpha = (1 - t);
 				} else {
 					pulse.alpha  = 0.0;
 					pulse.active = false;
+				}
+
+			}
+
+
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
+
+				if (cursor.start === null) {
+					cursor.start = clock;
+				}
+
+
+				var t = (clock - cursor.start) / cursor.duration;
+				if (t <= 1) {
+					cursor.alpha = cursor.pingpong === true ? (1 - t) : t;
+				} else {
+					cursor.start    = clock;
+					cursor.pingpong = !cursor.pingpong;
 				}
 
 			}
@@ -146,114 +214,78 @@ lychee.define('lychee.ui.Joystick').includes([
 
 
 			var position = this.position;
-
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-
-			var color  = this.state === 'active' ? '#33b5e5' : '#0099cc';
-			var color2 = this.state === 'active' ? '#0099cc' : '#575757';
-			var alpha  = this.state === 'active' ? 0.6       : 0.3;
+			var cursor   = this.__cursor;
+			var x        = position.x + offsetX;
+			var y        = position.y + offsetY;
+			var hwidth   = (this.width  - 2) / 2;
+			var hheight  = (this.height - 2) / 2;
 
 
-			var drag    = this.__drag;
-			var hwidth  = this.width / 2;
-			var hheight = this.height / 2;
-
-			var x1 = x - hwidth;
-			var y1 = y - hheight;
-			var x2 = x + hwidth;
-			var y2 = y + hheight;
+			var col = this.state === 'active' ? '#32afe5' : '#545857';
+			var map = cursor.map;
+			var cx  = x + map.x;
+			var cy  = y + map.y;
 
 
 			renderer.drawBox(
-				x1,
-				y1,
-				x2,
-				y2,
-				color2,
+				x - hwidth,
+				y - hheight,
+				x + hwidth,
+				y + hheight,
+				col,
 				false,
 				2
 			);
 
+			renderer.drawBox(
+				x - hwidth  + 9,
+				y - hheight + 9,
+				x + hwidth  - 9,
+				y + hheight - 9,
+				col,
+				false,
+				1
+			);
+
+			renderer.drawLine(
+				x - hwidth  + 10,
+				y,
+				x + hwidth  - 10,
+				y,
+				col,
+				false,
+				1
+			);
+
 			renderer.drawLine(
 				x,
-				y1,
+				y - hheight + 10,
 				x,
-				y2,
-				color2,
-				4
+				y + hheight - 10,
+				col,
+				false,
+				1
+			);
+
+			renderer.drawCircle(
+				cx,
+				cy,
+				11,
+				col,
+				false,
+				2
 			);
 
 
-			renderer.drawLine(
-				x1,
-				y,
-				x2,
-				y,
-				color2,
-				4
-			);
+			if (cursor.active === true) {
 
+				renderer.setAlpha(cursor.alpha);
 
-			renderer.drawTriangle(
-				x1,
-				y1 + 16,
-				x1,
-				y1,
-				x1 + 16,
-				y1,
-				color2,
-				true
-			);
-
-
-			renderer.drawTriangle(
-				x2 - 16,
-				y1,
-				x2,
-				y1,
-				x2,
-				y1 + 16,
-				color2,
-				true
-			);
-
-			renderer.drawTriangle(
-				x2,
-				y2 - 16,
-				x2,
-				y2,
-				x2 - 16,
-				y2,
-				color2,
-				true
-			);
-
-
-			renderer.drawTriangle(
-				x1 + 16,
-				y2,
-				x1,
-				y2,
-				x1,
-				y2 - 16,
-				color2,
-				true
-			);
-
-
-			var pulse = this.__pulse;
-			if (pulse.active === true) {
-
-				renderer.setAlpha(pulse.alpha);
-
-				renderer.drawBox(
-					x1,
-					y1,
-					x2,
-					y2,
-	   				color,
+				renderer.drawCircle(
+					cx,
+					cy,
+					12,
+					'#32afe5',
 					true
 				);
 
@@ -262,35 +294,23 @@ lychee.define('lychee.ui.Joystick').includes([
 			}
 
 
-			renderer.setAlpha(alpha);
+			var pulse = this.__pulse;
+			if (pulse.active === true) {
 
-			renderer.drawLine(
-				x,
-				y,
-				x + drag.x,
-				y + drag.y,
-				color,
-				4
-			);
+				renderer.setAlpha(pulse.alpha);
 
-			renderer.drawCircle(
-				x + drag.x,
-				y + drag.y,
-				14,
-				color,
-				true
-			);
+				renderer.drawBox(
+					x - hwidth,
+					y - hheight,
+					x + hwidth,
+					y + hheight,
+					'#32afe5',
+					true
+				);
 
-			renderer.setAlpha(1.0);
+				renderer.setAlpha(1.0);
 
-
-			renderer.drawCircle(
-				x + drag.x,
-				y + drag.y,
-				4,
-				color,
-				true
-			);
+			}
 
 		},
 
@@ -305,14 +325,22 @@ lychee.define('lychee.ui.Joystick').includes([
 			var result = lychee.ui.Entity.prototype.setState.call(this, id);
 			if (result === true) {
 
-				var pulse = this.__pulse;
+				var cursor = this.__cursor;
+				var pulse  = this.__pulse;
 
 
 				if (id === 'active') {
 
-					pulse.alpha  = 0.6;
-					pulse.start  = null;
-					pulse.active = true;
+					cursor.start  = null;
+					cursor.active = true;
+
+					pulse.alpha   = 1.0;
+					pulse.start   = null;
+					pulse.active  = true;
+
+				} else {
+
+					cursor.active = false;
 
 				}
 
@@ -347,12 +375,7 @@ lychee.define('lychee.ui.Joystick').includes([
 				this.value.y = val;
 
 
-				var hwidth  = this.width / 2;
-				var hheight = this.height / 2;
-
-				this.__drag.x = this.value.x * hwidth;
-				this.__drag.y = this.value.y * hheight;
-
+				_refresh.call(this);
 
 				return true;
 

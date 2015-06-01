@@ -1,7 +1,9 @@
 
 ={constructor}
 
-# lychee.Debugger;
+```javascript-constructor
+lychee.Debugger;
+```
 
 This implementation is a Module and has no constructor.
 
@@ -13,10 +15,10 @@ console.log(lychee.Debugger); // lychee.Debugger
 
 The Debugger offers an integration with a server-side
 [lychee.net.Service](lychee.net.Service) with
-the identifier *debugger*.
+the identifier `debugger`.
 
 For easier integration with the Sorbet Stack, you
-can simply include the *sorbet/build/<platform>/core.js*
+can simply include the `sorbet/build/<platform>/core.js`
 file and the Debugger will automatically report
 errors and bugs to the server.
 
@@ -24,11 +26,13 @@ errors and bugs to the server.
 
 ={methods-expose}
 
-### (Object || null) lychee.Debugger.expose(environment);
+```javascript-method
+(Object || null) lychee.Debugger.expose(environment);
+```
 
-- *(lychee.Environment) environment* is an instance of lychee.Environment.
+- `(lychee.Environment) environment` is an instance of lychee.Environment.
 
-This method determines the difference from the *global* scopes between
+This method determines the difference from the `global` scopes between
 the given environment and the default environment.
 
 It can be used to determine differences in runtime memory that are caused
@@ -53,12 +57,14 @@ env.init(function() {
 
 ={methods-report}
 
-### (Boolean) lychee.Debugger.report(environment, error [, definition]);
+```javascript-method
+(Boolean) lychee.Debugger.report(environment, error [, definition]);
+```
 
-- *(Function) callback* is a Function that returns the Definition.
+- `(Function) callback` is a Function that returns the Definition.
 Allowed return types are Callback, Class and Module
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 ```javascript
 var Bar = new lychee.Definition('foo.Bar').exports(function(lychee, foo, global, attachments) {

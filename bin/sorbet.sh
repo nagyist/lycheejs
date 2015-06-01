@@ -5,6 +5,7 @@ lowercase() {
 }
 
 OS=`lowercase \`uname\``;
+ARCH=`lowercase \`uname -m\``;
 
 LYCHEEJS_IOJS="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
@@ -14,21 +15,40 @@ SORBET_ERR="/var/log/sorbet.err";
 SORBET_USER=`whoami`;
 
 
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
+	ARCH="x86_64";
+fi;
+
+if [ "$ARCH" == "i386" -o "$ARCH" == "i686" -o "$ARCH" == "i686-64" ]; then
+	ARCH="x86";
+fi;
+
+if [ "$ARCH" == "armv7l" -o "$ARCH" == "armv8" ]; then
+	ARCH="arm";
+fi;
+
+
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/iojs";
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/iojs";
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
 
-elif [ "$OS" == "windowsnt" ]; then
+elif [ "$OS" == "windows_nt" ]; then
 
 	OS="windows";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/iojs.exe";
+	ARCH="x86"; # Well, fuck you, Microsoft
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
 
+fi;
+
+if [ ! -f $LYCHEEJS_IOJS ]; then
+	echo "Sorry, your computer is not supported. ($OS / $ARCH)";
+	exit 1;
 fi;
 
 

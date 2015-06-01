@@ -5,7 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="robots" content="noindex">
 
 	<!-- DESIGN -->
 	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
@@ -15,21 +16,17 @@
 	<script src="/lychee/build/html/core.js"></script>
 
 	<style>
-	#status article.hidden {
-		display: none;
-	}
-	#status table label.ico-online {
-		color: #32afe5;
-		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
-	}
-	#status div.wizard ul.select {
+	#bootup div.wizard ul.select {
 		width: auto;
 		margin: 0px 16px;
 	}
-	#status div.wizard article label {
+	#status article.hidden {
+		display: none;
+	}
+	#status table label.ico-online,
+	#remotes table label.ico-online {
 		color: #32afe5;
 		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
-		-webkit-animation: textpulse 2000ms infinite;
 	}
 	#profiles div.main ul.select {
 		width: auto;
@@ -37,7 +34,6 @@
 	}
 	#profiles table {
 		overflow: auto;
-		max-width: 512px;
 	}
 	#profiles table label.ico-okay {
 		color: #32afe5;
@@ -49,24 +45,19 @@
 <menu>
 	<b id="menu-toggle"></b>
 	<li class="ico-status active" onclick="ui.changeState('status');">Status</li>
+	<li class="ico-remotes" onclick="ui.changeState('remotes');">Remotes</li>
+	<li class="ico-console" onclick="ui.changeState('console');">Console</li>
 	<li class="ico-settings" onclick="ui.changeState('profiles');">Profiles</li>
-	<li class="ico-help" onclick="ui.changeState('help');">Help</li>
 </menu>
 <aside>
-	<button class="ico-exit" onclick="location.href='lycheejs://unboot=#';setTimeout(function(){ location.href='./index.html'; }, 0);">Shutdown</button>
+	<a class="button ico-exit" href="lycheejs://unboot=#" onclick="setTimeout(function() { location.href='./index.html'; }, 500);">Shutdown</a>
 </aside>
 
-<section id="status" class="active">
+<section id="bootup" class="active">
 
 	<div class="wizard">
 
-		<article id="status-connect" class="hidden">
-			<div>
-				<label class="ico-refresh">Connecting ...</label>
-			</div>
-		</article>
-
-		<article id="status-bootup" class="hidden">
+		<article class="hidden">
 			<h3>Boot lycheeJS</h3>
 			<p>
 				Select a Profile to boot lycheeJS Sorbet.<br>
@@ -79,12 +70,21 @@
 				</ul>
 			</div>
 			<p class="center">
-				<button class="ico-boot" onclick="setTimeout(function() { MAIN.init(); }, 1000); location.href='lycheejs://boot=' + ui.value('#status input');">Boot Sorbet</button>
+				<button class="ico-boot" onclick="MAIN.state.trigger('boot', [ ui.value('#bootup input') ]);return false;">Boot Sorbet</button>
 			</p>
 		</article>
 
 	</div>
 
+</section>
+
+<section id="remotes">
+
+	<div id="remotes-servers" class="wizard"></div>
+
+</section>
+
+<section id="status">
 </section>
 
 <section id="profiles">
@@ -153,10 +153,6 @@
 
 	</div>
 
-</section>
-
-<section id="help">
-Help (coming soon...)
 </section>
 
 <footer>

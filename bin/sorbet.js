@@ -6,12 +6,12 @@ var fs     = require('fs');
 var path   = require('path');
 
 
-if (fs.existsSync(root + '/lychee/build/nodejs/core.js') === false) {
+if (fs.existsSync(root + '/lychee/build/iojs/core.js') === false) {
 	require(root + '/lychee/configure.js');
 }
 
 
-var lychee = require(root + '/lychee/build/nodejs/core.js')(root);
+var lychee = require(root + '/lychee/build/iojs/core.js')(root);
 
 
 
@@ -199,7 +199,7 @@ var _settings = (function() {
 					new lychee.Package('sorbet', '/sorbet/lychee.pkg')
 				],
 				tags:     {
-					platform: [ 'nodejs' ]
+					platform: [ 'iojs' ]
 				}
 			}));
 

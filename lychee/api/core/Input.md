@@ -1,18 +1,20 @@
 
 ={constructor}
 
-# new lychee.Input(settings);
+```javascript-constructor
+new lychee.Input(settings);
+```
 
-- *settings* is an *Object*.
+- `settings` is an `Object`.
 
-This constructor returns an instance of *lychee.Input*.
-The *settings* object consists of the following properties:
+This constructor returns an instance of `lychee.Input`.
+The `settings` object consists of the following properties:
 
-- *(Number) delay* will be passed to [setDelay()](#methods-setDelay).
-- *(Boolean) key* will be passed to [setKey()](#methods-setKey).
-- *(Boolean) keymodifier* will be passed to [setKeyModifier()](#methods-setKeyModifier).
-- *(Boolean) touch* will be passed to [setTouch()](#methods-setTouch).
-- *(Boolean) swipe* will be passed to [setSwipe()](#methods-setSwipe).
+- `(Number) delay` will be passed to [setDelay()](#methods-setDelay).
+- `(Boolean) key` will be passed to [setKey()](#methods-setKey).
+- `(Boolean) keymodifier` will be passed to [setKeyModifier()](#methods-setKeyModifier).
+- `(Boolean) touch` will be passed to [setTouch()](#methods-setTouch).
+- `(Boolean) swipe` will be passed to [setSwipe()](#methods-setSwipe).
 
 ```javascript
 var input = new lychee.Input({
@@ -28,14 +30,16 @@ var input = new lychee.Input({
 
 ={events-name}
 
-### new lychee.Input().bind(name, function(delta) {}, scope);
+```javascript-event
+new lychee.Input().bind(name, function(delta) {}, scope);
+```
 
-The unique *name* event is fired on keyboard interaction.
+The unique `name` event is fired on keyboard interaction.
 
-- *(String) name* is the unique identifier of the key event itself.
+- `(String) name` is the unique identifier of the key event itself.
   It contains all modifiers in the following order if they are pressed.
-  The resulting event name is in the maximum case *ctrl-alt-shift-(key)*.
-- *(Number) delta* is the delta to the last event of the same type in milliseconds.
+  The resulting event name is in the maximum case `ctrl-alt-shift-(key)`.
+- `(Number) delta` is the delta to the last event of the same type in milliseconds.
 
 ```javascript
 var input = new lychee.Input({
@@ -56,16 +60,18 @@ input.bind('ctrl-shift-a', function(delta) {
 
 ={events-key}
 
-### new lychee.Input().bind('key', function(key, name, delta) {}, scope);
+```javascript-event
+new lychee.Input().bind('key', function(key, name, delta) {}, scope);
+```
 
-The *key* event is fired on keyboard interaction.
-It is fired right before the corresponding *name* event is fired.
+The `key` event is fired on keyboard interaction.
+It is fired right before the corresponding `name` event is fired.
 
-- *(String) key* is the mapped key as a UTF8 character.
-- *(String) name* is the unique identifier of the key event itself.
+- `(String) key` is the mapped key as a UTF8 character.
+- `(String) name` is the unique identifier of the key event itself.
   It contains all modifiers in the following order if they are pressed.
-  The resulting event name is in the maximum case *ctrl-alt-shift-(key)*.
-- *(Number) delta* is the delta to the last event of the same type in milliseconds.
+  The resulting event name is in the maximum case `ctrl-alt-shift-(key)`.
+- `(Number) delta` is the delta to the last event of the same type in milliseconds.
 
 ```javascript
 var input = new lychee.Input({
@@ -88,16 +94,18 @@ input.bind('key', function(key, name, delta) {
 
 ={events-touch}
 
-### new lychee.Input().bind('touch', function(id, position, delta) {}, scope);
+```javascript-event
+new lychee.Input().bind('touch', function(id, position, delta) {}, scope);
+```
 
-The *touch* event is fired on mouse or touchscreen interaction.
+The `touch` event is fired on mouse or touchscreen interaction.
 
-- *(Number) id* is the finger that is used for the touch.
-  On missing multi-touch support, it is defaulted with *0*.
-- *(Object) position* is the absolute position of the touch.
+- `(Number) id` is the finger that is used for the touch.
+  On missing multi-touch support, it is defaulted with `0`.
+- `(Object) position` is the absolute position of the touch.
   It consists of the following properties:
-  *(Number) x*, *(Number) y*, *(Number) z*.
-- *(Number) delta* is the delta to the last event of the same type in milliseconds.
+  `(Number) x`, `(Number) y`, `(Number) z`.
+- `(Number) delta` is the delta to the last event of the same type in milliseconds.
 
 ```javascript
 var input = new lychee.Input({
@@ -113,25 +121,27 @@ input.bind('touch', function(id, position, delta) {
 
 ={events-swipe}
 
-### new lychee.Input().bind('swipe', function(id, state, position, delta, swipe) {}, scope);
+```javascript-event
+new lychee.Input().bind('swipe', function(id, state, position, delta, swipe) {}, scope);
+```
 
-The *swipe* event is fired on mouse or touchscreen interaction.
+The `swipe` event is fired on mouse or touchscreen interaction.
 
-- *(Number) id* is the finger that is used for the touch.
-  On missing multi-touch support, it is defaulted with *0*.
-- *(String) state* is the touch interaction state.
+- `(Number) id` is the finger that is used for the touch.
+  On missing multi-touch support, it is defaulted with `0`.
+- `(String) state` is the touch interaction state.
   It consists either of the following values:
-  *'start'*, *'move'*, *'end'*.
-- *(Object) position* is the absolute position of the touch.
+  `'start'`, `'move'`, `'end'`.
+- `(Object) position` is the absolute position of the touch.
   It consists of the following properties:
-  *(Number) x*, *(Number) y*, *(Number) z*.
-- *(Number) delta* is the delta to the last event of the same type in milliseconds.
-- *(Object) swipe* is the position delta from the beginning of the *swipe* event.
+  `(Number) x`, `(Number) y`, `(Number) z`.
+- `(Number) delta` is the delta to the last event of the same type in milliseconds.
+- `(Object) swipe` is the position delta from the beginning of the `swipe` event.
   It consists of the following properties:
-  *(Number) x*, *(Number) y*, *(Number) z*.
+  `(Number) x`, `(Number) y`, `(Number) z`.
 
-The *swipe* event allows implementations of drag and drop behaviours and is
-therefore available to track the movement and acceleration of *touch* events.
+The `swipe` event allows implementations of drag and drop behaviours and is
+therefore available to track the movement and acceleration of `touch` events.
 
 ```javascript
 var input = new lychee.Input({
@@ -159,14 +169,16 @@ input.bind('swipe', function(id, state, position, delta, swipe) {
 
 ={properties-delay}
 
-### (Number) new lychee.Input().delay;
+```javascript-property
+(Number) new lychee.Input().delay;
+```
 
-The *(Number) delay* property is the delay in milliseconds after
+The `(Number) delay` property is the delay in milliseconds after
 which an event is fired.
 
-It influences all events, meaning that a *touch* event can delay a *key* event.
+It influences all events, meaning that a `touch` event can delay a `key` event.
 
-It is set via *settings.delay* in the [constructor](#constructor)
+It is set via `settings.delay` in the [constructor](#constructor)
 or via [setDelay()](#methods-setDelay).
 
 ```javascript
@@ -190,14 +202,16 @@ input.bind('touch', function() {
 
 ={properties-key}
 
-### (Boolean) new lychee.Input().key;
+```javascript-property
+(Boolean) new lychee.Input().key;
+```
 
-The *(Boolean) key* property is the state whether the instance is
+The `(Boolean) key` property is the state whether the instance is
 firing the [key event](#events-key).
 
-It influences the *key* event and the *name* event.
+It influences the `key` event and the `name` event.
 
-It is set via *settings.key* in the [constructor](#constructor)
+It is set via `settings.key` in the [constructor](#constructor)
 or via [setKey()](#methods-setKey).
 
 ```javascript
@@ -217,14 +231,16 @@ input.bind('key', function() {
 
 ={properties-keymodifier}
 
-### (Boolean) new lychee.Input().keymodifier;
+```javascript-property
+(Boolean) new lychee.Input().keymodifier;
+```
 
-The *(Boolean) keymodifier* property is the state whether the instance is
+The `(Boolean) keymodifier` property is the state whether the instance is
 firing the [name event](#events-name).
 
-It influences the *name* event.
+It influences the `name` event.
 
-It is set via *settings.keymodifier* in the [constructor](#constructor)
+It is set via `settings.keymodifier` in the [constructor](#constructor)
 or via [setKeyModifier()](#methods-setKeyModifier).
 
 ```javascript
@@ -251,14 +267,16 @@ input.bind('ctrl-s', function() {
 
 ={properties-touch}
 
-### (Boolean) new lychee.Input().touch;
+```javascript-property
+(Boolean) new lychee.Input().touch;
+```
 
-The *(Boolean) touch* property is the state whether the instance is
+The `(Boolean) touch` property is the state whether the instance is
 firing the [touch event](#events-touch).
 
-It influences the *touch* event and the *swipe* event.
+It influences the `touch` event and the `swipe` event.
 
-It is set via *settings.touch* in the [constructor](#constructor)
+It is set via `settings.touch` in the [constructor](#constructor)
 or via [setTouch()](#methods-setTouch).
 
 ```javascript
@@ -278,14 +296,16 @@ input.bind('touch', function() {
 
 ={properties-swipe}
 
-### (Boolean) new lychee.Input().swipe;
+```javascript-property
+(Boolean) new lychee.Input().swipe;
+```
 
-The *(Boolean) swipe* property is the state whether the instance is
+The `(Boolean) swipe` property is the state whether the instance is
 firing the [swipe event](#events-swipe).
 
-It influences the *swipe* event.
+It influences the `swipe` event.
 
-It is set via *settings.swipe* in the [constructor](#constructor)
+It is set via `settings.swipe` in the [constructor](#constructor)
 or via [setSwipe()](#methods-setSwipe).
 
 ```javascript
@@ -306,18 +326,22 @@ input.bind('swipe', function() {
 
 ={methods-destroy}
 
-### (Boolean) lychee.Viewport.prototype.destroy(void);
+```javascript-method
+(Boolean) lychee.Viewport.prototype.destroy(void);
+```
 
 - This method has no arguments.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will destroy the instance from any interaction bindings.
 
 
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.Input.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.Input.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
@@ -337,13 +361,15 @@ foo2; // lychee.Input instance
 
 ={methods-setDelay}
 
-### (Boolean) lychee.Input.prototype.setDelay(delay);
+```javascript-method
+(Boolean) lychee.Input.prototype.setDelay(delay);
+```
 
-- *(Number) delay* is the delay in milliseconds.
-  If set to a value bigger than *0*, the instance will wait the
+- `(Number) delay` is the delay in milliseconds.
+  If set to a value bigger than `0`, the instance will wait the
   amount of milliseconds until a new event of any kind is fired.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [delay property](#properties-delay) of the instance.
 
 ```javascript
@@ -364,11 +390,13 @@ input.bind('key', function(key, name, delta) {
 
 ={methods-setKey}
 
-### (Boolean) lychee.Input.prototype.setKey(key);
+```javascript-method
+(Boolean) lychee.Input.prototype.setKey(key);
+```
 
-- *(Boolean) key* is a flag. If set to *true*, the [key event](#events-key) is fired.
+- `(Boolean) key` is a flag. If set to `true`, the [key event](#events-key) is fired.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [key property](#properties-key) of the instance.
 
 ```javascript
@@ -387,11 +415,13 @@ input.bind('key', function() {
 
 ={methods-setKeyModifier}
 
-### (Boolean) lychee.Input.prototype.setKeyModifier(keymodifier);
+```javascript-method
+(Boolean) lychee.Input.prototype.setKeyModifier(keymodifier);
+```
 
-- *(Boolean) keymodifier* is a flag. If set to *true*, the [name event](#events-name) is fired.
+- `(Boolean) keymodifier` is a flag. If set to `true`, the [name event](#events-name) is fired.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [keymodifier property](#properties-keymodifier) of the instance.
 
 ```javascript
@@ -412,11 +442,13 @@ input.bind('ctrl-a', function() {
 
 ={methods-setTouch}
 
-### (Boolean) lychee.Input.prototype.setTouch(touch);
+```javascript-method
+(Boolean) lychee.Input.prototype.setTouch(touch);
+```
 
-- *(Boolean) touch* is a flag. If set to *true*, the [touch event](#events-touch) is fired.
+- `(Boolean) touch` is a flag. If set to `true`, the [touch event](#events-touch) is fired.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [touch property](#properties-touch) of the instance.
 
 ```javascript
@@ -435,11 +467,13 @@ input.bind('touch', function() {
 
 ={methods-setSwipe}
 
-### (Boolean) lychee.Input.prototype.setSwipe(swipe);
+```javascript-method
+(Boolean) lychee.Input.prototype.setSwipe(swipe);
+```
 
-- *(Boolean) swipe* is a flag. If set to *true*, the [swipe event](#events-swipe) is fired.
+- `(Boolean) swipe` is a flag. If set to `true`, the [swipe event](#events-swipe) is fired.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [swipe property](#properties-swipe) of the instance.
 
 ```javascript

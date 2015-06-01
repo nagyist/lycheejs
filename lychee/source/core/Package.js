@@ -217,7 +217,7 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 			if (candidate !== undefined) {
 
 				var url            = _resolve_root.call(this) + '/' + candidate + '.js';
-				var implementation = new lychee.Asset(url);
+				var implementation = new lychee.Asset(url, null, false);
 				var attachments    = _resolve_attachments.call(this, candidate);
 
 				if (implementation !== null) {

@@ -1,0 +1,18 @@
+{
+	"build": {
+		"environments": {},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"Main": [
+				"js"
+			]
+		}
+	},
+	"api": {
+		"files": {}
+	}
+}

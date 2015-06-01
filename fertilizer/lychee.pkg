@@ -4,12 +4,12 @@
 
 		"environments": {
 
-			"nodejs/main": {
+			"iojs/main": {
 				"build":    "fertilizer.Main",
 				"debug":    false,
 				"sandbox":  false,
 				"packages": [ [ "fertilizer", "./lychee.pkg" ] ],
-				"tags":     { "platform": [ "nodejs" ] },
+				"tags":     { "platform": [ "iojs" ] },
 				"variant":  "application"
 			}
 
@@ -40,17 +40,22 @@
 
 			"template": {
 
-				"html-nwjs": {
-					"Application": [ "js", "png", "config.tpl", "index.tpl", "main.tpl" ],
-					"Library":     [ "js", "tpl" ]
-				},
-
 				"html": {
 					"Application": [ "js", "index.tpl", "main.tpl" ],
 					"Library":     [ "js", "tpl" ]
 				},
 
-				"nodejs": {
+				"html-nwjs": {
+					"Application": [ "js", "png", "config.tpl", "index.tpl", "main.tpl" ],
+					"Library":     [ "js", "tpl" ]
+				},
+
+				"html-webview": {
+					"Application": [ "js", "png", "index.tpl", "main.tpl" ],
+					"Library":     [ "js", "tpl" ]
+				},
+
+				"iojs": {
 					"Application": [ "js", "tpl" ],
 					"Library":     [ "js", "tpl" ]
 				}

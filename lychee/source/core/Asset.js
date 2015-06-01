@@ -37,10 +37,11 @@ lychee.Asset = typeof lychee.Asset !== 'undefined' ? lychee.Asset : (function(gl
 	 * IMPLEMENTATION
 	 */
 
-	var Callback = function(url, type) {
+	var Callback = function(url, type, ignore) {
 
-		url  = typeof url === 'string'  ? url  : null;
-		type = typeof type === 'string' ? type : null;
+		url    = typeof url === 'string'  ? url  : null;
+		type   = typeof type === 'string' ? type : null;
+		ignore = ignore === true;
 
 
 		if (url !== null) {
@@ -52,7 +53,7 @@ lychee.Asset = typeof lychee.Asset !== 'undefined' ? lychee.Asset : (function(gl
 
 			var construct = _resolve_constructor(type);
 			if (construct !== null) {
-				return new construct(url);
+				return new construct(url, ignore);
 			}
 
 		}

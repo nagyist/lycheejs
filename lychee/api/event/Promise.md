@@ -1,9 +1,11 @@
 
 ={constructor}
 
-# new lychee.event.Promise(void);
+```javascript-constructor
+new lychee.event.Promise(void);
+```
 
-This constructor returns an instance of *lychee.event.Promise*.
+This constructor returns an instance of `lychee.event.Promise`.
 
 ```javascript
 var promise = new lychee.event.Promise();
@@ -35,7 +37,9 @@ promise.init();
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.event.Promise.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.event.Promise.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
@@ -55,17 +59,19 @@ foo2; // lychee.event.Promise instance
 
 ={methods-then}
 
-### (Boolean) lychee.event.Promise.prototype.then(data, callback [, scope]);
+```javascript-method
+(Boolean) lychee.event.Promise.prototype.then(data, callback [, scope]);
+```
 
-- *(Object || null) data* is an object that is passed as the first argument to the callback.
-- *(Function) callback* is the callback that is executed when the stack is processed.
-- *(Object) scope* is the scope of the callback.
+- `(Object || null) data` is an object that is passed as the first argument to the callback.
+- `(Function) callback` is the callback that is executed when the stack is processed.
+- `(Object) scope` is the scope of the callback.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to bind the callback to the stack.
 
-If the *data* parameter is *null* and the *oncomplete(result)* from
-the previous step is an *Object*, the *result* parameter will be the
+If the `data` parameter is `null` and the `oncomplete(result)` from
+the previous step is an `Object`, the `result` parameter will be the
 first argument of the followingly executed callback.
 
 ```javascript
@@ -104,11 +110,13 @@ promise.init();
 
 ={methods-init}
 
-### (Boolean) lychee.event.Promise.prototype.init(void);
+```javascript-method
+(Boolean) lychee.event.Promise.prototype.init(void);
+```
 
 - This method has no arguments.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to initialize the processing of the stack.
 
 ```javascript

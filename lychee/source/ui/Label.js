@@ -1,15 +1,18 @@
 
 lychee.define('lychee.ui.Label').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
+
+	var _font = attachments["fnt"];
+
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
+		this.font  = _font;
 		this.label = null;
-		this.font  = null;
 
 
 		this.setFont(settings.font);

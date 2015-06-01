@@ -32,6 +32,8 @@ lychee.define('fertilizer.template.html.Library').includes([
 
 			if (env !== null && fs !== null) {
 
+				console.log('fertilizer: BUILD ' + env.id);
+
 				var blob  = _JSON.encode(env.serialize());
 				var info  = this.getInfo(true);
 				var index = _template.toString();

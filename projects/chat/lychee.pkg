@@ -1,0 +1,103 @@
+{
+	"build": {
+		"environments": {
+			"html-nwjs/main": {
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"game",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application"
+			},
+			"html/main": {
+				"build": "game.Main",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"game",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application"
+			},
+			"iojs/server": {
+				"build": "game.net.Server",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"game",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"iojs"
+					]
+				},
+				"variant": "application"
+			}
+		},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"net": {
+				"client": {},
+				"remote": {},
+				"Server": [
+					"js"
+				],
+				"Client": [
+					"js"
+				]
+			},
+			"state": {
+				"Chat": [
+					"js",
+					"json",
+					"join_empty.snd",
+					"join_full.snd",
+					"message.snd"
+				]
+			},
+			"ui": {
+				"Avatar": [
+					"js",
+					"png"
+				],
+				"Messages": [
+					"js",
+					"fnt"
+				]
+			},
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js"
+			]
+		}
+	},
+	"api": {
+		"files": {}
+	}
+}

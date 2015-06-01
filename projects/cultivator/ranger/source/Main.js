@@ -1,7 +1,10 @@
 
 lychee.define('tool.Main').requires([
 	'lychee.data.JSON',
+	'tool.state.Bootup',
+//	'tool.state.Console',
 	'tool.state.Profiles',
+	'tool.state.Remotes',
 	'tool.state.Status'
 ]).includes([
 	'lychee.game.Main'
@@ -44,6 +47,24 @@ lychee.define('tool.Main').requires([
 
 
 	/*
+	 * HELPERS
+	 */
+
+	var _load_api = function(callback, scope) {
+
+		var config = new Config('http://localhost:4848/api/Project?timestamp=' + Date.now());
+
+		config.onload = function(result) {
+			callback.call(scope, result);
+		};
+
+		config.load();
+
+	};
+
+
+
+	/*
 	 * IMPLEMENTATION
 	 */
 
@@ -78,48 +99,26 @@ lychee.define('tool.Main').requires([
 		 */
 
 		this.bind('load', function(oncomplete) {
-
-			var bootup  = document.querySelector('#status-bootup');
-			var connect = document.querySelector('#status-connect');
-
-			if (bootup !== null && connect !== null) {
-				bootup.className  = 'hidden';
-				connect.className = '';
-			}
-
-
-			var config = new Config('http://localhost:4848/api/Project?timestamp=' + Date.now());
-
-			config.onload = function(result) {
-
-				if (result === true) {
-
-					bootup.className  = 'hidden';
-					connect.className = 'hidden';
-
-					oncomplete(true);
-
-				} else {
-
-					connect.className = 'hidden';
-					bootup.className  = '';
-
-					oncomplete(true);
-
-				}
-
-			};
-
-			config.load();
-
+			oncomplete(true);
 		}, this, true);
 
 		this.bind('init', function() {
 
+			this.setState('bootup',   new tool.state.Bootup(this));
 			this.setState('profiles', new tool.state.Profiles(this));
+			this.setState('remotes',  new tool.state.Remotes(this));
 			this.setState('status',   new tool.state.Status(this));
 
-			this.changeState('status');
+
+			_load_api(function(result) {
+
+				if (result === true) {
+					ui.changeState('status');
+				} else {
+					ui.changeState('bootup');
+				}
+
+			}, this);
 
 		}, this, true);
 

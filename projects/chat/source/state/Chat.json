@@ -1,0 +1,102 @@
+{
+	"layers": {
+		"background": {
+			"constructor": "lychee.game.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.game.Background",
+					"arguments": [{
+						"color": "#404948"
+					}]
+				}],
+				"map": {
+					"background": 0
+				}
+			}
+		},
+		"ui": {
+			"constructor": "lychee.ui.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.game.Background",
+					"arguments": [{
+						"color": "#2f3736",
+						"width": 640,
+						"height": 192
+					}]
+				}, {
+					"constructor": "lychee.ui.Select",
+					"arguments": [{
+						"options": [ "#home", "#design", "#tech", "#help" ],
+						"value": "#home",
+						"width": 128,
+						"height": 32,
+						"position": {
+							"x": -224,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "lychee.ui.Textarea",
+					"arguments": [{
+						"width": 320,
+						"height": 128,
+						"position": {
+							"x": 0,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "game.ui.Avatar",
+					"arguments": [{
+						"position": {
+							"x": 256,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "lychee.ui.Button",
+					"arguments": [{
+						"label": "SEND",
+						"width": 64,
+						"height": 32,
+						"position": {
+							"x": 256,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "game.ui.Messages",
+					"arguments": [{
+						"width":  640,
+						"height": 480,
+						"position": {
+							"x": 0,
+							"y": 0
+						}
+					}]
+				}, {
+					"constructor": "lychee.ui.Slider",
+					"arguments": [{
+						"height": 480,
+						"type": 1,
+						"min": 0,
+						"max": 100,
+						"value": 100
+					}]
+				}],
+				"map": {
+					"background": 0,
+					"channel":    1,
+					"message":    2,
+					"avatar":     3,
+					"button":     4,
+					"messages":   5,
+					"slider":     6
+				}
+			}
+		}
+	}
+}

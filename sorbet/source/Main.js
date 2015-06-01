@@ -4,7 +4,6 @@ lychee.define('sorbet.Main').requires([
 	'lychee.data.JSON',
 	'sorbet.data.Host',
 	'sorbet.net.Server',
-//	'sorbet.mod.Fertilizer',
 	'sorbet.mod.Package',
 	'sorbet.mod.Server',
 	'sorbet.serve.API',
@@ -86,10 +85,16 @@ lychee.define('sorbet.Main').requires([
 
 	var _process_server = function(data, ready) {
 
-		var identifier = (data.headers['Host'] || '').split(':')[0];
+		var identifier = (data.headers.host || '');
+		if (identifier.match(/\[.*\]+/g)) {
+			identifier = identifier.match(/([0-9a-f\:]+)/g)[0];
+		} else if (identifier.indexOf(':')) {
+			identifier = identifier.split(':')[0];
+		}
+
+
 		var host       = this.hosts[identifier] || null;
 		var url        = data.headers.url || null;
-
 
 		if (identifier !== 'admin' && host !== null && url !== null) {
 
@@ -178,26 +183,34 @@ lychee.define('sorbet.Main').requires([
 	(function(projects) {
 
 		projects['lychee'] = new sorbet.data.Project('lychee', '/lychee');
+		projects['sorbet'] = new sorbet.data.Project('sorbet', '/sorbet');
 
 
-		var root_fs = new sorbet.data.Filesystem('/');
-		var ids     = root_fs.dir('/projects').filter(function(value) {
-			return value !== 'README.md';
+		var filesystem = new sorbet.data.Filesystem('/');
+
+		filesystem.dir('/projects').filter(function(value) {
+			return !value.match(/README\.md/);
+		}).forEach(function(id) {
+
+			var info1 = filesystem.info('/projects/' + id + '/index.html');
+			var info2 = filesystem.info('/projects/' + id + '/lychee.pkg');
+			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
+				projects[id] = new sorbet.data.Project(id, '/projects/' + id);
+			}
+
 		});
 
-		if (ids.length > 0) {
+		filesystem.dir('/projects/cultivator').filter(function(value) {
+			return !value.match(/index\.html|design/);
+		}).forEach(function(id) {
 
-			ids.forEach(function(id) {
+			var info1 = filesystem.info('/projects/cultivator/' + id + '/index.html');
+			var info2 = filesystem.info('/projects/cultivator/' + id + '/lychee.pkg');
+			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
+				projects['cultivator/' + id] = new sorbet.data.Project('cultivator/' + id, '/projects/cultivator/' + id);
+			}
 
-				var info1 = root_fs.info('/projects/' + id + '/index.html');
-				var info2 = root_fs.info('/projects/' + id + '/lychee.pkg');
-				if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
-					projects[id] = new sorbet.data.Project(id, '/projects/' + id);
-				}
-
-			});
-
-		}
+		});
 
 	})(_project_cache);
 
@@ -278,13 +291,13 @@ lychee.define('sorbet.Main').requires([
 
 				var connections = 0;
 
-				this.server.bind('connect', function() {
+				this.server.bind('connect', function(remote) {
 
 					connections++;
 
 				});
 
-				this.server.bind('disconnect', function() {
+				this.server.bind('disconnect', function(remote) {
 
 					connections--;
 
@@ -335,6 +348,24 @@ lychee.define('sorbet.Main').requires([
 			}
 
 		}.bind(this), 1000);
+
+
+		if (this.settings.server.port > 1024) {
+
+			setInterval(function() {
+
+				for (var id in _project_cache) {
+
+					var project = _project_cache[id];
+					if (sorbet.mod.Package.can(project) === true) {
+						sorbet.mod.Package.process(project);
+					}
+
+				}
+
+			}.bind(this), 10000);
+
+		}
 
 	};
 

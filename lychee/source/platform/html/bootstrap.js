@@ -7,55 +7,46 @@
 
 	var _load_asset = function(settings, callback, scope) {
 
-		var proto = settings.url.split(':')[0];
-		if (proto === 'file') {
+		var xhr = new XMLHttpRequest();
 
-			callback.call(scope, null);
-
-		} else {
-
-			var xhr = new XMLHttpRequest();
-
-			xhr.open('GET', settings.url, true);
+		xhr.open('GET', settings.url, true);
 
 
-			if (settings.headers instanceof Object) {
+		if (settings.headers instanceof Object) {
 
-				for (var header in settings.headers) {
-					xhr.setRequestHeader(header, settings.headers[header]);
-				}
-
+			for (var header in settings.headers) {
+				xhr.setRequestHeader(header, settings.headers[header]);
 			}
 
-
-			xhr.onload = function() {
-
-				try {
-					callback.call(scope, xhr.responseText || xhr.responseXML);
-				} catch(err) {
-					lychee.Debugger.report(lychee.environment, err, null);
-				} finally {
-					xhr = null;
-				}
-
-			};
-
-			xhr.onerror = xhr.ontimeout = function() {
-
-				try {
-					callback.call(scope, null);
-				} catch(err) {
-					lychee.Debugger.report(lychee.environment, err, null);
-				} finally {
-					xhr = null;
-				}
-
-			};
-
-
-			xhr.send(null);
-
 		}
+
+
+		xhr.onload = function() {
+
+			try {
+				callback.call(scope, xhr.responseText || xhr.responseXML);
+			} catch(err) {
+				lychee.Debugger.report(lychee.environment, err, null);
+			} finally {
+				xhr = null;
+			}
+
+		};
+
+		xhr.onerror = xhr.ontimeout = function() {
+
+			try {
+				callback.call(scope, null);
+			} catch(err) {
+				lychee.Debugger.report(lychee.environment, err, null);
+			} finally {
+				xhr = null;
+			}
+
+		};
+
+
+		xhr.send(null);
 
 	};
 
@@ -2028,11 +2019,45 @@
 	 * PRELOADER IMPLEMENTATION
 	 */
 
-	var Stuff = function(url) {
+	var _stuff_cache = {};
 
-		this.url    = url;
-		this.onload = null;
-		this.buffer = null;
+
+	var _clone_stuff = function(origin, clone) {
+
+		if (origin.buffer !== null) {
+
+			clone.buffer = origin.buffer;
+
+			clone.__load = false;
+
+		}
+
+	};
+
+
+	var Stuff = function(url, ignore) {
+
+		url    = typeof url === 'string' ? url : null;
+		ignore = ignore === true;
+
+
+		this.url      = url;
+		this.onload   = null;
+		this.buffer   = null;
+
+		this.__ignore = ignore;
+		this.__load   = true;
+
+
+		if (url !== null) {
+
+			if (_stuff_cache[url] !== undefined) {
+				_clone_stuff(_stuff_cache[url], this);
+			} else {
+				_stuff_cache[url] = this;
+			}
+
+		}
 
 	};
 
@@ -2059,14 +2084,21 @@
 
 		load: function() {
 
-			if (this.buffer !== null) {
+			if (this.__load === false) {
+
+				if (this.onload instanceof Function) {
+					this.onload(true);
+					this.onload = null;
+				}
+
 				return;
+
 			}
 
 
 			var that = this;
 			var type = this.url.split('/').pop().split('.').pop();
-			if (type === 'js') {
+			if (type === 'js' && this.__ignore === false) {
 
 				this.buffer            = document.createElement('script');
 				this.buffer.__filename = this.url;
@@ -2102,7 +2134,7 @@
 
 				document.body.appendChild(this.buffer);
 
-			} else if (type === 'css') {
+			} else if (type === 'css' && this.__ignore === false) {
 
 				this.buffer = document.createElement('link');
 				this.buffer.rel  = 'stylesheet';

@@ -1,12 +1,14 @@
 
 ={constructor}
 
-# new lychee.Package(id, url);
+```javascript-constructor
+new lychee.Package(id, url);
+```
 
-- *(String) id* is a unique identifier.
-- *(String) url* is the url to the *lychee.pkg* file.
+- `(String) id` is a unique identifier.
+- `(String) url` is the url to the `lychee.pkg` file.
 
-This constructor returns an instance of *lychee.Package*.
+This constructor returns an instance of `lychee.Package`.
 
 ```javascript
 // Package initialized as namespace 'lychee'
@@ -20,15 +22,17 @@ var pkg2 = new lychee.Package('myname', '/lychee/lychee.pkg');
 
 ={properties-id}
 
-### (String) new lychee.Package().id;
+```javascript-property
+(String) new lychee.Package().id;
+```
 
-The *(String) id* property is the unique identifier of
+The `(String) id` property is the unique identifier of
 the package.
 
 It influences into which namespace the Definitions are
 mapped after they were loaded.
 
-It is set via *id* in the [constructor](#constructor).
+It is set via `id` in the [constructor](#constructor).
 
 ```javascript
 var pkg = new lychee.Package('game', './lychee.pkg');
@@ -40,12 +44,14 @@ pkg.id; // 'game'
 
 ={properties-url}
 
-### (String || null) new lychee.Package().url;
+```javascript-property
+(String || null) new lychee.Package().url;
+```
 
-The *(String) url* property represents the location of
-the *lychee.pkg* file.
+The `(String) url` property represents the location of
+the `lychee.pkg` file.
 
-If the property is set to *null*, the *url* argument
+If the property is set to `null`, the `url` argument
 in the constructor had an invalid value.
 
 ```javascript
@@ -60,10 +66,14 @@ bar.url; // null
 
 ={properties-root}
 
-The *(String) root* property represents the folder
-of the *lychee.pkg* file.
+```javascript-property
+(String || null) new lychee.Package().root;
+```
 
-If the property is set to *null*, the *url* argument
+The `(String) root` property represents the folder
+of the `lychee.pkg` file.
+
+If the property is set to `null`, the `url` argument
 in the constructor had an invalid value.
 
 ```javascript
@@ -78,7 +88,9 @@ bar.root; // null
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.Package.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.Package.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
@@ -98,14 +110,16 @@ foo2; // lychee.Package instance
 
 ={methods-isReady}
 
-### (Boolean) lychee.Package.prototype.isReady(void);
+```javascript-method
+(Boolean) lychee.Package.prototype.isReady(void);
+```
 
-This method returns *true* if the instance is ready and *false*
+This method returns `true` if the instance is ready and `false`
 if the instance is not ready.
 
 Due to asynchronous loading behaviours, this method might give
-different results on otherwise identical systems. The *lychee.pkg*
-file is loaded and parsed. After this process is done, the *lychee.Package*
+different results on otherwise identical systems. The `lychee.pkg`
+file is loaded and parsed. After this process is done, the `lychee.Package`
 instance is marked as being ready.
 
 This method is not intended for public usage. It is called
@@ -115,12 +129,14 @@ by the [lychee.Environment](lychee.Environment) instance.
 
 ={methods-load}
 
-### (Boolean) lychee.Package.prototype.load(id, tags);
+```javascript-method
+(Boolean) lychee.Package.prototype.load(id, tags);
+```
 
-- *(String) id* is the unique identifier of a Definition.
-- *(Object) tags* is an object consisting of a key and an Array of values.
+- `(String) id` is the unique identifier of a Definition.
+- `(Object) tags` is an object consisting of a key and an Array of values.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to load a Definition that matches the given tags
 and is properly supporting the target environment.
 
@@ -131,12 +147,14 @@ by the [lychee.Environment](lychee.Environment) instance.
 
 ={methods-setEnvironment}
 
-### (Boolean) lychee.Package.prototype.setEnvironment(environment);
+```javascript-method
+(Boolean) lychee.Package.prototype.setEnvironment(environment);
+```
 
-- *(lychee.Environment) environment* is a
+- `(lychee.Environment) environment` is a
 [lychee.Environment](lychee.Environment) instance.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the [environment property](#properties-delay) of the instance.
 
 ```javascript
@@ -151,12 +169,14 @@ pkg.setEnvironment(env); // true
 
 ={methods-setType}
 
-### (Boolean) lychee.Package.prototype.setType(type);
+```javascript-method
+(Boolean) lychee.Package.prototype.setType(type);
+```
 
-- *(String) type* is a string that can have the following
-values: *source*, *export* or *build*.
+- `(String) type` is a string that can have the following
+values: `source`, `export` or `build`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will set the type of the package that influences the
 behaviour of the [load()](#methods-load) method.
 

@@ -1,19 +1,40 @@
 
 lychee.define('lychee.ui.Textarea').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
+
+	var _font = attachments["fnt"];
+
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
-		this.font  = null;
+		this.font  = _font;
 		this.value = '';
 
 		this.__buffer  = null;
-		this.__drag    = { x: 0, y: 0 };
-		this.__lines   = [];
+		this.__cursor  = {
+			active:   false,
+			alpha:    0.0,
+			duration: 600,
+			start:    null,
+			pingpong: false,
+			map: {
+				x: 0,
+				y: 0,
+				w: 10,
+				h: 16
+			}
+		};
+		this.__pulse   = {
+			active:   false,
+			duration: 300,
+			start:    null,
+			alpha:    0.0
+		};
+		this.__lines   = [ '' ];
 		this.__value   = '';
 		this.__isDirty = false;
 
@@ -26,8 +47,8 @@ lychee.define('lychee.ui.Textarea').includes([
 
 
 		settings.shape  = lychee.ui.Entity.SHAPE.rectangle;
-		settings.width  = typeof settings.width  === 'number' ? settings.width  : 140;
-		settings.height = typeof settings.height === 'number' ? settings.height : 140;
+		settings.width  = typeof settings.width  === 'number' ? settings.width  : 256;
+		settings.height = typeof settings.height === 'number' ? settings.height : 128;
 
 
 		lychee.ui.Entity.call(this, settings);
@@ -39,21 +60,6 @@ lychee.define('lychee.ui.Textarea').includes([
 		 */
 
 		this.bind('touch', function() {}, this);
-
-		this.bind('focus', function() {
-			this.setState('active');
-		}, this);
-
-		this.bind('blur', function() {
-
-			if (this.value !== this.__value) {
-				this.trigger('change', [ this.value ]);
-				this.__value = this.value;
-			}
-
-			this.setState('default');
-
-		}, this);
 
 		this.bind('key', function(key, name, delta) {
 
@@ -104,6 +110,21 @@ lychee.define('lychee.ui.Textarea').includes([
 
 		}, this);
 
+		this.bind('focus', function() {
+			this.setState('active');
+		}, this);
+
+		this.bind('blur', function() {
+
+			if (this.value !== this.__value) {
+				this.trigger('change', [ this.value ]);
+				this.__value = this.value;
+			}
+
+			this.setState('default');
+
+		}, this);
+
 
 		settings = null;
 
@@ -134,9 +155,7 @@ lychee.define('lychee.ui.Textarea').includes([
 			var blob     = (data['blob'] || {});
 
 
-			if (this.width !== 140)  settings.width  = this.width;
-			if (this.height !== 140) settings.height = this.height;
-			if (this.value !== '')   settings.value  = this.value;
+			if (this.value !== '')  settings.value = this.value;
 
 
 			if (this.font !== null) blob.font = lychee.serialize(this.font);
@@ -149,178 +168,178 @@ lychee.define('lychee.ui.Textarea').includes([
 
 		},
 
+		update: function(clock, delta) {
+
+			var pulse = this.__pulse;
+			if (pulse.active === true) {
+
+				if (pulse.start === null) {
+					pulse.start = clock;
+				}
+
+				var t = (clock - pulse.start) / pulse.duration;
+				if (t <= 1) {
+					pulse.alpha = (1 - t);
+				} else {
+					pulse.alpha  = 0.0;
+					pulse.active = false;
+				}
+
+			}
+
+
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
+
+				if (cursor.start === null) {
+					cursor.start = clock;
+				}
+
+
+				var t = (clock - cursor.start) / cursor.duration;
+				if (t <= 1) {
+					cursor.alpha = cursor.pingpong === true ? (1 - t) : t;
+				} else {
+					cursor.start    = clock;
+					cursor.pingpong = !cursor.pingpong;
+				}
+
+			}
+
+
+			lychee.ui.Entity.prototype.update.call(this, clock, delta);
+
+		},
+
 		render: function(renderer, offsetX, offsetY) {
 
 			if (this.visible === false) return;
 
 
+			var font     = this.font;
+			var position = this.position;
+			var x        = position.x + offsetX;
+			var y        = position.y + offsetY;
+			var hwidth   = (this.width  - 2) / 2;
+			var hheight  = (this.height - 2) / 2;
+
+
+			renderer.drawBox(
+				x - hwidth,
+				y - hheight,
+				x + hwidth,
+				y + hheight,
+				this.state === 'active' ? '#32afe5' : '#545857',
+				false,
+				2
+			);
+
+
 			var buffer = this.__buffer;
 			if (buffer === null) {
-
-				buffer = renderer.createBuffer(
-					this.width  - 28,
-					this.height - 28
-				);
-
-				this.__buffer = buffer;
-
+				this.__buffer = buffer = renderer.createBuffer(this.width - 16, this.height - 16);
 			}
 
 
 			if (this.__isDirty === true) {
 
-				renderer.clearBuffer(buffer);
+				renderer.clear(buffer);
 				renderer.setBuffer(buffer);
 
 
-				var font = this.font;
-				if (font !== null) {
+				var lh    = font.lineheight;
+				var ll    = this.__lines.length;
+				var dim_x = font.measure(this.__lines[ll - 1]).width;
+				var dim_y = ll * lh;
 
-					var l, ll, text;
-					var kerning    = font.kerning;
-					var linewidth  = 0;
-					var lineheight = font.lineheight;
-					var textwidth  = 0;
-					var textheight = this.__lines.length * lineheight;
+				var off_x = 0;
+				var off_y = 0;
 
+				if (dim_x > buffer.width)  {
+					off_x = buffer.width - dim_x;
+				}
 
-					text = this.__lines[this.__lines.length - 1];
-
-					for (var t = 0, tl = text.length; t < tl; t++) {
-						var chr = font.get(text[t]);
-						if (chr === null) console.log(t, tl, text[t], text);
-						linewidth += chr.real + kerning;
-					}
-
-					var drag  = font.get('_');
-					textwidth = linewidth + drag.real;
+				if (dim_y > buffer.height) {
+					off_y = buffer.height - dim_y;
+				}
 
 
-					var offsetx = 0;
-					var offsety = 0;
-					var bwidth  = buffer.width;
-					var bheight = buffer.height;
+				for (var l = 0; l < ll; l++) {
 
-					if (textwidth  > bwidth)  offsetx = bwidth  - textwidth;
-					if (textheight > bheight) offsety = bheight - textheight;
+					var text = this.__lines[l];
 
 
-					for (l = 0, ll = this.__lines.length; l < ll; l++) {
-
-						text = this.__lines[l];
-
-						renderer.drawText(
-							offsetx,
-							offsety + lineheight * l,
-							text,
-							font,
-							false
-						);
-
-					}
-
-
-					if (this.state === 'active') {
-
-						var dragx = offsetx + textwidth - drag.real;
-						var dragy = offsety + lineheight * l - lineheight;
-
-						renderer.drawBox(
-							dragx,
-							dragy,
-							dragx + drag.real,
-							dragy + lineheight,
-							'#33b5e5',
-							true
-						);
-
-					}
+					renderer.drawText(
+						off_x,
+						off_y + lh * l,
+						text,
+						font,
+						false
+					);
 
 				}
 
 
+				var cur = this.__cursor.map;
+
+				cur.x = dim_x > buffer.width  ? (buffer.width)       : dim_x;
+				cur.y = dim_y > buffer.height ? (buffer.height - lh) : (dim_y - lh);
+
+
 				renderer.setBuffer(null);
-
-
 				this.__isDirty = false;
 
 			}
 
 
-			var position = this.position;
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
 
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-			var color = this.state === 'active' ? '#0099cc' : '#575757';
-
-
-			var hwidth  = this.width / 2;
-			var hheight = this.height / 2;
-
-			var x1 = x - hwidth;
-			var y1 = y - hheight;
-			var x2 = x + hwidth;
-			var y2 = y + hheight;
+				var map = cursor.map;
+				var cx1 = x - hwidth  + map.x + 8;
+				var cy1 = y - hheight + map.y + 8;
 
 
-			renderer.drawBox(
-				x1,
-				y1,
-				x2,
-				y2,
-				color,
-				false,
-				2
-			);
+				renderer.setAlpha(cursor.alpha);
 
-			renderer.drawTriangle(
-				x1,
-				y1 + 14,
-				x1,
-				y1,
-				x1 + 14,
-				y1,
-				color,
-				true
-			);
+				renderer.drawBox(
+					cx1,
+					cy1,
+					cx1 + map.w,
+					cy1 + map.h,
+					'#32afe5',
+					true
+				);
 
-			renderer.drawTriangle(
-				x2,
-				y2 - 14,
-				x2,
-				y2,
-				x2 - 14,
-				y2,
-				color,
-				true
-			);
+				renderer.setAlpha(1.0);
 
-
-
-			renderer.drawBuffer(
-				x1 + 14,
-				y1 + 14,
-				this.__buffer
-			);
-
-		},
-
-
-
-		/*
-		 * CUSTOM ENTITY API
-		 */
-
-		setState: function(id) {
-
-			var result = lychee.ui.Entity.prototype.setState.call(this, id);
-			if (result === true) {
-				this.__isDirty = true;
 			}
 
 
-			return result;
+			var pulse = this.__pulse;
+			if (pulse.active === true) {
+
+				renderer.setAlpha(pulse.alpha);
+
+				renderer.drawBox(
+					x - hwidth,
+					y - hheight,
+					x + hwidth,
+					y + hheight,
+					'#32afe5',
+					true
+				);
+
+				renderer.setAlpha(1.0);
+
+			}
+
+
+			renderer.drawBuffer(
+				x - hwidth  + 8,
+				y - hheight + 8,
+				this.__buffer
+			);
 
 		},
 
@@ -338,6 +357,47 @@ lychee.define('lychee.ui.Textarea').includes([
 			if (font !== null) {
 
 				this.font = font;
+
+
+				var map = this.__cursor.map;
+
+				map.w = font.measure('_').realwidth;
+				map.h = font.measure('_').realheight;
+
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		setState: function(id) {
+
+			var result = lychee.ui.Entity.prototype.setState.call(this, id);
+			if (result === true) {
+
+				var cursor = this.__cursor;
+				var pulse  = this.__pulse;
+
+
+				if (id === 'active') {
+
+					cursor.start  = null;
+					cursor.active = true;
+
+					pulse.alpha   = 1.0;
+					pulse.start   = null;
+					pulse.active  = true;
+
+				} else {
+
+					cursor.active = false;
+
+				}
+
 
 				return true;
 

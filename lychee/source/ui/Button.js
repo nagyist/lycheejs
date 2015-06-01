@@ -1,7 +1,10 @@
 
 lychee.define('lychee.ui.Button').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
+
+	var _font = attachments["fnt"];
+
 
 	var Class = function(data) {
 
@@ -9,11 +12,11 @@ lychee.define('lychee.ui.Button').includes([
 
 
 		this.label = null;
-		this.font  = null;
+		this.font  = _font;
 
 		this.__pulse = {
 			active:   false,
-			duration: 250,
+			duration: 300,
 			start:    null,
 			alpha:    0.0
 		};
@@ -27,7 +30,7 @@ lychee.define('lychee.ui.Button').includes([
 
 
 		settings.width  = typeof settings.width === 'number'  ? settings.width  : 128;
-		settings.height = typeof settings.height === 'number' ? settings.height : 64;
+		settings.height = typeof settings.height === 'number' ? settings.height :  32;
 		settings.shape  = lychee.ui.Entity.SHAPE.rectangle;
 
 
@@ -103,7 +106,7 @@ lychee.define('lychee.ui.Button').includes([
 
 				var t = (clock - pulse.start) / pulse.duration;
 				if (t <= 1) {
-					pulse.alpha = (1 - t) * 0.6;
+					pulse.alpha = (1 - t);
 				} else {
 					pulse.alpha  = 0.0;
 					pulse.active = false;
@@ -122,17 +125,10 @@ lychee.define('lychee.ui.Button').includes([
 
 
 			var position = this.position;
-
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-			var color  = this.state === 'active' ? '#33b5e5' : '#0099cc';
-			var color2 = this.state === 'active' ? '#0099cc' : '#575757';
-
-
-			var hwidth  = (this.width  - 2) / 2;
-			var hheight = (this.height - 2) / 2;
-
+			var x        = position.x + offsetX;
+			var y        = position.y + offsetY;
+			var hwidth   = this.width  / 2;
+			var hheight  = this.height / 2;
 
 
 			renderer.drawBox(
@@ -140,9 +136,8 @@ lychee.define('lychee.ui.Button').includes([
 				y - hheight,
 				x + hwidth,
 				y + hheight,
-				color2,
-				false,
-				2
+				'#545857',
+				true
 			);
 
 
@@ -156,7 +151,7 @@ lychee.define('lychee.ui.Button').includes([
 					y - hheight,
 					x + hwidth,
 					y + hheight,
-					color,
+					'#32afe5',
 					true
 				);
 
@@ -231,10 +226,9 @@ lychee.define('lychee.ui.Button').includes([
 
 				var pulse = this.__pulse;
 
-
 				if (id === 'active') {
 
-					pulse.alpha  = 0.6;
+					pulse.alpha  = 1.0;
 					pulse.start  = null;
 					pulse.active = true;
 

@@ -15,19 +15,19 @@ lychee.define('sorbet.serve.File').requires([
 		var response = {
 			status:  200,
 			headers: {
-				'E-Tag':           '"' + info.length + '-' + Date.parse(info.time) + '"',
-				'Last-Modified':   new Date(info.time).toUTCString(),
-				'Content-Control': 'no-transform',
-				'Content-Type':    mime.type,
-				'Expires':         new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(),
-				'Vary':            'Accept-Encoding'
+				'e-tag':           '"' + info.length + '-' + Date.parse(info.time) + '"',
+				'last-modified':   new Date(info.time).toUTCString(),
+				'content-control': 'no-transform',
+				'content-type':    mime.type,
+				'expires':         new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(),
+				'vary':            'Accept-Encoding'
 			},
 			payload: null
 		};
 
 
 		if (mime.type.substr(0, 4) === 'text') {
-			response.headers['Content-Type'] = mime.type + '; charset=utf-8';
+			response.headers['content-type'] = mime.type + '; charset=utf-8';
 		}
 
 
@@ -117,7 +117,8 @@ lychee.define('sorbet.serve.File').requires([
 			} else if (url.substr(0, 9) === '/projects') {
 
 				var identifier = url.split('/')[2];
-				var project    = host.getProject(identifier);
+
+				var project = host.getProject(identifier);
 				if (project !== null) {
 
 					var path = '/' + url.split('/').slice(3).join('/');
@@ -189,7 +190,7 @@ lychee.define('sorbet.serve.File').requires([
 				var info = project.filesystem.info(path);
 				if (info !== null && info.type === 'file') {
 
-					var timestamp = data.headers['If-Modified-Since'] || null;
+					var timestamp = data.headers['if-modified-since'] || null;
 					if (timestamp !== null) {
 
 						var diff = new Date(info.time) > new Date(timestamp);
@@ -198,7 +199,7 @@ lychee.define('sorbet.serve.File').requires([
 							ready({
 								status: 304,
 								headers: {
-									'Last-Modified': new Date(info.time).toUTCString()
+									'last-modified': new Date(info.time).toUTCString()
 								},
 								payload: ''
 							});

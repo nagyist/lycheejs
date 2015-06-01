@@ -1,24 +1,38 @@
 
 lychee.define('lychee.ui.Input').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
+
+	var _font = attachments["fnt"];
+
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
-		this.font  = null;
+		this.font  = _font;
 		this.max   = Infinity;
 		this.min   = 0;
 		this.type  = Class.TYPE.text;
 		this.value = null;
 
 		this.__buffer  = null;
-		this.__drag    = null;
+		this.__cursor  = {
+			active:   false,
+			alpha:    0.0,
+			duration: 600,
+			start:    null,
+			pingpong: false,
+			map: {
+				x: 0,
+				w: 10,
+				h: 16
+			}
+		};
 		this.__pulse   = {
 			active:   false,
-			duration: 250,
+			duration: 300,
 			start:    null,
 			alpha:    0.0
 		};
@@ -41,7 +55,7 @@ lychee.define('lychee.ui.Input').includes([
 
 		settings.shape  = lychee.ui.Entity.SHAPE.rectangle;
 		settings.width  = typeof settings.width === 'number'  ? settings.width  : 128;
-		settings.height = typeof settings.height === 'number' ? settings.height : 64;
+		settings.height = typeof settings.height === 'number' ? settings.height :  32;
 
 
 		lychee.ui.Entity.call(this, settings);
@@ -53,6 +67,69 @@ lychee.define('lychee.ui.Input').includes([
 		 */
 
 		this.bind('touch', function() {}, this);
+
+		this.bind('key', function(key, name, delta) {
+
+			var type = this.type;
+
+			if (key === 'backspace') {
+
+				var raw = this.__value.substr(0, this.__value.length - 1);
+
+				if (type === Class.TYPE.text) {
+
+					this.__value = raw;
+
+				} else if (type === Class.TYPE.number) {
+
+					var bsvalue = parseInt(raw, 10);
+					if (!isNaN(bsvalue)) {
+						this.__value = bsvalue + '';
+					} else {
+						this.__value = '';
+					}
+
+				}
+
+				this.__isDirty = true;
+
+				return;
+
+			} else if (key === 'enter') {
+
+				this.trigger('blur', []);
+
+				return;
+
+			} else if (key === 'space') {
+
+				key = ' ';
+
+			}
+
+
+			if (key.length === 1) {
+
+				if (type === Class.TYPE.text && key.match(/([A-Za-z0-9\s+=-_#@$%*:.\(\)?!]+)/)) {
+
+					this.__value = this.__value + key;
+
+				} else if (type === Class.TYPE.number && key.match(/[0-9-+]/)) {
+
+					var value = parseInt('' + this.__value + key, 10);
+					if (!isNaN(value)) {
+						this.__value = value + '';
+					} else {
+						this.__value = '';
+					}
+
+				}
+
+				this.__isDirty = true;
+
+			}
+
+		}, this);
 
 		this.bind('focus', function() {
 			this.setState('active');
@@ -108,69 +185,6 @@ lychee.define('lychee.ui.Input').includes([
 
 
 			this.setState('default');
-
-		}, this);
-
-		this.bind('key', function(key, name, delta) {
-
-			if (key === 'backspace') {
-
-				var raw = this.__value.substr(0, this.__value.length - 1);
-
-				if (type === Class.TYPE.text) {
-
-					this.__value = raw;
-
-				} else if (type === Class.TYPE.number) {
-
-					var bsvalue = parseInt(raw, 10);
-					if (!isNaN(bsvalue)) {
-						this.__value = bsvalue + '';
-					} else {
-						this.__value = '';
-					}
-
-				}
-
-				this.__isDirty = true;
-
-				return;
-
-			} else if (key === 'enter') {
-
-				this.trigger('blur', []);
-
-				return;
-
-			} else if (key === 'space') {
-
-				key = ' ';
-
-			}
-
-
-
-			if (key.length === 1) {
-
-				var type = this.type;
-				if (type === Class.TYPE.text && key.match(/([A-Za-z0-9\s-_]+)/)) {
-
-					this.__value = this.__value + key;
-
-				} else if (type === Class.TYPE.number && key.match(/[0-9-+]/)) {
-
-					var value = parseInt('' + this.__value + key, 10);
-					if (!isNaN(value)) {
-						this.__value = value + '';
-					} else {
-						this.__value = '';
-					}
-
-				}
-
-				this.__isDirty = true;
-
-			}
 
 		}, this);
 
@@ -237,10 +251,29 @@ lychee.define('lychee.ui.Input').includes([
 
 				var t = (clock - pulse.start) / pulse.duration;
 				if (t <= 1) {
-					pulse.alpha = (1 - t) * 0.6;
+					pulse.alpha = (1 - t);
 				} else {
 					pulse.alpha  = 0.0;
 					pulse.active = false;
+				}
+
+			}
+
+
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
+
+				if (cursor.start === null) {
+					cursor.start = clock;
+				}
+
+
+				var t = (clock - cursor.start) / cursor.duration;
+				if (t <= 1) {
+					cursor.alpha = cursor.pingpong === true ? (1 - t) : t;
+				} else {
+					cursor.start    = clock;
+					cursor.pingpong = !cursor.pingpong;
 				}
 
 			}
@@ -255,16 +288,27 @@ lychee.define('lychee.ui.Input').includes([
 			if (this.visible === false) return;
 
 
+			var position = this.position;
+			var x        = position.x + offsetX;
+			var y        = position.y + offsetY;
+			var hwidth   = (this.width  - 2) / 2;
+			var hheight  = (this.height - 2) / 2;
+
+
+			renderer.drawBox(
+				x - hwidth,
+				y - hheight,
+				x + hwidth,
+				y + hheight,
+				this.state === 'active' ? '#32afe5' : '#545857',
+				false,
+				2
+			);
+
+
 			var buffer = this.__buffer;
 			if (buffer === null) {
-
-				buffer = renderer.createBuffer(
-					this.width - 24,
-					this.height
-				);
-
-				this.__buffer = buffer;
-
+				this.__buffer = buffer = renderer.createBuffer(this.width - 16, this.height);
 			}
 
 
@@ -274,95 +318,90 @@ lychee.define('lychee.ui.Input').includes([
 				renderer.setBuffer(buffer);
 
 
-				var font = this.font;
-				if (font !== null) {
+				var font  = this.font;
+				var lh    = font.lineheight;
+				var text  = this.__value;
+				var cur   = this.__cursor.map;
+				var dim_x = font.measure(text).width;
 
-					var text = this.__value;
-					var dim  = font.measure(text);
+				if (dim_x > buffer.width) {
 
-					if (dim.width > buffer.width) {
+					renderer.drawText(
+						buffer.width - dim_x,
+						lh / 2,
+						text,
+						font,
+						false
+					);
 
-						renderer.drawText(
-							buffer.width - dim.width,
-							dim.height / 2,
-							text,
-							font,
-							false
-						);
+				} else {
 
-					} else {
-
-						renderer.drawText(
-							0,
-							dim.height / 2,
-							text,
-							font,
-							false
-						);
-
-					}
+					renderer.drawText(
+						0,
+						lh / 2,
+						text,
+						font,
+						false
+					);
 
 				}
 
 
+				cur.x = dim_x > buffer.width ? buffer.width : dim_x;
+
+
 				renderer.setBuffer(null);
-
-
 				this.__isDirty = false;
 
 			}
 
 
-			var position = this.position;
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
 
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-			var color  = this.state === 'active' ? '#33b5e5' : '#0099cc';
-			var color2 = this.state === 'active' ? '#0099cc' : '#575757';
-
-
-			var hwidth  = this.width / 2;
-			var hheight = this.height / 2;
-
-			var x1 = x - hwidth;
-			var y1 = y - hheight;
-			var x2 = x + hwidth;
-			var y2 = y + hheight;
+				var map = cursor.map;
+				var cx1 = x - hwidth  + map.x + 8;
+				var cy1 = y - hheight + 8;
 
 
-			renderer.drawLine(
-				x1,
-				y2 - 7,
-				x1,
-				y2,
-				color,
-				2
-			);
+				renderer.setAlpha(cursor.alpha);
 
-			renderer.drawLine(
-				x1,
-				y2,
-				x2,
-				y2,
-				color,
-				2
-			);
+				renderer.drawBox(
+					cx1,
+					cy1,
+					cx1 + map.w,
+					cy1 + map.h,
+					'#32afe5',
+					true
+				);
 
-			renderer.drawLine(
-				x2,
-				y2 - 7,
-				x2,
-				y2,
-				color,
-				2
-			);
+				renderer.setAlpha(1.0);
 
+			}
+
+
+			var pulse = this.__pulse;
+			if (pulse.active === true) {
+
+				renderer.setAlpha(pulse.alpha);
+
+				renderer.drawBox(
+					x - hwidth,
+					y - hheight,
+					x + hwidth,
+					y + hheight,
+					'#32afe5',
+					true
+				);
+
+				renderer.setAlpha(1.0);
+
+			}
 
 
 			renderer.drawBuffer(
-				x1 + 14,
-				y1,
+				x - hwidth + 8,
+				y - hheight,
 				this.__buffer
 			);
 
@@ -382,6 +421,13 @@ lychee.define('lychee.ui.Input').includes([
 			if (font !== null) {
 
 				this.font = font;
+
+
+				var map = this.__cursor.map;
+
+				map.w = font.measure('_').realwidth;
+				map.h = font.measure('_').realheight;
+
 
 				return true;
 
@@ -418,6 +464,40 @@ lychee.define('lychee.ui.Input').includes([
 			if (min !== null) {
 
 				this.min = min;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		setState: function(id) {
+
+			var result = lychee.ui.Entity.prototype.setState.call(this, id);
+			if (result === true) {
+
+				var cursor = this.__cursor;
+				var pulse  = this.__pulse;
+
+
+				if (id === 'active') {
+
+					cursor.start  = null;
+					cursor.active = true;
+
+					pulse.alpha   = 1.0;
+					pulse.start   = null;
+					pulse.active  = true;
+
+				} else {
+
+					cursor.active = false;
+
+				}
+
 
 				return true;
 

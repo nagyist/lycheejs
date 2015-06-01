@@ -39,6 +39,8 @@ lychee.define('fertilizer.template.html-nwjs.Application').requires([
 			var fs = this.filesystem;
 			if (fs !== null) {
 
+				console.log('fertilizer: CONFIGURE');
+
 				var tmp        = new fertilizer.data.Filesystem(fs.root + '/../../../source');
 				var has_config = tmp.info('/package.json');
 				var has_main   = tmp.info('/index.html');
@@ -49,7 +51,7 @@ lychee.define('fertilizer.template.html-nwjs.Application').requires([
 
 				}
 
-				if (has_main !== null)   {
+				if (has_main !== null) {
 
 					this.__main = tmp.read('/index.html').toString();
 					this.__main = this.replace(this.__main, '/lychee/build/html/core.js', './core.js');
@@ -69,9 +71,11 @@ lychee.define('fertilizer.template.html-nwjs.Application').requires([
 
 			if (env !== null && fs !== null) {
 
+				console.log('fertilizer: BUILD ' + env.id);
+
 				var id      = env.id.split('/').pop(); id = id.charAt(0).toUpperCase() + id.substr(1);
 				var blob    = _JSON.encode(env.serialize());
-				var core    = this.getCore('html');
+				var core    = this.getCore('html-nwjs');
 				var info    = this.getInfo(true);
 				var version = ('' + lychee.VERSION).replace(/\./g, '').split('').join('.');
 				var icon    = _icon.buffer;
@@ -118,6 +122,8 @@ lychee.define('fertilizer.template.html-nwjs.Application').requires([
 			var project_id = this.environment.id.split('/').pop();
 
 			if (project_fs !== null) {
+
+				console.log('fertilizer: PACKAGE ' + project_fs.root + ' ' + project_id);
 
 				if (runtime_fs.info('/package.sh') !== null) {
 

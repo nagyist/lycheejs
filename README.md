@@ -1,5 +1,5 @@
 
-# lycheeJS (v0.8.5)
+# lycheeJS (0.8.6)
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
@@ -15,84 +15,89 @@
 [gratipay-url]: https://gratipay.com/martensms/
 
 
+## Overview
+
 lycheeJS is a Next-Gen Isomorphic Application Engine that
 offers a complete solution for prototyping and deployment
-of HTML5 or native OpenGL(ES) or libSDL2 based applications.
+of HTML5, native OpenGL, native OpenGLES and libSDL2 based
+applications.
 
-The development process is optimized for Blink-based browsers
-(Chromium, Google Chrome, Opera) and their developer tools.
+The project has the goal to ease up development of applications
+and shipment to further platforms. The development process is
+optimized for Blink-based browsers (Chromium, Google Chrome,
+Opera) and their developer tools.
 
 
-## Automatic Installation
+**Current target platforms**
 
-There are prebuilt packages that ship all dependencies and
+- Browsers (all) via html
+- Linux (arm, x86, x86\_64) via html-nwjs, iojs
+- Windows (x86, x86\_64) via html-nwjs, iojs
+- OSX (x86\_64) via html-nwjs, iojs
+- Android (all) via html-webview, iojs
+- FirefoxOS (all) via html-webview
+
+**Planned target platforms**
+
+- Linux (all) via iojs-sdl
+- Android (all) via iojs-sdl
+- Browsers (all) via html-webgl
+- iOS (arm) via html-webview
+
+
+The [lycheeJS-runtime](https://github.com/LazerUnicorns/lycheeJS-runtime.git)
+repository contains all binary pre-compiled runtimes included
+in the bundles.
+
+The [lycheeJS-bundle](https://github.com/LazerUnicorns/lycheeJS-bundle.git)
+repository contains all logic required to generate operating
+system ready bundles.
+
+
+## Bundle Installation
+
+There are prebuilt bundles that ship all dependencies and
 runtimes lycheeJS needs in order to work and cross-compile
-properly.
-
-Take a look at [lycheejs.org](http://lycheejs.org)
-for a list of those available packages.
+properly. These bundles should be installed on the developer's
+machine and not on the target platform. Visit [lycheejs.org](http://lycheejs.org)
+for a list of available bundles.
 
 
 ## Manual Installation
 
-
-#### 1. Download lycheeJS
-
-Download lycheeJS via [zip-file](https://github.com/LazerUnicorns/lycheeJS/archive/master.zip)
-and extract its contents. Rename the lycheeJS-master folder that
-was inside the archive accordingly.
+The netinstall shell script allows to automatically install
+lycheeJS on any machine (arm, x86 or x86\_64). The only
+requirement for the script is `curl` and `unzip`.
 
 ```bash
-cd ~/Development; # Change to your development folder
-
-wget https://github.com/LazerUnicorns/lycheeJS/archive/master.zip -O lycheeJS-master.zip;
-unzip lycheeJS-master.zip;
-mv lycheeJS-master lycheeJS;
-```
-
-#### 2. Download lycheeJS runtimes
-
-```bash
-cd ~/Development; # Change to your development folder
-
-wget https://github.com/LazerUnicorns/lycheeJS-runtime/archive/master.zip;
-unzip lycheeJS-runtime-master.zip;
-mv lycheeJS-runtime-master ./lycheeJS/bin/runtime;
+# This will create a lycheeJS Installation in ./lycheejs
+wget -q -O - http://lycheejs.org/download/lycheejs-0.8.6-netinstall.sh | bash;
 ```
 
 
-#### 3. Start lycheeJS
+## NPM Installation
 
-If you installed lycheeJS via distributed package, you
-can use *lycheeJS Ranger* from the Applications Menu
-from your Operating System. This tool offers a GUI for
-maintenance and management of lycheeJS and your projects.
+There's an npm package available, though npm has several
+conceptual issues (no multi-platform distribution,
+no multi-architecture support, no binary shipment runtimes,
+no cross-compilation sdks, no binary shipment of updates
+possible etc.).
 
+That's why it is *NOT* recommended as it complicates the
+installation process.
 
-If you manually installed lycheeJS, you can start Sorbet via Terminal:
+Modify the `./lycheejs/package.json/scripts` section to
+get integration with other parts of the node ecosystem.
 
-```bash
-cd /path/to/lycheeJS;
-./bin/sorbet.sh start development;
-```
-
-
-#### NPM / NodeJS Integration
-
-You can modify the **~/lycheeJS/package.json**/*scripts* section to
-use your own sorbet profile. Take a look at the examples *localhost*
-or *lycheejs.org*.
 
 ```bash
-cd ~/Development/lycheeJS;
+npm install lycheejs;
+mv node_modules/lycheejs ./lycheejs;
+git clone https://github.com/LazerUnicorns/lycheeJS-runtime.git ./lycheejs/bin/runtime;
+
+cd lycheejs;
 npm run-script localhost;
 ```
-
-
-## Documentation
-
-The documentation is available online at
-[http://lycheejs.org/documentation/index.html](http://lycheejs.org/documentation/index.html).
 
 
 ## Roadmap
@@ -104,25 +109,7 @@ Take a look at the [ROADMAP.md](ROADMAP.md) file.
 ## Contribution
 
 You want to contribute to the project?
-Take a look at the [CONTRIBUTING.md](CONTRIBUTING.md) file.
-
-
-## Other (unsupported) JavaScript Runtimes
-
-The lycheeJS architecture is independent of the environment which
-means it will run in any theoretical JavaScript runtime.
-
-The only requirement for such a platform is a fully implemented
-[bootstrap API](http://lycheejs.org/documentation/bootstrap.html).
-
-For fully supporting a client-side environment, you will also have to implement
-a [lychee.Input](http://lycheejs.org/documentation/lychee-Input.html),
-a [lychee.Renderer](http://lycheejs.org/documentation/lychee-Renderer.html),
-a [lychee.Storage](http://lycheejs.org/documentation/lychee-Storage.html),
-and a [lychee.Viewport](http://lycheejs.org/documentation/lychee-Viewport.html).
-
-These implementations are fully optional and only necessary if you are using
-them inside your Game or Application.
+Take a look at the [CONTRIBUTION.md](CONTRIBUTION.md) file.
 
 
 ## License
@@ -130,4 +117,6 @@ them inside your Game or Application.
 lycheeJS is (c) 2012-2015 LazerUnicorns and released under MIT license.
 The projects and demos are licensed under CC0 (public domain) license.
 The runtimes are owned and copyrighted by their respective owners.
+
+Take a look at the [LICENSE.txt](LICENSE.txt) file.
 

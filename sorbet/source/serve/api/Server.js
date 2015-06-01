@@ -6,6 +6,76 @@ lychee.define('sorbet.serve.api.Server').requires([
 	var _JSON = lychee.data.JSON;
 
 
+
+	/*
+	 * HELPERS
+	 */
+
+	var _get_remotes = function(project) {
+
+		var remotes = [];
+
+		var info = project.filesystem.info('/lychee.store');
+		if (info !== null) {
+
+			var database = JSON.parse(project.filesystem.read('/lychee.store'));
+			if (database instanceof Object) {
+
+				if (database['server'] instanceof Object) {
+
+					if (database['server']['@objects'] instanceof Array) {
+
+						remotes.push.apply(remotes, database['server']['@objects'].map(function(remote) {
+
+							return {
+								id:   remote.host + ':' + remote.port,
+								mode: remote.mode,
+								host: remote.host,
+								port: remote.port
+							};
+
+						}));
+
+					}
+
+				}
+
+			}
+
+		}
+
+
+		return remotes;
+
+	};
+
+	var _serialize = function(project) {
+
+		var remotes     = _get_remotes(project);
+		var server_host = null;
+		var server_port = null;
+
+		if (project.server !== null) {
+			server_host = project.server.host;
+			server_port = project.server.port;
+		}
+
+
+		return {
+			identifier: project.identifier,
+			host:       server_host,
+			port:       server_port,
+			remotes:    remotes
+		};
+
+	};
+
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Module = {
 
 		process: function(host, url, data, ready) {
@@ -24,7 +94,7 @@ lychee.define('sorbet.serve.api.Server').requires([
 					status:  200,
 					headers: {
 						'Access-Control-Allow-Headers': 'Content-Type',
-						'Access-Control-Allow-Origin':  data.headers['Host'],
+						'Access-Control-Allow-Origin':  data.headers.host,
 						'Access-Control-Allow-Methods': 'GET',
 						'Access-Control-Max-Age':       60 * 60
 					},
@@ -38,12 +108,16 @@ lychee.define('sorbet.serve.api.Server').requires([
 					var project = host.getProject(identifier);
 					if (project !== null) {
 
-						var server_host = data.headers['Host'].split(':')[0];
-						var server_port = null;
+						var raw = _serialize(project);
+						if (raw !== null) {
 
-						if (project.server !== null) {
-							server_host = project.server.host || server_host;
-							server_port = project.server.port || null;
+							var rawhost = (data.headers.host || '');
+							if (rawhost.match(/\[.*\]+/g)) {
+								rawhost = rawhost.match(/([0-9a-f\:]+)/g)[0];
+							} else if (rawhost.indexOf(':')) {
+								rawhost = rawhost.split(':')[0];
+							}
+
 						}
 
 
@@ -53,10 +127,7 @@ lychee.define('sorbet.serve.api.Server').requires([
 								'Content-Control': 'no-transform',
 								'Content-Type':    'application/json'
 							},
-							payload: _JSON.encode({
-								host: server_host,
-								port: server_port
-							})
+							payload: _JSON.encode(raw)
 						});
 
 					} else {
@@ -73,24 +144,9 @@ lychee.define('sorbet.serve.api.Server').requires([
 
 				} else {
 
-					var projects = host.projects.map(function(project) {
-
-						var server_host = null;
-						var server_port = null;
-
-						if (project.server !== null) {
-							server_host = project.server.host;
-							server_port = project.server.port;
-						}
-
-
-						return {
-							identifier: project.identifier,
-							host:       server_host,
-							port:       server_port
-						};
-
-					});
+					var projects = host.projects.filter(function(project) {
+						return !project.identifier.match(/cultivator/);
+					}).map(_serialize);
 
 
 					ready({

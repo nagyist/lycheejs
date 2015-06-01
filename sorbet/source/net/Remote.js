@@ -1,6 +1,6 @@
 
 lychee.define('sorbet.net.Remote').tags({
-	platform: 'nodejs'
+	platform: 'iojs'
 }).requires([
 	'lychee.net.protocol.HTTP'
 ]).includes([

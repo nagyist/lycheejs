@@ -1,11 +1,13 @@
 
 ={constructor}
 
-# new lychee.Definition(identifier);
+```javascript-constructor
+new lychee.Definition(identifier);
+```
 
-- *identifier* is unique *String*.
+- `identifier` is unique `String`.
 
-This constructor returns an instance of *lychee.Definition*.
+This constructor returns an instance of `lychee.Definition`.
 
 ```javascript
 new lychee.Definition('foo.Foo').exports(function(lychee, foo, global, attachments) {
@@ -32,19 +34,21 @@ new lychee.Definition('foo.Bar').requires([
 #### Implementation Notes
 
 The unique identifier is used for determination of all dependencies
-in the current [lychee.environment](lychee#properties-environment).
+in the current [lychee.environment](?module=/lychee/source/core/lychee#properties-environment).
 
 
 
 ={methods-deserialize}
 
-### (void) lychee.Definition.prototype.deserialize(blob);
+```javascript-method
+(void) lychee.Definition.prototype.deserialize(blob);
+```
 
-- *(Object) blob* is an Object that is part of the Serialization Object.
+- `(Object) blob` is an Object that is part of the Serialization Object.
 
 This method returns nothing.
 It is not intended for direct usage. You can deserialize an
-object using the [lychee.deserialize()](lychee#methods-deserialize) method.
+object using the [lychee.deserialize()](?module=/lychee/source/core/lychee#methods-deserialize) method.
 
 ```javascript
 var Foo1 = new lychee.Definition('foo.Foo');
@@ -59,13 +63,15 @@ Foo2; // lychee.Definition instance
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.Definition.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.Definition.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
-This method returns the *Serialization Object* of the instance.
+This method returns the `Serialization Object` of the instance.
 It is not intended for direct usage. You can serialize an
-object using the [lychee.serialize()](lychee#methods-serialize) method.
+object using the [lychee.serialize()](?module=/lychee/source/core/lychee#methods-serialize) method.
 
 ```javascript
 var Foo1 = new lychee.Definition('foo.Foo');
@@ -80,11 +86,13 @@ Foo2; // lychee.Definition instance
 
 ={methods-attaches}
 
-### (Boolean) lychee.Definition.prototype.attaches(map);
+```javascript-method
+(Boolean) lychee.Definition.prototype.attaches(map);
+```
 
-- *(Object) map* is an Object consisting of a *(String) key* and a *(Asset) value*.
+- `(Object) map` is an Object consisting of a `(String) key` and a `(Asset) value`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
@@ -100,12 +108,14 @@ Foo.attaches({
 
 ={methods-exports}
 
-### (Boolean) lychee.Definition.prototype.exports(callback);
+```javascript-method
+(Boolean) lychee.Definition.prototype.exports(callback);
+```
 
-- *(Function) callback* is a Function that returns the Definition.
+- `(Function) callback` is a Function that returns the Definition.
 Allowed return types are Callback, Class and Module
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
@@ -133,11 +143,13 @@ Qux.exports(function(lychee, foo) {
 
 ={methods-includes}
 
-### (Boolean) lychee.Definition.prototype.includes(definitions);
+```javascript-method
+(Boolean) lychee.Definition.prototype.includes(definitions);
+```
 
-- *(Array) definitions* is an Array consisting of *(String) values*.
+- `(Array) definitions` is an Array consisting of `(String) values`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
@@ -156,7 +168,7 @@ Bar.includes([
 	'foo.Bar',
 	'foo.Qux'
 ]);
- 
+
 Bar.exports(function(lychee, foo, global, attachments) {
 
 	var _Foo  = foo.Foo;
@@ -178,11 +190,13 @@ Bar.exports(function(lychee, foo, global, attachments) {
 
 ={methods-requires}
 
-### (Boolean) lychee.Definition.prototype.requires(definitions);
+```javascript-method
+(Boolean) lychee.Definition.prototype.requires(definitions);
+```
 
-- *(Array) definitions* is an Array consisting of *(String) values*.
+- `(Array) definitions` is an Array consisting of `(String) values`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 ```javascript
 var Foo = new lychee.Definition('foo.Foo');
@@ -201,7 +215,7 @@ Bar.requires([
 	'foo.Bar',
 	'foo.Qux'
 ]);
- 
+
 Bar.exports(function(lychee, foo, global, attachments) {
 
 	var _Foo  = foo.Foo;
@@ -223,11 +237,13 @@ Bar.exports(function(lychee, foo, global, attachments) {
 
 ={methods-supports}
 
-### (Boolean) lychee.Definition.prototype.supports(callback);
+```javascript-method
+(Boolean) lychee.Definition.prototype.supports(callback);
+```
 
-- *(Function) callback* is a Function that returns either *true* or *false*.
+- `(Function) callback` is a Function that returns either `true` or `false`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 The callback is called at compilation runtime, which means it should work
 multiple times, even if the Definition defined in [exports()](#methods-exports)
@@ -260,11 +276,13 @@ Foo.supports(function(lychee, global) {
 
 ={methods-tags}
 
-### (Boolean) lychee.Definition.prototype.tags(map);
+```javascript-method
+(Boolean) lychee.Definition.prototype.tags(map);
+```
 
-- *(Object) map* is an Object consisting of a *(String) key* and a *(String) value*.
+- `(Object) map` is an Object consisting of a `(String) key` and a `(String) value`.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 
 Each tag has to be unique. Only one unique Definition with the same
 identifier can be used to determine its functionality.

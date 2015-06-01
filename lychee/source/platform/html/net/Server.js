@@ -2,6 +2,7 @@
 lychee.define('lychee.net.Server').tags({
 	platform: 'html'
 }).requires([
+	'lychee.Storage',
 	'lychee.data.JSON',
 	'lychee.net.Remote'
 ]).includes([
@@ -25,6 +26,18 @@ lychee.define('lychee.net.Server').tags({
 	 * IMPLEMENTATION
 	 */
 
+	var _storage = new lychee.Storage({
+		id:    'server',
+		type:  lychee.Storage.TYPE.persistent,
+		model: {
+			id:   '::ffff:1337',
+			mode: 'default',
+			host: '::ffff',
+			port: 1337
+		}
+	});
+
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
@@ -41,6 +54,40 @@ lychee.define('lychee.net.Server').tags({
 		lychee.event.Emitter.call(this);
 
 		settings = null;
+
+
+		/*
+		 * INITIALIZATION
+		 */
+
+		this.bind('connect', function(remote) {
+
+			var id  = remote.host + ':' + remote.port;
+			var obj = _storage.create();
+			if (obj !== null) {
+
+				obj.id   = id;
+				obj.host = remote.host;
+				obj.port = remote.port;
+
+				_storage.insert(obj);
+
+			}
+
+		}, this);
+
+		this.bind('disconnect', function(remote) {
+
+			var id  = remote.host + ':' + remote.port;
+			var obj = _storage.filter(function(raw) {
+				return raw.id === id;
+			}) || null;
+
+			if (obj !== null) {
+				_storage.remove(null, obj);
+			}
+
+		}, this);
 
 	};
 

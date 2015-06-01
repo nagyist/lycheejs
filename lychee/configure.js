@@ -1,18 +1,9 @@
-#!/usr/bin/env nodejs
+#!/usr/bin/env iojs
 
 (function() {
 
 	var _CORE      = '';
 	var _BOOTSTRAP = {};
-	var _PLATFORMS = [
-		'html',
-		'html-nwjs',
-		'html-webgl',
-		'nodejs',
-		'nodejs-sdl',
-		'nodejs-webgl'
-	];
-
 
 
 	(function() {
@@ -309,7 +300,7 @@
 		var errors    = 0;
 		var files     = [
 			'platform/html/bootstrap.js',
-			'platform/nodejs/bootstrap.js'
+			'platform/iojs/bootstrap.js'
 		].concat(_package_files(_package)).filter(function(value) {
 			return value.substr(0, 8) === 'platform';
 		}).sort(function(a, b) {
@@ -323,9 +314,10 @@
 
 
 		var	bootstrap = {};
+		var platforms = Object.keys(_package.source.tags.platform);
 
 
-		_PLATFORMS.forEach(function(platform) {
+		platforms.forEach(function(platform) {
 
 			var result = true;
 			var prefix = 'platform/' + platform + '/';
@@ -366,7 +358,7 @@
 
 		});
 
-		_PLATFORMS.forEach(function(platform) {
+		platforms.forEach(function(platform) {
 
 			if (Object.keys(bootstrap[platform]).length === 0) {
 				delete bootstrap[platform];
@@ -486,7 +478,7 @@
 		Object.keys(_BOOTSTRAP).forEach(function(platform) {
 
 			var result = true;
-			var path   = _path.resolve(_root, './lychee/dist/lychee.' + platform + '.js');
+			var path   = _path.resolve(_root, './lychee/build/' + platform + '/main.js');
 			var dir    = _path.dirname(path);
 			var code   = (function(bootstrap) {
 

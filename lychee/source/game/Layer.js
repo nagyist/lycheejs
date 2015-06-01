@@ -28,8 +28,6 @@ lychee.define('lychee.game.Layer').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var _SHAPE_rectangle = 2;
-
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
@@ -44,7 +42,7 @@ lychee.define('lychee.game.Layer').requires([
 		this.entities = [];
 		this.offset   = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
-		this.shape    = _SHAPE_rectangle;
+		this.shape    = lychee.game.Entity.SHAPE.rectangle;
 		this.visible  = true;
 
 		this.__map     = {};

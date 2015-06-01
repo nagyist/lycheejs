@@ -5,28 +5,48 @@ lowercase() {
 }
 
 OS=`lowercase \`uname\``;
+ARCH=`lowercase \`uname -m\``;
 USER=`whoami`;
 
 LYCHEEJS_IOJS="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
 
+NO_INTEGRATION=false;
+if [ "$1" == "--no-integration" ]; then
+	NO_INTEGRATION=true;
+fi;
+
+
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
+	ARCH="x86_64";
+fi;
+
+if [ "$ARCH" == "i386" -o "$ARCH" == "i686" -o "$ARCH" == "i686-64" ]; then
+	ARCH="x86";
+fi;
+
+if [ "$ARCH" == "armv7l" -o "$ARCH" == "armv8" ]; then
+	ARCH="arm";
+fi;
+
 
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/iojs";
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
 	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/nwjs.app";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/iojs";
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
 	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/nwjs";
 
-elif [ "$OS" == "windowsnt" ]; then
+elif [ "$OS" == "windows_nt" ]; then
 
 	OS="windows";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/iojs.exe";
+	ARCH="x86"; # Well, fuck you, Microsoft
+	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
 	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/windows/nwjs.exe";
 
 fi;
@@ -37,7 +57,6 @@ if [ "$USER" != "root" ]; then
 
 	echo "You are not root.";
 	echo "Use \"sudo $0\"";
-	exit 1;
 
 else
 
@@ -49,19 +68,26 @@ else
 
 		# Default chmod rights for folders
 
-		chmod -R 0777 ./bin;
-		chmod -R 0777 ./projects;
-		chmod -R 0777 ./lychee;
-		chmod -R 0777 ./sorbet;
+		find ./lychee -type d -print0 | xargs -0 chmod 777;
+		find ./lychee -type f -print0 | xargs -0 chmod 666;
 
-		touch ./sorbet/.pid;
+		find ./projects -type d -print0 | xargs -0 chmod 777;
+		find ./projects -type f -print0 | xargs -0 chmod 666;
+
+		find ./sorbet -type d -print0 | xargs -0 chmod 777;
+		find ./sorbet -type f -print0 | xargs -0 chmod 666;
 
 		# Make command line tools explicitely executable
 
 		chmod +x ./lychee/configure.js;
+		chmod +x ./projects/*/sorbet.js;
+
+		chmod 0777 ./bin;
+		chmod +x ./bin/editor.sh;
 		chmod +x ./bin/fertilizer.sh;
 		chmod +x ./bin/fertilizer.js;
 		chmod +x ./bin/helper.sh;
+		chmod +x ./bin/ranger.sh;
 		chmod +x ./bin/sorbet.sh;
 		chmod +x ./bin/sorbet.js;
 
@@ -80,34 +106,42 @@ else
 	fi;
 
 
-	if [ "$OS" == "linux" ]; then
+	if [ "$NO_INTEGRATION" == "false" ]; then
 
-		if [ -d /usr/share/applications ]; then
+		if [ "$OS" == "linux" ]; then
 
-			echo "Integrating Helper and Ranger...";
-			cp ./bin/helper/linux/helper.desktop /usr/share/applications/lycheejs-helper.desktop;
-			cp ./bin/helper/linux/ranger.desktop /usr/share/applications/lycheejs-ranger.desktop;
+			if [ -d /usr/share/applications ]; then
+
+				echo "Integrating Editor, Helper and Ranger...";
+
+				cp ./bin/helper/linux/editor.desktop /usr/share/applications/lycheejs-editor.desktop;
+				cp ./bin/helper/linux/helper.desktop /usr/share/applications/lycheejs-helper.desktop;
+				cp ./bin/helper/linux/ranger.desktop /usr/share/applications/lycheejs-ranger.desktop;
+
+
+				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-editor.desktop";
+				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-helper.desktop";
+				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-ranger.desktop";
+
+				echo "Done.";
+
+			fi;
+
+		elif [ "$OS" == "osx" ]; then
+
+			echo "Integrating Editor, Helper and Ranger...";
+			open ./bin/helper/osx/helper.app;
+			echo "Done.";
+
+		elif [ "$OS" == "windows" ]; then
+
+			echo "Integrating Editor, Helper and Ranger...";
+			regedit.exe /S ./bin/helper/windows/helper.reg;
 			echo "Done.";
 
 		fi;
 
-	elif [ "$OS" == "osx" ]; then
-
-		echo "Integrating Helper and Ranger...";
-		open ./bin/helper/osx/helper.app;
-		echo "Done.";
-
-	elif [ "$OS" == "windows" ]; then
-
-		echo "Integrating Helper and Ranger...";
-		regedit.exe /S ./bin/helper/windows/helper.reg;
-		echo "Done.";
-
 	fi;
 
 fi;
-
-
-
-exit 0;
 

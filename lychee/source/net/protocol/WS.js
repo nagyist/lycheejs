@@ -28,10 +28,6 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 	 *
 	 */
 
-	var _fragment = {
-		operator: 0x00,
-		payload:  new Buffer(0)
-	};
 
 	var _encode_buffer = function(data, binary) {
 
@@ -159,6 +155,10 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 		var parsed_bytes = -1;
 		var type         = this.type;
 
+		if (buffer.length <= 2) {
+			return parsed_bytes;
+		}
+
 
 		var fin            = (buffer[0] & 128) === 128;
 		// var rsv1        = (buffer[0] & 64) === 64;
@@ -230,24 +230,24 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 
 			if (fin === true) {
 
-				if (_fragment.operator === 0x01) {
-					this.ondata(_fragment.payload.toString('utf8'));
-				} else if (_fragment.operator === 0x02) {
-					this.ondata(_fragment.payload.toString('binary'));
+				if (this.__fragment.operator === 0x01) {
+					this.ondata(this.__fragment.payload.toString('utf8'));
+				} else if (this.__fragment.operator === 0x02) {
+					this.ondata(this.__fragment.payload.toString('binary'));
 				}
 
 
-				_fragment.operator = 0x00;
-				_fragment.payload  = new Buffer(0);
+				this.__fragment.operator = 0x00;
+				this.__fragment.payload  = new Buffer(0);
 
 			} else if (payload_data !== null) {
 
-				var payload = new Buffer(_fragment.payload.length + payload_length);
+				var payload = new Buffer(this.__fragment.payload.length + payload_length);
 
-				_fragment.payload.copy(payload, 0);
-				payload_data.copy(payload, _fragment.payload.length);
+				this.__fragment.payload.copy(payload, 0);
+				payload_data.copy(payload, this.__fragment.payload.length);
 
-				_fragment.payload = payload;
+				this.__fragment.payload = payload;
 
 			}
 
@@ -261,8 +261,8 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 
 			} else {
 
-				_fragment.operator = operator;
-				_fragment.payload  = payload_data;
+				this.__fragment.operator = operator;
+				this.__fragment.payload  = payload_data;
 
 			}
 
@@ -276,8 +276,8 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 
 			} else {
 
-				_fragment.operator = operator;
-				_fragment.payload  = payload_data;
+				this.__fragment.operator = operator;
+				this.__fragment.payload  = payload_data;
 
 			}
 
@@ -357,11 +357,11 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 		this.onclose = function(err) {};
 
 
+		this.__fragment = { operator: 0x00, payload:  new Buffer(0) };
 		this.__lastping = 0;
 		this.__lastpong = 0;
 		this.__interval = null;
 		this.__isClosed = false;
-
 
 
 		if (lychee.debug === true) {
@@ -395,12 +395,16 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 				data.copy(tmp, temp.length);
 				temp = tmp;
 
+
 				var parsed_bytes = _decode_buffer.call(that, temp);
-				if (parsed_bytes !== -1) {
+
+				while (parsed_bytes !== -1) {
 
 					tmp = new Buffer(temp.length - parsed_bytes);
 					temp.copy(tmp, 0, parsed_bytes);
 					temp = tmp;
+
+					parsed_bytes = _decode_buffer.call(that, temp);
 
 				}
 
@@ -417,7 +421,7 @@ lychee.define('lychee.net.protocol.WS').exports(function(lychee, global) {
 		});
 
 		this.socket.on('end', function() {
-			that.close(Class.STATUS.normal_closure);
+			// that.close(Class.STATUS.normal_closure);
 		});
 
 		this.socket.on('close', function() {

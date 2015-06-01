@@ -7,6 +7,14 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 	 * HELPERS
 	 */
 
+	var _uppercase = function(str) {
+
+		return str.split('-').map(function(val) {
+			return val.charAt(0).toUpperCase() + val.substr(1);
+		}).join('-');
+
+	};
+
 	var _STATUS = {
 		100: '100 Continue',
 		200: '200 OK',
@@ -50,7 +58,7 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 
 // TODO: Integrate headers.status via map for protocol data. status is a number here.
 
-			if (typeof headers['Location'] === 'string') {
+			if (typeof headers.location === 'string') {
 				status_data   = new Buffer('HTTP/1.1 ' + _STATUS[301], 'utf8');
 				status_length = status_data.length;
 			} else {
@@ -62,7 +70,7 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 			var tmp_headers = '\r\n';
 
 			for (var key in headers) {
-				tmp_headers += '' + key + ': ' + headers[key] + '\r\n';
+				tmp_headers += '' + _uppercase(key) + ': ' + headers[key] + '\r\n';
 			}
 
 			tmp_headers += 'Content-Length: ' + payload_length + '\r\n';
@@ -114,7 +122,7 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 			if (value.indexOf(':') !== -1) {
 
 				var tmp1 = value.split(':');
-				var key  = tmp1.shift();
+				var key  = tmp1.shift().toLowerCase();
 				var val  = tmp1.join(':');
 
 				headers[key] = val.trim();

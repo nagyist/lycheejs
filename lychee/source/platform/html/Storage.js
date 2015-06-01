@@ -111,9 +111,17 @@ lychee.define('Storage').tags({
 
 		var type = this.type;
 		if (type === Class.TYPE.persistent) {
-			blob = JSON.parse(_persistent.getItem(id));
+
+			if (_persistent !== null) {
+				blob = JSON.parse(_persistent.getItem(id));
+			}
+
 		} else if (type === Class.TYPE.temporary) {
-			blob = JSON.parse(_temporary.getItem(id));
+
+			if (_temporary !== null) {
+				blob = JSON.parse(_temporary.getItem(id));
+			}
+
 		}
 
 

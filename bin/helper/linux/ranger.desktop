@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=lycheeJS Ranger
-Exec=/opt/lycheejs/bin/ranger.sh
+Exec=__ROOT__/bin/ranger.sh
 Icon=lycheejs
 Type=Application
 NoDisplay=false

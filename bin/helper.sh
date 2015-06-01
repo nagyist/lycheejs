@@ -17,7 +17,7 @@ elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
 
-elif [ "$OS" == "windowsnt" ]; then
+elif [ "$OS" == "windows_nt" ]; then
 
 	OS="windows";
 
@@ -65,6 +65,16 @@ if [ "$protocol" == "lycheejs" ]; then
 		resource=${url#*=};
 	fi;
 
+	if [ "${url:11:4}" == "edit" ]; then
+		action="edit";
+		resource=${url#*=};
+	fi;
+
+	if [ "${url:11:5}" == "create" ]; then
+		action="create";
+		resource=${url#*=};
+	fi;
+
 	if [ "${url:11:4}" == "file" ]; then
 		action="file";
 		resource=${url#*=};
@@ -84,8 +94,9 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				cd $LYCHEEJS_ROOT;
 
-				./bin/sorbet.sh stop;
-				./bin/sorbet.sh start "$resource";
+				./bin/sorbet.sh stop 2>&1;
+				./bin/sorbet.sh start "$resource" 2>&1;
+				exit 0;
 
 			;;
 
@@ -93,19 +104,38 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				cd $LYCHEEJS_ROOT;
 
-				./bin/sorbet.sh stop;
+				./bin/sorbet.sh stop 2>&1;
+				exit 0;
 
 			;;
 
 			start)
 
 				_put_API_Projects "start" "$resource";
+				exit 0;
 
 			;;
 
 			stop)
 
 				_put_API_Projects "stop" "$resource";
+				exit 0;
+
+			;;
+
+			edit)
+
+				if [ -f ./bin/editor.sh ]; then
+
+					if [ "$OS" == "linux" -o "$OS" == "osx" ]; then
+						./bin/editor.sh "file://$LYCHEEJS_ROOT/projects/$resource/lychee.pkg" 2>&1;
+						exit 0;
+					elif [ "$OS" == "windows"]; then
+						./bin/editor.sh "file://c:$LYCHEEJS_ROOT/projects/$resource/lychee.pkg" 2>&1;
+						exit 0;
+					fi;
+
+				fi;
 
 			;;
 
@@ -113,17 +143,17 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				if [ "$OS" == "linux" ]; then
 
-					xdg-open "file://$resource" 2>&1;
+					xdg-open "file://$LYCHEEJS_ROOT/projects/$resource" 2>&1;
 					exit 0;
 
 				elif [ "$OS" == "osx" ]; then
 
-					open "file://$resource" 2>&1;
+					open "file://$LYCHEEJS_ROOT/projects/$resource" 2>&1;
 					exit 0;
 
 				elif [ "$OS" == "windows" ]; then
 
-					explorer "file://c:$resource";
+					explorer "file://c:$LYCHEEJS_ROOT/projects/$resource";
 					exit 0;
 
 				fi;

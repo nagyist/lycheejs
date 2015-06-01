@@ -1,9 +1,11 @@
 
 ={constructor}
 
-# new lychee.event.Emitter(void);
+```javascript-constructor
+new lychee.event.Emitter(void);
+```
 
-This constructor returns an instance of *lychee.event.Emitter*.
+This constructor returns an instance of `lychee.event.Emitter`.
 
 ```javascript
 var emitter = new lychee.event.Emitter();
@@ -46,9 +48,11 @@ emitter.trigger('@foo');                         // false
 
 ={methods-deserialize}
 
-### (void) lychee.event.Emitter.prototype.deserialize(blob);
+```javascript-method
+(void) lychee.event.Emitter.prototype.deserialize(blob);
+```
 
-- *(Object) blob* is an Object that is part of the Serialization Object.
+- `(Object) blob` is an Object that is part of the Serialization Object.
 
 This method returns nothing.
 It is not intended for direct usage. You can deserialize an
@@ -67,7 +71,9 @@ foo2; // lychee.event.Emitter instance
 
 ={methods-serialize}
 
-### (Serialization Object) lychee.event.Emitter.prototype.serialize(void);
+```javascript-method
+(Serialization Object) lychee.event.Emitter.prototype.serialize(void);
+```
 
 - This method has no arguments.
 
@@ -87,22 +93,24 @@ foo2; // lychee.event.Emitter instance
 
 ={methods-bind}
 
-### (Boolean) lychee.event.Emitter.prototype.bind(event, callback [, scope, once]);
+```javascript-method
+(Boolean) lychee.event.Emitter.prototype.bind(event, callback [, scope, once]);
+```
 
-- *(String) event* is the event name.
-- *(Function) callback* is the callback that is executed when the event is triggered.
-- *(Object) scope* is the scope of the callback.
-- *(Boolean) once* is a flag. If set to *true*, the callback will be executed once
+- `(String) event` is the event name.
+- `(Function) callback` is the callback that is executed when the event is triggered.
+- `(Object) scope` is the scope of the callback.
+- `(Boolean) once` is a flag. If set to `true`, the callback will be executed once
 and then removed via [unbind()](#methods-unbind)
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to bind the callback to an event name and parse the modifier of the
 event name beforehand.
 
 Supported event name modifiers are:
 
-- *@* will pass the *event name* and *self* parameters to the callback.
-- *#* will pass the *self* parameter to the callback.
+- `@` will pass the `event name` and `self` parameters to the callback.
+- `#` will pass the `self` parameter to the callback.
 
 ```javascript
 var emitter = new lychee.event.Emitter();
@@ -119,12 +127,14 @@ emitter.bind('#foo', function(self, a, b, c) {}, this);        // true
 
 ={methods-trigger}
 
-### (Boolean) lychee.event.Emitter.prototype.trigger(event [, data]);
+```javascript-method
+(Boolean) lychee.event.Emitter.prototype.trigger(event [, data]);
+```
 
-- *(String) event* is the event name.
-- *(Array) data* is an array of parameters that will be passed to the bound callbacks.
+- `(String) event` is the event name.
+- `(Array) data` is an array of parameters that will be passed to the bound callbacks.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to find and execute callbacks that are bound to the given event name.
 
 ```javascript
@@ -141,13 +151,15 @@ emitter.trigger('bar', []); // false
 
 ={methods-unbind}
 
-### (Boolean) lychee.event.Emitter.prototype.unbind(event [, callback, scope]);
+```javascript-method
+(Boolean) lychee.event.Emitter.prototype.unbind(event [, callback, scope]);
+```
 
-- *(String) event* is the event name.
-- *(Function) callback* is the callback that is executed when the event is triggered.
-- *(Object) scope* is the scope of the callback.
+- `(String) event` is the event name.
+- `(Function) callback` is the callback that is executed when the event is triggered.
+- `(Object) scope` is the scope of the callback.
 
-This method returns *true* on success and *false* on failure.
+This method returns `true` on success and `false` on failure.
 It will try to unbind the callback of an event name. It unbinds all callbacks that
 match the specified criteria.
 

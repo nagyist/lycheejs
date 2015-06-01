@@ -22,6 +22,8 @@ lychee.define('game.entity.Emblem').includes([
 
 		lychee.game.Sprite.call(this, settings);
 
+		settings = null;
+
 	};
 
 
@@ -30,7 +32,7 @@ lychee.define('game.entity.Emblem').includes([
 		serialize: function() {
 
 			var data = lychee.game.Sprite.prototype.serialize.call(this);
-			data['constructor'] = 'game.entity.lycheeJS';
+			data['constructor'] = 'game.entity.Emblem';
 
 
 			return data;

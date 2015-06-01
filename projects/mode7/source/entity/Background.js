@@ -69,17 +69,11 @@ lychee.define('game.entity.Background').includes([
 			var bgmap   = _config.map.background;
 
 
-			if (this.__buffer === null) {
-
-				this.__buffer = renderer.createBuffer(
-					this.width,
-					this.height
-				);
-
+			var buffer = this.__buffer;
+			if (buffer === null) {
+				buffer = this.__buffer = renderer.createBuffer(this.width, this.height);
 			}
 
-
-			var buffer = this.__buffer;
 
 			if (this.__isDirty === true) {
 

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=lycheejsURL
-Exec=/opt/lycheejs/bin/helper.sh %u
+Exec=__ROOT__/bin/helper.sh %u
 Type=Application
 NoDisplay=true
 Categories=Development;System;

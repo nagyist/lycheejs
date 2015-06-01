@@ -71,7 +71,7 @@ lychee.define('sorbet.serve.Redirect').exports(function(lychee, sorbet, global, 
 						ready({
 							status: 301,
 							headers: {
-								'Location': dir + '/source/index.html'
+								location: dir + '/source/index.html'
 							},
 							payload: ''
 						});
@@ -88,7 +88,7 @@ lychee.define('sorbet.serve.Redirect').exports(function(lychee, sorbet, global, 
 					ready({
 						status:  301,
 						headers: {
-							'Location': '/projects/cultivator/index.html'
+							location: '/projects/cultivator/index.html'
 						},
 						payload: ''
 					});
@@ -98,7 +98,7 @@ lychee.define('sorbet.serve.Redirect').exports(function(lychee, sorbet, global, 
 					ready({
 						status:  301,
 						headers: {
-							'Location': '/index.html'
+							location: '/index.html'
 						},
 						payload: ''
 					});
@@ -120,7 +120,7 @@ lychee.define('sorbet.serve.Redirect').exports(function(lychee, sorbet, global, 
 							ready({
 								status:  301,
 								headers: {
-									'Location': path + '/index.html'
+									location: path + '/index.html'
 								},
 								payload: ''
 							});

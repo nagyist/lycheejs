@@ -11,9 +11,15 @@ lychee.define('sorbet.data.Package').includes([
 
 		if (json instanceof Object) {
 
-			if (json.build instanceof Object) {
+			if (json.api instanceof Object) {
 
-				// TODO: Parse build environments
+				if (json.api.files instanceof Object) {
+					_walk_directory(this.api, json.api.files, '');
+				}
+
+			}
+
+			if (json.build instanceof Object) {
 
 				if (json.build.files instanceof Object) {
 					_walk_directory(this.build, json.build.files, '');
@@ -22,10 +28,6 @@ lychee.define('sorbet.data.Package').includes([
 			}
 
 			if (json.source instanceof Object) {
-
-				// TODO: Parse source environments
-				// TODO: Parse source tags
-
 
 				if (json.source.files instanceof Object) {
 					_walk_directory(this.source, json.source.files, '');
@@ -58,6 +60,12 @@ lychee.define('sorbet.data.Package').includes([
 						files.push(path + '.' + ext);
 					}
 
+				} else if (ext.match(/md/)) {
+
+					if (files.indexOf(path + '.' + ext) === -1) {
+						files.push(path + '.' + ext);
+					}
+
 				}
 
 			});
@@ -84,6 +92,7 @@ lychee.define('sorbet.data.Package').includes([
 		buffer = buffer instanceof Buffer ? buffer : null;
 
 
+		this.api    = [];
 		this.build  = [];
 		this.source = [];
 		this.json   = {};
@@ -95,9 +104,6 @@ lychee.define('sorbet.data.Package').includes([
 
 
 		lychee.event.Emitter.call(this);
-
-
-// console.log(this.files);
 
 	};
 

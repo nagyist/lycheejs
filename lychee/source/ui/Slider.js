@@ -1,40 +1,42 @@
 
 lychee.define('lychee.ui.Slider').includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, global) {
+]).exports(function(lychee, global, attachments) {
+
+	var _font = attachments["fnt"];
+
+
 
 	/*
 	 * HELPERS
 	 */
 
-	var _refresh_drag = function(x, y) {
+	var _refresh = function() {
 
-		var type   = this.type;
-		var width  = this.width;
-		var height = this.height;
-		var index  = 0;
+		var val  = this.value;
+		var map  = this.__cursor.map;
+		var type = this.type;
+
+
+		if (val < this.min || val > this.max) {
+			return;
+		}
 
 
 		if (type === Class.TYPE.horizontal) {
-			index = Math.max(0.0, Math.min(1.0,     (x + width  / 2) / width));
+
+			var vx = (val - this.min) / (this.max - this.min);
+
+			map.x = vx * (this.width - 44);
+			map.y = 0;
+
 		} else if (type === Class.TYPE.vertical) {
-			index = Math.max(0.0, Math.min(1.0, 1 - (y + height / 2) / height));
-		}
 
+			var vy = (val - this.min) / (this.max - this.min);
 
-		var range = this.range;
-		var value = index * (range.to - range.from);
+			map.x = 0;
+			map.y = vy * (this.height - 44);
 
-		if (range.from < 0) {
-			value += range.from;
-		}
-
-		value = ((value / range.delta) | 0) * range.delta;
-
-
-		var result = this.setValue(value);
-		if (result === true) {
-			this.trigger('change', [ value ]);
 		}
 
 	};
@@ -50,31 +52,55 @@ lychee.define('lychee.ui.Slider').includes([
 		var settings = lychee.extend({}, data);
 
 
-		this.range = { from: 0, to: 1, delta: 0.001 };
+		this.font  = _font;
+		this.max   = 100;
+		this.min   = 0;
+		this.step  = 1;
 		this.type  = Class.TYPE.horizontal;
 		this.value = 0;
 
-		this.__drag = { x: 0, y: 0 };
-		this.__pulse = {
+		this.__cursor = {
 			active:   false,
-			duration: 250,
+			alpha:    0.0,
+			duration: 600,
+			start:    null,
+			pingpong: false,
+			map: {
+				x: 0,
+				y: 0
+			}
+		};
+		this.__pulse  = {
+			active:   false,
+			duration: 300,
 			start:    null,
 			alpha:    0.0
 		};
 
 
-		this.setRange(settings.range);
+		this.setFont(settings.font);
+		this.setMax(settings.max);
+		this.setMin(settings.min);
+		this.setStep(settings.step);
 		this.setType(settings.type);
-		this.setValue(settings.value);
 
-		delete settings.range;
+		delete settings.font;
+		delete settings.max;
+		delete settings.min;
+		delete settings.step;
 		delete settings.type;
-		delete settings.value;
 
 
-		settings.shape  = lychee.ui.Entity.SHAPE.rectangle;
-		settings.width  = typeof settings.width === 'number'  ? settings.width  : 128;
-		settings.height = typeof settings.height === 'number' ? settings.height : 128;
+		settings.shape = lychee.ui.Entity.SHAPE.rectangle;
+
+
+		if (this.type === Class.TYPE.horizontal) {
+			settings.width  = typeof settings.width === 'number'  ? settings.width  : 192;
+			settings.height = typeof settings.height === 'number' ? settings.height :  32;
+		} else if (this.type === Class.TYPE.vertical) {
+			settings.width  = typeof settings.width === 'number'  ? settings.width  :  32;
+			settings.height = typeof settings.height === 'number' ? settings.height : 192;
+		}
 
 
 		lychee.ui.Entity.call(this, settings);
@@ -86,11 +112,86 @@ lychee.define('lychee.ui.Slider').includes([
 		 */
 
 		this.bind('touch', function(id, position, delta) {
-			_refresh_drag.call(this, position.x, position.y);
+
+			var val  = null;
+			var type = this.type;
+
+			if (type === Class.TYPE.horizontal) {
+
+				var qx = Math.max(-0.5, Math.min(0.5, position.x / (this.width - 44))) + 0.5;
+				var vx = (this.min + qx * (this.max - this.min)) | 0;
+
+				val = ((vx / this.step) | 0) * this.step;
+
+			} else if (type === Class.TYPE.vertical) {
+
+				var qy = Math.max(-0.5, Math.min(0.5, position.y / (this.height - 44))) + 0.5;
+				var vy = (this.min + qy * (this.max - this.min)) | 0;
+
+				val = ((vy / this.step) | 0) * this.step;
+
+			}
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
+			}
+
 		}, this);
 
 		this.bind('swipe', function(id, state, position, delta, swipe) {
-			_refresh_drag.call(this, position.x, position.y);
+
+			var val  = null;
+			var type = this.type;
+
+			if (type === Class.TYPE.horizontal) {
+
+				var qx = Math.max(-0.5, Math.min(0.5, position.x / (this.width - 44))) + 0.5;
+				var vx = (this.min + qx * (this.max - this.min)) | 0;
+
+				val = ((vx / this.step) | 0) * this.step;
+
+			} else if (type === Class.TYPE.vertical) {
+
+				var qy = Math.max(-0.5, Math.min(0.5, position.y / (this.height - 44))) + 0.5;
+				var vy = (this.min + qy * (this.max - this.min)) | 0;
+
+				val = ((vy / this.step) | 0) * this.step;
+
+			}
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
+			}
+
+		}, this);
+
+		this.bind('key', function(key, name, delta) {
+
+			var val  = this.value;
+			var type = this.type;
+
+			if (type === Class.TYPE.horizontal) {
+
+				if (key === 'arrow-left')  val -= this.step;
+				if (key === 'arrow-right') val += this.step;
+
+			} else if (type === Class.TYPE.vertical) {
+
+				if (key === 'arrow-up')    val -= this.step;
+				if (key === 'arrow-down')  val += this.step;
+
+			}
+
+
+			var result = this.setValue(val);
+			if (result === true) {
+				this.trigger('change', [ val ]);
+			}
+
 		}, this);
 
 		this.bind('focus', function() {
@@ -102,8 +203,7 @@ lychee.define('lychee.ui.Slider').includes([
 		}, this);
 
 
-		// This fixes the width/height dependency problem for the drag
-		this.setValue(this.value);
+		this.setValue(settings.value);
 
 
 		settings = null;
@@ -123,7 +223,14 @@ lychee.define('lychee.ui.Slider').includes([
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) { },
+		deserialize: function(blob) {
+
+			var font = lychee.deserialize(blob.font);
+			if (font !== null) {
+				this.setFont(font);
+			}
+
+		},
 
 		serialize: function() {
 
@@ -131,20 +238,20 @@ lychee.define('lychee.ui.Slider').includes([
 			data['constructor'] = 'lyche.ui.Slider';
 
 			var settings = data['arguments'][0];
+			var blob     = (data['blob'] || {});
 
 
-			if (this.type !== Class.TYPE.horizontal) settings.type   = this.type;
-			if (this.value !== 0)                    settings.value  = this.value;
+			if (this.max !== 100)                    settings.max   = this.max;
+			if (this.min !== 0)                      settings.min   = this.min;
+			if (this.step !== 1)                     settings.step  = this.step;
+			if (this.type !== Class.TYPE.horizontal) settings.type  = this.type;
+			if (this.value !== 0)                    settings.value = this.value;
 
-			if (this.range.from !== 0 || this.range.to !== 1 || this.range.delta !== 0.001) {
 
-				settings.range = {};
+			if (this.font !== null) blob.font = lychee.serialize(this.font);
 
-				if (this.range.from !== 0)      settings.range.from  = this.range.from;
-				if (this.range.to !== 1)        settings.range.to    = this.range.to;
-				if (this.range.delta !== 0.001) settings.range.delta = this.range.delta;
 
-			}
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;
@@ -162,10 +269,29 @@ lychee.define('lychee.ui.Slider').includes([
 
 				var t = (clock - pulse.start) / pulse.duration;
 				if (t <= 1) {
-					pulse.alpha = (1 - t) * 0.6;
+					pulse.alpha = (1 - t);
 				} else {
 					pulse.alpha  = 0.0;
 					pulse.active = false;
+				}
+
+			}
+
+
+			var cursor = this.__cursor;
+			if (cursor.active === true) {
+
+				if (cursor.start === null) {
+					cursor.start = clock;
+				}
+
+
+				var t = (clock - cursor.start) / cursor.duration;
+				if (t <= 1) {
+					cursor.alpha = cursor.pingpong === true ? (1 - t) : t;
+				} else {
+					cursor.start    = clock;
+					cursor.pingpong = !cursor.pingpong;
 				}
 
 			}
@@ -180,131 +306,148 @@ lychee.define('lychee.ui.Slider').includes([
 			if (this.visible === false) return;
 
 
+			var font     = this.font;
 			var position = this.position;
-
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-			var color  = this.state === 'active' ? '#33b5e5' : '#0099cc';
-			var color2 = this.state === 'active' ? '#0099cc' : '#575757';
-			var alpha  = this.state === 'active' ? 0.6       : 0.3;
+			var type     = this.type;
+			var x        = position.x + offsetX;
+			var y        = position.y + offsetY;
+			var hwidth   = (this.width  - 2) / 2;
+			var hheight  = (this.height - 2) / 2;
 
 
-			var drag    = this.__drag;
-			var pulse   = this.__pulse;
-			var hwidth  = this.width / 2;
-			var hheight = this.height / 2;
-
-			var x1 = x - hwidth;
-			var y1 = y - hheight;
-			var x2 = x + hwidth;
-			var y2 = y + hheight;
+			var cursor = this.__cursor;
+			var map = cursor.map;
+			var cx  = 0;
+			var cy  = 0;
 
 
-			var type = this.type;
 			if (type === Class.TYPE.horizontal) {
 
+				cx  = x - hwidth  + map.x + 20;
+				cy  = y - hheight + 15;
+
+
 				renderer.drawLine(
-					x1,
+					x - hwidth,
 					y,
-					x + drag.x,
+					cx - 12,
 					y,
-					color2,
+					this.state === 'active' ? '#32afe5' : '#545857',
 					2
 				);
 
 				renderer.drawLine(
-					x + drag.x,
+					cx + 12,
 					y,
-					x2,
+					x + hwidth,
 					y,
-					'#575757',
+					this.state === 'active' ? '#32afe5' : '#545857',
 					2
 				);
-
-
-				if (pulse.active === true) {
-
-					renderer.setAlpha(pulse.alpha);
-
-					renderer.drawTriangle(
-						x1,
-						y,
-						x + drag.x,
-						y - 14,
-						x + drag.x,
-						y + 14,
-						color,
-						true
-					);
-
-					renderer.setAlpha(1.0);
-
-				}
 
 			} else if (type === Class.TYPE.vertical) {
 
+				cx  = x - hwidth  + 15;
+				cy  = y - hheight + map.y + 20;
+
+
 				renderer.drawLine(
 					x,
-					y2,
+					y - hheight,
 					x,
-					y + drag.y,
-					color2,
+					cy - 12,
+					this.state === 'active' ? '#32afe5' : '#545857',
 					2
 				);
 
 				renderer.drawLine(
 					x,
-					y + drag.y,
+					cy + 12,
 					x,
-					y1,
-					'#575757',
+					y + hheight,
+					this.state === 'active' ? '#32afe5' : '#545857',
 					2
 				);
-
-
-				if (pulse.active === true) {
-
-					renderer.setAlpha(pulse.alpha);
-
-					renderer.drawTriangle(
-						x,
-						y2,
-						x - 14,
-						y + drag.y,
-						x + 14,
-						y + drag.y,
-						color,
-						true
-					);
-
-					renderer.setAlpha(1.0);
-
-				}
 
 			}
 
 
-			renderer.setAlpha(alpha);
+			if (cursor.active === true) {
 
-			renderer.drawCircle(
-				x + drag.x,
-				y + drag.y,
-				14,
-				color,
-				true
-			);
+				renderer.drawCircle(
+					cx,
+					cy,
+					11,
+					'#32afe5',
+					false,
+					2
+				);
 
-			renderer.setAlpha(1.0);
+				renderer.setAlpha(cursor.alpha);
+
+				renderer.drawCircle(
+					cx,
+					cy,
+					12,
+					'#32afe5',
+					true
+				);
+
+				renderer.setAlpha(1.0);
 
 
-			renderer.drawCircle(
-				x + drag.x,
-				y + drag.y,
-				4,
-				color,
-				true
-			);
+				if (type === Class.TYPE.horizontal) {
+
+					renderer.drawText(
+						cx,
+						cy - 6 - font.lineheight,
+						'' + this.value,
+						font,
+						true
+					);
+
+				} else if (type === Class.TYPE.vertical) {
+
+					renderer.drawText(
+						cx + 6 + font.measure('' + this.value).realwidth,
+						cy,
+						'' + this.value,
+						font,
+						true
+					);
+
+				}
+
+			} else {
+
+				renderer.drawCircle(
+					cx,
+					cy,
+					11,
+					'#545857',
+					false,
+					2
+				);
+
+			}
+
+
+			var pulse = this.__pulse;
+			if (pulse.active === true) {
+
+				renderer.setAlpha(pulse.alpha);
+
+				renderer.drawCircle(
+					cx,
+					cy,
+					12,
+					'#32afe5',
+					true
+				);
+
+				renderer.setAlpha(1.0);
+
+			}
 
 		},
 
@@ -314,20 +457,85 @@ lychee.define('lychee.ui.Slider').includes([
 		 * CUSTOM API
 		 */
 
-		setRange: function(range) {
+		setFont: function(font) {
 
-			if (range instanceof Object) {
+			font = font instanceof Font ? font : null;
 
-				this.range.from  = typeof range.from === 'number'  ? range.from  : this.range.from;
-				this.range.to    = typeof range.to === 'number'    ? range.to    : this.range.to;
-				this.range.delta = typeof range.delta === 'number' ? range.delta : this.range.delta;
+
+			if (font !== null) {
+
+				this.font = font;
+
+
+				var map = this.__cursor.map;
+
+				map.w = font.measure('_').realwidth;
+				map.h = font.measure('_').realheight;
+
 
 				return true;
 
 			}
 
 
-			return true;
+			return false;
+
+		},
+
+		setMax: function(max) {
+
+			max = typeof max === 'number' ? max : null;
+
+
+			if (max !== null) {
+
+				this.max = max;
+				_refresh.call(this);
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		setMin: function(min) {
+
+			min = typeof min === 'number' ? min : null;
+
+
+			if (min !== null) {
+
+				this.min = min;
+				_refresh.call(this);
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		setStep: function(step) {
+
+			step = typeof step === 'number' ? step : null;
+
+
+			if (step !== null) {
+
+				this.step = step;
+				_refresh.call(this);
+
+				return true;
+
+			}
+
+
+			return false;
 
 		},
 
@@ -336,14 +544,22 @@ lychee.define('lychee.ui.Slider').includes([
 			var result = lychee.ui.Entity.prototype.setState.call(this, id);
 			if (result === true) {
 
-				var pulse = this.__pulse;
+				var cursor = this.__cursor;
+				var pulse  = this.__pulse;
 
 
 				if (id === 'active') {
 
-					pulse.alpha  = 0.6;
-					pulse.start  = null;
-					pulse.active = true;
+					cursor.start  = null;
+					cursor.active = true;
+
+					pulse.alpha   = 1.0;
+					pulse.start   = null;
+					pulse.active  = true;
+
+				} else {
+
+					cursor.active = false;
 
 				}
 
@@ -379,30 +595,14 @@ lychee.define('lychee.ui.Slider').includes([
 
 			if (value !== null) {
 
-				var range = this.range;
-				var index = (value - range.from) / (range.to - range.from);
+				if (value >= this.min && value <= this.max) {
 
-				var type   = this.type;
-				var width  = this.width  || 0;
-				var height = this.height || 0;
+					this.value = value;
+					_refresh.call(this);
 
-
-				if (type === Class.TYPE.horizontal) {
-
-					this.__drag.x = width * index - (width / 2);
-					this.__drag.y = 0;
-
-				} else if (type === Class.TYPE.vertical) {
-
-					this.__drag.x = 0;
-					this.__drag.y = height * (1 - index) - (height / 2);
+					return true;
 
 				}
-
-
-				this.value = value;
-
-				return true;
 
 			}
 

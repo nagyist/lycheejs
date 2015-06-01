@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Editor</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="robots" content="noindex">
+
+	<!-- DESIGN -->
+	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
+	<script src="/projects/cultivator/design/index.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lychee/build/html/core.js"></script>
+
+	<style>
+	#scene div.main > article:nth-child(1) {
+		margin: 0px 0px 0px 8px;
+		display: block;
+		min-height: 512px;
+		overflow: auto;
+		-moz-box-flex: 3;
+		-webkit-box-flex: 3;
+		-ms-flex: 3;
+		-webkit-flex: 3;
+		flex: 3;
+		max-width: initial;
+		min-width: initial;
+	}
+	
+	#scene div.main > article:nth-child(2) {
+		margin: 0px 0px 0px 16px;
+		min-width: initial;
+		max-width: initial;
+		-moz-box-flex: 1;
+		-webkit-box-flex: 1;
+		-ms-flex: 1;
+		-webkit-flex: 1;
+		flex: 1;
+		background: none;
+	}
+
+
+	#scene-preview-mode button.active {
+		background: #32afe5;
+		text-shadow: #eeeeee 0 0 10px;
+	}
+
+	#scene-settings div.collapse-content {
+		margin-bottom: 16px;
+		-moz-transition: all 250ms ease-out;
+		-ms-transition: all 250ms ease-out;
+		-webkit-transition: all 250ms ease-out;
+		transition: all 250ms ease-out;
+		overflow: hidden;
+		min-height: 0;
+		max-height: 0px;
+		background: #363f3e;
+	}
+	
+	#scene-settings div.collapse-content.active {
+		min-height: 0;
+		max-height: 2000px;
+	}
+
+
+	#scene-settings .ico-eye {
+		opacity: 0.3;
+	}
+
+	#scene-settings .ico-eye.active {
+		opacity: 1;
+	}
+
+
+	#scene-settings-wrapper,
+	#scene-layers-wrapper {
+		margin: 0px;
+	}
+
+	#scene-settings-wrapper > div {
+		font-size: 11px;
+		padding: 17px 25px;
+		letter-spacing: 0.1em;
+	}
+
+	#scene-settings-wrapper .row {
+		padding: 8px 0;
+		display: -webkit-box;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -webkit-flex;
+		display: flex;
+	
+		-moz-flex-flow: row nowrap;
+		-ms-flex-flow: row nowrap;
+		-webkit-flex-flow: row nowrap;
+		flex-flow: row nowrap;
+	}
+	
+	#scene-settings-wrapper label {
+		display: block;
+		text-align: center;
+		line-height: 32px;
+	}
+	
+	#scene-settings-wrapper label, #scene-settings-wrapper input {
+		-moz-box-flex: 1;
+		-webkit-box-flex: 1;
+		-ms-flex: 1;
+		-webkit-flex: 1;
+		flex: 1;
+	}
+	
+	#scene-settings-wrapper input {
+		width: 36px;
+		padding-right: 0;
+	}
+	
+	#scene-settings-wrapper span {
+		text-transform: uppercase;
+	}
+
+	#scene-layers-wrapper {
+		padding: 8px;
+	}
+
+	#scene-layers-wrapper ul {
+		margin: 0px 0px 0px 0px;
+		padding: 0px 0px 0px 0px;
+		list-style: none;
+	}
+
+	#scene-layers-wrapper ul li {
+		font-size: 12px;
+		line-height: 16px;
+	}
+
+	#scene-layers-wrapper li ul {
+		display: none;
+	}
+
+	#scene-layers-wrapper li.active > ul {
+		display: block;
+	}
+
+	#scene-layers-wrapper ul ul {
+		padding: 0px 0px 0px 32px;
+	}
+
+
+	.ico-eye,
+	.ico-arrow {
+		display: inline-block;
+		width: 32px;
+		line-height: 32px;
+		padding: 0;
+		margin: 0;
+		text-align: center;
+		cursor: pointer;
+	}
+
+	.ico-eye {
+		font-size: 12px;
+	}
+
+	.ico-arrow {
+		font-size: 8px;
+	}
+
+	label.ico-eye:before {
+		margin: 0px 8px 0px 8px;
+	}
+
+	label.ico-arrow:before {
+		margin: 0px 8px 0px 8px;
+	}
+	</style>
+</head>
+<body>
+<menu>
+	<b id="menu-toggle"></b>
+	<li class="ico-status active" onclick="ui.changeState('scene');">Scene</li>
+	<li class="ico-tools" onclick="ui.changeState('flow');">Flow</li>
+	<li class="ico-projects" onclick="ui.changeState('debugger');">Debugger</li>
+</menu>
+<aside>
+	<a class="button ico-tools">Projects</a>
+</aside>
+
+<section id="scene">
+
+	<div class="main">
+
+		<article id="scene-preview">
+			<h3>
+				<div id="scene-preview-mode">
+					<button id="scene-preview-mode-play" class="ico-only ico-play active" onclick="MAIN.trigger('changemode', [ 'play' ]);"></button>
+					<button id="scene-preview-mode-modify" class="ico-only ico-modify" onclick="MAIN.trigger('changemode', [ 'modify' ]);"></button>
+					<button id="scene-preview-mode-create" class="ico-only ico-create" onclick="MAIN.trigger('changemode', [ 'create' ]);"></button>
+				</div>
+			</h3>
+			<div id="scene-preview-wrapper"></div>
+		</article>
+
+		<article id="scene-settings">
+			<h3 onclick="ui.toggle('#scene-settings-wrapper');">No Entity selected</h3>
+
+			<form id="settings" enctype="application/json" action="MAIN.state" method="javascript">
+			<div class="collapse-content" id="scene-settings-wrapper">
+				<div>
+					<div class="row">
+						<span>Position</span>
+					</div>
+					<div class="row">
+						<label>x</label>
+						<input type="number" name="entity-position-x" min="-2048" max="2048" value="" placeholder="0">
+						<label>y</label>
+						<input type="number" name="entity-position-y" min="-2048" max="2048" value="" placeholder="0">
+					</div>
+					<div class="row">
+						<span>Size</span>
+					</div>
+					<div class="row">
+						<label>W</label>
+						<input type="number" name="entity-width" min="0" max="2048" value="" placeholder="0">
+						<label>H</label>
+						<input type="number" name="entity-height" min="0" max="2048" value="" placeholder="0">
+					</div>
+				</div>
+			</div>
+			</form>
+
+			<h3 onclick="ui.toggle('#scene-layers-wrapper');">Layers</h3>
+			<div class="collapse-content active no-padding" id="scene-layers-wrapper"></div>
+		</article>
+
+	</div>
+
+</section>
+
+<footer>
+	lycheeJS is (c) 2012-2015 by LazerUnicorns and released under MIT license.
+</footer>
+<script src="./index.js"></script>
+</body>
+</html>    

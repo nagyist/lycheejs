@@ -1,6 +1,7 @@
 
 lychee.define('sorbet.serve.API').requires([
 	'lychee.data.JSON',
+	'sorbet.serve.api.Editor',
 	'sorbet.serve.api.Profile',
 	'sorbet.serve.api.Project',
 	'sorbet.serve.api.Server'
@@ -9,6 +10,7 @@ lychee.define('sorbet.serve.API').requires([
 	var _JSON = lychee.data.JSON;
 
 	var _ADMIN  = {
+		'Editor':  sorbet.serve.api.Editor,
 		'Profile': sorbet.serve.api.Profile,
 		'Project': sorbet.serve.api.Project
 	};
@@ -34,7 +36,7 @@ lychee.define('sorbet.serve.API').requires([
 		process: function(host, url, data, ready) {
 
 			var api  = url.split('/').pop().split('?')[0];
-			var name = (data.headers['Host'] || '');
+			var name = (data.headers.host || '');
 
 			if (name === 'localhost:4848' && _ADMIN[api] !== undefined) {
 

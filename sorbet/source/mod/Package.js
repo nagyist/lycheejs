@@ -7,6 +7,36 @@ lychee.define('sorbet.mod.Package').requires([
 	 * HELPERS
 	 */
 
+	var _get_diff = function(project) {
+
+		var diff = {
+			api:    [ project.package.api,    []],
+			build:  [ project.package.build,  []],
+			source: [ project.package.source, []]
+		};
+
+
+		_walk_directory.call(project.filesystem, diff.api[1],    '/api');
+		_walk_directory.call(project.filesystem, diff.build[1],  '/build');
+		_walk_directory.call(project.filesystem, diff.source[1], '/source');
+
+		diff.api[1] = diff.api[1].map(function(value) {
+			return value.substr('/api'.length);
+		});
+
+		diff.build[1] = diff.build[1].map(function(value) {
+			return value.substr('/build'.length);
+		});
+
+		diff.source[1] = diff.source[1].map(function(value) {
+			return value.substr('/source'.length);
+		});
+
+
+		return diff;
+
+	};
+
 	var _insert = function(root, url) {
 
 		var pointer    = root;
@@ -20,8 +50,7 @@ lychee.define('sorbet.mod.Package').requires([
 			if (pointer[name] !== undefined) {
 				pointer = pointer[name];
 			} else {
-				pointer[name] = path.length > 0 ? {} : [];
-				pointer = pointer[name];
+				pointer = pointer[name] = path.length > 0 ? {} : [];
 			}
 
 		}
@@ -104,7 +133,7 @@ lychee.define('sorbet.mod.Package').requires([
 						files.push(path);
 					}
 
-				} else if (ext.match(/js|json|fnt|png/)) {
+				} else if (ext.match(/md|js|json|fnt|png/)) {
 
 					if (files.indexOf(path) === -1) {
 						files.push(path);
@@ -134,34 +163,17 @@ lychee.define('sorbet.mod.Package').requires([
 
 		can: function(project) {
 
-			// Ignore lychee core for now, because we want to develop with unstable builds
-			if (project.identifier === 'lychee') {
-				return false;
-			}
-
-
 			if (project.package !== null) {
 
-				var diff    = null;
-				var files_a = project.package.source;
-				var files_b = [];
-				var files_c = project.package.build;
-				var files_d = [];
+				var diff = _get_diff(project);
 
+				for (var id in diff) {
 
-				_walk_directory.call(project.filesystem, files_b, '/source');
-				files_b = files_b.map(function(value) {
-					return value.substr('/source'.length);
-				});
+					var data = diff[id];
+					if (data[0].length !== data[1].length) {
+						return true;
+					}
 
-				_walk_directory.call(project.filesystem, files_d, '/build');
-				files_d = files_d.map(function(value) {
-					return value.substr('/build'.length);
-				});
-
-
-				if (files_a.length !== files_b.length || files_c.length !== files_d.length) {
-					return true;
 				}
 
 			}
@@ -175,107 +187,82 @@ lychee.define('sorbet.mod.Package').requires([
 
 			if (project.package !== null) {
 
-				var diff    = [];
-				var mode    = null;
-				var json    = JSON.parse(JSON.stringify(project.package.json));
-				var files_a = project.package.source;
-				var files_b = [];
-				var files_c = project.package.build;
-				var files_d = [];
-
-				if (json instanceof Object && json.source instanceof Object) {
-
-					_walk_directory.call(project.filesystem, files_b, '/source');
-					files_b = files_b.map(function(value) {
-						return value.substr('/source'.length);
-					});
-
-					_walk_directory.call(project.filesystem, files_d, '/build');
-					files_d = files_d.map(function(value) {
-						return value.substr('/build'.length);
-					});
+				var diff       = _get_diff(project);
+				var json       = JSON.parse(JSON.stringify(project.package.json));
+				var operations = [];
 
 
+				for (var id in diff) {
 
-					if (files_b.length > files_a.length) {
+					if (typeof json[id] === 'undefined')       json[id]       = {};
+					if (typeof json[id].files === 'undefined') json[id].files = {};
 
-						diff.push({
-							json:  json.source.files,
-							mode:  'insert',
-							files: files_b.filter(function(value) {
-								return files_a.indexOf(value) === -1;
+
+					var data    = diff[id];
+					var pointer = json[id].files;
+
+					if (data[1].length > data[0].length) {
+
+						operations.push({
+							pointer: pointer,
+							mode:    'insert',
+							files:   data[1].filter(function(value) {
+								return data[0].indexOf(value) === -1;
 							})
 						});
 
-					} else if (files_a.length > files_b.length) {
+					} else if (data[0].length > data[1].length) {
 
-						diff.push({
-							json:  json.source.files,
-							mode:  'delete',
-							files: files_a.filter(function(value) {
-								return files_b.indexOf(value) === -1;
+						operations.push({
+							pointer: pointer,
+							mode:    'delete',
+							files:   data[0].filter(function(value) {
+								return data[1].indexOf(value) === -1;
 							})
 						});
 
 					}
 
+				}
 
-					if (files_d.length > files_c.length) {
 
-						diff.push({
-							json:  json.build.files,
-							mode:  'insert',
-							files: files_d.filter(function(value) {
-								return files_c.indexOf(value) === -1;
-							})
-						});
+				if (operations.length > 0) {
 
-					} else if (files_c.length > files_d.length) {
+					operations.forEach(function(operation) {
 
-						diff.push({
-							json:  json.build.files,
-							mode:  'delete',
-							files: files_c.filter(function(value) {
-								return files_d.indexOf(value) === -1;
-							})
-						});
+						switch (operation.mode) {
 
+							case 'insert':
+
+								operation.files.forEach(function(file) {
+									_insert(operation.pointer, file);
+								});
+
+							break;
+
+							case 'delete':
+
+								operation.files.forEach(function(file) {
+									_delete(operation.pointer, file);
+								});
+
+							break;
+
+						}
+
+					});
+
+
+					var data = null;
+
+					try {
+						data = JSON.stringify(json, null, '\t');
+					} catch(e) {
 					}
 
-
-					if (diff.length > 0) {
-
-						diff.forEach(function(entry) {
-
-							var mode = entry.mode;
-							if (mode === 'insert') {
-
-								entry.files.forEach(function(file) {
-									_insert(entry.json, file);
-								});
-
-							} else if (mode === 'delete') {
-
-								entry.files.forEach(function(file) {
-									_delete(entry.json, file);
-								});
-
-							}
-
-						});
-
-
-						var data = null;
-
-						try {
-							data = JSON.stringify(json, null, '\t');
-						} catch(e) {
-						}
-
-						if (data !== null) {
-							project.filesystem.write('/lychee.pkg', data);
-						}
-
+					if (data !== null) {
+						project.filesystem.write('/lychee.pkg', data);
+						project.package = new sorbet.data.Package(new Buffer(data, 'utf8'));
 					}
 
 				}

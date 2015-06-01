@@ -1,0 +1,156 @@
+
+header {
+	display: block;
+	height: 64px;
+	margin: 0px;
+	padding: 16px 32px;
+	line-height: 64px;
+	vertical-align: middle;
+}
+
+#logo, #logo h2 {
+	display: inline-block;
+	font-size: 32px;
+}
+
+#score {
+	display: inline-block;
+	float: right;
+	font-size: 24px;
+}
+
+#score span {
+	padding: 0px 8px;
+	font-size: 42px;
+}
+
+#score-amount {
+	color: #d0494b;
+}
+
+#score-total {
+	color: #2f3736;
+}
+
+
+div.main {
+	backface-visibility: hidden;
+	will-change: overflow;
+}
+
+article#navi {
+	background: #363f3e;
+}
+
+article#navi ul {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+}
+
+article#navi ul li {
+	margin: 0px;
+	padding: 0px;
+}
+
+article#navi ul li a {
+	display: block;
+	margin: 0px;
+	padding: 0px 16px;
+	color: #efefef;
+	font-family: 'museo-sans-300';
+	font-size: 16px;
+	line-height: 32px;
+}
+
+article#navi ul li a:hover,
+article#navi ul li a:focus,
+article#navi ul li a.active {
+	color: #efefef;
+	background: #32afe5;
+}
+
+article#navi ul li a.no-docs {
+	color: #2f3736;
+}
+
+article#view {
+	color: #efefef;
+	padding: 16px;
+	background: none;
+}
+
+article#view article {
+	background: none;
+}
+
+article#view h1,
+article#view h2,
+article#view h4 {
+	font-size: 32px;
+	font-family: 'museo-sans-300';
+	text-transform: none;
+	font-weight: bold;
+	color: #efefef;
+}
+
+article#view h1 { font-size: 32px; }
+article#view h2 { font-size: 32px; }
+article#view h3 { font-size: 24px; }
+article#view h4 { font-size: 24px; }
+
+article#view p {
+	margin: 1em;
+}
+
+article#view li {
+	margin: 0.2em 0em;
+}
+
+article#view p,
+article#view li {
+	line-height: 24px;
+	font-size: 16px;
+	font-family: 'museo-sans-300';
+	color: #efefef;
+	-webkit-font-smoothing: auto;
+}
+
+article#view pre {
+	padding: 16px;
+	font-family: monaco, Consolas, 'Lucida Console', monospace;
+	background: #2f3736;
+}
+
+article#view code {
+	display: inline-block;
+	padding: 0.2em 0.4em;
+	color: #efefef;
+	background: #2f3736;
+	font-family: monaco, Consolas, 'Lucida Console', monospace;
+	font-size: 14px;
+	border-radius: 3px;
+	-webkit-font-smoothing: antialiased;
+}
+
+article#view article {
+	margin: 128px 0px;
+}
+
+article#view article#constructor {
+	margin-top: 0px;
+}
+
+article#view article pre:nth-of-type(1) {
+	margin: 24px 0px;
+	padding: 0px;
+	background: transparent;
+	overflow: hidden;
+}
+
+article#view article pre:nth-of-type(1) code {
+	font-size: 32px;
+	background: transparent;
+	overflow: hidden;
+}
+

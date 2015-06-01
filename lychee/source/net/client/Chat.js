@@ -15,14 +15,20 @@ lychee.define('lychee.net.client.Chat').includes([
 		this.user = null;
 
 
+		lychee.net.Service.call(this, id, client, lychee.net.Service.TYPE.client);
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
+
 		this.setRoom(settings.room);
 		this.setUser(settings.user);
 
 		delete settings.room;
 		delete settings.user;
 
-
-		lychee.net.Service.call(this, id, client, lychee.net.Service.TYPE.client);
 
 		settings = null;
 
@@ -89,7 +95,7 @@ lychee.define('lychee.net.client.Chat').includes([
 
 		setRoom: function(room) {
 
-			room = typeof room === 'number' ? room : null;
+			room = typeof room === 'string' ? room : null;
 
 
 			if (room !== null) {

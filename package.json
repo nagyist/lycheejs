@@ -2,14 +2,14 @@
 	"name":        "lycheejs",
 	"homepage":    "http://lycheejs.org",
 	"license":     "MIT",
-	"version":     "0.8.5",
+	"version":     "0.8.6",
 	"description": "Next-Gen Isomorphic Peer-to-Peer Application Engine for Embedded, Console, Mobile, Server and Desktop",
 
 	"keywords": [
 		"lycheejs",
 		"application",
 		"engine",
-		"nodejs",
+		"iojs",
 		"webgl",
 		"opengl",
 		"libsdl",
@@ -21,7 +21,7 @@
 		"windows"
 	],
 
-	"main":           "./lychee/build/nodejs/core.js",
+	"main":           "./lychee/build/iojs/core.js",
 	"readmeFilename": "README.md",
 
 	"scripts": {
@@ -32,7 +32,9 @@
 		"stop":        "./bin/sorbet.sh stop",
 
 		"development": "./bin/sorbet.sh start development",
-		"production":  "./bin/sorbet.sh start production"
+		"production":  "./bin/sorbet.sh start production",
+
+		"local-git":   "git daemon --reuseaddr --base-path=. --export-all --verbose"
 
 	},
 
@@ -45,7 +47,7 @@
 
 	"author": {
 		"name":  "The lycheeJS project and its contributors",
-		"email": "support@lazerunicorns.com"
+		"email": "lycheejs@gmail.com"
 	},
 
 	"repository": {

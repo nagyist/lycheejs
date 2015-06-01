@@ -41,7 +41,7 @@ lychee.define('Renderer').tags({
 
 		if (typeof color === 'string') {
 
-			if (color.match(/(#[AaBbCcDdEeFf0-9]{6})/) || color.match(/(#[AaBbCcDdEeFf0-9]{8})/)) {
+			if (color.match(/(#[AaBbCcDdEeFf0-9]{6})/)) {
 				return true;
 			}
 
@@ -49,44 +49,6 @@ lychee.define('Renderer').tags({
 
 
 		return false;
-
-	};
-
-	var _hex_to_rgba = function(hex) {
-
-		if (_color_cache[hex] !== undefined) {
-			return _color_cache[hex];
-		}
-
-		var rgba = [ 0, 0, 0, 255 ];
-
-		if (typeof hex === 'string') {
-
-			if (hex.length === 7) {
-
-				rgba[0] = parseInt(hex[1] + hex[2], 16);
-				rgba[1] = parseInt(hex[3] + hex[4], 16);
-				rgba[2] = parseInt(hex[5] + hex[6], 16);
-				rgba[3] = 255;
-
-			} else if (hex.length === 9) {
-
- 				rgba[0] = parseInt(hex[1] + hex[2], 16);
-				rgba[1] = parseInt(hex[3] + hex[4], 16);
-				rgba[2] = parseInt(hex[5] + hex[6], 16);
-				rgba[3] = parseInt(hex[7] + hex[8], 16);
-
-			}
-
-		}
-
-
-		var color = 'rgba(' + rgba[0] + ',' + rgba[1] + ',' + rgba[2] + ',' + (rgba[3] / 255) + ')';
-
-		_color_cache[hex] = color;
-
-
-		return color;
 
 	};
 
@@ -148,7 +110,7 @@ lychee.define('Renderer').tags({
 		this.offset     = { x: 0, y: 0 };
 
 		this.__canvas           = global.document.createElement('canvas');
-		this.__canvas.className = 'lychee-Renderer-canvas';
+		this.__canvas.className = 'lychee-Renderer';
 		this.__ctx              = this.__canvas.getContext('2d');
 		global.document.body.appendChild(this.__canvas);
 
@@ -253,7 +215,7 @@ lychee.define('Renderer').tags({
 
 			this.__canvas.width       = this.width;
 			this.__canvas.style.width = this.width + 'px';
-			this.offset.x             = this.__canvas.offsetLeft;
+			this.offset.x             = this.__canvas.getBoundingClientRect().left;
 
 		},
 
@@ -271,7 +233,7 @@ lychee.define('Renderer').tags({
 
 			this.__canvas.height       = this.height;
 			this.__canvas.style.height = this.height + 'px';
-			this.offset.y              = this.__canvas.offsetTop;
+			this.offset.y              = this.__canvas.getBoundingClientRect().top;
 
 		},
 
@@ -446,47 +408,6 @@ lychee.define('Renderer').tags({
 				ctx.stroke();
 			} else {
 				ctx.fillStyle   = color;
-				ctx.fill();
-			}
-
-			ctx.closePath();
-
-		},
-
-		drawLight: function(x, y, radius, color, background, lineWidth) {
-
-			color      = _is_color(color) ? _hex_to_rgba(color) : 'rgba(255,255,255,1.0)';
-			background = background === true;
-			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
-
-
-			var ctx = this.__ctx;
-
-
-			var gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
-
-			gradient.addColorStop(0, color);
-			gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-
-			ctx.globalAlpha = this.alpha;
-			ctx.beginPath();
-
-			ctx.arc(
-				x,
-				y,
-				radius,
-				0,
-				Math.PI * 2
-			);
-
-
-			if (background === false) {
-				ctx.lineWidth   = lineWidth;
-				ctx.strokeStyle = gradient;
-				ctx.stroke();
-			} else {
-				ctx.fillStyle   = gradient;
 				ctx.fill();
 			}
 

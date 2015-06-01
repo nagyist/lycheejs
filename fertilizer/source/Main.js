@@ -4,12 +4,14 @@ lychee.define('fertilizer.Main').requires([
 	'lychee.data.JSON',
 	'fertilizer.data.Filesystem',
 	'fertilizer.data.Shell',
-	'fertilizer.template.html-nwjs.Application',
-	'fertilizer.template.html-nwjs.Library',
 	'fertilizer.template.html.Application',
 	'fertilizer.template.html.Library',
-	'fertilizer.template.nodejs.Application',
-	'fertilizer.template.nodejs.Library'
+	'fertilizer.template.html-nwjs.Application',
+	'fertilizer.template.html-nwjs.Library',
+	'fertilizer.template.html-webview.Application',
+	'fertilizer.template.html-webview.Library',
+	'fertilizer.template.iojs.Application',
+	'fertilizer.template.iojs.Library'
 ]).includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, sorbet, global, attachments) {

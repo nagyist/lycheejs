@@ -61,6 +61,44 @@ lychee.define('sorbet.data.Filesystem').exports(function(lychee, sorbet, global,
 		 * PUBLIC API
 		 */
 
+		asset: function(path, callback, scope) {
+
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : this;
+
+
+			var asset    = null;
+			var resolved = _path.normalize(this.root.substr(process.cwd().length) + path);
+			if (callback !== null) {
+
+				asset = new lychee.Asset(resolved, null, true);
+
+				if (asset !== null) {
+					asset.load();
+				}
+
+				callback.call(scope, asset);
+
+			} else {
+
+				try {
+
+					asset = new lychee.Asset(resolved, null, true);
+
+					if (asset !== null) {
+						asset.load();
+					}
+
+					return asset;
+
+				} catch(e) {
+					return null;
+				}
+
+			}
+
+		},
+
 		dir: function(path, callback, scope) {
 
 			callback = callback instanceof Function ? callback : null;

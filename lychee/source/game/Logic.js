@@ -53,6 +53,7 @@ lychee.define('lychee.game.Logic').requires([
 		this.__layers   = [];
 
 
+		this.setLayers(settings.layers);
 		this.setPhysic(settings.physic);
 		this.setProjection(settings.projection);
 		this.setTile(settings.tile);
@@ -125,7 +126,7 @@ lychee.define('lychee.game.Logic').requires([
 
 			var layers = this.__layers;
 			for (var l = 0, ll = layers.length; l < ll; l++) {
-				_project_layer(layers[l]);
+				_project_layer.call(this, layers[l]);
 			}
 
 		},
@@ -134,7 +135,7 @@ lychee.define('lychee.game.Logic').requires([
 
 			var layers = this.__layers;
 			for (var l = 0, ll = layers.length; l < ll; l++) {
-				_unproject_layer(layers[l]);
+				_unproject_layer.call(this, layers[l]);
 			}
 
 		},
