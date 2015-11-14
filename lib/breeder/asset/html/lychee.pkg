@@ -1,0 +1,29 @@
+{
+	"build": {
+		"environments": {},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"state": {
+				"Welcome": [
+					"js"
+				],
+				"Settings": [
+					"js"
+				]
+			},
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js"
+			]
+		}
+	},
+	"api": {
+		"files": {}
+	}
+}

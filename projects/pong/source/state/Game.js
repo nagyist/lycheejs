@@ -8,14 +8,10 @@ lychee.define('game.state.Game').requires([
 	'game.ui.Welcome',
 	'lychee.ui.Label'
 ]).includes([
-	'lychee.game.State'
+	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _blob  = attachments["json"].buffer;
-	var _fonts = {
-		headline: attachments["headline.fnt"],
-		normal:   attachments["normal.fnt"]
-	};
 
 	var _boo   = attachments["boo.snd"];
 	var _cheer = attachments["cheer.snd"];
@@ -102,7 +98,7 @@ lychee.define('game.state.Game').requires([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 
 
 		this.__ai = {
@@ -142,10 +138,6 @@ lychee.define('game.state.Game').requires([
 					var height = renderer.height;
 
 
-					this.getLayer('ui').reshape();
-					this.getLayer('game').reshape();
-
-
 					entity = this.queryLayer('background', 'background');
 					entity.width  = width;
 					entity.height = height;
@@ -179,7 +171,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.State.prototype.serialize.call(this);
+			var data = lychee.app.State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -189,7 +181,7 @@ lychee.define('game.state.Game').requires([
 
 		deserialize: function(blob) {
 
-			lychee.game.State.prototype.deserialize.call(this, blob);
+			lychee.app.State.prototype.deserialize.call(this, blob);
 
 		},
 
@@ -203,7 +195,7 @@ lychee.define('game.state.Game').requires([
 			_reset_game.call(this, null);
 
 
-			lychee.game.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this);
 
 
 
@@ -236,7 +228,7 @@ lychee.define('game.state.Game').requires([
 
 		leave: function() {
 
-			lychee.game.State.prototype.leave.call(this);
+			lychee.app.State.prototype.leave.call(this);
 
 			this.input.unbind('touch', _on_touch, this);
 
@@ -244,7 +236,7 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			lychee.game.State.prototype.update.call(this, clock, delta);
+			lychee.app.State.prototype.update.call(this, clock, delta);
 
 
 			var jukebox    = this.jukebox;

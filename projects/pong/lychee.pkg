@@ -59,10 +59,6 @@
 					"json",
 					"enemy.png",
 					"player.png"
-				],
-				"lycheeJS": [
-					"js",
-					"png"
 				]
 			},
 			"state": {
@@ -73,9 +69,7 @@
 					"cheer.snd",
 					"music.msc",
 					"ping.snd",
-					"pong.snd",
-					"headline.fnt",
-					"normal.fnt"
+					"pong.snd"
 				]
 			},
 			"ui": {
@@ -88,8 +82,12 @@
 				"js"
 			],
 			"index": [
-				"js"
+				"js",
+				"html"
 			]
 		}
+	},
+	"api": {
+		"files": {}
 	}
 }

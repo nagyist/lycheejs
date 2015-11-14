@@ -27,6 +27,9 @@
 		"tags": {},
 		"files": {
 			"state": {
+				"Project": [
+					"js"
+				],
 				"Scene": [
 					"js"
 				]
@@ -35,8 +38,15 @@
 				"js"
 			],
 			"index": [
+				"js",
+				"html"
+			],
+			"Main__OLD": [
 				"js"
 			]
 		}
+	},
+	"api": {
+		"files": {}
 	}
 }

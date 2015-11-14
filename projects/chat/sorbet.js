@@ -1,4 +1,4 @@
-#!/usr/bin/env iojs
+#!/usr/bin/env node
 
 
 
@@ -11,7 +11,7 @@ var _folder = __dirname.substr(_root.length);
 var _port   = parseInt(process.argv[3], 10);
 var _host   = process.argv[4] === 'null' ? null : process.argv[4];
 
-require(_root + '/lychee/build/iojs/core.js')(_root);
+require(_root + '/lib/lychee/build/node/core.js')(_root);
 
 
 
@@ -24,12 +24,12 @@ require(_root + '/lychee/build/iojs/core.js')(_root);
 	var environment = new lychee.Environment({
 		debug:    false,
 		sandbox:  false,
-		build:    'game.net.Server',
+		build:    'app.net.Server',
 		packages: [
-			new lychee.Package('game', _folder + '/lychee.pkg')
+			new lychee.Package('app', _folder + '/lychee.pkg')
 		],
 		tags:     {
-			platform: [ 'iojs' ]
+			platform: [ 'node' ]
 		}
 	});
 
@@ -39,9 +39,9 @@ require(_root + '/lychee/build/iojs/core.js')(_root);
 	lychee.init(function(sandbox) {
 
 		var lychee = sandbox.lychee;
-		var game   = sandbox.game;
+		var app    = sandbox.app;
 
-		sandbox.SERVER = new game.net.Server({
+		sandbox.SERVER = new app.net.Server({
 			host: _host,
 			port: _port
 		});

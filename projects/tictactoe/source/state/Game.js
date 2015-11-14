@@ -1,12 +1,12 @@
 
 lychee.define('game.state.Game').requires([
 	'lychee.effect.Shake',
-	'lychee.game.Background',
+	'lychee.ui.Background',
 	'game.entity.Board',
 	'game.ui.Button',
 	'game.ui.Label'
 ]).includes([
-	'lychee.game.State'
+	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _blob  = attachments["json"].buffer;
@@ -71,30 +71,42 @@ lychee.define('game.state.Game').requires([
 		var tiles  = this.queryLayer('ui', 'board').entities;
 		var state  = 'active-' + player;
 
+		var get_horizontal = function(y) {
+
+			return tiles.filter(function(tile) {
+				return tile.y === y && tile.state === state;
+			});
+
+		};
+
+		var get_vertical   = function(x) {
+
+			return tiles.filter(function(tile) {
+				return tile.x === x && tile.state === state;
+			});
+
+		};
+
 
         for (var y = 1; y <= 3; y++) {
 
-            var horizontal = tiles.filter(function(tile) {
-                return tile.y === y && tile.state === state;
-            });
-
+			var horizontal = get_horizontal(y);
             if (horizontal.length === 3) {
                 return true;
             }
 
         }
 
+
         for (var x = 1; x <= 3; x++) {
 
-            var vertical = tiles.filter(function(tile) {
-                return tile.x === x && tile.state === state;
-            });
-
+            var vertical = get_vertical(x);
             if (vertical.length === 3) {
                 return true;
             }
 
         }
+
 
         var diagonal_tlbr = tiles.filter(function(tile) {
             return tile.x === tile.y && tile.state === state;
@@ -170,7 +182,7 @@ lychee.define('game.state.Game').requires([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 
 
 		this.__player = 'x';
@@ -219,7 +231,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.State.prototype.serialize.call(this);
+			var data = lychee.app.State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -229,7 +241,7 @@ lychee.define('game.state.Game').requires([
 
 		deserialize: function(blob) {
 
-			lychee.game.State.prototype.deserialize.call(this, blob);
+			lychee.app.State.prototype.deserialize.call(this, blob);
 
 
 			this.queryLayer('ui', 'board').entities.forEach(function(entity) {
@@ -250,13 +262,13 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			lychee.game.State.prototype.update.call(this, clock, delta);
+			lychee.app.State.prototype.update.call(this, clock, delta);
 
 		},
 
 		enter: function() {
 
-			lychee.game.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this);
 
 
 			this.__player   = 'x';
@@ -283,7 +295,7 @@ lychee.define('game.state.Game').requires([
 
 		leave: function() {
 
-			lychee.game.State.prototype.leave.call(this);
+			lychee.app.State.prototype.leave.call(this);
 
 
 			this.jukebox.stop(_music);

@@ -1,0 +1,335 @@
+{
+	"map": {
+		"ammo": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 32,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 64,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 96,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"black-bottom": [
+			{
+				"x": 128,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"black-left": [
+			{
+				"x": 160,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"black-right": [
+			{
+				"x": 192,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"black-top": [
+			{
+				"x": 224,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"blue-bottom": [
+			{
+				"x": 0,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"blue-left": [
+			{
+				"x": 32,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"blue-right": [
+			{
+				"x": 64,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"blue-top": [
+			{
+				"x": 96,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"green-bottom": [
+			{
+				"x": 128,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"green-left": [
+			{
+				"x": 160,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"green-right": [
+			{
+				"x": 192,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"green-top": [
+			{
+				"x": 224,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"life": [
+			{
+				"x": 0,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 32,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 64,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			},
+			{
+				"x": 96,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"rainbow-bottom": [
+			{
+				"x": 128,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"rainbow-left": [
+			{
+				"x": 160,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"rainbow-right": [
+			{
+				"x": 192,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"rainbow-top": [
+			{
+				"x": 224,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"red-bottom": [
+			{
+				"x": 0,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"red-left": [
+			{
+				"x": 32,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"red-right": [
+			{
+				"x": 64,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"red-top": [
+			{
+				"x": 96,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"white-bottom": [
+			{
+				"x": 128,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"white-left": [
+			{
+				"x": 160,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"white-right": [
+			{
+				"x": 192,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"white-top": [
+			{
+				"x": 224,
+				"y": 96,
+				"w": 32,
+				"h": 32
+			}
+		]
+	},
+	"shape": 1,
+	"states": {
+		"ammo": {
+			"animation": true,
+			"duration": 1000,
+			"loop": true
+		},
+		"black-bottom": {
+			"animation": false
+		},
+		"black-left": {
+			"animation": false
+		},
+		"black-right": {
+			"animation": false
+		},
+		"black-top": {
+			"animation": false
+		},
+		"blue-bottom": {
+			"animation": false
+		},
+		"blue-left": {
+			"animation": false
+		},
+		"blue-right": {
+			"animation": false
+		},
+		"blue-top": {
+			"animation": false
+		},
+		"green-bottom": {
+			"animation": false
+		},
+		"green-left": {
+			"animation": false
+		},
+		"green-right": {
+			"animation": false
+		},
+		"green-top": {
+			"animation": false
+		},
+		"life": {
+			"animation": true,
+			"duration": 1000,
+			"loop": true
+		},
+		"rainbow-bottom": {
+			"animation": false
+		},
+		"rainbow-left": {
+			"animation": false
+		},
+		"rainbow-right": {
+			"animation": false
+		},
+		"rainbow-top": {
+			"animation": false
+		},
+		"red-bottom": {
+			"animation": false
+		},
+		"red-left": {
+			"animation": false
+		},
+		"red-right": {
+			"animation": false
+		},
+		"red-top": {
+			"animation": false
+		},
+		"white-bottom": {
+			"animation": false
+		},
+		"white-left": {
+			"animation": false
+		},
+		"white-right": {
+			"animation": false
+		},
+		"white-top": {
+			"animation": false
+		}
+	},
+	"width": 32,
+	"height": 32
+}

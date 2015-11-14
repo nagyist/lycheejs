@@ -1,0 +1,32 @@
+{
+	"map": {
+		"default": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		]
+	},
+	"shape": 1,
+	"states": {
+		"arrow-bottom": {
+			"animation": false
+		},
+		"arrow-left": {
+			"animation": false
+		},
+		"arrow-right": {
+			"animation": false
+		},
+		"arrow-top": {
+			"animation": false
+		},
+		"default": {
+			"animation": false
+		}
+	},
+	"width": 32,
+	"height": 32
+}

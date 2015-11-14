@@ -1,0 +1,132 @@
+{
+	"layers": {
+		"background": {
+			"constructor": "lychee.app.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "app.entity.Background",
+					"arguments": [{}]
+				}],
+				"map": {
+					"background": 0
+				}
+			}
+		},
+		"midground": {
+			"constructor": "lychee.app.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "app.entity.Midground",
+					"arguments": [{}]
+				}, {
+					"constructor": "app.entity.Emblem",
+					"arguments": [{}]
+				}],
+				"map": {
+					"midground": 0,
+					"emblem":    1
+				}
+			}
+		},
+		"foreground": {
+			"constructor": "lychee.app.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.app.Layer",
+					"arguments": [{}],
+					"blob": {
+						"entities": [{
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": 0 }, "type" : "node1", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 0, "y": 80 }, "type": "horizontal-medium" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 0, "y": -80 }, "type": "horizontal-big" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 80, "y": 0 }, "type": "vertical-big" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": -80, "y": 0 }, "type": "vertical-big" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": 192 } , "type" : "fgb", "country" : "RU" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 0, "y": 304 } , "type": "horizontal-small" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": 352 }, "type": "node0" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 48, "y": 352 } , "type": "vertical-small" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": -48, "y": 352 } , "type": "vertical-small"  }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 0, "y": 400 } , "type": "horizontal-small" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": 512 }, "type" : "sm", "country" : "RU" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": -176, "y": 0 }, "type" : "node3", "alias" : "tranquility", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 128, "y": 0 }, "type" : "crewlock", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": -208 }, "type" : "destiny", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 0, "y": -336 }, "type": "horizontal-big" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 0, "y": -432 }, "type" : "harmony", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": 80, "y": -416 }, "type": "vertical-big" }]
+						}, {
+							"constructor": "app.entity.Airlock",
+							"arguments": [{ "position": { "x": -80, "y": -416 }, "type": "vertical-big" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 208, "y": -416 }, "type" : "columbus", "country" : "US" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": -192, "y": -416 }, "type" : "jem", "country" : "EU" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": 128, "y": 352 }, "type" : "dc1", "country" : "USSR" }]
+						}, {
+							"constructor": "app.entity.Room",
+							"arguments": [{ "position": { "x": -128, "y": 352 }, "type" : "mrm2", "country" : "US" }]
+						}]
+					}
+				}],
+				"map": {
+					"ship": 0
+				}
+			}
+		},
+		"ui": {
+			"constructor": "lychee.ui.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "app.ui.Overlay",
+					"arguments": [{}]
+				}],
+				"map": {
+					"overlay": 0
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,184 @@
+{
+	"map": {
+		"green-01": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-02": [
+			{
+				"x": 64,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-03": [
+			{
+				"x": 128,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-04": [
+			{
+				"x": 192,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-05": [
+			{
+				"x": 0,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-06": [
+			{
+				"x": 64,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-07": [
+			{
+				"x": 128,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"green-08": [
+			{
+				"x": 192,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-01": [
+			{
+				"x": 0,
+				"y": 128,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-02": [
+			{
+				"x": 64,
+				"y": 128,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-03": [
+			{
+				"x": 128,
+				"y": 128,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-04": [
+			{
+				"x": 192,
+				"y": 128,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-05": [
+			{
+				"x": 0,
+				"y": 192,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-06": [
+			{
+				"x": 64,
+				"y": 192,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-07": [
+			{
+				"x": 128,
+				"y": 192,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"red-08": [
+			{
+				"x": 192,
+				"y": 192,
+				"w": 64,
+				"h": 64
+			}
+		]
+	},
+	"states": {
+		"green-01": {
+			"animation": false
+		},
+		"green-02": {
+			"animation": false
+		},
+		"green-03": {
+			"animation": false
+		},
+		"green-04": {
+			"animation": false
+		},
+		"green-05": {
+			"animation": false
+		},
+		"green-06": {
+			"animation": false
+		},
+		"green-07": {
+			"animation": false
+		},
+		"green-08": {
+			"animation": false
+		},
+		"red-01": {
+			"animation": false
+		},
+		"red-02": {
+			"animation": false
+		},
+		"red-03": {
+			"animation": false
+		},
+		"red-04": {
+			"animation": false
+		},
+		"red-05": {
+			"animation": false
+		},
+		"red-06": {
+			"animation": false
+		},
+		"red-07": {
+			"animation": false
+		},
+		"red-08": {
+			"animation": false
+		}
+	},
+	"radius": 24,
+	"shape": 0
+}

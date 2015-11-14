@@ -1,6 +1,6 @@
 
 lychee.define('tool.state.Bootup').includes([
-	'lychee.game.State',
+	'lychee.app.State',
 	'lychee.event.Emitter'
 ]).tags({
 	platform: 'html'
@@ -30,7 +30,7 @@ lychee.define('tool.state.Bootup').includes([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 		lychee.event.Emitter.call(this);
 
 

@@ -1,10 +1,10 @@
 
-lychee.define('game.net.Server').requires([
+lychee.define('app.net.Server').requires([
 	'lychee.data.BitON',
 	'lychee.net.remote.Chat'
 ]).includes([
 	'lychee.net.Server'
-]).exports(function(lychee, game, global, attachments) {
+]).exports(function(lychee, app, global, attachments) {
 
 	var _BitON = lychee.data.BitON;
 	var _Chat  = lychee.net.remote.Chat;
@@ -31,13 +31,13 @@ lychee.define('game.net.Server').requires([
 				limit: 64
 			}));
 
-			console.log('(Anonchat) game.net.Server: Remote connected (' + remote.host + ':' + remote.port + ')');
+			console.log('(Chat) app.net.Server: Remote connected (' + remote.host + ':' + remote.port + ')');
 
 		}, this);
 
 		this.bind('disconnect', function(remote) {
 
-			console.log('(Anonchat) game.net.Server: Remote disconnected (' + remote.host + ':' + remote.port + ')');
+			console.log('(Chat) app.net.Server: Remote disconnected (' + remote.host + ':' + remote.port + ')');
 
 		}, this);
 
@@ -58,7 +58,7 @@ lychee.define('game.net.Server').requires([
 		serialize: function() {
 
 			var data = lychee.net.Server.prototype.serialize.call(this);
-			data['constructor'] = 'game.net.Server';
+			data['constructor'] = 'app.net.Server';
 
 
 			return data;

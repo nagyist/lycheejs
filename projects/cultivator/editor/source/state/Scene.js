@@ -1,6 +1,6 @@
 
 lychee.define('tool.state.Scene').includes([
-	'lychee.game.State',
+	'lychee.app.State',
 	'lychee.event.Emitter'
 ]).tags({
 	platform: 'html'
@@ -12,8 +12,9 @@ lychee.define('tool.state.Scene').includes([
 
 	var _cache  = {};
 
-	var _render = function(query, parent) {
+	var _ui_render = function(query, parent) {
 
+/*
 		var blob = this.serialize();
 		var code = '';
 		var name = this.label ? this.label : (parent.__map[query.split('/').pop()] || blob.constructor);
@@ -38,7 +39,7 @@ lychee.define('tool.state.Scene').includes([
 			var parent = this;
 
 			this.entities.forEach(function(entity, index) {
-				code += _render.call(entity, query + '/' + index, parent);
+				code += _ui_render.call(entity, query + '/' + index, parent);
 			});
 
 			code += '</ul>';
@@ -49,11 +50,13 @@ lychee.define('tool.state.Scene').includes([
 		code += '</li>';
 
 		return code;
+*/
 
 	};
 
 	var _ui_update = function(id) {
 
+/*
 		if (this.environment === null) return false;
 
 
@@ -70,7 +73,7 @@ lychee.define('tool.state.Scene').includes([
 				var dummy = { __map: {} };
 				dummy.__map[index] = Object.keys(layers).reverse()[index];
 
-				code += _render.call(layer, '/' + index, dummy);
+				code += _ui_render.call(layer, '/' + index, dummy);
 
 			});
 
@@ -85,6 +88,7 @@ lychee.define('tool.state.Scene').includes([
 
 
 		ui.render(code, '#scene-layers-wrapper');
+*/
 
 	};
 
@@ -97,10 +101,10 @@ lychee.define('tool.state.Scene').includes([
 	var Class = function(main) {
 
 
-		this.environment = null;
+		this.sandbox = null;
 
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 		lychee.event.Emitter.call(this);
 
 
@@ -111,6 +115,37 @@ lychee.define('tool.state.Scene').includes([
 
 		this.main.bind('changestate', _ui_update, this);
 
+		this.bind('changetool', function(tool) {
+
+console.log(tool);
+
+		}, this);
+
+
+		// MUHAHA I HAZ CRAPPY DOM
+		global.addEventListener('click', function(event) {
+
+			var target = event.target;
+			if (target !== null && target.className === 'lychee-Renderer') {
+
+				var parent = target.parentNode;
+
+console.log(event);
+
+console.log(parent.scrollTop);
+
+console.log('YES!');
+
+			} else {
+
+console.log('NO :\'(');
+
+			}
+
+		});
+
+
+/*
 
 		this.bind('entity', function(entity) {
 
@@ -172,17 +207,18 @@ console.log(settings);
 			var entity = pointer || null;
 			if (entity !== null) {
 
-				if (lychee.interfaceof(lychee.ui.Layer, entity) || lychee.interfaceof(lychee.game.Layer, entity)) {
+				if (lychee.interfaceof(lychee.ui.Layer, entity) || lychee.interfaceof(lychee.app.Layer, entity)) {
 					entity.setVisible(!entity.visible);
 				} else if (lychee.interfaceof(lychee.ui.Entity, entity)) {
 					entity.setVisible(!entity.visible);
-				} else if (lychee.interfaceof(lychee.game.Entity, entity)) {
+				} else if (lychee.interfaceof(lychee.app.Entity, entity)) {
 					entity.setAlpha(entity.alpha === 1 ? 0 : 1);
 				}
 
 			}
 
 		}, this);
+*/
 
 	};
 
@@ -206,22 +242,81 @@ console.log(settings);
 
 		},
 
-		enter: function(environment) {
+		enter: function() {
+
+			// TODO: Figure out if timestamps are necessary or if caching issues can be prevented in Project State
+			var that        = this;
+			var path        = this.main.project.package.url.split('?')[0];
+			var environment = new lychee.Environment({
+				id:      'sandbox',
+				debug:   true,
+				sandbox: true,
+				build:   'app.Main',
+				packages: [
+					new lychee.Package('lychee', '/lib/lychee/lychee.pkg'),
+					new lychee.Package('app',    path)
+				],
+				tags: {
+					platform: [ 'html' ]
+				}
+			});
+
+			lychee.setEnvironment(environment);
+
+			lychee.init(function(sandbox) {
+
+				var lychee = sandbox.lychee;
+				var app    = sandbox.app;
+
+				if (typeof app.Main !== 'undefined') {
+
+					sandbox.MAIN = new app.Main();
+
+					sandbox.MAIN.bind('init', function() {
+
+						var canvas  = document.querySelector('body > .lychee-Renderer');
+						var wrapper = document.querySelector('#scene-preview-wrapper');
+
+						if (canvas !== null && wrapper !== null) {
+							canvas.parentNode.removeChild(canvas);
+							wrapper.appendChild(canvas);
+							wrapper.style.height = (global.innerHeight - 208) + 'px';
+						}
+
+					}, this);
+
+					sandbox.MAIN.init();
+
+				}
+
+				that.sandbox = sandbox;
+
+			});
+
+
+console.log(environment);
+
+
+console.log('ENTERED');
+
+
+/*
 
 			this.environment = environment;
 
 			var id = Object.keys(MAIN.__states)[Object.values(MAIN.__states).indexOf(MAIN.state)] || null;
 			_ui_update.call(this, id);
+*/
 
-			lychee.game.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this);
 
 		},
 
 		leave: function() {
 
-			this.environment = null;
+console.log('LEFT');
 
-			lychee.game.State.prototype.leave.call(this);
+			lychee.app.State.prototype.leave.call(this);
 
 		}
 

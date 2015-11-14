@@ -5,9 +5,9 @@
 		id:       'chat',
 		debug:    false,
 		sandbox:  true,
-		build:    'game.Main',
+		build:    'app.Main',
 		packages: [
-			new lychee.Package('game', '../lychee.pkg')
+			new lychee.Package('app', '../lychee.pkg')
 		],
 		tags:     {
 			platform: [ 'html' ]
@@ -20,10 +20,10 @@
 	lychee.init(function(sandbox) {
 
 		var lychee = sandbox.lychee;
-		var game   = sandbox.game;
+		var app    = sandbox.app;
 
 		// This allows using #MAIN in JSON files
-		sandbox.MAIN = new game.Main();
+		sandbox.MAIN = new app.Main();
 		sandbox.MAIN.init();
 
 	});

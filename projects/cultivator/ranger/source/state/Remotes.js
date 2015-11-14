@@ -1,6 +1,6 @@
 
 lychee.define('tool.state.Remotes').includes([
-	'lychee.game.State',
+	'lychee.app.State',
 	'lychee.event.Emitter'
 ]).tags({
 	platform: 'html'
@@ -22,24 +22,21 @@ lychee.define('tool.state.Remotes').includes([
 			if (this.buffer instanceof Array) {
 
 				var servers = this.buffer.filter(function(server) {
-					return server.port !== null;
+					return server.port !== null && server.remotes.length > 0;
 				});
-
-
-
-				_ui_render.call(that, servers.filter(function(server) {
-					return server.remotes.length > 0;
-				}));
-
 
 				servers.forEach(function(server) {
 
 					_servers[server.identifier] = {
-						host: server.host,
-						port: server.port
+						identifier: server.identifier,
+						host:       server.host,
+						port:       server.port,
+						remotes:    server.remotes
 					};
 
 				});
+
+				_ui_render.call(that);
 
 			}
 
@@ -49,12 +46,21 @@ lychee.define('tool.state.Remotes').includes([
 
 	};
 
-	var _ui_render = function(servers) {
+	var _ui_render = function() {
 
-		var code = '';
+		var code    = '';
+		var servers = Object.values(_servers);
 
 		if (servers.length > 0) {
 
+			code += servers.map(function(server) {
+				return '<li><input type="radio" name="project" value="' + server.identifier + '"><span>' + server.identifier + '</span></li>';
+			}).join('');
+
+			ui.render(code, '#remotes-selection ul.select');
+
+
+/*
 			servers.forEach(function(server) {
 
 				code += '<article class="wide">';
@@ -98,17 +104,18 @@ lychee.define('tool.state.Remotes').includes([
 				code += '</article>';
 
 			});
+*/
 
 		} else {
 
-			code += '<article class="wide">';
-			code += '<h3 class="center">No Remote connected to any Server</h3>';
-			code += '</article>';
+//			code += '<article class="wide">';
+//			code += '<h3>No Remote connected to any Server</h3>';
+//			code += '</article>';
 
 		}
 
 
-		ui.render(code, '#remotes-servers');
+		// ui.render(code, '#remotes-servers');
 
 	};
 
@@ -120,7 +127,7 @@ lychee.define('tool.state.Remotes').includes([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 		lychee.event.Emitter.call(this);
 
 
@@ -180,6 +187,16 @@ console.log('CONNECT', project, remote, mode, server);
 			}
 
 console.log('DISCONNECT', project, remote, server);
+
+		}, this);
+
+		this.bind('submit', function(id, settings) {
+
+			if (id === 'settings') {
+
+			}
+
+console.log(id, settings, _servers);
 
 		}, this);
 

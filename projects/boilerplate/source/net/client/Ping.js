@@ -1,7 +1,7 @@
 
-lychee.define('game.net.client.Ping').includes([
+lychee.define('app.net.client.Ping').includes([
 	'lychee.net.Service'
-]).exports(function(lychee, game, global, attachments) {
+]).exports(function(lychee, app, global, attachments) {
 
 	/*
 	 * HELPERS
@@ -46,7 +46,7 @@ lychee.define('game.net.client.Ping').includes([
 		serialize: function() {
 
 			var data = lychee.net.Service.prototype.serialize.call(this);
-			data['constructor'] = 'game.net.client.Ping';
+			data['constructor'] = 'app.net.client.Ping';
 			data['arguments']   = [ '#MAIN.client' ];
 
 

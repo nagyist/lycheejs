@@ -1,6 +1,6 @@
 
 lychee.define('game.entity.Paddle').includes([
-	'lychee.game.Sprite'
+	'lychee.app.Sprite'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _config   = attachments["json"].buffer;
@@ -18,7 +18,7 @@ lychee.define('game.entity.Paddle').includes([
 		settings.texture = _textures[settings.state || 'player'];
 
 
-		lychee.game.Sprite.call(this, settings);
+		lychee.app.Sprite.call(this, settings);
 
 		settings = null;
 
@@ -33,7 +33,7 @@ lychee.define('game.entity.Paddle').includes([
 
 		serialize: function() {
 
-			var data = lychee.game.Sprite.prototype.serialize.call(this);
+			var data = lychee.app.Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Paddle';
 
 

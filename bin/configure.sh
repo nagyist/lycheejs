@@ -8,7 +8,7 @@ OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 USER=`whoami`;
 
-LYCHEEJS_IOJS="";
+LYCHEEJS_NODE="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
 
 NO_INTEGRATION=false;
@@ -33,21 +33,14 @@ fi;
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node";
 	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/nwjs.app";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/nwjs";
-
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-	ARCH="x86"; # Well, fuck you, Microsoft
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
-	LYCHEEJS_NWJS="$LYCHEEJS_ROOT/bin/runtime/html-nwjs/windows/nwjs.exe";
 
 fi;
 
@@ -60,48 +53,71 @@ if [ "$USER" != "root" ]; then
 
 else
 
-	cd $LYCHEEJS_ROOT;
+	if [[ "$OS" == "linux" || "$OS" == "osx" ]]; then
+
+		echo "> Building lycheeJS core and fertilizers";
+
+
+		cd $LYCHEEJS_ROOT;
+
+
+		$LYCHEEJS_NODE ./bin/configure.js;
+
+		./bin/fertilizer.sh lychee html/dist;
+		./bin/fertilizer.sh lychee html-nwjs/dist;
+		./bin/fertilizer.sh lychee html-webview/dist;
+		./bin/fertilizer.sh lychee node/dist;
+		./bin/fertilizer.sh lychee node-sdl/dist;
+
+
+		echo "> DONE";
+
+	fi;
+
 
 	if [[ "$OS" == "linux" || "$OS" == "osx" ]]; then
 
-		echo "Fixing chmod rights...";
+		echo "> Fixing chmod rights";
+
+
+		cd $LYCHEEJS_ROOT;
 
 		# Default chmod rights for folders
 
-		find ./lychee -type d -print0 | xargs -0 chmod 777;
-		find ./lychee -type f -print0 | xargs -0 chmod 666;
+		find ./lib -type d -print0 | xargs -0 chmod 777;
+		find ./lib -type f -print0 | xargs -0 chmod 666;
 
 		find ./projects -type d -print0 | xargs -0 chmod 777;
 		find ./projects -type f -print0 | xargs -0 chmod 666;
 
-		find ./sorbet -type d -print0 | xargs -0 chmod 777;
-		find ./sorbet -type f -print0 | xargs -0 chmod 666;
-
 		# Make command line tools explicitely executable
 
-		chmod +x ./lychee/configure.js;
 		chmod +x ./projects/*/sorbet.js;
 
 		chmod 0777 ./bin;
+		chmod +x ./bin/breeder.js;
+		chmod +x ./bin/breeder.sh;
+		chmod +x ./bin/configure.js;
 		chmod +x ./bin/editor.sh;
-		chmod +x ./bin/fertilizer.sh;
 		chmod +x ./bin/fertilizer.js;
+		chmod +x ./bin/fertilizer.sh;
 		chmod +x ./bin/helper.sh;
 		chmod +x ./bin/ranger.sh;
-		chmod +x ./bin/sorbet.sh;
 		chmod +x ./bin/sorbet.js;
+		chmod +x ./bin/sorbet.sh;
 
 		# Make runtimes explicitely executable
 
-		if [ -f "$LYCHEEJS_IOJS" ]; then
-			chmod +x $LYCHEEJS_IOJS;
+		if [ -f "$LYCHEEJS_NODE" ]; then
+			chmod +x $LYCHEEJS_NODE;
 		fi;
 
 		if [ -f "$LYCHEEJS_NWJS" ]; then
 			chmod +x $LYCHEEJS_NWJS;
 		fi;
 
-		echo "Done.";
+
+		echo "> DONE";
 
 	fi;
 
@@ -112,32 +128,31 @@ else
 
 			if [ -d /usr/share/applications ]; then
 
-				echo "Integrating Editor, Helper and Ranger...";
+				echo "> Integrating Editor, Helper and Ranger";
 
 				cp ./bin/helper/linux/editor.desktop /usr/share/applications/lycheejs-editor.desktop;
 				cp ./bin/helper/linux/helper.desktop /usr/share/applications/lycheejs-helper.desktop;
 				cp ./bin/helper/linux/ranger.desktop /usr/share/applications/lycheejs-ranger.desktop;
+				cp ./asset/desktop.svg /usr/share/icons/lycheejs.svg;
 
 
 				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-editor.desktop";
 				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-helper.desktop";
 				sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-ranger.desktop";
 
-				echo "Done.";
+
+				update-desktop-database;
+
+
+				echo "> DONE";
 
 			fi;
 
 		elif [ "$OS" == "osx" ]; then
 
-			echo "Integrating Editor, Helper and Ranger...";
+			echo "> Integrating Editor, Helper and Ranger";
 			open ./bin/helper/osx/helper.app;
-			echo "Done.";
-
-		elif [ "$OS" == "windows" ]; then
-
-			echo "Integrating Editor, Helper and Ranger...";
-			regedit.exe /S ./bin/helper/windows/helper.reg;
-			echo "Done.";
+			echo "> DONE";
 
 		fi;
 

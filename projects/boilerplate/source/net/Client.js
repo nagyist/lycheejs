@@ -1,16 +1,19 @@
 
-lychee.define('game.net.Client').requires([
+lychee.define('app.net.Client').requires([
 	'lychee.data.BitON',
-	'game.net.client.Highscore',
-	'game.net.client.Ping'
+	'app.net.client.Ping'
 ]).includes([
 	'lychee.net.Client'
-]).exports(function(lychee, game, global, attachments) {
+]).exports(function(lychee, app, global, attachments) {
 
-	var _BitON     = lychee.data.BitON;
-	var _highscore = game.net.client.Highscore;
-	var _ping      = game.net.client.Ping;
+	var _BitON = lychee.data.BitON;
+	var _Ping  = app.net.client.Ping;
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
@@ -30,11 +33,10 @@ lychee.define('game.net.Client').requires([
 
 		this.bind('connect', function() {
 
-			this.addService(new _highscore(this));
-			this.addService(new _ping(this));
+			this.addService(new _Ping(this));
 
 			if (lychee.debug === true) {
-				console.log('(Boilerplate) game.net.Client: Remote connected');
+				console.log('(Boilerplate) app.net.Client: Remote connected');
 			}
 
 		}, this);
@@ -42,7 +44,7 @@ lychee.define('game.net.Client').requires([
 		this.bind('disconnect', function(code) {
 
 			if (lychee.debug === true) {
-				console.log('(Boilerplate) game.net.Client: Remote disconnected (' + code + ')');
+				console.log('(Boilerplate) app.net.Client: Remote disconnected (' + code + ')');
 			}
 
 		}, this);
@@ -64,7 +66,7 @@ lychee.define('game.net.Client').requires([
 		serialize: function() {
 
 			var data = lychee.net.Client.prototype.serialize.call(this);
-			data['constructor'] = 'game.net.Client';
+			data['constructor'] = 'app.net.Client';
 
 
 			return data;

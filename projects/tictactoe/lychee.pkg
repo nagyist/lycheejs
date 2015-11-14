@@ -54,7 +54,7 @@
 					"json",
 					"png"
 				],
-				"lycheeJS": [
+				"Emblem": [
 					"js",
 					"png"
 				]
@@ -93,8 +93,12 @@
 				"js"
 			],
 			"index": [
-				"js"
+				"js",
+				"html"
 			]
 		}
+	},
+	"api": {
+		"files": {}
 	}
 }

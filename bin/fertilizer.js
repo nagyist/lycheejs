@@ -1,4 +1,4 @@
-#!/usr/bin/env iojs
+#!/usr/bin/env node
 
 
 var root   = require('path').resolve(__dirname, '../');
@@ -6,12 +6,12 @@ var fs     = require('fs');
 var path   = require('path');
 
 
-if (fs.existsSync(root + '/lychee/build/iojs/core.js') === false) {
-	require(root + '/lychee/configure.js');
+if (fs.existsSync(root + '/lib/lychee/build/node/core.js') === false) {
+	require(root + '/bin/configure.js');
 }
 
 
-var lychee = require(root + '/lychee/build/iojs/core.js')(root);
+var lychee = require(root + '/lib/lychee/build/node/core.js')(root);
 
 
 
@@ -62,16 +62,16 @@ var _print_help = function() {
 	console.log('                                                      ');
 	console.log('Available Fertilizers:                                ');
 	console.log('                                                      ');
-	console.log('   html, html-nwjs, html-webview, iojs                ');
+	console.log('   html, html-nwjs, html-webview, node');
 	console.log('                                                      ');
 	console.log('Available Projects:                                   ');
 	console.log('                                                      ');
-	projects.forEach(function(line)    { console.log('    ' + line);   });
+	projects.forEach(function(line) { console.log('    ' + line);      });
 	console.log('                                                      ');
 	console.log('Examples:                                             ');
 	console.log('                                                      ');
 	console.log('    fertilizer boilerplate "html-nwjs/main"           ');
-	console.log('    fertilizer boilerplate "iojs/server"              ');
+	console.log('    fertilizer boilerplate "node/server"              ');
 	console.log('                                                      ');
 
 };
@@ -92,10 +92,8 @@ var _settings = (function() {
 
 
 	var pkg_path = root + '/projects/' + raw_arg0 + '/lychee.pkg';
-	if (raw_arg0 === 'lychee') {
-		pkg_path = root + '/lychee/lychee.pkg';
-	} else if (raw_arg0 === 'sorbet') {
-		pkg_path = root + '/sorbet/lychee.pkg';
+	if (raw_arg0.match(/breeder|fertilizer|lychee|sorbet/g)) {
+		pkg_path = root + '/lib/' + raw_arg0 + '/lychee.pkg';
 	}
 
 
@@ -152,11 +150,11 @@ var _settings = (function() {
 			build:   'fertilizer.Main',
 			timeout: 1000,
 			packages: [
-				new lychee.Package('lychee', '/lychee/lychee.pkg'),
-				new lychee.Package('fertilizer', '/fertilizer/lychee.pkg')
+				new lychee.Package('lychee', '/lib/lychee/lychee.pkg'),
+				new lychee.Package('fertilizer', '/lib/fertilizer/lychee.pkg')
 			],
 			tags:     {
-				platform: [ 'iojs' ]
+				platform: [ 'node' ]
 			}
 		}));
 

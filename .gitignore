@@ -1,9 +1,15 @@
 
-
 # Auto-built applications
 /bin/editor
 /bin/ranger
 /bin/runtime
+/bin/sorbet.pid
+
+/lib/breeder/build
+/lib/lychee/build
+/lib/lychee/source/DIST.js
+/lib/fertilizer/build
+/lib/sorbet/build
 
 
 /projects/*
@@ -29,13 +35,6 @@
 /projects/cultivator/ranger/build
 
 
-# lychee and sorbet
-/lychee/build/*
-/sorbet/.pid
-/sorbet/build/*
-
-
 # Well, yeah. Fuck these guys
 .DS_Store
-npm-debug.log
 

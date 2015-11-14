@@ -1,12 +1,10 @@
 
-lychee.define('game.Main').requires([
-	'game.net.Client',
-	'game.state.Game',
-	'game.state.Menu',
-	'game.DeviceSpecificHacks'
+lychee.define('app.Main').requires([
+	'app.net.Client',
+	'app.state.Menu'
 ]).includes([
-	'lychee.game.Main'
-]).exports(function(lychee, game, global, attachments) {
+	'lychee.app.Main'
+]).exports(function(lychee, app, global, attachments) {
 
 	var Class = function(data) {
 
@@ -17,7 +15,7 @@ lychee.define('game.Main').requires([
 
 			input: {
 				delay:       0,
-				key:         false,
+				key:         true,
 				keymodifier: false,
 				touch:       true,
 				swipe:       true
@@ -32,7 +30,7 @@ lychee.define('game.Main').requires([
 				id:         'boilerplate',
 				width:      null,
 				height:     null,
-				background: '#3f7cb6'
+				background: '#404948'
 			},
 
 			viewport: {
@@ -42,7 +40,7 @@ lychee.define('game.Main').requires([
 		}, data);
 
 
-		lychee.game.Main.call(this, settings);
+		lychee.app.Main.call(this, settings);
 
 
 
@@ -52,8 +50,8 @@ lychee.define('game.Main').requires([
 
 		this.bind('load', function(oncomplete) {
 
-			this.settings.gameclient = this.settings.client;
-			this.settings.client     = null;
+			this.settings.appclient = this.settings.client;
+			this.settings.client    = null;
 
 			oncomplete(true);
 
@@ -61,13 +59,12 @@ lychee.define('game.Main').requires([
 
 		this.bind('init', function() {
 
-			var settings = this.settings.gameclient || null;
+			var settings = this.settings.appclient || null;
 			if (settings !== null) {
-				this.client = new game.net.Client(settings, this);
+				this.client = new app.net.Client(settings, this);
 			}
 
-			this.setState('game', new game.state.Game(this));
-			this.setState('menu', new game.state.Menu(this));
+			this.setState('menu', new app.state.Menu(this));
 			this.changeState('menu');
 
 		}, this, true);
@@ -85,8 +82,8 @@ lychee.define('game.Main').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.Main.prototype.serialize.call(this);
-			data['constructor'] = 'game.Main';
+			var data = lychee.app.Main.prototype.serialize.call(this);
+			data['constructor'] = 'app.Main';
 
 			var settings = data['arguments'][0] || {};
 			var blob     = data['blob'] || {};
@@ -100,20 +97,6 @@ lychee.define('game.Main').requires([
 
 
 			return data;
-
-		},
-
-
-
-		/*
-		 * CUSTOM API
-		 */
-
-		reshape: function(orientation, rotation) {
-
-			game.DeviceSpecificHacks.call(this);
-
-			lychee.game.Main.prototype.reshape.call(this, orientation, rotation);
 
 		}
 

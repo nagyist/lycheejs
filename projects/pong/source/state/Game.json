@@ -1,7 +1,7 @@
 {
 	"layers": {
 		"background": {
-			"constructor": "lychee.game.Layer",
+			"constructor": "lychee.app.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
@@ -14,7 +14,7 @@
 			}
 		},
 		"game": {
-			"constructor": "lychee.game.Layer",
+			"constructor": "lychee.app.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
@@ -63,13 +63,7 @@
 							"x": 0,
 							"y": -64
 						}
-					}],
-					"blob": {
-						"font": {
-							"constructor": "Font",
-							"arguments": [ "../source/state/Game.headline.fnt" ]
-						}
-					}
+					}]
 				}, {
 					"constructor": "game.ui.Welcome",
 					"arguments": [{

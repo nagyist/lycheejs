@@ -1,6 +1,6 @@
 
 lychee.define('tool.state.Profiles').includes([
-	'lychee.game.State',
+	'lychee.app.State',
 	'lychee.event.Emitter'
 ]).tags({
 	platform: 'html'
@@ -12,7 +12,10 @@ lychee.define('tool.state.Profiles').includes([
 
 	var _profiles = {};
 
-	var _save_config = function(config) {
+	var _save_profile = function(config, callback) {
+
+		callback = callback instanceof Function ? callback : function(){};
+
 
 		var url    = config.url;
 		var buffer = config.buffer;
@@ -24,15 +27,11 @@ lychee.define('tool.state.Profiles').includes([
 			xhr.open('PUT', url, true);
 
 			xhr.onload = function() {
-
-				ui.enable('#profiles-save-boot');
-
+				callback(true);
 			};
 
 			xhr.onerror = xhr.ontimeout = function() {
-
-				ui.disable('#profiles-save-boot');
-
+				callback(false);
 			};
 
 			xhr.send(JSON.stringify(buffer));
@@ -65,7 +64,7 @@ lychee.define('tool.state.Profiles').includes([
 
 			}
 
-			_ui_render_select.call(that, this.buffer);
+			_ui_render_selection.call(that, this.buffer);
 
 		};
 
@@ -73,7 +72,7 @@ lychee.define('tool.state.Profiles').includes([
 
 	};
 
-	var _ui_render_select = function(profiles) {
+	var _ui_render_selection = function(profiles) {
 
 		if (profiles instanceof Array) {
 
@@ -88,7 +87,7 @@ lychee.define('tool.state.Profiles').includes([
 				var chunk   = '';
 
 				chunk += '<li>';
-				chunk += '<input name="profiles-profile" type="radio" onclick="MAIN.state.trigger(\'select\', [this.value]);" value="' + profile.identifier + '"' + (checked ? ' checked' : '') + '>';
+				chunk += '<input name="identifier" type="radio" value="' + profile.identifier + '"' + (checked ? ' checked' : '') + '>';
 				chunk += '<span>' + profile.identifier + '</span>';
 				chunk += '</li>';
 
@@ -96,9 +95,8 @@ lychee.define('tool.state.Profiles').includes([
 
 			}).join('');
 
-			code += '<li><input name="profiles-profile" type="radio" onclick="MAIN.state.trigger(\'select\', [this.value]);" value="new-profile"><span>new profile</span></li>';
 
-			ui.render(code, '#profiles-select ul.select');
+			ui.render(code, '#profiles-selection ul.select');
 
 		}
 
@@ -118,15 +116,14 @@ lychee.define('tool.state.Profiles').includes([
 				code += '<tr>';
 				code += '<td><input name="host-' + index + '" type="text" value="' + host + '"></td>';
 				code += '<td><input name="project-' + index + '" type="text" value="' + project + '"></td>';
-				code += '<td><button class="ico-remove ico-only" onclick="MAIN.state.trigger(\'remove\', [\'' + host + '\']);return false;"></button></td>';
+				code += '<td><button class="ico-remove ico-only" onclick="MAIN.state.trigger(\'remove-project\', [\'' + host + '\']);return false;"></button></td>';
 				code += '</tr>';
 
 			});
 
 
-			ui.render(code,               '#profiles-settings table tbody');
-			ui.render(profile.identifier, '#profiles-save-identifier');
-			ui.render(profile.port,       '#profiles-save-port');
+			ui.render(code,         '#profiles-settings table tbody');
+			ui.render(profile.port, '#profiles-selection-port');
 
 		}
 
@@ -147,7 +144,7 @@ lychee.define('tool.state.Profiles').includes([
 		};
 
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 		lychee.event.Emitter.call(this);
 
 
@@ -156,40 +153,33 @@ lychee.define('tool.state.Profiles').includes([
 		 * INITIALIZATION
 		 */
 
-		this.bind('select', function(identifier) {
-
-			ui.disable('#profiles-save-boot');
-
-
-			var profile = _profiles[identifier];
-			if (profile instanceof Object) {
-
-				this.__profile = profile;
-				_ui_render_settings.call(this, this.__profile);
-
-			} else if (identifier === 'new-profile') {
-
-				this.__profile = {
-					identifier: 'new-profile',
-					port:       8080,
-					hosts:      { localhost: null }
-				};
-				_ui_render_settings.call(this, this.__profile);
-
-			}
-
-		}, this);
-
 		this.bind('submit', function(id, settings) {
 
-			if (id === 'settings') {
+			if (id === 'selection') {
+
+				var profile = _profiles[settings['identifier']] || null;
+				if (profile instanceof Object) {
+
+					if (this.__profile !== profile) {
+						this.__profile = profile;
+						_ui_render_settings.call(this, this.__profile);
+					} else {
+						this.__profile.port = settings.port;
+					}
+
+				}
+
+			} else if (id === 'settings') {
 
 				this.__profile.hosts = {};
 
 
+				delete settings[''];
+
+
 				var length = (Object.keys(settings).length / 2) - 1;
 
-				for (var i = 0; i < length; i++) {
+				for (var i = 0; i <= length; i++) {
 
 					var host    = settings['host-' + i];
 					var project = settings['project-' + i];
@@ -202,7 +192,7 @@ lychee.define('tool.state.Profiles').includes([
 
 		}, this);
 
-		this.bind('add', function(host, project) {
+		this.bind('add-project', function(host, project) {
 
 			if (host.length > 0 && project.length > 0) {
 
@@ -215,7 +205,7 @@ lychee.define('tool.state.Profiles').includes([
 
 		}, this);
 
-		this.bind('remove', function(host) {
+		this.bind('remove-project', function(host) {
 
 			if (this.__profile.hosts[host] !== undefined) {
 				delete this.__profile.hosts[host];
@@ -224,11 +214,7 @@ lychee.define('tool.state.Profiles').includes([
 
 		}, this);
 
-		this.bind('save', function(identifier, port) {
-
-			this.__profile.identifier = identifier;
-			this.__profile.port       = port;
-
+		this.bind('save', function() {
 
 			var config = lychee.deserialize({
 				constructor: 'Config',
@@ -238,12 +224,32 @@ lychee.define('tool.state.Profiles').includes([
 				}
 			});
 
+			if (config !== null) {
 
-			_save_config.call(this, config);
+				_save_profile(config, function(result) {
 
-// TODO: PUT request to API to store profile
-// TODO: Relocate to lycheejs://boot=identifier afterwards
-// TODO: Error integration if API requests fail (or are they failsafe?)
+					if (result === true) {
+						ui.enable('#profiles-selection-boot');
+					} else {
+						ui.disable('#profiles-selection-boot');
+					}
+
+				});
+
+			} else {
+
+				ui.disable('#profiles-selection-boot');
+
+			}
+
+		}, this);
+
+		this.bind('boot', function() {
+
+			var profile = this.__profile || null;
+			if (profile instanceof Object) {
+				global.location.href = 'lycheejs://boot=' + profile.identifier;
+			}
 
 		}, this);
 

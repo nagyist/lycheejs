@@ -1,13 +1,13 @@
 {
 	"layers": {
 		"background": {
-			"constructor": "lychee.game.Layer",
+			"constructor": "lychee.app.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.game.Background",
+					"constructor": "lychee.ui.Background",
 					"arguments": [{
-						"color": "#404948"
+						"color": "#404844"
 					}]
 				}],
 				"map": {
@@ -20,7 +20,7 @@
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.game.Background",
+					"constructor": "lychee.ui.Background",
 					"arguments": [{
 						"color": "#2f3736",
 						"width": 640,
@@ -49,7 +49,7 @@
 						}
 					}]
 				}, {
-					"constructor": "game.ui.Avatar",
+					"constructor": "app.ui.Avatar",
 					"arguments": [{
 						"position": {
 							"x": 256,
@@ -68,7 +68,7 @@
 						}
 					}]
 				}, {
-					"constructor": "game.ui.Messages",
+					"constructor": "app.ui.Messages",
 					"arguments": [{
 						"width":  640,
 						"height": 480,

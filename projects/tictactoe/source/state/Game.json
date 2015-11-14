@@ -1,11 +1,11 @@
 {
 	"layers": {
 		"background": {
-			"constructor": "lychee.game.Layer",
+			"constructor": "lychee.app.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.game.Background",
+					"constructor": "lychee.ui.Background",
 					"arguments": [{
 						"color": "#8dc435"
 					}]

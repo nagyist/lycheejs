@@ -1,9 +1,9 @@
 
-lychee.define('game.ui.Messages').requires([
-	'game.ui.Avatar'
+lychee.define('app.ui.Messages').requires([
+	'app.ui.Avatar'
 ]).includes([
 	'lychee.ui.Entity'
-]).exports(function(lychee, game, global, attachments) {
+]).exports(function(lychee, app, global, attachments) {
 
 	var _font = attachments["fnt"];
 
@@ -37,6 +37,10 @@ lychee.define('game.ui.Messages').requires([
 
 		this.bind('touch', function() {}, this);
 
+		this.bind('relayout', function() {
+			this.__buffer = null;
+		}, this);
+
 	};
 
 
@@ -48,8 +52,8 @@ lychee.define('game.ui.Messages').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.Sprite.prototype.serialize.call(this);
-			data['constructor'] = 'game.ui.Messages';
+			var data = lychee.app.Sprite.prototype.serialize.call(this);
+			data['constructor'] = 'app.ui.Messages';
 
 
 			return data;
@@ -75,8 +79,10 @@ lychee.define('game.ui.Messages').requires([
 			renderer.setBuffer(buffer);
 
 
-			var my1  = this.offset.y + this.height - 32;
+			var x1   = position.x + offsetX - this.width  / 2;
+			var y1   = position.y + offsetY - this.height / 2;
 			var mx1  = this.offset.x;
+			var my1  = this.offset.y + this.height - 32;
 			var last = null;
 
 
@@ -126,7 +132,7 @@ lychee.define('game.ui.Messages').requires([
 						my1 + 32,
 						this.width,
 						my1 + 32,
-						'#545857',
+						'#545454',
 						1
 					);
 
@@ -141,13 +147,6 @@ lychee.define('game.ui.Messages').requires([
 
 
 			renderer.setBuffer(null);
-
-
-			var position = this.position;
-
-			var x1 = position.x + offsetX - this.width  / 2;
-			var y1 = position.y + offsetY - this.height / 2;
-
 
 			renderer.drawBuffer(
 				x1,
@@ -165,7 +164,7 @@ lychee.define('game.ui.Messages').requires([
 
 		setAvatar: function(avatar) {
 
-			avatar = lychee.interfaceof(game.ui.Avatar, avatar) ? avatar : null;
+			avatar = lychee.interfaceof(app.ui.Avatar, avatar) ? avatar : null;
 
 
 			if (avatar !== null) {

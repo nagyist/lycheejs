@@ -1,4 +1,4 @@
-#!/usr/bin/env iojs
+#!/usr/bin/env node
 
 
 var root   = require('path').resolve(__dirname, '../');
@@ -6,12 +6,12 @@ var fs     = require('fs');
 var path   = require('path');
 
 
-if (fs.existsSync(root + '/lychee/build/iojs/core.js') === false) {
-	require(root + '/lychee/configure.js');
+if (fs.existsSync(root + '/lib/lychee/build/node/core.js') === false) {
+	require(root + '/bin/configure.js');
 }
 
 
-var lychee = require(root + '/lychee/build/iojs/core.js')(root);
+var lychee = require(root + '/lib/lychee/build/node/core.js')(root);
 
 
 
@@ -49,7 +49,7 @@ var _pretty_lines = function(str) {
 
 var _print_help = function() {
 
-	var profiles = _pretty_lines(fs.readdirSync(root + '/sorbet/profile').map(function(value) {
+	var profiles = _pretty_lines(fs.readdirSync(root + '/bin/sorbet').map(function(value) {
 		return '"' + value.substr(0, value.indexOf('.json')) + '"';
 	}).join(', '));
 
@@ -99,8 +99,8 @@ var _settings = (function() {
 
 		try {
 
-			if (fs.existsSync(root + '/sorbet/profile/' + settings.profile + '.json')) {
-				settings.profile = JSON.parse(fs.readFileSync(root + '/sorbet/profile/' + settings.profile + '.json', 'utf8'));
+			if (fs.existsSync(root + '/bin/sorbet/' + settings.profile + '.json')) {
+				settings.profile = JSON.parse(fs.readFileSync(root + '/bin/sorbet/' + settings.profile + '.json', 'utf8'));
 			} else {
 				settings.profile = null;
 			}
@@ -127,7 +127,7 @@ var _settings = (function() {
 
 		try {
 
-			fs.unlinkSync(root + '/sorbet/.pid');
+			fs.unlinkSync(root + '/bin/sorbet.pid');
 			return true;
 
 		} catch(e) {
@@ -144,7 +144,7 @@ var _settings = (function() {
 
 		try {
 
-			pid = fs.readFileSync(root + '/sorbet/.pid', 'utf8');
+			pid = fs.readFileSync(root + '/bin/sorbet.pid', 'utf8');
 
 			if (!isNaN(parseInt(pid, 10))) {
 				pid = parseInt(pid, 10);
@@ -162,7 +162,7 @@ var _settings = (function() {
 
 		try {
 
-			fs.writeFileSync(root + '/sorbet/.pid', process.pid);
+			fs.writeFileSync(root + '/bin/sorbet.pid', process.pid);
 			return true;
 
 		} catch(e) {
@@ -195,11 +195,11 @@ var _settings = (function() {
 				build:   'sorbet.Main',
 				timeout: 10000, // 10 seconds bootup time, because we also ship lycheeOS
 				packages: [
-					new lychee.Package('lychee', '/lychee/lychee.pkg'),
-					new lychee.Package('sorbet', '/sorbet/lychee.pkg')
+					new lychee.Package('lychee', '/lib/lychee/lychee.pkg'),
+					new lychee.Package('sorbet', '/lib/sorbet/lychee.pkg')
 				],
 				tags:     {
-					platform: [ 'iojs' ]
+					platform: [ 'node' ]
 				}
 			}));
 

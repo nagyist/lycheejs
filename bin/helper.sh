@@ -17,10 +17,6 @@ elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
 
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-
 fi;
 
 
@@ -86,6 +82,10 @@ if [ "$protocol" == "lycheejs" ]; then
 	fi;
 
 
+	# XXX: https://bugs.freedesktop.org/show_bug.cgi?id=91027
+	resource=${resource%/};
+
+
 	if [ "$action" != "" -a "$resource" != "" ]; then
 
 		case "$action" in
@@ -130,9 +130,6 @@ if [ "$protocol" == "lycheejs" ]; then
 					if [ "$OS" == "linux" -o "$OS" == "osx" ]; then
 						./bin/editor.sh "file://$LYCHEEJS_ROOT/projects/$resource/lychee.pkg" 2>&1;
 						exit 0;
-					elif [ "$OS" == "windows"]; then
-						./bin/editor.sh "file://c:$LYCHEEJS_ROOT/projects/$resource/lychee.pkg" 2>&1;
-						exit 0;
 					fi;
 
 				fi;
@@ -151,30 +148,28 @@ if [ "$protocol" == "lycheejs" ]; then
 					open "file://$LYCHEEJS_ROOT/projects/$resource" 2>&1;
 					exit 0;
 
-				elif [ "$OS" == "windows" ]; then
-
-					explorer "file://c:$LYCHEEJS_ROOT/projects/$resource";
-					exit 0;
-
 				fi;
 
 			;;
 
 			web)
 
+				# Well, fuck you, Blink and WebKit.
+
+				clean_resource="$resource";
+				clean_resource=${clean_resource//%5B/\[};
+				clean_resource=${clean_resource//%5D/\]};
+				clean_resource=${clean_resource//http:0\/\//http:\/\/};
+
+
 				if [ "$OS" == "linux" ]; then
 
-					xdg-open "$resource" 2>&1;
+					xdg-open "$clean_resource" 2>&1;
 					exit 0;
 
 				elif [ "$OS" == "osx" ]; then
 
-					open "$resource" 2>&1;
-					exit 0;
-
-				elif [ "$OS" == "windows" ]; then
-
-					start "$resource" 2>&1;
+					open "$clean_resource" 2>&1;
 					exit 0;
 
 				fi;

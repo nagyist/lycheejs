@@ -1,0 +1,48 @@
+{
+
+	"build": {
+
+		"environments": {
+
+			"node/main": {
+				"build":    "breeder.Main",
+				"debug":    false,
+				"sandbox":  false,
+				"packages": [ [ "breeder", "./lychee.pkg" ] ],
+				"tags":     { "platform": [ "node" ] },
+				"variant":  "application"
+			}
+
+		},
+
+		"files": {
+
+		}
+
+	},
+
+	"source": {
+
+		"environments": {
+
+		},
+
+		"tags": {
+
+		},
+
+		"files": {
+
+			"data": {
+				"Filesystem": [ "js" ],
+				"Shell":      [ "js" ]
+			},
+
+			"Main":     [ "js" ],
+			"Template": [ "js" ]
+
+		}
+
+	}
+
+}

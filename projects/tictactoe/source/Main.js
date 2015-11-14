@@ -3,7 +3,7 @@ lychee.define('game.Main').requires([
 	'game.state.Game',
 	'game.state.Menu'
 ]).includes([
-	'lychee.game.Main'
+	'lychee.app.Main'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var Class = function(data) {
@@ -40,7 +40,7 @@ lychee.define('game.Main').requires([
 		}, data);
 
 
-		lychee.game.Main.call(this, settings);
+		lychee.app.Main.call(this, settings);
 
 
 
@@ -73,7 +73,7 @@ lychee.define('game.Main').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.Main.prototype.serialize.call(this);
+			var data = lychee.app.Main.prototype.serialize.call(this);
 			data['constructor'] = 'game.Main';
 
 

@@ -7,12 +7,8 @@ lowercase() {
 OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
-LYCHEEJS_IOJS="";
+LYCHEEJS_NODE="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
-SORBET_PID="$LYCHEEJS_ROOT/sorbet/.pid";
-SORBET_LOG="/var/log/sorbet.log";
-SORBET_ERR="/var/log/sorbet.err";
-SORBET_USER=`whoami`;
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -31,38 +27,33 @@ fi;
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
-
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
 fi;
 
-if [ ! -f $LYCHEEJS_IOJS ]; then
+if [ ! -f $LYCHEEJS_NODE ]; then
 	echo "Sorry, your computer is not supported. ($OS / $ARCH)";
 	exit 1;
 fi;
 
 
 
-if [ -d "$LYCHEEJS_ROOT/projects/$1" ]; then
+if [ -d "$LYCHEEJS_ROOT/projects/$1" ] || [ "$1" == "lychee" ] || [ "$1" == "sorbet" ]; then
 
 	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_IOJS ./bin/fertilizer.js "$1" "$2";
+	$LYCHEEJS_NODE ./bin/fertilizer.js "$1" "$2";
 
 	exit 0;
 
 else
 
 	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_IOJS ./bin/fertilizer.js help;
+	$LYCHEEJS_NODE ./bin/fertilizer.js help;
 
 	exit 1;
 

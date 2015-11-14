@@ -61,35 +61,6 @@ ui = (function(global) {
 
 	};
 
-	var _set_value = function(key, value) {
-
-		if (key.indexOf('.') === -1) {
-
-			this[key] = value;
-
-		} else if (key.match(/\[([A-Za-z]+)\]/g)) {
-
-			var path    = key.split('[')[0].split('.');
-			var pointer = this;
-
-
-			while (path.length > 0) {
-
-				var name = path.shift();
-				if (pointer[name] !== undefined) {
-					pointer = pointer[name];
-				}
-
-			}
-
-
-			name          = key.split(/\[([A-Za-z]+)\]/g)[1];
-			pointer[name] = value;
-
-		}
-
-	};
-
 	var _encode_file = function(name, buffer, mime) {
 
 		var construct = mime['constructor'];
@@ -176,29 +147,37 @@ ui = (function(global) {
 					var type = element.type;
 					if (type === 'text' || type === 'hidden' || type === 'color') {
 
-						_set_value.call(data, element.name, '' + element.value);
+						data[element.name] = '' + element.value;
 
 					} else if (type === 'number' || type === 'range') {
 
 						var tmp1 = parseInt(element.value, 10);
-						if (!isNaN(tmp1)) {
-							_set_value.call(data, element.name, tmp1);
+						if (!isNaN(tmp1) && (tmp1).toString() === element.value) {
+							data[element.name] = tmp1;
 						}
 
 					} else if (type === 'radio' && element.checked === true) {
 
 						var tmp2 = parseInt(element.value, 10);
-						if (!isNaN(tmp2)) {
-							_set_value.call(data, element.name, tmp2);
+						if (!isNaN(tmp2) && (tmp).toString() === element.value) {
+							data[element.name] = tmp2;
 						} else {
-							_set_value.call(data, element.name, element.value);
+							data[element.name] = element.value;
+						}
+
+					} else if (type === 'checkbox') {
+
+						if (element.checked === true) {
+							data[element.name] = 'on';
+						} else {
+							data[element.name] = 'off';
 						}
 
 					} else if (type === 'file' && element.files.length > 0) {
 
 						var tmp3 = element.__files || [];
 						if (tmp3.length > 0) {
-							_set_value.call(data, element.name, [].slice.call(tmp3));
+							data[element.name] = [].slice.call(tmp3);
 						}
 
 					}
@@ -391,30 +370,19 @@ ui = (function(global) {
 
 			items.forEach(function(item) {
 
-				item.addEventListener('mouseenter', function() {
+				item.addEventListener('click', function() {
 
 					items.forEach(function(other) { _set_inactive(other); });
+					_active = items.indexOf(this);
 					_set_active(this);
 
-				});
-
-				item.addEventListener('mouseleave', function() {
-
-					items.forEach(function(other) { _set_inactive(other); });
-					_set_active(items[_active]);
-
-				});
-
-				item.addEventListener('mouseup', function() {
-					_active = items.indexOf(this);
-					_set_inactive(menu);
 				});
 
 			});
 
 		}
 
-		var toggle = document.querySelector('#menu-toggle');
+		var toggle = document.querySelector('menu > b');
 		if (toggle !== null) {
 
 			toggle.onclick = function() {
@@ -610,6 +578,12 @@ ui = (function(global) {
 							value.push(_convert_value(input.value));
 						}
 
+					} else if (input.type === 'checkbox') {
+
+						if (input.checked === true) {
+							value.push(_convert_value('on'));
+						}
+
 					} else if (input.type === 'text' && input.value != '') {
 
 						value.push('' + input.value);
@@ -637,6 +611,8 @@ ui = (function(global) {
 
 				if (elements[0].type === 'text') {
 					return '' + elements[0].value;
+				} else if (elements[0].type === 'checkbox') {
+					return elements[0].checked === true ? 'on' : 'off';
 				} else {
 					return _convert_value(elements[0].value);
 				}
@@ -673,9 +649,9 @@ ui = (function(global) {
 				states.forEach(function(state) {
 
 					if (state.id === identifier) {
-						state.className = 'active';
+						_set_active(state);
 					} else {
-						state.className = '';
+						_set_inactive(state);
 					}
 
 				});
@@ -715,6 +691,8 @@ ui = (function(global) {
 
 				if (node.value !== undefined) {
 					node.value = code;
+				} else if (node.src !== undefined) {
+					node.src = code;
 				} else {
 					node.innerHTML = code;
 				}

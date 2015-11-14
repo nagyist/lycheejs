@@ -13,24 +13,32 @@
 	<script src="/projects/cultivator/design/index.js"></script>
 
 	<!-- BOOTSTRAP -->
-	<script src="/lychee/build/html/core.js"></script>
+	<script src="/lib/lychee/build/html/core.js"></script>
 
 	<style>
-	#bootup div.wizard ul.select {
+	#bootup ul.select {
 		width: auto;
 		margin: 0px 16px;
 	}
-	#status article.hidden {
-		display: none;
+	#status table {
+		width: auto;
+		width: calc(100% - 32px);
+		margin: 0px 0px 0px 32px;
 	}
 	#status table label.ico-online,
 	#remotes table label.ico-online {
 		color: #32afe5;
 		text-shadow: #32afe5 0 0 10px, #32afe5 0 0 20px, #32afe5 0 0 40px;
 	}
-	#profiles div.main ul.select {
-		width: auto;
-		margin: 0px 16px;
+	#remotes > article:nth-of-type(1),
+	#profiles > article:nth-of-type(1) {
+		min-width: 320px;
+		max-width: 320px;
+	}
+	#profiles > article:nth-of-type(1) p {
+		margin: 0px;
+		padding: 16px;
+		border-bottom: 2px solid #404844;
 	}
 	#profiles table {
 		overflow: auto;
@@ -43,21 +51,21 @@
 </head>
 <body>
 <menu>
-	<b id="menu-toggle"></b>
-	<li class="ico-status active" onclick="ui.changeState('status');">Status</li>
-	<li class="ico-remotes" onclick="ui.changeState('remotes');">Remotes</li>
-	<li class="ico-console" onclick="ui.changeState('console');">Console</li>
-	<li class="ico-settings" onclick="ui.changeState('profiles');">Profiles</li>
+	<b onclick="ui.toggle('menu');"><span></span></b>
+	<li class="active" onclick="ui.changeState('status');">Status</li>
+	<li onclick="ui.changeState('remotes');">Remotes</li>
+	<li onclick="ui.changeState('profiles');">Profiles</li>
+	<aside>
+		<button class="ico-refresh ico-only" onclick="location.href='./index.html';"></button>
+		<a class="button ico-exit ico-only" href="lycheejs://unboot=#" onclick="setTimeout(function() { location.href='./index.html'; }, 500);"></a>
+	</aside>
 </menu>
-<aside>
-	<a class="button ico-exit" href="lycheejs://unboot=#" onclick="setTimeout(function() { location.href='./index.html'; }, 500);">Shutdown</a>
-</aside>
 
-<section id="bootup" class="active">
+<main>
 
-	<div class="wizard">
+	<section id="bootup" class="active">
 
-		<article class="hidden">
+		<article>
 			<h3>Boot lycheeJS</h3>
 			<p>
 				Select a Profile to boot lycheeJS Sorbet.<br>
@@ -74,36 +82,85 @@
 			</p>
 		</article>
 
-	</div>
+	</section>
+	
+	<section id="status">
+	</section>
+	
+	<section id="remotes">
 
-</section>
+		<article id="remotes-selection">
+			<h3><b>1</b>Select</h3>
+			<form id="selection" enctype="application/json" action="MAIN.state" method="javascript">
+				<table class="vertical">
+					<tr>
+						<th>Project</th>
+						<td>
+							<ul class="select">
+								<li><input name="identifier" type="radio" value="boilerplate" checked><span>boilerplate</span></li>
+							</ul>
+						</td>
+					</tr>
+				</table>
+			</form>
+		</article>
 
-<section id="remotes">
+		<article id="remotes-servers">
+			<h3>
+				<b>2</b>Connect
+				<span>
+					<button class="ico-refresh ico-only" onclick="MAIN.trigger('api');"></button>
+					<button class="ico-api ico-only" onclick="MAIN.trigger('api');"></button>
+				</span>
+			</h3>
+			<table>
+				<thead>
+					<tr>
+						<th>Remote</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</article>
 
-	<div id="remotes-servers" class="wizard"></div>
+	</section>
 
-</section>
+	<section id="profiles">
 
-<section id="status">
-</section>
-
-<section id="profiles">
-
-	<div class="main">
-
-		<article id="profiles-select">
-			<h3><b>1</b>Select Profile</h3>
-			<div>
-				<ul class="select">
-					<li><input name="profiles-profile" type="radio" value="development" checked><span>development</span></li>
-					<li><input name="profiles-profile" type="radio" value="production"><span>production</span></li>
-					<li><input name="profiles-profile" type="radio" value="new-profile"><span>new profile</span></li>
-				</ul>
-			</div>
+		<article id="profiles-selection">
+			<h3><b>1</b>Select</h3>
+			<form id="selection" enctype="application/json" action="MAIN.state" method="javascript">
+				<table class="vertical">
+					<tr>
+						<th>Profile</th>
+						<td>
+							<ul class="select">
+								<li><input name="identifier" type="radio" value="development" checked><span>development</span></li>
+								<li><input name="identifier" type="radio" value="production"><span>production</span></li>
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<th>Port</th>
+						<td>
+							<input id="profiles-selection-port" name="port" type="number" value="8080">
+						</td>
+					</tr>
+				</table>
+			</form>
+			<p class="center">
+				<button class="ico-upload" onclick="MAIN.state.trigger('save');">Save</button>
+			</p>
+			<p class="center">
+				<button id="profiles-selection-boot" class="ico-boot" onclick="MAIN.state.trigger('boot');" disabled>Boot</button>
+			</p>
 		</article>
 
 		<article id="profiles-settings">
-			<h3><b>2</b>Modify Profile</h3>
+			<h3><b>2</b>Modify</h3>
 			<form id="settings" enctype="application/json" action="MAIN.state" method="javascript">
 				<table>
 					<thead>
@@ -115,48 +172,30 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td><input type="text" value="localhost"></td>
-							<td><input type="text" value="*"></td>
-							<td><button class="ico-remove ico-only" onclick="ui.remove(this.parentNode.parentNode)"></button></td>
+							<td><input name="host-0" type="text" value="localhost"></td>
+							<td><input name="project-0" type="text" value="*"></td>
+							<td></td>
 						</tr>
 					</tbody>
 					<tfoot>
 						<tr class="div"><td colspan="4"></td></tr>
 						<tr class="div"><th colspan="4">Add new Project</th></tr>
 						<tr class="menu">
-							<td><input type="text" id="new-host" name="new-host" value="" placeholder="Host" onchange="return false;"></td>
-							<td><input type="text" id="new-project" name="new-project" value="" placeholder="Project" onchange="return false;"></td>
-							<td><button class="ico-add ico-only" onclick="MAIN.state.trigger('add', [ui.value('#new-host'), ui.value('#new-project')]);return false;"></button></td>
+							<td><input type="text" id="profiles-settings-host" value="" placeholder="Host" onchange="return false;"></td>
+							<td><input type="text" id="profiles-settings-project" value="" placeholder="Project" onchange="return false;"></td>
+							<td><button class="ico-add ico-only" onclick="MAIN.state.trigger('add-project', [ui.value('#profiles-settings-host'), ui.value('#profiles-settings-project')]);return false;"></button></td>
 						</tr>
 					</tfoot>
 				</table>
 			</form>
 		</article>
 
-		<article id="profiles-save">
-			<h3><b>3</b>Save and Boot Profile</h3>
-			<table class="vertical">
-				<tr>
-					<th>Profile</th>
-					<td><input id="profiles-save-identifier" type="text" value="development"></td>
-				</tr>
-				<tr>
-					<th>Port</th>
-					<td><input id="profiles-save-port" type="number" value="8080"></td>
-				</tr>
-			</table>
-			<p class="center">
-				<button id="profiles-save-save" class="ico-upload" onclick="MAIN.state.trigger('save', [ui.value('#profiles-save-identifier'), ui.value('#profiles-save-port')])">Save</button>
-				<button id="profiles-save-boot" class="ico-boot" onclick="location.href='lycheejs://boot=' + ui.value('#profiles-save-identifier');" disabled>Boot</button>
-			</p>
-		</article>
+	</section>
 
-	</div>
-
-</section>
+</main>
 
 <footer>
-	lycheeJS is (c) 2012-2015 by LazerUnicorns and released under MIT license.
+	lycheeJS is (c) 2012-2016 by Artificial-Engineering and released under MIT license.
 </footer>
 <script src="./index.js"></script>
 </body>

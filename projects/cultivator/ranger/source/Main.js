@@ -7,7 +7,7 @@ lychee.define('tool.Main').requires([
 	'tool.state.Remotes',
 	'tool.state.Status'
 ]).includes([
-	'lychee.game.Main'
+	'lychee.app.Main'
 ]).tags({
 	platform: 'html'
 }).exports(function(lychee, tool, global, attachments) {
@@ -90,7 +90,7 @@ lychee.define('tool.Main').requires([
 		}, data);
 
 
-		lychee.game.Main.call(this, settings);
+		lychee.app.Main.call(this, settings);
 
 
 
@@ -105,6 +105,7 @@ lychee.define('tool.Main').requires([
 		this.bind('init', function() {
 
 			this.setState('bootup',   new tool.state.Bootup(this));
+			// this.setState('console',  new tool.state.Console(this));
 			this.setState('profiles', new tool.state.Profiles(this));
 			this.setState('remotes',  new tool.state.Remotes(this));
 			this.setState('status',   new tool.state.Status(this));

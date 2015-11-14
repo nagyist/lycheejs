@@ -1,0 +1,21 @@
+{
+	"layers": {
+		"game": {
+			"constructor": "lychee.app.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.app.Layer",
+					"arguments": [{}]
+				}, {
+					"constructor": "lychee.app.Layer",
+					"arguments": [{}]
+				}],
+				"map": {
+					"terrain": 0,
+					"objects": 1
+				}
+			}
+		}
+	}
+}

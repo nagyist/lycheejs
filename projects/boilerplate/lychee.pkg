@@ -2,12 +2,12 @@
 	"build": {
 		"environments": {
 			"html/main": {
-				"build": "game.Main",
+				"build": "app.Main",
 				"debug": false,
 				"sandbox": false,
 				"packages": [
 					[
-						"game",
+						"app",
 						"./lychee.pkg"
 					]
 				],
@@ -19,12 +19,12 @@
 				"variant": "application"
 			},
 			"html-nwjs/main": {
-				"build": "game.Main",
+				"build": "app.Main",
 				"debug": false,
 				"sandbox": false,
 				"packages": [
 					[
-						"game",
+						"app",
 						"./lychee.pkg"
 					]
 				],
@@ -37,12 +37,12 @@
 				"variant": "application"
 			},
 			"html-webview/main": {
-				"build": "game.Main",
+				"build": "app.Main",
 				"debug": false,
 				"sandbox": false,
 				"packages": [
 					[
-						"game",
+						"app",
 						"./lychee.pkg"
 					]
 				],
@@ -54,19 +54,19 @@
 				},
 				"variant": "application"
 			},
-			"iojs/server": {
-				"build": "game.net.Server",
+			"node/server": {
+				"build": "app.net.Server",
 				"debug": false,
 				"sandbox": false,
 				"packages": [
 					[
-						"game",
+						"app",
 						"./lychee.pkg"
 					]
 				],
 				"tags": {
 					"platform": [
-						"iojs"
+						"node"
 					]
 				},
 				"variant": "application"
@@ -78,32 +78,13 @@
 		"environments": {},
 		"tags": {},
 		"files": {
-			"entity": {
-				"Circle": [
-					"js",
-					"snd"
-				],
-				"Particle": [
-					"js"
-				],
-				"Emblem": [
-					"js",
-					"png"
-				]
-			},
 			"net": {
 				"client": {
-					"Highscore": [
-						"js"
-					],
 					"Ping": [
 						"js"
 					]
 				},
 				"remote": {
-					"Highscore": [
-						"js"
-					],
 					"Ping": [
 						"js"
 					]
@@ -116,42 +97,16 @@
 				]
 			},
 			"state": {
-				"Game": [
-					"js",
-					"json",
-					"fnt"
-				],
 				"Menu": [
-					"js",
-					"json"
+					"js"
 				]
 			},
-			"ui": {
-				"Button": [
-					"js",
-					"json",
-					"png",
-					"fnt"
-				],
-				"Highscores": [
-					"js",
-					"fnt"
-				],
-				"Layer": [
-					"js",
-					"json",
-					"png",
-					"fnt"
-				]
-			},
-			"DeviceSpecificHacks": [
-				"js"
-			],
 			"Main": [
 				"js"
 			],
 			"index": [
-				"js"
+				"js",
+				"html"
 			]
 		}
 	},

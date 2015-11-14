@@ -7,12 +7,8 @@ lowercase() {
 OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
-LYCHEEJS_IOJS="";
+LYCHEEJS_NODE="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
-SORBET_PID="$LYCHEEJS_ROOT/sorbet/.pid";
-SORBET_LOG="/var/log/sorbet.log";
-SORBET_ERR="/var/log/sorbet.err";
-SORBET_USER=`whoami`;
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -31,22 +27,16 @@ fi;
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
-
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-	ARCH="x86"; # Well, fuck you, Microsoft
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
 fi;
 
-if [ ! -f $LYCHEEJS_IOJS ]; then
+if [ ! -f $LYCHEEJS_NODE ]; then
 	echo "Sorry, your computer is not supported. ($OS / $ARCH)";
 	exit 1;
 fi;
@@ -55,8 +45,8 @@ fi;
 
 cd $LYCHEEJS_ROOT;
 
-if [ ! -f "./lychee/build/html-nwjs/core.js" ]; then
-	$LYCHEEJS_IOJS ./lychee/configure.js;
+if [ ! -f "./lib/lychee/build/html-nwjs/core.js" ]; then
+	$LYCHEEJS_NODE ./bin/configure.js;
 fi;
 
 
@@ -102,13 +92,14 @@ if [ ! -d "./bin/ranger" ]; then
 		# 4. Cache binaries for fast bootup
 
 		cd $LYCHEEJS_ROOT;
-		mkdir ./bin/ranger;
-		cp ./asset/softcore/desktop.png ./bin/ranger/icon.png;
 
-		mv ./projects/cultivator/ranger/build/html-nwjs/main-linux ./bin/ranger/linux;
-		mv ./projects/cultivator/ranger/build/html-nwjs/main-osx ./bin/ranger/osx;
-		mv ./projects/cultivator/ranger/build/html-nwjs/main-windows ./bin/ranger/windows;
+		if [ "$OS" == "linux" ]; then
+			mv ./projects/cultivator/ranger/build/html-nwjs/main-linux ./bin/ranger;
+		elif [ "$OS" == "osx" ]; then
+			mv ./projects/cultivator/ranger/build/html-nwjs/main-osx ./bin/ranger;
+		fi;
 
+		cp ./asset/desktop.png ./bin/ranger/icon.png;
 		rm -rf ./projects/cultivator/ranger/build;
 
 	fi;
@@ -120,17 +111,12 @@ if [ -d "./bin/ranger" ]; then
 
 	if [ "$OS" == "linux" ]; then
 
-		./bin/ranger/linux/$ARCH/ranger;
+		./bin/ranger/$ARCH/ranger.bin;
 		exit 0;
 
 	elif [ "$OS" == "osx" ]; then
 
-		open ./bin/ranger/osx/$ARCH/ranger.app;
-		exit 0;
-
-	elif [ "$OS" == "windows" ]; then
-
-		./bin/ranger/windows/$ARCH/ranger.exe;
+		open ./bin/ranger/$ARCH/ranger.app;
 		exit 0;
 
 	fi;

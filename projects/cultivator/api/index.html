@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS API Tool</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="robots" content="noindex">
+
+	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
+	<script src="/projects/cultivator/design/index.js"></script>
+
+	<!-- CUSTOM -->
+	<link rel="stylesheet" href="/projects/cultivator/api/design/highlight.css">
+	<script src="/projects/cultivator/api/design/highlight.js"></script>
+
+	<!-- BOOTSTRAP -->
+	<script src="/lib/lychee/build/html/core.js"></script>
+
+	<style>
+	#tool > article:nth-of-type(1) p {
+		margin: 0px;
+		padding: 16px;
+		border-bottom: 2px solid #404844;
+	}
+	#tool > article:nth-of-type(1) ul.select {
+		margin: 0px;
+	}
+	#tool > article:nth-of-type(2) {
+		position: relative;
+	}
+	#tool-documentation {
+		position: absolute;
+		top: 64px;
+		right: 0px;
+		bottom: 0px;
+		left: 0px;
+		margin: 0px;
+		padding: 0px;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+	#tool-documentation article {
+		margin: 128px 0px;
+		padding: 0px;
+		font-size: 16px;
+		background: none;
+	}
+	#tool-documentation article pre {
+		margin: 0px;
+		padding: 16px;
+	}
+	#tool-documentation article pre code {
+		padding: 0px;
+	}
+	#tool-documentation code {
+		display: inline-block;
+		padding: 0.2em 0.4em;
+		color: #ffffff;
+		background: #1f2726;
+		font-family: monaco, Consolas, 'Lucida Console', monospace;
+		font-size: 14px;
+		border-radius: 3px;
+		vertical-align: middle;
+		-webkit-font-smoothing: antialiased;
+	}
+	#tool-documentation article pre:nth-of-type(1) {
+		margin: 32px 0px;
+		padding: 0px;
+		background: transparent;
+		white-space: pre-line;
+	}
+	#tool-documentation article pre:nth-of-type(1) code {
+		margin: 16px;
+		font-size: 32px;
+		background: transparent;
+	}
+
+	#tool-documentation article#constructor { margin-top: 0px; }
+	#tool-documentation h1 { margin: 32px 16px; font-size: 32px; }
+	#tool-documentation h2 { margin: 32px 16px; font-size: 32px; }
+	#tool-documentation h3 { margin: 32px 16px; font-size: 24px; }
+	#tool-documentation h4 { margin: 32px 16px; font-size: 24px; }
+	#tool-documentation p  { margin: 16px; }
+	#tool-documentation textarea {
+		display: block;
+		box-sizing: border-box;
+		width: 100%;
+		min-height: 50em;
+		margin: 0px;
+		color: #ffffff;
+		background: #1f2726;
+		font-family: monaco, Consolas, 'Lucida Console', monospace;
+		resize: vertical;
+	}
+	</style>
+</head>
+<body>
+
+<menu>
+	<b onclick="ui.toggle('menu');"><span></span></b>
+	<li class="active" onclick="ui.changeState('tool');">Tool</li>
+	<aside>
+		<button class="ico-refresh ico-only" onclick="window.location.href='./index.html';"></button>
+	</aside>
+</menu>
+
+<main>
+
+	<section id="tool" class="active">
+
+		<article>
+			<h3>Definitions</h3>
+			<form id="settings" enctype="application/json" action="MAIN" method="javascript">
+				<p class="center">
+					<input type="text" name="custom" placeholder="lychee.Renderer">
+					<button class="ico-create ico-only" onclick="location.hash='!' + this.parentNode.querySelector('input').value;return false;"></button>
+				</p>
+				<table class="vertical"></table>
+			</form>
+		</article>
+
+		<article>
+			<h3>
+				Documentation
+				<span>
+					<button class="ico-api ico-only" onclick="MAIN.trigger('api');"></button>
+					<button class="ico-edit ico-only" onclick="MAIN.trigger('edit');"></button>
+					<button class="ico-code ico-only" onclick="MAIN.trigger('code');"></button>
+					<button class="ico-download ico-only" onclick="MAIN.trigger('download');"></button>
+				</span>
+			</h3>
+			<div id="tool-documentation" class="markdown-body"></div>
+		</article>
+
+	</section>
+
+</main>
+
+<footer>
+	lycheeJS is (c) 2012-2016 by Artificial-Engineering and released under MIT license.
+</footer>
+
+<script>
+(function(lychee, global) {
+
+	var environment = new lychee.Environment({
+		id:      'api',
+		debug:   false,
+		sandbox: false,
+		build:   'tool.Main',
+		packages: [
+			new lychee.Package('tool', './lychee.pkg')
+		],
+		tags:     {
+			platform: [ 'html' ]
+		}
+	});
+
+
+	lychee.setEnvironment(environment);
+
+	lychee.init(function(sandbox) {
+
+		var lychee = sandbox.lychee;
+		var tool   = sandbox.tool;
+
+		sandbox.MAIN = new tool.Main();
+		sandbox.MAIN.init();
+
+	});
+
+})(lychee, typeof global !== 'undefined' ? global : this);
+</script>
+</body>
+</html>

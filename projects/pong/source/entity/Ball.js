@@ -1,6 +1,6 @@
 
 lychee.define('game.entity.Ball').includes([
-	'lychee.game.Sprite'
+	'lychee.app.Sprite'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _config  = attachments["json"].buffer;
@@ -15,7 +15,7 @@ lychee.define('game.entity.Ball').includes([
 		settings.texture = _texture;
 
 
-		lychee.game.Sprite.call(this, settings);
+		lychee.app.Sprite.call(this, settings);
 
 		settings = null;
 
@@ -30,7 +30,7 @@ lychee.define('game.entity.Ball').includes([
 
 		serialize: function() {
 
-			var data = lychee.game.Sprite.prototype.serialize.call(this);
+			var data = lychee.app.Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Ball';
 
 

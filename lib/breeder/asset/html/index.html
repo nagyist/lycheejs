@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+	<title>lycheeJS Separated HTML Boilerplate</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="64x64 32x32 16x16">
+	<link rel="apple-touch-icon" sizes="256x256" href="./design/apple-touch-icon.png">
+	<link rel="stylesheet" href="./design/index.css">
+	<meta property="og:image" content="./design/desktop.png">
+	<meta property="og:image:width" content="256">
+	<meta property="og:image:height" content="256">
+	<meta property="og:description" content="Humans need not apply">
+
+	<!-- BOOTSTRAP -->
+	<script src="/lib/lychee/build/html/core.js"></script>
+	<script src="/lib/lychee/build/html/dist/index.js"></script>
+
+	<style>
+	</style>
+</head>
+<body>
+<menu>
+	<b id="menu-toggle"></b>
+	<li class="ico-intro active" onclick="ui.changeState('welcome')">Welcome</li>
+	<li class="ico-settings active" onclick="ui.changeState('settings')">Settings</li>
+</menu>
+<aside>
+	<button class="ico-refresh ico-only" onclick="window.location.href='./index.html'"></button>
+</aside>
+<main>
+
+	<section id="welcome" class="center active">
+
+	</section>
+
+	<section id="settings">
+
+		<article>
+			<h3><b>1</b>Modify</h3>
+		</article>
+
+		<article>
+			<h3><b>2</b>Preview</h3>
+		</article>
+
+	</section>
+
+</main>
+<footer>
+	lycheeJS is (c) 2012-2016 by Artificial-Engineering and released under MIT license.
+</footer>
+<script src="./design/index.js"></script>
+<script src="./source/index.js"></script>
+</body>
+</html>

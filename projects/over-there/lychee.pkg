@@ -1,0 +1,143 @@
+{
+	"build": {
+		"environments": {
+			"html-nwjs/main": {
+				"build": "app.Main",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application"
+			},
+			"html/main": {
+				"build": "app.Main",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application"
+			},
+			"node/server": {
+				"build": "app.net.Server",
+				"debug": false,
+				"sandbox": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "application"
+			}
+		},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"entity": {
+				"Airlock": [
+					"js",
+					"json",
+					"png"
+				],
+				"Astronaut": [
+					"js",
+					"json",
+					"blue.png",
+					"light.png",
+					"green.png",
+					"red.png",
+					"orange.png",
+					"pink.png",
+					"purple.png",
+					"yellow.png"
+				],
+				"Background": [
+					"js",
+					"png"
+				],
+				"Midground": [
+					"js",
+					"png"
+				],
+				"Room": [
+					"js",
+					"json",
+					"png"
+				],
+				"Emblem": [
+					"js",
+					"png"
+				]
+			},
+			"net": {
+				"client": {},
+				"remote": {},
+				"Client": [
+					"js",
+					"json"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"state": {
+				"App": [
+					"fnt",
+					"js",
+					"json"
+				]
+			},
+			"ui": {
+				"Bubble": [
+					"fnt",
+					"js",
+					"json",
+					"png",
+					"avatar.json",
+					"avatar.png"
+				],
+				"Overlay": [
+					"js",
+					"fnt"
+				]
+			},
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js",
+				"html"
+			]
+		}
+	},
+	"api": {
+		"files": {}
+	}
+}

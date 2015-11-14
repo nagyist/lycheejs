@@ -3,7 +3,7 @@ lychee.define('tool.Main').requires([
 	'lychee.data.JSON',
 	'tool.data.SPRITE'
 ]).includes([
-	'lychee.game.Main'
+	'lychee.app.Main'
 ]).tags({
 	platform: 'html'
 }).exports(function(lychee, tool, global, attachments) {
@@ -90,7 +90,7 @@ lychee.define('tool.Main').requires([
 		this.locked = false;
 
 
-		lychee.game.Main.call(this, settings);
+		lychee.app.Main.call(this, settings);
 
 
 

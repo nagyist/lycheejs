@@ -1,0 +1,96 @@
+{
+	"map": {
+		"attack-disabled": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"attack": [
+			{
+				"x": 64,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"deselect-disabled": [
+			{
+				"x": 128,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"deselect": [
+			{
+				"x": 192,
+				"y": 0,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"drop-disabled": [
+			{
+				"x": 0,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"drop": [
+			{
+				"x": 64,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"move-disabled": [
+			{
+				"x": 128,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		],
+		"move": [
+			{
+				"x": 192,
+				"y": 64,
+				"w": 64,
+				"h": 64
+			}
+		]
+	},
+	"states": {
+		"attack-disabled": {
+			"animation": false
+		},
+		"attack": {
+			"animation": false
+		},
+		"deselect-disabled": {
+			"animation": false
+		},
+		"deselect": {
+			"animation": false
+		},
+		"drop-disabled": {
+			"animation": false
+		},
+		"drop": {
+			"animation": false
+		},
+		"move-disabled": {
+			"animation": false
+		},
+		"move": {
+			"animation": false
+		}
+	},
+	"width": 64,
+	"height": 64
+}

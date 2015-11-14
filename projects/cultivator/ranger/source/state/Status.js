@@ -1,6 +1,6 @@
 
 lychee.define('tool.state.Status').includes([
-	'lychee.game.State',
+	'lychee.app.State',
 	'lychee.event.Emitter'
 ]).tags({
 	platform: 'html'
@@ -87,11 +87,17 @@ lychee.define('tool.state.Status').includes([
 						}
 
 
+						var pretty_host = identifier + ':' + port;
+						if (identifier.match(/:/)) {
+							pretty_host = '[' + identifier + ']:' + port;
+						}
+
+
 						code += '<tr>';
 						code += '<td>' + identifier + '</td>';
 						code += '<td><label class="ico-online">Online</label></td>';
 						code += '<td>' + host_projects.join(', ') + '</td>';
-						code += '<td><a class="button ico-browser ico-only" href="lycheejs://web=http://' + identifier + ':' + port + '"></a></td>';
+						code += '<td><a class="button ico-browser ico-only" href="lycheejs://web=' + encodeURI('http://' + pretty_host) + '"></a></td>';
 						code += '</tr>';
 
 					});
@@ -152,14 +158,19 @@ lychee.define('tool.state.Status').includes([
 						}
 
 
-						if (project_hosts.length > 0) {
+						if (project.identifier !== 'lychee' && project_hosts.length > 0) {
 
 							project_hosts.forEach(function(host) {
 
+								var pretty_host = host + ':' + port;
+								if (host.match(/:/)) {
+									pretty_host = '[' + host + ']:' + port;
+								}
+
 								if (sorbet !== null && sorbet.details[host] === null) {
-									project_actions.push('<a class="button ico-browser ico-only" href="lycheejs://web=http://' + host + ':' + port + '/projects/' + project.identifier + '"></a>');
+									project_actions.push('<a class="button ico-browser ico-only" href="lycheejs://web=' + encodeURI('http://' + pretty_host + '/projects/' + project.identifier) + '"></a>');
 								} else {
-									project_actions.push('<a class="button ico-browser ico-only" href="lycheejs://web=http://' + host + ':' + port + '"></a>');
+									project_actions.push('<a class="button ico-browser ico-only" href="lycheejs://web=' + encodeURI('http://' + pretty_host) + '"></a>');
 								}
 
 							});
@@ -197,7 +208,7 @@ lychee.define('tool.state.Status').includes([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 		lychee.event.Emitter.call(this);
 
 	};

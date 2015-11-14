@@ -3,7 +3,7 @@ lychee.define('tool.data.SPRITE').requires([
 	'lychee.data.JSON'
 ]).tags({
 	platform: 'html'
-}).exports(function(lychee, game, global, attachments) {
+}).exports(function(lychee, tool, global, attachments) {
 
 	var _JSON = lychee.data.JSON;
 

@@ -7,7 +7,7 @@ lowercase() {
 OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
-LYCHEEJS_IOJS="";
+LYCHEEJS_NODE="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
 SORBET_PID="$LYCHEEJS_ROOT/sorbet/.pid";
 SORBET_LOG="/var/log/sorbet.log";
@@ -31,24 +31,26 @@ fi;
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
-
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-	ARCH="x86"; # Well, fuck you, Microsoft
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
 fi;
 
-if [ ! -f $LYCHEEJS_IOJS ]; then
+if [ ! -f $LYCHEEJS_NODE ]; then
 	echo "Sorry, your computer is not supported. ($OS / $ARCH)";
 	exit 1;
+fi;
+
+
+
+cd $LYCHEEJS_ROOT;
+
+if [ ! -f "./lib/lychee/build/node/core.js" ]; then
+	$LYCHEEJS_NODE ./bin/configure.js;
 fi;
 
 
@@ -59,10 +61,10 @@ case "$1" in
 
 		cd $LYCHEEJS_ROOT;
 
-		if [ "$SORBET_USER" == "root" ] || [ "$SORBET_USER" == "lycheejs-sorbet" ]; then 
-			$LYCHEEJS_IOJS --expose-gc ./bin/sorbet.js start "$2" >> $SORBET_LOG 2>> $SORBET_ERR
+		if [ "$SORBET_USER" == "root" ] || [ "$SORBET_USER" == "lycheejs-sorbet" ]; then
+			$LYCHEEJS_NODE --expose-gc ./bin/sorbet.js start "$2" >> $SORBET_LOG 2>> $SORBET_ERR
 		else
-			$LYCHEEJS_IOJS --expose-gc ./bin/sorbet.js start "$2"
+			$LYCHEEJS_NODE --expose-gc ./bin/sorbet.js start "$2"
 		fi;
 
 	;;
@@ -94,19 +96,21 @@ case "$1" in
 	stop)
 
 		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_IOJS ./bin/sorbet.js stop;
+
+		$LYCHEEJS_NODE ./bin/sorbet.js stop;
 
 	;;
 
 	restart)
 
 		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_IOJS ./bin/sorbet.js stop;
 
-		if [ "$SORBET_USER" == "root" ] || [ "$SORBET_USER" == "lycheejs-sorbet" ]; then 
-			$LYCHEEJS_IOJS --expose-gc ./bin/sorbet.js start "$2" >> $SORBET_LOG 2>> $SORBET_ERR
+		$LYCHEEJS_NODE ./bin/sorbet.js stop;
+
+		if [ "$SORBET_USER" == "root" ] || [ "$SORBET_USER" == "lycheejs-sorbet" ]; then
+			$LYCHEEJS_NODE --expose-gc ./bin/sorbet.js start "$2" >> $SORBET_LOG 2>> $SORBET_ERR
 		else
-			$LYCHEEJS_IOJS --expose-gc ./bin/sorbet.js start "$2"
+			$LYCHEEJS_NODE --expose-gc ./bin/sorbet.js start "$2"
 		fi;
 
 	;;
@@ -114,7 +118,8 @@ case "$1" in
 	*)
 
 		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_IOJS ./bin/sorbet.js help;
+
+		$LYCHEEJS_NODE ./bin/sorbet.js help;
 
 	;;
 

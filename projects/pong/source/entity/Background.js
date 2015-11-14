@@ -1,6 +1,6 @@
 
 lychee.define('game.entity.Background').includes([
-	'lychee.game.Background'
+	'lychee.ui.Background'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _texture = attachments["png"];
@@ -24,7 +24,7 @@ lychee.define('game.entity.Background').includes([
 		settings.state   = 'default';
 
 
-		lychee.game.Background.call(this, settings);
+		lychee.ui.Background.call(this, settings);
 
 		settings = null;
 
@@ -32,6 +32,7 @@ lychee.define('game.entity.Background').includes([
 
 
 	Class.prototype = {
+
 	};
 
 

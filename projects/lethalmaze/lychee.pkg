@@ -1,0 +1,100 @@
+{
+	"build": {
+		"environments": {},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"layer": {},
+			"effect": {
+				"Explosion": [
+					"js",
+					"json",
+					"png"
+				]
+			},
+			"entity": {
+				"Bullet": [
+					"js",
+					"json",
+					"png"
+				],
+				"Item": [
+					"js",
+					"json",
+					"png"
+				],
+				"Tank": [
+					"js",
+					"json",
+					"png",
+					"snd"
+				],
+				"Wall": [
+					"js",
+					"json",
+					"png"
+				],
+				"Terrain": [
+					"js",
+					"json",
+					"png"
+				]
+			},
+			"net": {
+				"client": {
+					"Controller": [
+						"js"
+					]
+				},
+				"remote": {
+					"Controller": [
+						"js"
+					]
+				},
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"state": {
+				"Game": [
+					"js",
+					"json",
+					"levels.json",
+					"fnt",
+					"death.snd",
+					"explosion.snd",
+					"powerup.snd",
+					"msc"
+				],
+				"Game___OLD": [
+					"js"
+				]
+			},
+			"ui": {},
+			"Main": [
+				"js"
+			],
+			"index": [
+				"js",
+				"html"
+			],
+			"Controller": [
+				"js"
+			],
+			"data": {
+				"Level": [
+					"js"
+				]
+			}
+		}
+	},
+	"api": {
+		"files": {}
+	}
+}

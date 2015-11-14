@@ -1,0 +1,184 @@
+{
+	"map": {
+		"dirt-bound": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"dirt-free": [
+			{
+				"x": 65,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"grass-bound": [
+			{
+				"x": 130,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"grass-free": [
+			{
+				"x": 195,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"lava-bound": [
+			{
+				"x": 260,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"lava-free": [
+			{
+				"x": 325,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"rock-bound": [
+			{
+				"x": 390,
+				"y": 0,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"rock-free": [
+			{
+				"x": 0,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"sand-bound": [
+			{
+				"x": 65,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"sand-free": [
+			{
+				"x": 130,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"snow-bound": [
+			{
+				"x": 195,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"snow-free": [
+			{
+				"x": 260,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"stone-bound": [
+			{
+				"x": 325,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"stone-free": [
+			{
+				"x": 390,
+				"y": 90,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"water-bound": [
+			{
+				"x": 0,
+				"y": 180,
+				"w": 65,
+				"h": 90
+			}
+		],
+		"water-free": [
+			{
+				"x": 65,
+				"y": 180,
+				"w": 65,
+				"h": 90
+			}
+		]
+	},
+	"states": {
+		"dirt-bound": {
+			"animation": false
+		},
+		"dirt-free": {
+			"animation": false
+		},
+		"grass-bound": {
+			"animation": false
+		},
+		"grass-free": {
+			"animation": false
+		},
+		"lava-bound": {
+			"animation": false
+		},
+		"lava-free": {
+			"animation": false
+		},
+		"rock-bound": {
+			"animation": false
+		},
+		"rock-free": {
+			"animation": false
+		},
+		"sand-bound": {
+			"animation": false
+		},
+		"sand-free": {
+			"animation": false
+		},
+		"snow-bound": {
+			"animation": false
+		},
+		"snow-free": {
+			"animation": false
+		},
+		"stone-bound": {
+			"animation": false
+		},
+		"stone-free": {
+			"animation": false
+		},
+		"water-bound": {
+			"animation": false
+		},
+		"water-free": {
+			"animation": false
+		}
+	},
+	"width": 65,
+	"height": 90
+}

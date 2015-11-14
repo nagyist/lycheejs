@@ -7,12 +7,8 @@ lowercase() {
 OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
-LYCHEEJS_IOJS="";
+LYCHEEJS_NODE="";
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
-SORBET_PID="$LYCHEEJS_ROOT/sorbet/.pid";
-SORBET_LOG="/var/log/sorbet.log";
-SORBET_ERR="/var/log/sorbet.err";
-SORBET_USER=`whoami`;
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -31,21 +27,16 @@ fi;
 if [ "$OS" == "darwin" ]; then
 
 	OS="osx";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/osx/$ARCH/iojs";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node";
 
 elif [ "$OS" == "linux" ]; then
 
 	OS="linux";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/linux/$ARCH/iojs";
-
-elif [ "$OS" == "windows_nt" ]; then
-
-	OS="windows";
-	LYCHEEJS_IOJS="$LYCHEEJS_ROOT/bin/runtime/iojs/windows/$ARCH/iojs.exe";
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
 fi;
 
-if [ ! -f $LYCHEEJS_IOJS ]; then
+if [ ! -f $LYCHEEJS_NODE ]; then
 	echo "Sorry, your computer is not supported. ($OS / $ARCH)";
 	exit 1;
 fi;
@@ -54,8 +45,8 @@ fi;
 
 cd $LYCHEEJS_ROOT;
 
-if [ ! -f "./lychee/build/html-nwjs/core.js" ]; then
-	$LYCHEEJS_IOJS ./lychee/configure.js;
+if [ ! -f "./lib/lychee/build/html-nwjs/core.js" ]; then
+	$LYCHEEJS_NODE ./bin/configure.js;
 fi;
 
 
@@ -101,14 +92,15 @@ if [ ! -d "./bin/editor" ]; then
 		# 4. Cache binaries for fast bootup
 
 		cd $LYCHEEJS_ROOT;
-		mkdir ./bin/editor;
-		cp ./asset/softcore/desktop.png ./bin/editor/icon.png;
 
-		mv ./projects/cultivator/editor/build/html-nwjs/main-linux ./bin/editor/linux;
-		mv ./projects/cultivator/editor/build/html-nwjs/main-osx ./bin/editor/osx;
-		mv ./projects/cultivator/editor/build/html-nwjs/main-windows ./bin/editor/windows;
+		if [ "$OS" == "linux" ]; then
+			mv ./projects/cultivator/editor/build/html-nwjs/main-linux ./bin/editor;
+		elif [ "$OS" == "osx" ]; then
+			mv ./projects/cultivator/editor/build/html-nwjs/main-osx ./bin/editor;
+		fi;
 
-#		rm -rf ./projects/cultivator/editor/build;
+		cp ./asset/desktop.png ./bin/editor/icon.png;
+		rm -rf ./projects/cultivator/editor/build;
 
 	fi;
 
@@ -119,17 +111,12 @@ if [ -d "./bin/editor" ]; then
 
 	if [ "$OS" == "linux" ]; then
 
-		./bin/editor/linux/$ARCH/editor "$1";
+		./bin/editor/$ARCH/editor.bin "$1";
 		exit 0;
 
 	elif [ "$OS" == "osx" ]; then
 
-		open ./bin/editor/osx/$ARCH/editor.app "$1";
-		exit 0;
-
-	elif [ "$OS" == "windows" ]; then
-
-		./bin/editor/windows/$ARCH/editor.exe "$1";
+		open ./bin/editor/$ARCH/editor.app "$1";
 		exit 0;
 
 	fi;

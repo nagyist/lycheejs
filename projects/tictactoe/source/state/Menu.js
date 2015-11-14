@@ -3,12 +3,12 @@ lychee.define('game.state.Menu').requires([
 	'lychee.effect.Alpha',
 	'lychee.effect.Color',
 	'lychee.effect.Position',
-	'lychee.game.Background',
-	'game.entity.lycheeJS',
+	'lychee.ui.Background',
+	'game.entity.Emblem',
 	'game.ui.Button',
 	'game.ui.Layer'
 ]).includes([
-	'lychee.game.State'
+	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _blob = attachments["json"].buffer;
@@ -61,7 +61,7 @@ lychee.define('game.state.Menu').requires([
 
 	var Class = function(main) {
 
-		lychee.game.State.call(this, main);
+		lychee.app.State.call(this, main);
 
 
 		this.__index = 0;
@@ -92,7 +92,7 @@ lychee.define('game.state.Menu').requires([
 					entity.width  = width;
 					entity.height = height;
 
-					entity = this.queryLayer('background', 'lycheeJS');
+					entity = this.queryLayer('background', 'emblem');
 					entity.position.y = 1/2 * height - 32;
 
 				}
@@ -112,7 +112,7 @@ lychee.define('game.state.Menu').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.State.prototype.serialize.call(this);
+			var data = lychee.app.State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Menu';
 
 
@@ -122,7 +122,7 @@ lychee.define('game.state.Menu').requires([
 
 		deserialize: function(blob) {
 
-			lychee.game.State.prototype.deserialize.call(this, blob);
+			lychee.app.State.prototype.deserialize.call(this, blob);
 
 
 			var entity = null;
@@ -228,13 +228,13 @@ lychee.define('game.state.Menu').requires([
 			}
 
 
-			lychee.game.State.prototype.update.call(this, clock, delta);
+			lychee.app.State.prototype.update.call(this, clock, delta);
 
 		},
 
 		enter: function(data) {
 
-			lychee.game.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this);
 
 		}
 

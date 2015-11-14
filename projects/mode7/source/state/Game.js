@@ -1,15 +1,15 @@
 
 lychee.define('game.state.Game').requires([
 	'game.entity.Background',
-	'game.entity.lycheeJS',
+	'game.entity.Emblem',
 	'game.entity.Track'
 ]).includes([
-	'lychee.game.State'
+	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var Class = function(game) {
 
-		lychee.game.State.call(this, game);
+		lychee.app.State.call(this, game);
 
 
 		this.camera = game.camera || null;
@@ -37,7 +37,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = lychee.game.State.prototype.serialize.call(this);
+			var data = lychee.app.State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -66,10 +66,10 @@ lychee.define('game.state.Game').requires([
 					origin: this.__origin
 				});
 
-				this.__logo = new game.entity.lycheeJS({
+				this.__logo = new game.entity.Emblem({
 					position: {
 						x: renderer.width - 128,
-						y: renderer.height - 24
+						y: renderer.height - 32
 					}
 				});
 
@@ -79,7 +79,7 @@ lychee.define('game.state.Game').requires([
 
 		enter: function(data) {
 
-			lychee.game.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this);
 
 
 			this.__track = new game.entity.Track(data.track);
@@ -138,7 +138,7 @@ lychee.define('game.state.Game').requires([
 			this.__track     = null;
 
 
-			lychee.game.State.prototype.leave.call(this);
+			lychee.app.State.prototype.leave.call(this);
 
 		},
 

@@ -3,7 +3,7 @@ lychee.define('tool.data.FNT').requires([
 	'lychee.data.JSON'
 ]).tags({
 	platform: 'html'
-}).exports(function(lychee, game, global, attachments) {
+}).exports(function(lychee, tool, global, attachments) {
 
 	var _JSON = lychee.data.JSON;
 
@@ -20,7 +20,7 @@ lychee.define('tool.data.FNT').requires([
 		defaults.family       = 'Ubuntu Mono';
 		defaults.style        = 'normal';
 		defaults.size         = 16;
-		defaults.spacing      = 0;
+		defaults.space        = 0;
 		defaults.color        = '#ffffff';
 		defaults.outline      = 0;
 		defaults.outlinecolor = '#000000';
@@ -51,7 +51,7 @@ lychee.define('tool.data.FNT').requires([
 			kerning:    0,
 			lineheight: 0,
 			map:        [],
-			spacing:    0,
+			space:      0,
 			texture:    null
 		};
 		this.__mode = mode;
@@ -62,7 +62,7 @@ lychee.define('tool.data.FNT').requires([
 		this.setKerning(settings.kerning);
 		this.setLineHeight(settings.lineheight);
 		this.setMap(settings.map);
-		this.setSpacing(settings.spacing);
+		this.setSpace(settings.space);
 		this.setTexture(settings.texture);
 
 
@@ -198,14 +198,14 @@ lychee.define('tool.data.FNT').requires([
 
 		},
 
-		setSpacing: function(spacing) {
+		setSpace: function(space) {
 
-			spacing = typeof spacing === 'number' ? (spacing | 0) : null;
+			space = typeof space === 'number' ? (space | 0) : null;
 
 
-			if (spacing !== null) {
+			if (space !== null) {
 
-				this.__data.spacing = spacing;
+				this.__data.space = space;
 
 				return true;
 
@@ -262,7 +262,7 @@ lychee.define('tool.data.FNT').requires([
 			var canvas  = document.createElement('canvas');
 			var context = canvas.getContext('2d');
 
-			measurements.width  = settings.spacing;
+			measurements.width  = settings.space;
 			measurements.height = settings.size * 3 + settings.outline * 2;
 
 			context.font         = settings.style + ' ' + settings.size + 'px "' + settings.family + '"';
@@ -274,7 +274,7 @@ lychee.define('tool.data.FNT').requires([
 				var w = Math.max(1, Math.ceil(m.width)) + settings.outline * 2;
 
 				measurements.map.push(w);
-				measurements.width += w + settings.spacing * 2;
+				measurements.width += w + settings.space * 2;
 
 			}
 
@@ -303,7 +303,7 @@ lychee.define('tool.data.FNT').requires([
 
 				var data      = this.getImageData(0, 0, measurements.width, measurements.height);
 				var baselines = [];
-				var margin    = settings.spacing;
+				var margin    = settings.space;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -326,7 +326,7 @@ lychee.define('tool.data.FNT').requires([
 
 					}
 
-					margin += measurements.map[c] + settings.spacing * 2;
+					margin += measurements.map[c] + settings.space * 2;
 					baselines.push(baseline);
 
 				}
@@ -388,7 +388,7 @@ lychee.define('tool.data.FNT').requires([
 
 
 				var outline = settings.outline;
-				var m       = settings.spacing;
+				var m       = settings.space;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -406,7 +406,7 @@ lychee.define('tool.data.FNT').requires([
 
 					}
 
-					m += measurements.map[c] + settings.spacing * 2;
+					m += measurements.map[c] + settings.space * 2;
 
 				}
 
@@ -421,7 +421,7 @@ lychee.define('tool.data.FNT').requires([
 				this.textBaseline = 'top';
 
 
-				var m = settings.spacing;
+				var m = settings.space;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -432,7 +432,7 @@ lychee.define('tool.data.FNT').requires([
 						offset
 					);
 
-					m += measurements.map[c] + settings.spacing * 2;
+					m += measurements.map[c] + settings.space * 2;
 
 				}
 
@@ -511,7 +511,7 @@ lychee.define('tool.data.FNT').requires([
 			buffer.setKerning(data.kerning);
 			buffer.setLineHeight(data.lineheight);
 			buffer.setMap(data.map);
-			buffer.setSpacing(data.spacing);
+			buffer.setSpace(data.space);
 
 
 			if (data.texture instanceof Texture) {
@@ -535,7 +535,7 @@ lychee.define('tool.data.FNT').requires([
 //		value.kerning    = buffer.kerning;
 //		value.lineheight = buffer.lineheight;
 //		value.map        = buffer.map;
-//		value.spacing    = buffer.spacing;
+//		value.space      = buffer.space;
 
 
 		if (value.texture === null) {
