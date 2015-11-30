@@ -20,7 +20,7 @@ lychee.define('tool.data.FNT').requires([
 		defaults.family       = 'Ubuntu Mono';
 		defaults.style        = 'normal';
 		defaults.size         = 16;
-		defaults.space        = 0;
+		defaults.spacing      = 0;
 		defaults.color        = '#ffffff';
 		defaults.outline      = 0;
 		defaults.outlinecolor = '#000000';
@@ -51,7 +51,7 @@ lychee.define('tool.data.FNT').requires([
 			kerning:    0,
 			lineheight: 0,
 			map:        [],
-			space:      0,
+			spacing:    0,
 			texture:    null
 		};
 		this.__mode = mode;
@@ -62,7 +62,7 @@ lychee.define('tool.data.FNT').requires([
 		this.setKerning(settings.kerning);
 		this.setLineHeight(settings.lineheight);
 		this.setMap(settings.map);
-		this.setSpace(settings.space);
+		this.setSpacing(settings.spacing);
 		this.setTexture(settings.texture);
 
 
@@ -198,14 +198,14 @@ lychee.define('tool.data.FNT').requires([
 
 		},
 
-		setSpace: function(space) {
+		setSpacing: function(spacing) {
 
-			space = typeof space === 'number' ? (space | 0) : null;
+			spacing = typeof spacing === 'number' ? (spacing | 0) : null;
 
 
-			if (space !== null) {
+			if (spacing !== null) {
 
-				this.__data.space = space;
+				this.__data.spacing = spacing;
 
 				return true;
 
@@ -262,7 +262,7 @@ lychee.define('tool.data.FNT').requires([
 			var canvas  = document.createElement('canvas');
 			var context = canvas.getContext('2d');
 
-			measurements.width  = settings.space;
+			measurements.width  = settings.spacing;
 			measurements.height = settings.size * 3 + settings.outline * 2;
 
 			context.font         = settings.style + ' ' + settings.size + 'px "' + settings.family + '"';
@@ -274,7 +274,7 @@ lychee.define('tool.data.FNT').requires([
 				var w = Math.max(1, Math.ceil(m.width)) + settings.outline * 2;
 
 				measurements.map.push(w);
-				measurements.width += w + settings.space * 2;
+				measurements.width += w + settings.spacing * 2;
 
 			}
 
@@ -303,7 +303,7 @@ lychee.define('tool.data.FNT').requires([
 
 				var data      = this.getImageData(0, 0, measurements.width, measurements.height);
 				var baselines = [];
-				var margin    = settings.space;
+				var margin    = settings.spacing;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -326,7 +326,7 @@ lychee.define('tool.data.FNT').requires([
 
 					}
 
-					margin += measurements.map[c] + settings.space * 2;
+					margin += measurements.map[c] + settings.spacing * 2;
 					baselines.push(baseline);
 
 				}
@@ -388,7 +388,7 @@ lychee.define('tool.data.FNT').requires([
 
 
 				var outline = settings.outline;
-				var m       = settings.space;
+				var m       = settings.spacing;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -406,7 +406,7 @@ lychee.define('tool.data.FNT').requires([
 
 					}
 
-					m += measurements.map[c] + settings.space * 2;
+					m += measurements.map[c] + settings.spacing * 2;
 
 				}
 
@@ -421,7 +421,7 @@ lychee.define('tool.data.FNT').requires([
 				this.textBaseline = 'top';
 
 
-				var m = settings.space;
+				var m = settings.spacing;
 
 				for (var c = 0; c < settings.charset.length; c++) {
 
@@ -432,7 +432,7 @@ lychee.define('tool.data.FNT').requires([
 						offset
 					);
 
-					m += measurements.map[c] + settings.space * 2;
+					m += measurements.map[c] + settings.spacing * 2;
 
 				}
 
@@ -511,7 +511,7 @@ lychee.define('tool.data.FNT').requires([
 			buffer.setKerning(data.kerning);
 			buffer.setLineHeight(data.lineheight);
 			buffer.setMap(data.map);
-			buffer.setSpace(data.space);
+			buffer.setSpacing(data.spacing);
 
 
 			if (data.texture instanceof Texture) {
@@ -535,7 +535,7 @@ lychee.define('tool.data.FNT').requires([
 //		value.kerning    = buffer.kerning;
 //		value.lineheight = buffer.lineheight;
 //		value.map        = buffer.map;
-//		value.space      = buffer.space;
+//		value.spacing    = buffer.spacing;
 
 
 		if (value.texture === null) {

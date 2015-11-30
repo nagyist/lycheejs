@@ -1,0 +1,119 @@
+{
+	"map": {
+		"default": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"default-damage": [
+			{
+				"x": 32,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"grass-big": [
+			{
+				"x": 64,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"grass-big-damage": [
+			{
+				"x": 96,
+				"y": 0,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"grass-small": [
+			{
+				"x": 0,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"grass-small-damage": [
+			{
+				"x": 32,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"scrub-big": [
+			{
+				"x": 64,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"scrub-big-damage": [
+			{
+				"x": 96,
+				"y": 32,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"scrub-small": [
+			{
+				"x": 0,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		],
+		"scrub-small-damage": [
+			{
+				"x": 32,
+				"y": 64,
+				"w": 32,
+				"h": 32
+			}
+		]
+	},
+	"states": {
+		"default": {
+			"animation": false
+		},
+		"default-damage": {
+			"animation": false
+		},
+		"grass-big": {
+			"animation": false
+		},
+		"grass-big-damage": {
+			"animation": false
+		},
+		"grass-small": {
+			"animation": false
+		},
+		"grass-small-damage": {
+			"animation": false
+		},
+		"scrub-big": {
+			"animation": false
+		},
+		"scrub-big-damage": {
+			"animation": false
+		},
+		"scrub-small": {
+			"animation": false
+		},
+		"scrub-small-damage": {
+			"animation": false
+		}
+	},
+	"width": 32,
+	"height": 32,
+	"shape": 1
+}

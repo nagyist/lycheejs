@@ -40,73 +40,212 @@
 					"blob": {
 						"entities": [{
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": 0 }, "type" : "node1", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 0
+								},
+								"state": "node1"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 0, "y": 80 }, "type": "horizontal-medium" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 80
+								},
+								"state": "horizontal-medium"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 0, "y": -80 }, "type": "horizontal-big" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": -80
+								},
+								"state": "horizontal-big"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 80, "y": 0 }, "type": "vertical-big" }]
+							"arguments": [{
+								"position": {
+									"x": 80,
+									"y": 0
+								},
+								"state": "vertical-big"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": -80, "y": 0 }, "type": "vertical-big" }]
+							"arguments": [{
+								"position": {
+									"x": -80,
+									"y": 0
+								},
+								"state": "vertical-big"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": 192 } , "type" : "fgb", "country" : "RU" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 192
+								},
+								"state": "fgb"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 0, "y": 304 } , "type": "horizontal-small" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 304
+								},
+								"state": "horizontal-small"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": 352 }, "type": "node0" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 352
+								},
+								"state": "node0"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 48, "y": 352 } , "type": "vertical-small" }]
+							"arguments": [{
+								"position": {
+									"x": 48,
+									"y": 352
+								},
+								"state": "vertical-small"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": -48, "y": 352 } , "type": "vertical-small"  }]
+							"arguments": [{
+								"position": {
+									"x": -48,
+									"y": 352
+								},
+								"state": "vertical-small"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 0, "y": 400 } , "type": "horizontal-small" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 400
+								},
+								"state": "horizontal-small"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": 512 }, "type" : "sm", "country" : "RU" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": 512
+								},
+								"state": "sm",
+								"country": "RU"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": -176, "y": 0 }, "type" : "node3", "alias" : "tranquility", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": -176,
+									"y": 0
+								},
+								"state": "node3"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 128, "y": 0 }, "type" : "crewlock", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": 128,
+									"y": 0
+								},
+								"state": "crewlock"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": -208 }, "type" : "destiny", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": -208
+								},
+								"state": "destiny"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 0, "y": -336 }, "type": "horizontal-big" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": -336
+								},
+								"state": "horizontal-big"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 0, "y": -432 }, "type" : "harmony", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": 0,
+									"y": -432
+								},
+								"state": "harmony"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": 80, "y": -416 }, "type": "vertical-big" }]
+							"arguments": [{
+								"position": {
+									"x": 80,
+									"y": -416
+								},
+								"state": "vertical-big"
+							}]
 						}, {
 							"constructor": "app.entity.Airlock",
-							"arguments": [{ "position": { "x": -80, "y": -416 }, "type": "vertical-big" }]
+							"arguments": [{
+								"position": {
+									"x": -80,
+									"y": -416
+								},
+								"state": "vertical-big"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 208, "y": -416 }, "type" : "columbus", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": 208,
+									"y": -416
+								},
+								"state": "columbus"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": -192, "y": -416 }, "type" : "jem", "country" : "EU" }]
+							"arguments": [{
+								"position": {
+									"x": -192,
+									"y": -416
+								},
+								"state": "jem"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": 128, "y": 352 }, "type" : "dc1", "country" : "USSR" }]
+							"arguments": [{
+								"position": {
+									"x": 128,
+									"y": 352
+								},
+								"state": "dc1"
+							}]
 						}, {
 							"constructor": "app.entity.Room",
-							"arguments": [{ "position": { "x": -128, "y": 352 }, "type" : "mrm2", "country" : "US" }]
+							"arguments": [{
+								"position": {
+									"x": -128,
+									"y": 352
+								},
+								"state": "mrm2"
+							}]
 						}]
 					}
 				}],
@@ -120,7 +259,7 @@
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "app.ui.Overlay",
+					"constructor": "app.ui.layer.Overlay",
 					"arguments": [{}]
 				}],
 				"map": {

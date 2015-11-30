@@ -1,19 +1,19 @@
 
 lychee.define('game.net.Client').requires([
 	'lychee.data.BitON',
-	'game.net.client.Controller'
+	'game.net.client.Control'
 ]).includes([
 	'lychee.net.Client'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _BitON      = lychee.data.BitON;
-	var _Controller = game.net.client.Controller;
-
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data, main) {
 
 		var settings = lychee.extend({
-			codec:     _BitON,
+			codec:     lychee.data.BitON,
 			reconnect: 10000
 		}, data);
 
@@ -28,10 +28,10 @@ lychee.define('game.net.Client').requires([
 
 		this.bind('connect', function() {
 
-			this.addService(new _Controller(this));
+			this.addService(new game.net.client.Control(this));
 
 			if (lychee.debug === true) {
-				console.log('(Lethal Maze) game.net.Client: Remote connected');
+				console.log('game.net.Client: Remote connected');
 			}
 
 		}, this);
@@ -39,14 +39,14 @@ lychee.define('game.net.Client').requires([
 		this.bind('disconnect', function(code) {
 
 			if (lychee.debug === true) {
-				console.log('(Lethal Maze) game.net.Client: Remote disconnected (' + code + ')');
+				console.log('game.net.Client: Remote disconnected (' + code + ')');
 			}
 
 		}, this);
 
 		this.bind('receive', function(data) {
 
-			var service = this.getService('controller');
+			var service = this.getService('control');
 			if (service !== null) {
 				service.setSid(data.sid);
 			}
@@ -60,6 +60,20 @@ lychee.define('game.net.Client').requires([
 
 
 	Class.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		serialize: function() {
+
+			var data = lychee.net.Client.prototype.serialize.call(this);
+			data['constructor'] = 'game.net.Client';
+
+
+			return data;
+
+		}
 
 	};
 

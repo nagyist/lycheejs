@@ -6,89 +6,103 @@ lychee.define('tool.state.Scene').includes([
 	platform: 'html'
 }).exports(function(lychee, tool, global, attachments) {
 
+	var _environment = lychee.environment;
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _cache  = {};
+	var _bind_wrapper = function(sandbox) {
 
-	var _ui_render = function(query, parent) {
+		var canvas  = document.querySelector('body > .lychee-Renderer');
+		var wrapper = document.querySelector('#scene-preview-wrapper');
 
-/*
-		var blob = this.serialize();
-		var code = '';
-		var name = this.label ? this.label : (parent.__map[query.split('/').pop()] || blob.constructor);
+		if (canvas !== null && wrapper !== null) {
+
+			canvas.parentNode.removeChild(canvas);
+			wrapper.appendChild(canvas);
+			wrapper.style.height = (global.innerHeight - 208) + 'px';
 
 
-		code += '<li class="active" title="' + blob.constructor + '">';
+			if (this.input === null && sandbox.MAIN.input !== null) {
 
-		code += '<label class="ico-eye active" onclick="MAIN.state.trigger(\'visibility\', [\'' + query + '\']);this.classList.toggle(\'active\');this.parentNode.classList.toggle(\'active\');"></label>';
+				sandbox.MAIN.input.unbind = function() {};
+				sandbox.MAIN.input.destroy();
+				sandbox.MAIN.input.unbind = lychee.Input.prototype.unbind;
 
-		if (this.entities instanceof Array && this.entities.length > 0) {
-			code += '<label class="ico-arrow down active" onclick="this.parentNode.classList.toggle(\'active\');this.classList.toggle(\'down\');this.classList.toggle(\'right\'); void 1337;"></label>';
+
+				this.input = new lychee.Input({
+					touch:       true,
+					swipe:       true,
+					key:         true,
+					keymodifier: false
+				});
+
+				this.input.bind('key', function(key, name, delta) {
+					sandbox.MAIN.input.trigger('key', [ key, name, delta ]);
+				}, this);
+
+				this.input.bind('touch', function(id, position, delta) {
+
+					var box = wrapper.getBoundingClientRect();
+					var x1  = box.left;
+					var x2  = box.left + box.width;
+					var y1  = box.top;
+					var y2  = box.top + box.height;
+
+
+					if (position.x >= x1 && position.y >= y1 && position.x <= x2 && position.y <= y2) {
+
+						position.x += wrapper.scrollLeft;
+						position.y += wrapper.scrollTop;
+
+						sandbox.MAIN.input.trigger('touch', [ id, position, delta ]);
+
+					}
+
+				}, this);
+
+				this.input.bind('swipe', function(id, state, position, delta, swipe) {
+
+					var box = wrapper.getBoundingClientRect();
+					var x1  = box.left;
+					var x2  = box.left + box.width;
+					var y1  = box.top;
+					var y2  = box.top + box.height;
+
+
+					if (position.x >= x1 && position.y >= y1 && position.x <= x2 && position.y <= y2) {
+
+						position.x += wrapper.scrollLeft;
+						position.y += wrapper.scrollTop;
+
+						sandbox.MAIN.input.trigger('swipe', [ id, state, position, delta, swipe ]);
+
+					}
+
+				}, this);
+
+			}
+
 		}
-
-
-		code += '<span>' + name + '</span>';
-
-
-		if (this.entities instanceof Array && this.entities.length > 0) {
-
-			code += '<ul>';
-
-			var parent = this;
-
-			this.entities.forEach(function(entity, index) {
-				code += _ui_render.call(entity, query + '/' + index, parent);
-			});
-
-			code += '</ul>';
-
-		}
-
-
-		code += '</li>';
-
-		return code;
-*/
 
 	};
 
-	var _ui_update = function(id) {
+	var _unbind_wrapper = function() {
 
-/*
-		if (this.environment === null) return false;
-
-
-		var code   = typeof _cache[id] === 'string' ? _cache[id] : '';
-		var layers = this.environment.global.MAIN.state.__layers;
-
-
-		if (code === '') {
-
-			code += '<ul>';
-
-			Object.values(layers).reverse().forEach(function(layer, index) {
-
-				var dummy = { __map: {} };
-				dummy.__map[index] = Object.keys(layers).reverse()[index];
-
-				code += _ui_render.call(layer, '/' + index, dummy);
-
-			});
-
-			code += '</ul>';
-
+		if (this.input !== null) {
+			this.input.destroy();
+			this.input = null;
 		}
 
 
-		if (_cache[id] === undefined) {
-			_cache[id] = code;
+		var wrapper = document.querySelector('#scene-preview-wrapper');
+		var canvas  = wrapper.querySelector('canvas');
+		if (canvas !== null && wrapper !== null) {
+			wrapper.removeChild(canvas);
 		}
-
-
-		ui.render(code, '#scene-layers-wrapper');
-*/
 
 	};
 
@@ -113,112 +127,11 @@ lychee.define('tool.state.Scene').includes([
 		 * INITIALIZATION
 		 */
 
-		this.main.bind('changestate', _ui_update, this);
-
 		this.bind('changetool', function(tool) {
 
 console.log(tool);
 
 		}, this);
-
-
-		// MUHAHA I HAZ CRAPPY DOM
-		global.addEventListener('click', function(event) {
-
-			var target = event.target;
-			if (target !== null && target.className === 'lychee-Renderer') {
-
-				var parent = target.parentNode;
-
-console.log(event);
-
-console.log(parent.scrollTop);
-
-console.log('YES!');
-
-			} else {
-
-console.log('NO :\'(');
-
-			}
-
-		});
-
-
-/*
-
-		this.bind('entity', function(entity) {
-
-			if (entity !== null) {
-
-				var blob = entity.serialize();
-
-				ui.render(blob.constructor, '#scene-settings > h3');
-				ui.active('#scene-settings-wrapper');
-
-
-				[].slice.call(document.querySelectorAll('#scene-settings-wrapper input')).forEach(function(element) {
-
-					switch (element.name) {
-
-						case 'entity-position-x': element.value = entity.position.x; break;
-						case 'entity-position-y': element.value = entity.position.y; break;
-						case 'entity-width':      element.value = entity.width;      break;
-						case 'entity-height':     element.value = entity.height;     break;
-
-					}
-
-				});
-
-			} else {
-
-				ui.render('No Entity selected', '#scene-settings > h3');
-				ui.inactive('#scene-settings-wrapper');
-
-			}
-
-		}, this);
-
-		this.bind('submit', function(id, settings) {
-
-			if (id === 'settings') {
-
-console.log(settings);
-
-			}
-
-		}, this);
-
-		this.bind('visibility', function(query) {
-
-			var path    = query.split('/').slice(1);
-			var layers  = this.environment.global.MAIN.state.__layers;
-			var pointer = Object.values(layers).reverse()[path.shift()];
-
-			while (path.length > 0) {
-
-				if (pointer.entities instanceof Array) {
-					pointer = pointer.entities[path.shift()];
-				}
-
-			}
-
-
-			var entity = pointer || null;
-			if (entity !== null) {
-
-				if (lychee.interfaceof(lychee.ui.Layer, entity) || lychee.interfaceof(lychee.app.Layer, entity)) {
-					entity.setVisible(!entity.visible);
-				} else if (lychee.interfaceof(lychee.ui.Entity, entity)) {
-					entity.setVisible(!entity.visible);
-				} else if (lychee.interfaceof(lychee.app.Entity, entity)) {
-					entity.setAlpha(entity.alpha === 1 ? 0 : 1);
-				}
-
-			}
-
-		}, this);
-*/
 
 	};
 
@@ -265,48 +178,30 @@ console.log(settings);
 
 			lychee.init(function(sandbox) {
 
-				var lychee = sandbox.lychee;
-				var app    = sandbox.app;
+				if (sandbox !== null) {
 
-				if (typeof app.Main !== 'undefined') {
+					var lychee = sandbox.lychee;
+					var app    = sandbox.app;
 
-					sandbox.MAIN = new app.Main();
+					if (typeof app.Main !== 'undefined') {
 
-					sandbox.MAIN.bind('init', function() {
+						sandbox.MAIN = new app.Main();
 
-						var canvas  = document.querySelector('body > .lychee-Renderer');
-						var wrapper = document.querySelector('#scene-preview-wrapper');
+						sandbox.MAIN.bind('init', function() {
+							_bind_wrapper.call(that, sandbox);
+						}, this);
 
-						if (canvas !== null && wrapper !== null) {
-							canvas.parentNode.removeChild(canvas);
-							wrapper.appendChild(canvas);
-							wrapper.style.height = (global.innerHeight - 208) + 'px';
-						}
+						sandbox.MAIN.init();
 
-					}, this);
+					}
 
-					sandbox.MAIN.init();
+					that.environment = environment;
+					that.sandbox     = sandbox;
 
 				}
 
-				that.sandbox = sandbox;
-
 			});
 
-
-console.log(environment);
-
-
-console.log('ENTERED');
-
-
-/*
-
-			this.environment = environment;
-
-			var id = Object.keys(MAIN.__states)[Object.values(MAIN.__states).indexOf(MAIN.state)] || null;
-			_ui_update.call(this, id);
-*/
 
 			lychee.app.State.prototype.enter.call(this);
 
@@ -314,7 +209,23 @@ console.log('ENTERED');
 
 		leave: function() {
 
-console.log('LEFT');
+			_unbind_wrapper.call(this);
+
+			lychee.setEnvironment(_environment);
+
+
+			if (this.sandbox !== null) {
+
+				var main = this.sandbox.MAIN || null;
+				if (main !== null) {
+					main.destroy();
+				}
+
+				this.sandbox     = null;
+				this.environment = null;
+
+			}
+
 
 			lychee.app.State.prototype.leave.call(this);
 

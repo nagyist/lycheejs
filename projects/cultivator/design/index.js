@@ -670,6 +670,12 @@ ui = (function(global) {
 
 			}
 
+
+			var location = global.location || null;
+			if (location instanceof Object) {
+				location.hash = '#!' + identifier;
+			}
+
 		},
 
 		remove: function(node) {

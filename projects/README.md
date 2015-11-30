@@ -1,32 +1,45 @@
 
-## Getting Started
+## Projects Folder
 
-The best way to get started is to clone the Boilerplate.
+This folder contains all lycheeJS Projects.
+
+Each Project has a unique identifier (its folder name) which is
+also used as an identifier for the network connection initiated
+by the `Harvester` and the `harvester.js` automatically.
+
+
+### Initialize a Project
+
+You can initialize a project using the `Breeder`.
+The `Breeder` allows to manage your projects and its libraries
+as dependencies.
+
 
 ```bash
-cd /path/to/lycheeJS/projects;
-cp -R ./boilerplate ./myproject; # Replace myproject with a unique name
+cd /opt/lycheejs;
+
+mkdir ./projects/my-project;
+cd ./projects/my-project;
+
+lycheejs-breeder init;
 ```
 
-Each project has a unique identifier (e.g. /projects/boilerplate has the
-identifier **boilerplate**). A project's folder name is equivalent to
-its unique identifier.
 
-It is wise to change the identifier for automatic port assignments
-and debugger integration. There are two places where you need to change
-the identifier:
+### Alternative: Fork the Boilerplate
 
-```javascript
-  var settings = {
-    // ./projects/myproject/source/Main.js#L16
-    client: '/api/server?identifier=boilerplate', // Replace boilerplate with correct identifier
-  };
-```
+Alternatively if you want to use the full isomorphic lycheeJS
+stack, you can also fork the boilerplate and edit it with the
+`Editor` afterwards.
 
-```javascript
-  var environment = new lychee.Environment({
-    // ./projects/myproject/source/index.js#L5
-	id: 'boilerplate', // Replace boilerplate with correct identifier
-  });
+```bash
+cd /opt/lycheejs;
+
+cp -R ./projects/boilerplate ./projects/my-project;
+cd ./projects/my-project;
+
+# Replace the identifier inside source/Main.js and source/index.js
+
+sed -i.bak 's/boilerplate/my-project/g' ./my-project/source/Main.js;
+sed -i.bak 's/boilerplate/my-project/g' ./my-project/source/index.js;
 ```
 

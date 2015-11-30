@@ -5,13 +5,14 @@ lychee.define('app.net.Server').requires([
 	'lychee.net.Server'
 ]).exports(function(lychee, app, global, attachments) {
 
-	var _BitON = lychee.data.BitON;
-
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({
-			codec: _BitON
+			codec: lychee.data.BitON
 		}, data);
 
 
@@ -25,13 +26,13 @@ lychee.define('app.net.Server').requires([
 
 		this.bind('connect', function(remote) {
 
-			console.log('(Over-There) app.net.Server: Remote connected (' + remote.host + ':' + remote.port + ')');
+			console.log('app.net.Server: Remote connected (' + remote.host + ':' + remote.port + ')');
 
 		}, this);
 
 		this.bind('disconnect', function(remote) {
 
-			console.log('(Over-There) app.net.Server: Remote disconnected (' + remote.host + ':' + remote.port + ')');
+			console.log('app.net.Server: Remote disconnected (' + remote.host + ':' + remote.port + ')');
 
 		}, this);
 

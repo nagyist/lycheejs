@@ -10,8 +10,6 @@ lychee.define('tool.state.Project').includes([
 	 * HELPERS
 	 */
 
-	var _projects = {};
-
 	var _save_project = function(project, callback) {
 
 		callback = callback instanceof Function ? callback : function(){};
@@ -82,7 +80,7 @@ lychee.define('tool.state.Project').includes([
 
 	};
 
-	var _ui_update = function(id) {
+	var _ui_update = function(identifier) {
 
 		var config = new Config('http://localhost:4848/api/Project?timestamp=' + Date.now());
 		var that   = this;
@@ -92,7 +90,7 @@ lychee.define('tool.state.Project').includes([
 			if (this.buffer instanceof Array) {
 
 				var buffer = this.buffer.filter(function(project) {
-					return !project.identifier.match(/cultivator|lychee|sorbet/);
+					return !project.identifier.match(/cultivator/);
 				});
 
 				if (buffer.length > 0) {
@@ -101,19 +99,19 @@ lychee.define('tool.state.Project').includes([
 
 						var id = project.identifier;
 
-						if (_projects[id] instanceof Object) {
+						if (that.main.projects[id] instanceof Object) {
 
-							_projects[id].identifier = project.identifier;
-							_projects[id].filesystem = project.filesystem;
-							_projects[id].sorbet     = project.sorbet;
-							_projects[id].package    = new Config('/projects/' + project.identifier + '/lychee.pkg?timestamp=' + Date.now());
+							that.main.projects[id].identifier = project.identifier;
+							that.main.projects[id].filesystem = project.filesystem;
+							that.main.projects[id].harvester  = project.harvester;
+							that.main.projects[id].package    = new Config('/projects/' + project.identifier + '/lychee.pkg?timestamp=' + Date.now());
 
 						} else {
 
-							_projects[id] = {
+							that.main.projects[id] = {
 								identifier: project.identifier,
 								filesystem: project.filesystem,
-								sorbet:     project.sorbet === true,
+								harvester:  project.harvester === true,
 								package:    new Config('/projects/' + project.identifier + '/lychee.pkg?timestamp=' + Date.now())
 							};
 
@@ -126,16 +124,22 @@ lychee.define('tool.state.Project').includes([
 
 				if (that.main.project === null) {
 
-					that.main.project = _projects['boilerplate'];
-					that.main.project.package.onload = function() {
-						_ui_render_settings.call(that, that.main.project);
-					};
+					var project = that.main.projects[identifier] || that.main.projects['boilerplate'];
+					if (project !== null) {
+
+						that.main.project = project;
+						that.main.project.package.onload = function() {
+							_ui_render_settings.call(that, that.main.project);
+						};
+
+					}
 
 				}
 
+
 				_ui_render_selection.call(that, buffer);
 
-				Object.values(_projects).forEach(function(project) {
+				Object.values(that.main.projects).forEach(function(project) {
 					project.package.load();
 				});
 
@@ -256,7 +260,7 @@ lychee.define('tool.state.Project').includes([
 
 			if (id === 'selection') {
 
-				var project = _projects[settings['identifier']] || null;
+				var project = this.main.projects[settings['identifier']] || null;
 				if (project instanceof Object) {
 					this.main.project = project;
 					_ui_render_settings.call(this, this.main.project);
@@ -386,9 +390,13 @@ lychee.define('tool.state.Project').includes([
 
 		},
 
-		enter: function(environment) {
+		enter: function(project) {
 
-			_ui_update.call(this);
+			project = project instanceof Object ? project : { identifier: null };
+
+
+			_ui_update.call(this, project.identifier);
+
 
 			lychee.app.State.prototype.enter.call(this);
 

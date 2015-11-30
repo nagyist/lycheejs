@@ -789,7 +789,7 @@ lychee.define('tool.API').requires([
 				code += '```javascript-enum\n';
 				code += '(Enum) ' + identifier + '.' + enam.name + ';\n';
 				code += '```\n';
-                code += '\n';
+				code += '\n';
 
 				code += 'The `(Enum) ' + enam.name + '` enum consists of the following properties:\n';
 				code += '\n';
@@ -816,10 +816,10 @@ lychee.define('tool.API').requires([
 				code += '```javascript-event\n';
 				code += 'new ' + identifier + '().bind(\'' + event.name + '\', function(' + params + ') {}, scope);\n';
 				code += '```\n';
-                code += '\n';
+				code += '\n';
 
 				code += 'The `' + event.name + '` event is triggered on (TODO: CALLS).\n';
-                code += '\n';
+				code += '\n';
 
 				code += '\n' + event.params.map(function(param) {
 					return '- `(' + param.type + ') ' + param.name + '` is the (TODO: DESCRIPTION).';
@@ -852,11 +852,11 @@ lychee.define('tool.API').requires([
 				var code   = '={properties-' + property.name + '}\n';
 
 
-                code += '\n';
+				code += '\n';
 				code += '```javascript-property\n';
 				code += '(' + type + ') new ' + identifier + '().' + property.name + ';\n';
 				code += '```\n';
-                code += '\n';
+				code += '\n';
 
 				code += 'The `(' + property.type + ') ' + property.name + '` property is (TODO: DESCRIPTION).\n';
 				code += '\n';
@@ -942,11 +942,11 @@ lychee.define('tool.API').requires([
 				var code   = '={methods-' + method.name + '}\n';
 
 
-                code += '\n';
+				code += '\n';
 				code += '```javascript-method\n';
 				code += '(' + types + ') ' + identifier + '.prototype.' + method.name + '(' + params + ');\n';
 				code += '```\n';
-                code += '\n';
+				code += '\n';
 
 
 				var params_list = method.params.map(function(param) {

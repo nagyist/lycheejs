@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 lowercase() {
@@ -8,7 +9,8 @@ OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
 LYCHEEJS_NODE="";
-LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
+LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+PROJECT_ROOT=$(realpath --relative-to=$LYCHEEJS_ROOT $PWD);
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -42,32 +44,22 @@ if [ ! -f $LYCHEEJS_NODE ]; then
 fi;
 
 
-if [ -d "$3" ]; then
-	project="$3";
-else
-	project="$PWD";
-fi;
-
-
-
-cd $LYCHEEJS_ROOT;
-
-if [ ! -f "./lychee/build/node/core.js" ]; then
-	$LYCHEEJS_NODE ./bin/configure.js;
-fi;
-
-
 
 case "$1" in
 
-	configure)
+	init)
 		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js configure "$2" "$project";
+		$LYCHEEJS_NODE ./bin/breeder.js init "" --project=/$PROJECT_ROOT;
 	;;
 
-	fertilize)
+	pull)
 		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js fertilize "$project";
+		$LYCHEEJS_NODE ./bin/breeder.js pull "$2" --project=/$PROJECT_ROOT;
+	;;
+
+	push)
+		cd $LYCHEEJS_ROOT;
+		$LYCHEEJS_NODE ./bin/breeder.js push "" --project=/$PROJECT_ROOT;
 	;;
 
 	*)

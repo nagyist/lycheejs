@@ -1,4 +1,7 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {},
 		"files": {}
@@ -7,14 +10,14 @@
 		"environments": {},
 		"tags": {},
 		"files": {
+			"Main": [
+				"js"
+			],
 			"data": {
 				"FNT": [
 					"js"
 				]
-			},
-			"Main": [
-				"js"
-			]
+			}
 		}
 	}
 }

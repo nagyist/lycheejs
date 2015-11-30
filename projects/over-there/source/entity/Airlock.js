@@ -3,30 +3,29 @@ lychee.define('app.entity.Airlock').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, app, global, attachments) {
 
-	var _config  = attachments["json"].buffer;
-	var _texture = attachments["png"];
+	var _CONFIG  = attachments["json"].buffer;
+	var _TEXTURE = attachments["png"];
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
-		this.on = false;
-
-
-		settings.texture = _texture;
 		settings.width   = 0;
 		settings.height  = 0;
-		settings.map     = _config.map;
-		settings.state   = settings.state || 'default';
-		settings.states  = _config.states;
+		settings.map     = _CONFIG.map;
+		settings.state   = settings.state || 'horizontal-big';
+		settings.states  = _CONFIG.states;
+		settings.texture = _TEXTURE;
 
 
 		lychee.app.Sprite.call(this, settings);
-
-
-		this.setType(settings.type);
 
 		settings = null;
 
@@ -35,24 +34,17 @@ lychee.define('app.entity.Airlock').includes([
 
 	Class.prototype = {
 
-		setType: function(type) {
+		/*
+		 * ENTITY API
+		 */
 
-			type = typeof type === 'string' ? type : null;
+		serialize: function() {
 
-
-			if (type !== null) {
-
-				var result = this.setState(type);
-				if (result === true) {
-
-					return true;
-
-				}
-
-			}
+			var data = lychee.app.Sprite.prototype.serialize.call(this);
+			data['constructor'] = 'app.entity.Airlock';
 
 
-			return false;
+			return data;
 
 		}
 

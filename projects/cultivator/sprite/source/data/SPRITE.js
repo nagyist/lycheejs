@@ -195,6 +195,10 @@ lychee.define('tool.data.SPRITE').requires([
 			}
 
 
+			if (size_x === 0) size_x = 1;
+			if (size_y === 0) size_y = 1;
+
+
 			files.forEach(function(file, index) {
 
 				var state   = file.name.toLowerCase().split('_')[0].split('.')[0];
@@ -382,7 +386,8 @@ lychee.define('tool.data.SPRITE').requires([
 			 * 4.2 Export Config
 			 */
 
-			var blob = 'data:application/json;base64,' + new Buffer(_JSON.encode(data), 'utf8').toString('base64');
+			// var blob = 'data:application/json;base64,' + new Buffer(_JSON.encode(data), 'utf8').toString('base64');
+			var blob = 'data:application/json;base64,' + new Buffer(JSON.stringify(data, null, '\t'), 'utf8').toString('base64');
 
 			config = new Config(blob);
 			config.deserialize({ buffer: blob });

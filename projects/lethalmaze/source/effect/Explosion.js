@@ -1,9 +1,15 @@
 
 lychee.define('game.effect.Explosion').exports(function(lychee, game, global, attachments) {
 
-	var _config  = attachments["json"].buffer;
-	var _texture = attachments["png"];
+	var _CONFIG  = attachments["json"].buffer;
+	var _TEXTURE = attachments["png"];
+	var _SOUND   = attachments["snd"];
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(settings) {
 
@@ -13,16 +19,17 @@ lychee.define('game.effect.Explosion').exports(function(lychee, game, global, at
 		this.position = { x: null, y: null, z: null };
 
 		this.__frame  = 0;
-		this.__map    = Math.random() > 0.5 ? _config.map['default'] : _config.map['fire'];
+		this.__map    = Math.random() > 0.5 ? _CONFIG.map['default'] : _CONFIG.map['fire'];
 		this.__origin = 0;
 		this.__start  = null;
+		this.__sound  = true;
 
 
 		// No data validation garbage allowed for effects
 
-		var delay    = typeof settings.delay === 'number'       ? (settings.delay | 0)    : null;
-		var duration = typeof settings.duration === 'number'    ? (settings.duration | 0) : null;
-		var position = settings.position instanceof Object      ? settings.position       : null;
+		var delay    = typeof settings.delay === 'number'    ? (settings.delay | 0)    : null;
+		var duration = typeof settings.duration === 'number' ? (settings.duration | 0) : null;
+		var position = settings.position instanceof Object   ? settings.position       : null;
 
 		if (delay !== null) {
 			this.delay = delay;
@@ -74,22 +81,27 @@ lychee.define('game.effect.Explosion').exports(function(lychee, game, global, at
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var frame    = (this.__frame | 0);
-			var map      = this.__map[frame] || null;
-			var position = this.position;
+			var t = (this.__clock - this.__start) / this.duration;
+			if (t > 0 && t <= 1) {
 
-			if (map !== null) {
+				var frame    = (this.__frame | 0);
+				var map      = this.__map[frame] || null;
+				var position = this.position;
 
-				var x1 = position.x + offsetX - map.w / 2;
-				var y1 = position.y + offsetY - map.h / 2;
+				if (map !== null) {
+
+					var x1 = position.x + offsetX - map.w / 2;
+					var y1 = position.y + offsetY - map.h / 2;
 
 
-				renderer.drawSprite(
-					x1,
-					y1,
-					_texture,
-					map
-				);
+					renderer.drawSprite(
+						x1,
+						y1,
+						_TEXTURE,
+						map
+					);
+
+				}
 
 			}
 
@@ -97,17 +109,30 @@ lychee.define('game.effect.Explosion').exports(function(lychee, game, global, at
 
 		update: function(entity, clock, delta) {
 
+			this.__clock = clock;
+
+
 			if (this.__start === null) {
-
-				this.__start  = clock + this.delay;
-				this.__origin = 0;
-
+				this.__start = clock + this.delay;
 			}
 
 
 			var t = (clock - this.__start) / this.duration;
 			if (t < 0) {
+
 				return true;
+
+			} else {
+
+				if (this.__origin === null) {
+					this.__origin = 0;
+				}
+
+				if (this.__sound === true) {
+					this.__sound = false;
+					_SOUND.play();
+				}
+
 			}
 
 
@@ -118,9 +143,7 @@ lychee.define('game.effect.Explosion').exports(function(lychee, game, global, at
 
 			if (t <= 1) {
 
-				var df = frame - origin;
-
-				f += t * df;
+				f += t * (frame - origin);
 
 
 				this.__frame = f;

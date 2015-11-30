@@ -7,15 +7,15 @@ lychee.define('app.entity.Room').includes([
 	var _texture = attachments["png"];
 
 
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
-
-		this.air   = 1;
-		this.power = 0;
-		this.temp  = 0;
-		this.type  = null;
 
 		this.properties = {};
 
@@ -29,10 +29,12 @@ lychee.define('app.entity.Room').includes([
 		settings.states  = _config.states;
 
 
+		this.setProperties(settings.properties);
+
+		delete settings.properties;
+
+
 		lychee.app.Sprite.call(this, settings);
-
-
-		this.setType(settings.type);
 
 		settings = null;
 
@@ -41,19 +43,37 @@ lychee.define('app.entity.Room').includes([
 
 	Class.prototype = {
 
-		setType: function(type) {
+		/*
+		 * ENTITY API
+		 */
 
-			type = typeof type === 'string' ? type : null;
+		serialize: function() {
+
+			var data = lychee.app.Sprite.prototype.serialize.call(this);
+			data['constructor'] = 'app.entity.Room';
 
 
-			if (type !== null) {
+			return data;
 
-				var result = this.setState(type);
-				if (result === true) {
+		},
 
-					return true;
 
-				}
+
+		/*
+		 * CUSTOM API
+		 */
+
+		setProperties: function(properties) {
+
+			properties = properties instanceof Object ? properties : null;
+
+
+			if (properties !== null) {
+
+				this.properties = properties;
+
+
+				return true;
 
 			}
 

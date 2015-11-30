@@ -36,44 +36,6 @@
 
 
 
-.ico-add:before      { content: "\e095"; }
-.ico-api:before      { content: "\e05b"; }
-.ico-boot:before     { content: "\e05c"; }
-.ico-browser:before  { content: "\e037"; }
-.ico-code:before     { content: "\e04c"; }
-.ico-console:before  { content: "\e011"; }
-.ico-create:before   { content: "\e095"; }
-.ico-debugger:before { content: "\e052"; }
-.ico-download:before { content: "\e083"; }
-.ico-edit:before     { content: "\e05f"; }
-.ico-editor:before   { content: "\e00c"; }
-.ico-error:before    { content: "\e082"; }
-.ico-exit:before     { content: "\e097"; }
-.ico-fail:before     { content: "\e082"; }
-.ico-folder:before   { content: "\e039"; }
-.ico-help:before     { content: "\e08b"; }
-.ico-intro:before    { content: "\e020"; }
-.ico-message:before  { content: "\e086"; }
-.ico-offline:before  { content: "\e082"; }
-.ico-okay:before     { content: "\e080"; }
-.ico-online:before   { content: "\e071"; }
-.ico-open:before     { content: "\e00c"; }
-.ico-projects:before { content: "\e04b"; }
-.ico-refresh:before  { content: "\e098"; }
-.ico-remotes:before  { content: "\e059"; }
-.ico-remove:before   { content: "\e07c"; }
-.ico-settings:before { content: "\e09a"; }
-.ico-status:before   { content: "\e06a"; }
-.ico-start:before    { content: "\e071"; }
-.ico-stop:before     { content: "\e072"; }
-.ico-tools:before    { content: "\e059"; }
-.ico-tutorial:before { content: "\e04c"; }
-.ico-upload:before   { content: "\e084"; }
-.ico-eye:before      { content: "\e087"; }
-.ico-arrow:before    { content: "\e071"; }
-
-
-
 ::moz-placeholder {
 	color: #545454;
 }
@@ -124,7 +86,7 @@ body {
 	margin: 0;
 	padding: 0;
 	color: #ffffff;
-	background: #404844;
+	background: #405050;
 	font-family: 'museo-sans-300';
 }
 
@@ -204,7 +166,7 @@ menu:before {
 
 menu.active {
 	display: block;
-	width: 112px;
+	width: 128px;
 	transition: 300ms all ease-out;
 }
 
@@ -273,6 +235,41 @@ menu > aside > a.button,
 menu > aside > button {
 	position: relative;
 	margin: 16px auto;
+}
+
+menu > aside > a.button,
+menu > aside > button,
+menu > aside > a.button:not(.ico-only),
+menu > aside > button:not(.ico-only) {
+	min-width: 0px;
+	overflow: hidden;
+}
+
+menu > aside > a.button:before,
+menu > aside > button:before {
+	margin: 0;
+}
+
+menu > aside > a.button:after,
+menu > aside > button:after {
+	display: inline-block;
+	content: "";
+	transition: all 300ms ease-out;
+}
+
+menu.active > aside > a.button,
+menu.active > aside > button {
+	min-width: 112px;
+}
+
+menu.active > aside > a.button:before,
+menu.active > aside > button:before {
+	margin: 0px 8px 0px 0px;
+}
+
+menu.active > aside > a.button:after,
+menu.active > aside > button:after {
+	content: attr(title);
 }
 
 menu.active > li {
@@ -410,6 +407,7 @@ article {
 
 article h3 {
 	display: block;
+	position: relative;
 	height: 32px;
 	line-height: 32px;
 	margin: 0px;
@@ -435,7 +433,8 @@ article h3 b {
 }
 
 article h3 span {
-	float: right;
+	position: absolute;
+	right: 16px;
 }
 
 article > div,
@@ -443,7 +442,8 @@ article > p {
 	margin: 32px;
 }
 
-article a {
+article a,
+footer a {
 	color: #32afe5;
 	font-weight: bold;
 	text-decoration: none;
@@ -693,10 +693,10 @@ label.file {
 	text-transform: uppercase;
 	outline: none;
 	cursor: pointer;
-	-moz-transition: all 250ms ease-out;
-	-ms-transition: all 250ms ease-out;
-	-webkit-transition: all 250ms ease-out;
-	transition: all 250ms ease-out;
+	-moz-transition: all 300ms ease-out;
+	-ms-transition: all 300ms ease-out;
+	-webkit-transition: all 300ms ease-out;
+	transition: all 300ms ease-out;
 	-moz-appearance: none;
 	-ms-appearance: none;
 	-webkit-appearance: none;
@@ -801,10 +801,10 @@ input[type="range"] {
 	width: 128px;
 	height: 2px;
 	background: #545454;
-	-moz-transition: all 250ms ease-out;
-	-ms-transition: all 250ms ease-out;
-	-webkit-transition: all 250ms ease-out;
-	transition: all 250ms ease-out;
+	-moz-transition: all 300ms ease-out;
+	-ms-transition: all 300ms ease-out;
+	-webkit-transition: all 300ms ease-out;
+	transition: all 300ms ease-out;
 	outline: none;
 	-moz-appearance: none;
 	-ms-appearance: none;
@@ -1026,6 +1026,6 @@ table.vertical ul.select {
 
 table.vertical tr:last-child th,
 table.vertical tr:last-child td {
-	border-bottom: 2px solid #404844;
+	border-bottom: 2px solid #405050;
 }
 

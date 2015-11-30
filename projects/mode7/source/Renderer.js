@@ -6,6 +6,10 @@ lychee.define('game.Renderer').includes([
 	'game.Compositor'
 ]).exports(function(lychee, game, global, attachments) {
 
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
@@ -15,6 +19,8 @@ lychee.define('game.Renderer').includes([
 
 
 		lychee.Renderer.call(this, settings);
+
+		settings = null;
 
 	};
 

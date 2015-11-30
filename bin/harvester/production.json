@@ -1,0 +1,10 @@
+{
+
+	"port":  80,
+
+	"hosts": {
+		"boilerplate.org": "/projects/boilerplate",
+		"localhost": null
+	}
+
+}

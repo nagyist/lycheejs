@@ -1,0 +1,110 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {
+			"html-nwjs/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/text-chat",
+					"server": "/api/Server?identifier=/projects/text-chat"
+				}
+			},
+			"html/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/text-chat",
+					"server": "/api/Server?identifier=/projects/text-chat"
+				}
+			},
+			"node/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "application"
+			}
+		},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"files": {
+			"Main": [
+				"js"
+			],
+			"net": {
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"state": {
+				"Chat": [
+					"join_empty.snd",
+					"join_full.snd",
+					"js",
+					"json",
+					"message.snd"
+				]
+			},
+			"ui": {
+				"entity": {
+					"Messages": [
+						"fnt",
+						"js"
+					]
+				},
+				"sprite": {
+					"Avatar": [
+						"js",
+						"png"
+					]
+				}
+			}
+		},
+		"tags": {}
+	}
+}

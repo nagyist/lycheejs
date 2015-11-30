@@ -8,7 +8,7 @@ OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
 LYCHEEJS_NODE="";
-LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
+LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -45,9 +45,10 @@ fi;
 
 cd $LYCHEEJS_ROOT;
 
-if [ ! -f "./lib/lychee/build/html-nwjs/core.js" ]; then
+if [ ! -f "./libraries/lychee/build/html-nwjs/core.js" ]; then
 	$LYCHEEJS_NODE ./bin/configure.js;
 fi;
+
 
 
 if [ ! -d "./bin/ranger" ]; then
@@ -57,39 +58,12 @@ if [ ! -d "./bin/ranger" ]; then
 	fi;
 
 
-	./bin/fertilizer.sh cultivator/ranger "html-nwjs/main";
+	./bin/fertilizer.sh html-nwjs/main /projects/cultivator/ranger;
 
+
+	# Cache binaries for fast bootup
 
 	if [ -d "./projects/cultivator/ranger/build/html-nwjs" ]; then
-
-		# 1. Remove previously packaged builds
-
-		rm -rf ./projects/cultivator/ranger/build/html-nwjs/main-linux;
-		rm -rf ./projects/cultivator/ranger/build/html-nwjs/main-osx;
-		rm -rf ./projects/cultivator/ranger/build/html-nwjs/main-windows;
-
-
-		# 2. Inject design from cultivator project
-
-		cp -R ./projects/cultivator/design ./projects/cultivator/ranger/build/html-nwjs/main/design;
-
-
-		# Well, fuck you, Apple.
-		if [ "$OS" == "osx" ]; then
-			sed -i '' 's/\/projects\/cultivator\/design/.\/design/g' ./projects/cultivator/ranger/build/html-nwjs/main/index.html;
-		else
-			sed -i.bak 's/\/projects\/cultivator\/design/.\/design/g' ./projects/cultivator/ranger/build/html-nwjs/main/index.html;
-			rm ./projects/cultivator/ranger/build/html-nwjs/main/index.html.bak;
-		fi;
-
-
-		# 3. Re-package builds
-
-		cd ./bin/runtime/html-nwjs;
-		./package.sh /projects/cultivator/ranger/build/html-nwjs/main ranger;
-
-
-		# 4. Cache binaries for fast bootup
 
 		cd $LYCHEEJS_ROOT;
 
@@ -99,7 +73,6 @@ if [ ! -d "./bin/ranger" ]; then
 			mv ./projects/cultivator/ranger/build/html-nwjs/main-osx ./bin/ranger;
 		fi;
 
-		cp ./asset/desktop.png ./bin/ranger/icon.png;
 		rm -rf ./projects/cultivator/ranger/build;
 
 	fi;
@@ -111,7 +84,7 @@ if [ -d "./bin/ranger" ]; then
 
 	if [ "$OS" == "linux" ]; then
 
-		./bin/ranger/$ARCH/ranger.bin;
+		./bin/ranger/$ARCH/main.bin;
 		exit 0;
 
 	elif [ "$OS" == "osx" ]; then

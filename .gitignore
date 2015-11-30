@@ -3,13 +3,11 @@
 /bin/editor
 /bin/ranger
 /bin/runtime
-/bin/sorbet.pid
+/bin/harvester.pid
 
-/lib/breeder/build
-/lib/lychee/build
-/lib/lychee/source/DIST.js
-/lib/fertilizer/build
-/lib/sorbet/build
+/libraries/lychee/source/DIST.js
+/libraries/*/build
+/projects/*/build
 
 
 /projects/*
@@ -18,8 +16,8 @@
 
 
 # Whitelisted git-tracked projects
-!/projects/chat
-!/projects/blitzkrieg
+!/projects/emoji-chat
+!/projects/text-chat
 !/projects/boilerplate
 !/projects/cultivator
 !/projects/mode7

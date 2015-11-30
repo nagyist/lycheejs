@@ -1,0 +1,75 @@
+{
+	"layers": {
+		"bg": {
+			"constructor": "lychee.app.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.ui.sprite.Background",
+					"arguments": [{
+						"color": "#405050"
+					}]
+				}, {
+					"constructor": "lychee.ui.sprite.Emblem",
+					"arguments": [{}]
+				}],
+				"map": {
+					"background": 0,
+					"emblem":     1
+				}
+			}
+		},
+		"ui": {
+			"constructor": "lychee.ui.Layer",
+			"arguments": [{}],
+			"blob": {
+				"entities": [{
+					"constructor": "lychee.ui.Blueprint",
+					"arguments": [{
+						"visible": true
+					}]
+				}, {
+					"constructor": "lychee.ui.Blueprint",
+					"arguments": [{
+						"visible": false
+					}],
+					"blob": {
+						"entities": [{
+							"constructor": "lychee.ui.element.Input",
+							"arguments": [{}]
+						}, {
+							"constructor": "lychee.ui.element.Jukebox",
+							"arguments": [{}]
+						}, {
+							"constructor": "lychee.ui.element.Network",
+							"arguments": [{}]
+						}, {
+							"constructor": "lychee.ui.element.Stash",
+							"arguments": [{}]
+						}, {
+							"constructor": "lychee.ui.element.Storage",
+							"arguments": [{}]
+						}, {
+							"constructor": "lychee.ui.element.Viewport",
+							"arguments": [{}]
+						}]
+					}
+				}, {
+					"constructor": "lychee.ui.Menu",
+					"arguments": [{
+						"options": [
+							"Welcome",
+							"Settings"
+						],
+						"value": "Welcome"
+					}]
+				}],
+				"map": {
+					"welcome":  0,
+					"settings": 1,
+					"menu":     2
+				}
+			}
+		}
+	}
+}

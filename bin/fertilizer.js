@@ -1,17 +1,17 @@
-#!/usr/bin/env node
+#!/usr/bin/lycheejs-helper env:node
 
 
-var root   = require('path').resolve(__dirname, '../');
-var fs     = require('fs');
-var path   = require('path');
+var root = require('path').resolve(__dirname, '../');
+var fs   = require('fs');
+var path = require('path');
 
 
-if (fs.existsSync(root + '/lib/lychee/build/node/core.js') === false) {
+if (fs.existsSync(root + '/libraries/lychee/build/node/core.js') === false) {
 	require(root + '/bin/configure.js');
 }
 
 
-var lychee = require(root + '/lib/lychee/build/node/core.js')(root);
+var lychee = require(root + '/libraries/lychee/build/node/core.js')(root);
 
 
 
@@ -19,60 +19,55 @@ var lychee = require(root + '/lib/lychee/build/node/core.js')(root);
  * USAGE
  */
 
-var _pretty_lines = function(str) {
-
-	var lines  = [];
-	var spacer = (function(v) {
-		for (var i = 0; i < 50; i++) { v+=' '; } return v;
-	})('');
-
-
-	if (str.length > 50) {
-
-		var i      = str.lastIndexOf(',', 50) + 1;
-		var chunk1 = str.substr(0, i).trim();
-		var chunk2 = str.substr(i).trim();
-
-		lines.push((chunk1 + spacer).substr(0, 50));
-		lines.push((chunk2 + spacer).substr(0, 50));
-
-	} else {
-
-		lines.push((str + spacer).substr(0, 50));
-
-	}
-
-
-	return lines;
-
-};
-
 var _print_help = function() {
 
-	var projects = _pretty_lines(fs.readdirSync(root + '/projects').filter(function(value) {
+	var targets = fs.readdirSync(root + '/libraries/lychee/build').sort();
+
+	var libraries = fs.readdirSync(root + '/libraries').sort().filter(function(value) {
+		return fs.existsSync(root + '/libraries/' + value + '/lychee.pkg');
+	}).map(function(value) {
+		return '/libraries/' + value;
+	});
+
+	var projects = fs.readdirSync(root + '/projects').sort().filter(function(value) {
 		return fs.existsSync(root + '/projects/' + value + '/lychee.pkg');
-	}).join(', '));
+	}).map(function(value) {
+		return '/projects/' + value;
+	});
 
 
-	console.log('                                                      ');
+	console.log('                                                              ');
 	console.info('lycheeJS ' + lychee.VERSION + ' Fertilizer');
-	console.log('                                                      ');
-	console.log('Usage: fertilizer [Project] [Environment]             ');
-	console.log('                                                      ');
-	console.log('                                                      ');
-	console.log('Available Fertilizers:                                ');
-	console.log('                                                      ');
-	console.log('   html, html-nwjs, html-webview, node');
-	console.log('                                                      ');
-	console.log('Available Projects:                                   ');
-	console.log('                                                      ');
-	projects.forEach(function(line) { console.log('    ' + line);      });
-	console.log('                                                      ');
-	console.log('Examples:                                             ');
-	console.log('                                                      ');
-	console.log('    fertilizer boilerplate "html-nwjs/main"           ');
-	console.log('    fertilizer boilerplate "node/server"              ');
-	console.log('                                                      ');
+	console.log('                                                              ');
+	console.log('Usage: lycheejs-fertilizer [Target] [Library/Project]         ');
+	console.log('                                                              ');
+	console.log('                                                              ');
+	console.log('Available Fertilizers:                                        ');
+	console.log('                                                              ');
+	targets.forEach(function(target) {
+		var diff = ('                                                          ').substr(target.length);
+		console.log('    ' + target + diff);
+	});
+	console.log('                                                              ');
+	console.log('Available Libraries:                                          ');
+	console.log('                                                              ');
+	libraries.forEach(function(library) {
+		var diff = ('                                                          ').substr(library.length);
+		console.log('    ' + library + diff);
+	});
+	console.log('                                                              ');
+	console.log('Available Projects:                                           ');
+	console.log('                                                              ');
+	projects.forEach(function(project) {
+		var diff = ('                                                          ').substr(project.length);
+		console.log('    ' + project + diff);
+	});
+	console.log('                                                              ');
+	console.log('Examples:                                                     ');
+	console.log('                                                              ');
+	console.log('    lycheejs-fertilizer html-nwjs/main /projects/boilerplate; ');
+	console.log('    lycheejs-fertilizer node/main /projects/boilerplate;      ');
+	console.log('                                                              ');
 
 };
 
@@ -91,15 +86,10 @@ var _settings = (function() {
 	var raw_arg1 = process.argv[3] || '';
 
 
-	var pkg_path = root + '/projects/' + raw_arg0 + '/lychee.pkg';
-	if (raw_arg0.match(/breeder|fertilizer|lychee|sorbet/g)) {
-		pkg_path = root + '/lib/' + raw_arg0 + '/lychee.pkg';
-	}
-
-
+	var pkg_path = root + raw_arg1 + '/lychee.pkg';
 	if (fs.existsSync(pkg_path) === true) {
 
-		settings.project = raw_arg0;
+		settings.project = raw_arg1;
 
 
 		var json = null;
@@ -115,9 +105,9 @@ var _settings = (function() {
 
 			if (json.build instanceof Object && json.build.environments instanceof Object) {
 
-				if (json.build.environments[raw_arg1] instanceof Object) {
-					settings.identifier  = raw_arg1;
-					settings.environment = json.build.environments[raw_arg1];
+				if (json.build.environments[raw_arg0] instanceof Object) {
+					settings.identifier  = raw_arg0;
+					settings.environment = json.build.environments[raw_arg0];
 				}
 
 			}
@@ -131,6 +121,82 @@ var _settings = (function() {
 
 })();
 
+var _bootup = function(settings) {
+
+	console.info('BOOTUP (' + process.pid + ')');
+
+	var environment = new lychee.Environment({
+		id:      'fertilizer',
+		debug:   false,
+		sandbox: false,
+		build:   'fertilizer.Main',
+		timeout: 1000,
+		packages: [
+			new lychee.Package('lychee',     '/libraries/lychee/lychee.pkg'),
+			new lychee.Package('fertilizer', '/libraries/fertilizer/lychee.pkg')
+		],
+		tags:     {
+			platform: [ 'node' ]
+		}
+	});
+
+
+	lychee.setEnvironment(environment);
+
+
+	environment.init(function(sandbox) {
+
+		if (sandbox !== null) {
+
+			var lychee     = sandbox.lychee;
+			var fertilizer = sandbox.fertilizer;
+
+
+			// Show less debug messages
+			lychee.debug = true;
+
+
+			// This allows using #MAIN in JSON files
+			sandbox.MAIN = new fertilizer.Main(settings);
+
+			sandbox.MAIN.bind('destroy', function() {
+				process.exit(0);
+			});
+
+			sandbox.MAIN.init();
+
+
+			process.on('SIGHUP',  function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGINT',  function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGQUIT', function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGABRT', function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGTERM', function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('error',   function() { sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('exit',    function() {});
+
+
+			new lychee.Input({
+				key:         true,
+				keymodifier: true
+			}).bind('escape', function() {
+
+				console.warn('fertilizer: [ESC] pressed, exiting ...');
+				sandbox.MAIN.destroy();
+
+			}, this);
+
+		} else {
+
+			console.error('BOOTUP FAILURE');
+
+			process.exit(1);
+
+		}
+
+	});
+
+};
+
 
 
 (function(project, identifier, settings) {
@@ -139,82 +205,26 @@ var _settings = (function() {
 	 * IMPLEMENTATION
 	 */
 
-	if (project !== null && identifier !== null && settings !== null) {
-
-		console.info('Starting Instance (' + process.pid + ') ... ');
-
-		lychee.setEnvironment(new lychee.Environment({
-			id:      'fertilizer',
-			debug:   false,
-			sandbox: false,
-			build:   'fertilizer.Main',
-			timeout: 1000,
-			packages: [
-				new lychee.Package('lychee', '/lib/lychee/lychee.pkg'),
-				new lychee.Package('fertilizer', '/lib/fertilizer/lychee.pkg')
-			],
-			tags:     {
-				platform: [ 'node' ]
-			}
-		}));
+	var has_project    = project !== null;
+	var has_identifier = identifier !== null;
+	var has_settings   = settings !== null;
 
 
-		lychee.init(function(sandbox) {
+	if (has_project && has_identifier && has_settings) {
 
-			if (sandbox !== null) {
-
-				var lychee     = sandbox.lychee;
-				var fertilizer = sandbox.fertilizer;
-
-
-				// Show less debug messages
-				lychee.debug = true;
-
-
-				// This allows using #MAIN in JSON files
-				sandbox.MAIN = new fertilizer.Main({
-					project:    project,
-					identifier: identifier,
-					settings:   settings
-				});
-				sandbox.MAIN.init();
-				sandbox.MAIN.bind('destroy', function() {
-					process.exit(0);
-				});
-
-
-				process.on('SIGHUP',  function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('SIGINT',  function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('SIGQUIT', function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('SIGABRT', function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('SIGTERM', function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('error',   function() { sandbox.MAIN.destroy(); this.exit(1); });
-				process.on('exit',    function() {});
-
-
-				new lychee.Input({
-					key:         true,
-					keymodifier: true
-				}).bind('escape', function() {
-
-					console.warn('fertilizer: [ESC] pressed, exiting ...');
-					sandbox.MAIN.destroy();
-
-				}, this);
-
-			} else {
-
-				process.exit(1);
-
-			}
-
+		_bootup({
+			project:    project,
+			identifier: identifier,
+			settings:   settings
 		});
 
 	} else {
 
+		console.error('PARAMETERS FAILURE');
+
 		_print_help();
 
-		process.exit(0);
+		process.exit(1);
 
 	}
 

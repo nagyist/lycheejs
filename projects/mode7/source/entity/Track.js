@@ -1,7 +1,7 @@
 
 lychee.define('game.entity.Track').exports(function(lychee, game, global, attachments) {
 
-	var _tracks = {};
+	var _TRACKS = {};
 
 	for (var file in attachments) {
 
@@ -10,7 +10,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 		var ext = tmp[1];
 
 		if (ext === 'json') {
-			_tracks[id] = attachments[file].buffer;
+			_TRACKS[id] = attachments[file].buffer;
 		}
 
 	}
@@ -206,7 +206,7 @@ lychee.define('game.entity.Track').exports(function(lychee, game, global, attach
 		this.__type     = 'stadium';
 
 
-		var data = _tracks[id] || _tracks['valley'] || null;
+		var data = _TRACKS[id] || _TRACKS['valley'] || null;
 		if (data !== null) {
 			_parse_track(this, data);
 		}

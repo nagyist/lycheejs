@@ -1,11 +1,11 @@
 {
 	"layers": {
-		"background": {
+		"bg": {
 			"constructor": "lychee.app.Layer",
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "game.entity.Background",
+					"constructor": "game.ui.sprite.Background",
 					"arguments": [{}]
 				}],
 				"map": {
@@ -56,16 +56,16 @@
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.ui.Label",
+					"constructor": "lychee.ui.entity.Label",
 					"arguments": [{
-						"label": "0 - 0",
+						"value":    "0 - 0",
 						"position": {
 							"x": 0,
 							"y": -64
 						}
 					}]
 				}, {
-					"constructor": "game.ui.Welcome",
+					"constructor": "game.ui.sprite.Welcome",
 					"arguments": [{
 						"position": {
 							"x": 0,

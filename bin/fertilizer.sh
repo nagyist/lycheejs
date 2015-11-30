@@ -8,7 +8,7 @@ OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
 LYCHEEJS_NODE="";
-LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
+LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -43,7 +43,15 @@ fi;
 
 
 
-if [ -d "$LYCHEEJS_ROOT/projects/$1" ] || [ "$1" == "lychee" ] || [ "$1" == "sorbet" ]; then
+cd $LYCHEEJS_ROOT;
+
+if [ ! -f "./libraries/lychee/build/node/core.js" ]; then
+	$LYCHEEJS_NODE ./bin/configure.js;
+fi;
+
+
+
+if [ -d "$LYCHEEJS_ROOT/$2" ]; then
 
 	cd $LYCHEEJS_ROOT;
 	$LYCHEEJS_NODE ./bin/fertilizer.js "$1" "$2";

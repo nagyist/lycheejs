@@ -3,16 +3,21 @@ lychee.define('game.entity.Ball').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _config  = attachments["json"].buffer;
-	var _texture = attachments["png"];
+	var _CONFIG  = attachments["json"].buffer;
+	var _TEXTURE = attachments["png"];
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
-		var settings = lychee.extend({}, _config, data);
+		var settings = lychee.extend({}, _CONFIG, data);
 
 
-		settings.texture = _texture;
+		settings.texture = _TEXTURE;
 
 
 		lychee.app.Sprite.call(this, settings);

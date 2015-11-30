@@ -8,12 +8,51 @@ lychee.define('game.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, game, global, attachments) {
 
+	var _instances  = [];
+
+
+
+	/*
+	 * FEATURE DETECTION
+	 */
+
+	(function(viewport) {
+
+		viewport.bind('reshape', function(orientation, rotation, width, height) {
+
+			if (_instances.length > 1) {
+
+				var vp_width  = width / _instances.length;
+				var vp_height = height;
+
+
+				for (var i = 0, il = _instances.length; i < il; i++) {
+
+					var main = _instances[i];
+					if (main.viewport !== null) {
+
+						main.renderer.setWidth(vp_width);
+						main.renderer.setHeight(vp_height);
+
+					}
+
+				}
+
+			}
+
+		}, this);
+
+	})(new lychee.Viewport());
+
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({
-
-			id:     0,
-			title:  'Mode7 Game',
 
 			client: null,
 			server: null,
@@ -31,7 +70,12 @@ lychee.define('game.Main').requires([
 				sound: false
 			},
 
-			renderer: null,
+			renderer: {
+				id:         'mode7-' + _instances.length,
+				background: '#436026',
+				width:      null,
+				height:     null
+			},
 
 			viewport: {
 				fullscreen: true
@@ -40,20 +84,9 @@ lychee.define('game.Main').requires([
 		}, data);
 
 
-		if (settings.id === 0) {
-
-			settings.gamerenderer = {
-				id:         'mode7-0',
-				// background: '#92c9ef' ,
-				background: '#436026',
-				width:      null,
-				height:     null
-			};
-
-		}
-
-
 		lychee.app.Main.call(this, settings);
+
+		_instances.push(this);
 
 
 
@@ -61,21 +94,30 @@ lychee.define('game.Main').requires([
 		 * INITIALIZATION
 		 */
 
+		this.bind('load', function(oncomplete) {
+
+			this.settings.gamerenderer = this.settings.renderer;
+			this.settings.renderer     = null;
+
+			oncomplete(true);
+
+		}, this);
+
 		this.bind('init', function() {
 
-			var settings = this.settings.gamerenderer;
-			if (settings instanceof Object) {
-				this.renderer = new game.Renderer(settings);
+			var gamerenderer = this.settings.gamerenderer || null;
+			if (gamerenderer !== null) {
+				this.renderer = new game.Renderer(gamerenderer);
 			}
 
 			this.camera     = new game.Camera(this);
 			this.compositor = new game.Compositor(this);
+			this.viewport.unbind('reshape');
 
 			this.renderer.setCamera(this.camera);
 			this.renderer.setCompositor(this.compositor);
 
 			this.setState('game', new game.state.Game(this));
-			this.changeState('game', { track: 'valley' });
 
 
 			this.viewport.bind('reshape', function() {
@@ -84,6 +126,9 @@ lychee.define('game.Main').requires([
 				this.compositor.reshape();
 
 			}, this);
+
+
+			this.changeState('game', { track: this.settings.track || 'valley' });
 
 		}, this, true);
 

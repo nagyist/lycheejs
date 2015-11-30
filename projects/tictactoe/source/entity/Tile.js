@@ -3,9 +3,14 @@ lychee.define('game.entity.Tile').includes([
 	'lychee.ui.Sprite'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _texture = attachments["png"];
-	var _config  = attachments["json"].buffer;
+	var _TEXTURE = attachments["png"];
+	var _CONFIG  = attachments["json"].buffer;
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
@@ -16,12 +21,12 @@ lychee.define('game.entity.Tile').includes([
 		this.y     = settings.y;
 
 
-		settings.texture = _texture;
-		settings.map     = _config.map;
-		settings.width   = _config.width;
-		settings.height  = _config.height;
+		settings.texture = _TEXTURE;
+		settings.map     = _CONFIG.map;
+		settings.width   = _CONFIG.width;
+		settings.height  = _CONFIG.height;
 		settings.shape   = lychee.ui.Entity.SHAPE.rectangle;
-		settings.states  = _config.states;
+		settings.states  = _CONFIG.states;
 		settings.state   = 'default';
 
 
@@ -42,6 +47,7 @@ lychee.define('game.entity.Tile').includes([
 
 			var data = lychee.ui.Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Tile';
+
 
 			return data;
 

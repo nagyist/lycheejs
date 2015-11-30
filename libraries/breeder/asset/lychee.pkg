@@ -1,0 +1,125 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {
+			"html-nwjs/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/${id}",
+					"server": "/api/Server?identifier=/projects/${id}"
+				}
+			},
+			"html-webview/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html-webview",
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/${id}",
+					"server": "/api/Server?identifier=/projects/${id}"
+				}
+			},
+			"html/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/${id}",
+					"server": "/api/Server?identifier=/projects/${id}"
+				}
+			},
+			"node/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "application"
+			}
+		},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"files": {
+			"Main": [
+				"js"
+			],
+			"net": {
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				],
+				"client": {
+					"Ping": [
+						"js"
+					]
+				},
+				"remote": {
+					"Ping": [
+						"js"
+					]
+				}
+			},
+			"state": {
+				"Welcome": [
+					"js",
+					"json"
+				]
+			}
+		},
+		"tags": {}
+	}
+}

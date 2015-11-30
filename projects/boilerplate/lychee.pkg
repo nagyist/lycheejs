@@ -1,84 +1,107 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {
-			"html/main": {
-				"build": "app.Main",
-				"debug": false,
-				"sandbox": false,
-				"packages": [
-					[
-						"app",
-						"./lychee.pkg"
-					]
-				],
-				"tags": {
-					"platform": [
-						"html"
-					]
-				},
-				"variant": "application"
-			},
 			"html-nwjs/main": {
 				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-nwjs",
 						"html"
 					]
 				},
-				"variant": "application"
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/boilerplate"
+				}
 			},
 			"html-webview/main": {
 				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-webview",
 						"html"
 					]
 				},
-				"variant": "application"
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/boilerplate"
+				}
 			},
-			"node/server": {
-				"build": "app.net.Server",
+			"html/main": {
+				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/boilerplate"
+				}
+			},
+			"node/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"node"
 					]
 				},
-				"variant": "application"
+				"variant": "application",
+				"profile": {
+					"client": null
+				}
 			}
 		},
 		"files": {}
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
+			"Main": [
+				"js"
+			],
 			"net": {
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				],
 				"client": {
 					"Ping": [
 						"js"
@@ -88,29 +111,15 @@
 					"Ping": [
 						"js"
 					]
-				},
-				"Client": [
-					"js"
-				],
-				"Server": [
-					"js"
-				]
+				}
 			},
 			"state": {
-				"Menu": [
-					"js"
+				"Welcome": [
+					"js",
+					"json"
 				]
-			},
-			"Main": [
-				"js"
-			],
-			"index": [
-				"js",
-				"html"
-			]
-		}
-	},
-	"api": {
-		"files": {}
+			}
+		},
+		"tags": {}
 	}
 }

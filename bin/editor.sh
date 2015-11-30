@@ -8,7 +8,7 @@ OS=`lowercase \`uname\``;
 ARCH=`lowercase \`uname -m\``;
 
 LYCHEEJS_NODE="";
-LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
+LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 
 
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
@@ -45,7 +45,7 @@ fi;
 
 cd $LYCHEEJS_ROOT;
 
-if [ ! -f "./lib/lychee/build/html-nwjs/core.js" ]; then
+if [ ! -f "./libraries/lychee/build/html-nwjs/core.js" ]; then
 	$LYCHEEJS_NODE ./bin/configure.js;
 fi;
 
@@ -53,11 +53,11 @@ fi;
 if [ ! -d "./bin/editor" ]; then
 
 	if [ -d "./projects/cultivator/editor/build" ]; then
-		rm -rf ./projects/cultivator/editor/build;
+		rm -rf /projects/cultivator/editor/build;
 	fi;
 
 
-	./bin/fertilizer.sh cultivator/editor "html-nwjs/main";
+	./bin/fertilizer.sh html-nwjs/main /projects/cultivator/editor;
 
 
 	if [ -d "./projects/cultivator/editor/build/html-nwjs" ]; then
@@ -99,7 +99,6 @@ if [ ! -d "./bin/editor" ]; then
 			mv ./projects/cultivator/editor/build/html-nwjs/main-osx ./bin/editor;
 		fi;
 
-		cp ./asset/desktop.png ./bin/editor/icon.png;
 		rm -rf ./projects/cultivator/editor/build;
 
 	fi;

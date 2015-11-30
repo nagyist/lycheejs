@@ -12,9 +12,13 @@
 	<script src="/projects/cultivator/design/index.js"></script>
 
 	<!-- BOOTSTRAP -->
-	<script src="/lib/lychee/build/html/core.js"></script>
+	<script src="/libraries/lychee/build/html/core.js"></script>
 
 	<style>
+	.ico-download:before { content: "\e083"; }
+	.ico-refresh:before  { content: "\e098"; }
+	.ico-upload:before   { content: "\e084"; }
+	.ico-quit:before     { content: "\e07a"; }
 	#tool > article:nth-child(1) {
 		min-width: 320px;
 		max-width: 320px;
@@ -44,7 +48,8 @@
 	<li class="active" onclick="ui.changeState('tool');">Tool</li>
 	<li onclick="ui.changeState('help');">Help</li>
 	<aside>
-		<button class="ico-refresh ico-only" onclick="window.location.href='./index.html'"></button>
+		<button class="ico-refresh ico-only" title="Refresh" onclick="window.location.href='./index.html'"></button>
+		<button class="ico-quit ico-only" title="Quit" onclick="location.href='../index.html';"></button>
 	</aside>
 </menu>
 
@@ -167,7 +172,6 @@
 (function(lychee, global) {
 
 	var environment = new lychee.Environment({
-		id:      'sprite',
 		debug:   false,
 		sandbox: false,
 		build:   'tool.Main',
@@ -180,23 +184,13 @@
 	});
 
 
-	lychee.setEnvironment(environment);
-
-	lychee.init(function(sandbox) {
-
-		var lychee = sandbox.lychee;
-		var tool   = sandbox.tool;
-
-		sandbox.MAIN = new tool.Main({
-			dropzone: {
-				element:    document.querySelector('#dropzone'),
-				extensions: {
-					png: true
-				}
+	lychee.envinit(environment, {
+		dropzone: {
+			element:    document.querySelector('#dropzone'),
+			extensions: {
+				png: true
 			}
-		});
-		sandbox.MAIN.init();
-
+		}
 	});
 
 })(lychee, typeof global !== 'undefined' ? global : this);

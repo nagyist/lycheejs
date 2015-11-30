@@ -3,19 +3,24 @@ lychee.define('game.entity.Paddle').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _config   = attachments["json"].buffer;
-	var _textures = {
+	var _CONFIG   = attachments["json"].buffer;
+	var _TEXTURES = {
 		player: attachments["player.png"],
 		enemy:  attachments["enemy.png"]
 	};
 
 
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(data) {
 
-		var settings = lychee.extend({}, _config, data);
+		var settings = lychee.extend({}, _CONFIG, data);
 
 
-		settings.texture = _textures[settings.state || 'player'];
+		settings.texture = _TEXTURES[settings.state || 'player'];
 
 
 		lychee.app.Sprite.call(this, settings);

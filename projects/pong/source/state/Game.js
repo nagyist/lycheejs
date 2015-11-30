@@ -2,22 +2,23 @@
 lychee.define('game.state.Game').requires([
 	'lychee.effect.Color',
 	'lychee.effect.Shake',
-	'game.entity.Background',
+	'lychee.ui.entity.Label',
 	'game.entity.Ball',
 	'game.entity.Paddle',
-	'game.ui.Welcome',
-	'lychee.ui.Label'
+	'game.ui.sprite.Background',
+	'game.ui.sprite.Welcome'
 ]).includes([
 	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _blob  = attachments["json"].buffer;
-
-	var _boo   = attachments["boo.snd"];
-	var _cheer = attachments["cheer.snd"];
-	var _music = attachments["music.msc"];
-	var _ping  = attachments["ping.snd"];
-	var _pong  = attachments["pong.snd"];
+	var _BLOB   = attachments["json"].buffer;
+	var _MUSIC  = attachments["music.msc"];
+	var _SOUNDS = {
+		boo:   attachments["boo.snd"],
+		cheer: attachments["cheer.snd"],
+		ping:  attachments["ping.snd"],
+		pong:  attachments["pong.snd"]
+	};
 
 
 
@@ -73,15 +74,15 @@ lychee.define('game.state.Game').requires([
 
 
 		if (winner === 'player') {
-			this.jukebox.play(_cheer);
+			this.jukebox.play(_SOUNDS.cheer);
 		} else if (winner === 'enemy') {
-			this.jukebox.play(_boo);
+			this.jukebox.play(_SOUNDS.boo);
 		}
 
 
 		var score = this.queryLayer('ui', 'score');
 		if (score !== null) {
-			score.setLabel(this.__score.player + ' - ' + this.__score.enemy);
+			score.setValue(this.__score.player + ' - ' + this.__score.enemy);
 		}
 
 
@@ -117,7 +118,7 @@ lychee.define('game.state.Game').requires([
 		};
 
 
-		this.deserialize(_blob);
+		this.deserialize(_BLOB);
 
 
 
@@ -138,7 +139,7 @@ lychee.define('game.state.Game').requires([
 					var height = renderer.height;
 
 
-					entity = this.queryLayer('background', 'background');
+					entity = this.queryLayer('bg', 'background');
 					entity.width  = width;
 					entity.height = height;
 
@@ -169,6 +170,8 @@ lychee.define('game.state.Game').requires([
 		 * STATE API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
 			var data = lychee.app.State.prototype.serialize.call(this);
@@ -179,13 +182,7 @@ lychee.define('game.state.Game').requires([
 
 		},
 
-		deserialize: function(blob) {
-
-			lychee.app.State.prototype.deserialize.call(this, blob);
-
-		},
-
-		enter: function() {
+		enter: function(oncomplete) {
 
 			this.__score.enemy  = 0;
 			this.__score.player = 0;
@@ -193,10 +190,6 @@ lychee.define('game.state.Game').requires([
 
 
 			_reset_game.call(this, null);
-
-
-			lychee.app.State.prototype.enter.call(this);
-
 
 
 			// Allow AI playing while welcome dialog is visible
@@ -222,15 +215,28 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			this.jukebox.play(_music);
+			var jukebox = this.jukebox;
+			if (jukebox !== null) {
+				jukebox.play(_MUSIC);
+			}
+
+
+			lychee.app.State.prototype.enter.call(this, oncomplete);
 
 		},
 
-		leave: function() {
-
-			lychee.app.State.prototype.leave.call(this);
+		leave: function(oncomplete) {
 
 			this.input.unbind('touch', _on_touch, this);
+
+
+			var jukebox = this.jukebox;
+			if (jukebox !== null) {
+				jukebox.stop(_MUSIC);
+			}
+
+
+			lychee.app.State.prototype.leave.call(this, oncomplete);
 
 		},
 
@@ -241,7 +247,7 @@ lychee.define('game.state.Game').requires([
 
 			var jukebox    = this.jukebox;
 			var renderer   = this.renderer;
-			var background = this.queryLayer('background', 'background');
+			var background = this.queryLayer('bg', 'background');
 			var gamelayer  = this.getLayer('game');
 			var uilayer    = this.getLayer('ui');
 
@@ -289,7 +295,7 @@ lychee.define('game.state.Game').requires([
 
 				position.x = player.position.x + 24;
 				velocity.x = Math.abs(velocity.x);
-				jukebox.play(_ping);
+				jukebox.play(_SOUNDS.ping);
 
 				gamelayer.addEffect(new lychee.effect.Shake({
 					type:     lychee.effect.Shake.TYPE.bounceeaseout,
@@ -320,7 +326,7 @@ lychee.define('game.state.Game').requires([
 
 				position.x = enemy.position.x - 24;
 				velocity.x = -1 * Math.abs(velocity.x);
-				jukebox.play(_pong);
+				jukebox.play(_SOUNDS.pong);
 
 				gamelayer.addEffect(new lychee.effect.Shake({
 					type:     lychee.effect.Shake.TYPE.bounceeaseout,

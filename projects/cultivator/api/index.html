@@ -16,9 +16,16 @@
 	<script src="/projects/cultivator/api/design/highlight.js"></script>
 
 	<!-- BOOTSTRAP -->
-	<script src="/lib/lychee/build/html/core.js"></script>
+	<script src="/libraries/lychee/build/html/core.js"></script>
 
 	<style>
+	.ico-add:before      { content: "\e095"; }
+	.ico-api:before      { content: "\e05b"; }
+	.ico-code:before     { content: "\e04c"; }
+	.ico-download:before { content: "\e083"; }
+	.ico-edit:before     { content: "\e05f"; }
+	.ico-refresh:before  { content: "\e098"; }
+	.ico-quit:before     { content: "\e07a"; }
 	#tool > article:nth-of-type(1) p {
 		margin: 0px;
 		padding: 16px;
@@ -102,7 +109,8 @@
 	<b onclick="ui.toggle('menu');"><span></span></b>
 	<li class="active" onclick="ui.changeState('tool');">Tool</li>
 	<aside>
-		<button class="ico-refresh ico-only" onclick="window.location.href='./index.html';"></button>
+		<button class="ico-refresh ico-only" title="Refresh" onclick="window.location.href='./index.html';"></button>
+		<button class="ico-quit ico-only" title="Quit" onclick="location.href='../index.html';"></button>
 	</aside>
 </menu>
 
@@ -114,8 +122,8 @@
 			<h3>Definitions</h3>
 			<form id="settings" enctype="application/json" action="MAIN" method="javascript">
 				<p class="center">
-					<input type="text" name="custom" placeholder="lychee.Renderer">
-					<button class="ico-create ico-only" onclick="location.hash='!' + this.parentNode.querySelector('input').value;return false;"></button>
+					<input type="text" title="name" Refresh="custom" placeholder="lychee.Renderer">
+					<button class="ico-add ico-only" onclick="location.hash='!' + this.parentNode.querySelector('input').value;return false;"></button>
 				</p>
 				<table class="vertical"></table>
 			</form>
@@ -146,7 +154,6 @@
 (function(lychee, global) {
 
 	var environment = new lychee.Environment({
-		id:      'api',
 		debug:   false,
 		sandbox: false,
 		build:   'tool.Main',
@@ -159,17 +166,7 @@
 	});
 
 
-	lychee.setEnvironment(environment);
-
-	lychee.init(function(sandbox) {
-
-		var lychee = sandbox.lychee;
-		var tool   = sandbox.tool;
-
-		sandbox.MAIN = new tool.Main();
-		sandbox.MAIN.init();
-
-	});
+	lychee.envinit(environment, {});
 
 })(lychee, typeof global !== 'undefined' ? global : this);
 </script>

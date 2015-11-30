@@ -1,0 +1,21 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {},
+		"files": {
+			"Main": [
+				"js"
+			],
+			"Template": [
+				"js"
+			]
+		}
+	}
+}

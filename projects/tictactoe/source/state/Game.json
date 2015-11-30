@@ -5,7 +5,7 @@
 			"arguments": [{}],
 			"blob": {
 				"entities": [{
-					"constructor": "lychee.ui.Background",
+					"constructor": "lychee.app.sprite.Background",
 					"arguments": [{
 						"color": "#8dc435"
 					}]
@@ -28,15 +28,6 @@
 						}
 					}]
 				}, {
-					"constructor": "game.ui.Button",
-					"arguments": [{
-						"state": "back",
-						"position": {
-							"x": -160,
-							"y": -192
-						}
-					}]
-				}, {
 					"constructor": "game.ui.Label",
 					"arguments": [{
 						"label": "0 : 0",
@@ -48,8 +39,7 @@
 				}],
 				"map": {
 					"board": 0,
-					"back":  1,
-					"score": 2
+					"score": 1
 				}
 			}
 		}

@@ -1,4 +1,7 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {},
 		"files": {}
@@ -7,15 +10,15 @@
 		"environments": {},
 		"tags": {},
 		"files": {
+			"Main": [
+				"Entity.tpl",
+				"js"
+			],
 			"data": {
 				"SPRITE": [
 					"js"
 				]
-			},
-			"Main": [
-				"js",
-				"Entity.tpl"
-			]
+			}
 		}
 	}
 }

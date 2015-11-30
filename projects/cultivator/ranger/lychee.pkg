@@ -1,16 +1,19 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {
 			"html-nwjs/main": {
-				"build": "tool.Main",
+				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
-						"tool",
+						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-nwjs",
@@ -18,333 +21,83 @@
 					]
 				},
 				"variant": "application"
-			}
-		},
-		"files": {
-			"html-nwjs": {
-				"main": {
-					"index": [
+			},
+			"html-webview/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html-webview",
 						"html"
 					]
 				},
-				"main-linux": {
-					"x86_64": {
-						"icudtl": [
-							"dat"
-						],
-						"libffmpegsumo": [
-							"so"
-						],
-						"nw": [
-							"pak"
-						],
-						"ranger": [
-							"bin"
-						]
-					}
+				"variant": "application"
+			},
+			"html/main": {
+				"build": "app.Main",
+				"debug": false,
+				"packages": [
+					[
+						"app",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
 				},
-				"main-osx": {
-					"x86_64": {
-						"ranger.app": {
-							"Contents": {
-								"Frameworks": {
-									"crash_inspector": [
-										""
-									],
-									"nwjs Framework.framework": {
-										"Libraries": {
-											"ffmpegsumo": [
-												"so"
-											]
-										},
-										"Resources": {
-											"AHEM____": [
-												"TTF"
-											],
-											"ChromiumAATTest": [
-												"ttf"
-											],
-											"English.lproj": {
-												"HttpAuth": [
-													"nib"
-												]
-											},
-											"am": [
-												"pak"
-											],
-											"ar": [
-												"pak"
-											],
-											"bg": [
-												"pak"
-											],
-											"bn": [
-												"pak"
-											],
-											"ca": [
-												"pak"
-											],
-											"cs": [
-												"pak"
-											],
-											"da": [
-												"pak"
-											],
-											"de": [
-												"pak"
-											],
-											"el": [
-												"pak"
-											],
-											"en-GB": [
-												"pak"
-											],
-											"en-US": [
-												"pak"
-											],
-											"es-419": [
-												"pak"
-											],
-											"es": [
-												"pak"
-											],
-											"et": [
-												"pak"
-											],
-											"fa": [
-												"pak"
-											],
-											"fi": [
-												"pak"
-											],
-											"fil": [
-												"pak"
-											],
-											"fr": [
-												"pak"
-											],
-											"gu": [
-												"pak"
-											],
-											"hi": [
-												"pak"
-											],
-											"hr": [
-												"pak"
-											],
-											"hu": [
-												"pak"
-											],
-											"icudtl": [
-												"dat"
-											],
-											"id": [
-												"pak"
-											],
-											"it": [
-												"pak"
-											],
-											"iw": [
-												"pak"
-											],
-											"ja": [
-												"pak"
-											],
-											"kn": [
-												"pak"
-											],
-											"ko": [
-												"pak"
-											],
-											"lt": [
-												"pak"
-											],
-											"lv": [
-												"pak"
-											],
-											"ml": [
-												"pak"
-											],
-											"mr": [
-												"pak"
-											],
-											"ms": [
-												"pak"
-											],
-											"nl": [
-												"pak"
-											],
-											"no": [
-												"pak"
-											],
-											"nw": [
-												"pak"
-											],
-											"pl": [
-												"pak"
-											],
-											"pt-BR": [
-												"pak"
-											],
-											"pt-PT": [
-												"pak"
-											],
-											"ro": [
-												"pak"
-											],
-											"ru": [
-												"pak"
-											],
-											"sk": [
-												"pak"
-											],
-											"sl": [
-												"pak"
-											],
-											"sr": [
-												"pak"
-											],
-											"sv": [
-												"pak"
-											],
-											"sw": [
-												"pak"
-											],
-											"ta": [
-												"pak"
-											],
-											"te": [
-												"pak"
-											],
-											"th": [
-												"pak"
-											],
-											"tr": [
-												"pak"
-											],
-											"uk": [
-												"pak"
-											],
-											"vi": [
-												"pak"
-											],
-											"zh-CN": [
-												"pak"
-											],
-											"zh-TW": [
-												"pak"
-											]
-										},
-										"nwjs Framework": [
-											""
-										]
-									},
-									"nwjs Helper EH.app": {
-										"Contents": {
-											"Info": [
-												"plist"
-											],
-											"MacOS": {
-												"nwjs Helper EH": [
-													""
-												]
-											},
-											"PkgInfo": [
-												""
-											]
-										}
-									},
-									"nwjs Helper NP.app": {
-										"Contents": {
-											"Info": [
-												"plist"
-											],
-											"MacOS": {
-												"nwjs Helper NP": [
-													""
-												]
-											},
-											"PkgInfo": [
-												""
-											]
-										}
-									},
-									"nwjs Helper.app": {
-										"Contents": {
-											"Info": [
-												"plist"
-											],
-											"MacOS": {
-												"nwjs Helper": [
-													""
-												]
-											},
-											"PkgInfo": [
-												""
-											]
-										}
-									}
-								},
-								"Info": [
-									"plist"
-								],
-								"MacOS": {
-									"nwjs": [
-										""
-									]
-								},
-								"PkgInfo": [
-									""
-								],
-								"Resources": {
-									"AHEM____": [
-										"TTF"
-									],
-									"ChromiumAATTest": [
-										"ttf"
-									],
-									"app": [
-										"nw"
-									],
-									"nw": [
-										"icns"
-									]
-								}
-							}
-						}
-					}
-				}
+				"variant": "application"
 			}
-		}
+		},
+		"files": {}
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
-			"state": {
-				"Profiles": [
-					"js"
-				],
-				"Bootup": [
-					"js"
-				],
-				"Remotes": [
-					"js"
-				],
-				"Status": [
-					"js"
-				]
-			},
 			"Main": [
 				"js"
 			],
-			"index": [
-				"js",
-				"html"
-			]
-		}
-	},
-	"api": {
-		"files": {}
+			"state": {
+				"Profile": [
+					"js",
+					"json"
+				],
+				"Welcome": [
+					"js",
+					"json"
+				]
+			},
+			"ui": {
+				"entity": {
+					"Identifier": [
+						"js"
+					],
+					"Status": [
+						"js"
+					]
+				},
+				"layer": {
+					"Control": [
+						"js"
+					],
+					"Profile": [
+						"js"
+					],
+					"Web": [
+						"js"
+					]
+				}
+			}
+		},
+		"tags": {}
 	}
 }

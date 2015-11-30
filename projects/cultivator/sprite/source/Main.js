@@ -8,10 +8,9 @@ lychee.define('tool.Main').requires([
 	platform: 'html'
 }).exports(function(lychee, tool, global, attachments) {
 
+	var _definition = attachments["Entity.tpl"];
 	var _SPRITE     = tool.data.SPRITE;
 	var _JSON       = lychee.data.JSON;
-
-	var _definition = attachments["Entity.tpl"];
 
 
 
@@ -111,12 +110,21 @@ lychee.define('tool.Main').requires([
 						settings.texture = _SIZES[settings.size];
 
 
-						var sprite = _SPRITE.encode(settings);
-						if (sprite !== null) {
-							_update_preview(sprite);
-						}
+						try {
 
-						this.locked = false;
+							var sprite = _SPRITE.encode(settings);
+							if (sprite !== null) {
+								_update_preview(sprite);
+							}
+
+						} catch(e) {
+
+
+						} finally {
+
+							this.locked = false;
+
+						}
 
 					}, this);
 

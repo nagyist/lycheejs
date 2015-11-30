@@ -1,6 +1,10 @@
 
 lychee.define('game.Compositor').exports(function(lychee, game, global, attachments) {
 
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(main) {
 
 		this.renderer = main.renderer || null;

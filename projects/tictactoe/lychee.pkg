@@ -1,16 +1,19 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {
 			"html-nwjs/main": {
 				"build": "game.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"game",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-nwjs",
@@ -22,13 +25,13 @@
 			"html/main": {
 				"build": "game.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"game",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html"
@@ -41,21 +44,23 @@
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
+			"Main": [
+				"js"
+			],
 			"entity": {
 				"Board": [
 					"js",
 					"json",
 					"png"
 				],
+				"Emblem": [
+					"js",
+					"png"
+				],
 				"Tile": [
 					"js",
 					"json",
-					"png"
-				],
-				"Emblem": [
-					"js",
 					"png"
 				]
 			},
@@ -65,40 +70,18 @@
 					"json",
 					"msc",
 					"snd"
-				],
-				"Menu": [
-					"js",
-					"json"
 				]
 			},
 			"ui": {
-				"Button": [
-					"js",
-					"json",
-					"png",
-					"fnt"
+				"Label": [
+					"fnt",
+					"js"
 				],
 				"Layer": [
-					"js",
-					"json",
-					"png",
-					"fnt"
-				],
-				"Label": [
-					"js",
 					"fnt"
 				]
-			},
-			"Main": [
-				"js"
-			],
-			"index": [
-				"js",
-				"html"
-			]
-		}
-	},
-	"api": {
-		"files": {}
+			}
+		},
+		"tags": {}
 	}
 }

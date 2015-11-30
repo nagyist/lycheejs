@@ -1,4 +1,7 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {},
 		"files": {}
@@ -7,15 +10,12 @@
 		"environments": {},
 		"tags": {},
 		"files": {
-			"Main": [
+			"API": [
 				"js"
 			],
-			"API": [
+			"Main": [
 				"js"
 			]
 		}
-	},
-	"api": {
-		"files": {}
 	}
 }

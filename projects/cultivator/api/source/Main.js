@@ -79,7 +79,7 @@ lychee.define('tool.Main').requires([
 				identifier = path === 'core/lychee' ? 'lychee' : 'lychee.' + path.split('/').pop();
 			}
 
-			var stuff = new Stuff('/lib/lychee/api/' + path + '.md');
+			var stuff = new Stuff('/libraries/lychee/api/' + path + '.md');
 
 			stuff.onload = function(result) {
 				_API_CACHE[identifier] = this.buffer;
@@ -108,7 +108,7 @@ lychee.define('tool.Main').requires([
 			}
 
 
-			var stuff = new Stuff('/lib/lychee/source/' + path + '.js?' + Date.now(), true);
+			var stuff = new Stuff('/libraries/lychee/source/' + path + '.js?' + Date.now(), true);
 
 			stuff.onload = function(result) {
 				_SRC_CACHE[identifier] = this.buffer;
@@ -384,7 +384,7 @@ lychee.define('tool.Main').requires([
 
 		this.bind('load', function(oncomplete) {
 
-			var config = new Config('/lib/lychee/lychee.pkg');
+			var config = new Config('/libraries/lychee/lychee.pkg');
 			var that   = this;
 
 			config.onload = function(result) {

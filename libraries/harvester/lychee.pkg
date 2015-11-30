@@ -1,0 +1,129 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {
+			"node-sdl/dist": {
+				"build": "harvester.Main",
+				"debug": false,
+				"packages": [
+					[
+						"harvester",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "library"
+			},
+			"node/dist": {
+				"build": "harvester.Main",
+				"debug": false,
+				"packages": [
+					[
+						"harvester",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "library"
+			}
+		},
+		"files": {
+			"node": {
+				"dist": {
+					"index": [
+						"js"
+					]
+				}
+			},
+			"node-sdl": {
+				"dist": {
+					"index": [
+						"js"
+					]
+				}
+			}
+		}
+	},
+	"source": {
+		"environments": {},
+		"files": {
+			"Main": [
+				"js"
+			],
+			"data": {
+				"Filesystem": [
+					"js"
+				],
+				"Host": [
+					"js"
+				],
+				"Package": [
+					"js"
+				],
+				"Project": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"mod": {
+				"Fertilizer": [
+					"js"
+				],
+				"Package": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"net": {
+				"Remote": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"serve": {
+				"API": [
+					"js"
+				],
+				"File": [
+					"js"
+				],
+				"Redirect": [
+					"js"
+				],
+				"api": {
+					"Library": [
+						"js"
+					],
+					"Profile": [
+						"js"
+					],
+					"Project": [
+						"js"
+					],
+					"Server": [
+						"js"
+					]
+				}
+			}
+		},
+		"tags": {}
+	}
+}

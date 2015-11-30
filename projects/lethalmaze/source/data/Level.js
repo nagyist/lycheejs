@@ -1,9 +1,9 @@
 
 lychee.define('game.data.Level').requires([
-	'game.entity.Item',
-	'game.entity.Tank',
-	'game.entity.Terrain',
-	'game.entity.Wall'
+	'game.app.sprite.Item',
+	'game.app.sprite.Tank',
+	'game.app.sprite.Terrain',
+	'game.app.sprite.Wall'
 ]).exports(function(lychee, game, global, attachments) {
 
 	var _TILE = 32;
@@ -72,7 +72,7 @@ lychee.define('game.data.Level').requires([
 						position.z = position.z * _TILE;
 
 
-						cache.terrain.push(new game.entity.Terrain({
+						cache.terrain.push(new game.app.sprite.Terrain({
 							position: position
 						}));
 
@@ -81,7 +81,7 @@ lychee.define('game.data.Level').requires([
 
 							case 1:
 
-								cache.objects.push(new game.entity.Wall({
+								cache.objects.push(new game.app.sprite.Wall({
 									position: position
 								}));
 
@@ -89,7 +89,7 @@ lychee.define('game.data.Level').requires([
 
 							case 2:
 
-								cache.objects.push(new game.entity.Tank({
+								cache.objects.push(new game.app.sprite.Tank({
 									position: position
 								}));
 
@@ -97,7 +97,7 @@ lychee.define('game.data.Level').requires([
 
 							case 3:
 
-								cache.objects.push(new game.entity.Item({
+								cache.objects.push(new game.app.sprite.Item({
 									position: position
 								}));
 

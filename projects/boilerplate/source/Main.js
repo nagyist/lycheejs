@@ -1,17 +1,22 @@
 
 lychee.define('app.Main').requires([
 	'app.net.Client',
-	'app.state.Menu'
+	'app.net.Server',
+	'app.state.Welcome'
 ]).includes([
 	'lychee.app.Main'
 ]).exports(function(lychee, app, global, attachments) {
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({
 
-			// Is configured by Sorbet API
-			client: '/api/Server?identifier=boilerplate',
+			// Is configured in lychee.pkg
+			// client: '/api/Server?identifier=/projects/boilerplate',
 
 			input: {
 				delay:       0,
@@ -27,10 +32,9 @@ lychee.define('app.Main').requires([
 			},
 
 			renderer: {
-				id:         'boilerplate',
-				width:      null,
-				height:     null,
-				background: '#404948'
+				id:     'boilerplate',
+				width:  null,
+				height: null
 			},
 
 			viewport: {
@@ -53,19 +57,30 @@ lychee.define('app.Main').requires([
 			this.settings.appclient = this.settings.client;
 			this.settings.client    = null;
 
+			this.settings.appserver = this.settings.server;
+			this.settings.server    = null;
+
 			oncomplete(true);
 
 		}, this, true);
 
 		this.bind('init', function() {
 
-			var settings = this.settings.appclient || null;
-			if (settings !== null) {
-				this.client = new app.net.Client(settings, this);
+			var appclient = this.settings.appclient || null;
+			if (appclient !== null) {
+				this.client = new app.net.Client(appclient, this);
 			}
 
-			this.setState('menu', new app.state.Menu(this));
-			this.changeState('menu');
+			var appserver = this.settings.appserver || null;
+			if (appserver !== null) {
+				this.server = new app.net.Server(appserver, this);
+			}
+
+
+			this.setState('welcome', new app.state.Welcome(this));
+
+
+			this.changeState('welcome');
 
 		}, this, true);
 
@@ -85,11 +100,13 @@ lychee.define('app.Main').requires([
 			var data = lychee.app.Main.prototype.serialize.call(this);
 			data['constructor'] = 'app.Main';
 
+
 			var settings = data['arguments'][0] || {};
 			var blob     = data['blob'] || {};
 
 
-			if (this.defaults.client !== null) { settings.client = this.defaults.client; }
+			if (this.settings.appclient !== null) settings.client = this.defaults.client;
+			if (this.settings.appserver !== null) settings.server = this.defaults.server;
 
 
 			data['arguments'][0] = settings;

@@ -1,6 +1,7 @@
 
 lychee.define('game.Main').requires([
 	'game.net.Client',
+	'game.net.Server',
 	'game.state.Game'
 ]).includes([
 	'lychee.app.Main'
@@ -10,26 +11,24 @@ lychee.define('game.Main').requires([
 
 		var settings = lychee.extend({
 
-			// Is configured by Sorbet API
-			client: '/api/Server?identifier=lethalmaze',
-
 			input: {
 				delay:       0,
 				key:         true,
 				keymodifier: false,
 				touch:       true,
-				swipe:       false
+				swipe:       true
 			},
 
 			jukebox: {
-				music: false,
-				sound: true
+				music:  true,
+				sound:  true,
+				volume: 0.25
 			},
 
 			renderer: {
 				id:         'lethalmaze',
-				width:      768,
-				height:     768,
+				width:      null,
+				height:     null,
 				background: '#67b843'
 			},
 
@@ -45,8 +44,11 @@ lychee.define('game.Main').requires([
 
 		this.bind('load', function(oncomplete) {
 
-			this.settings.gameclient = this.settings.client;
+			this.settings.gameclient = this.settings.client || null;
 			this.settings.client     = null;
+
+			this.settings.gameserver = this.settings.server || null;
+			this.settings.server     = null;
 
 			oncomplete(true);
 
@@ -54,13 +56,27 @@ lychee.define('game.Main').requires([
 
 		this.bind('init', function() {
 
-			var settings = this.settings.gameclient || null;
-			if (settings !== null) {
-				this.client = new game.net.Client(settings, this);
+			var gameclient = this.settings.gameclient;
+			if (gameclient !== null) {
+
+				this.client = new game.net.Client(gameclient, this);
+				this.client.bind('connect', function() {
+					this.changeState('game');
+				}, this);
+
 			}
 
+			var gameserver = this.settings.gameserver;
+			if (gameserver !== null) {
+				this.server = new game.net.Server(gameserver, this);
+			}
+
+
+			this.viewport.unbind('show');
+			this.viewport.unbind('hide');
+
+
 			this.setState('game', new game.state.Game(this));
-			this.changeState('game');
 
 		}, this, true);
 
@@ -84,7 +100,8 @@ lychee.define('game.Main').requires([
 			var blob     = data['blob'] || {};
 
 
-			if (this.defaults.client !== null) { settings.client = this.defaults.client; }
+			if (this.settings.gameclient !== null) { settings.client = this.defaults.client; }
+			if (this.settings.gameserver !== null) { settings.server = this.defaults.server; }
 
 
 			data['arguments'][0] = settings;
@@ -93,22 +110,7 @@ lychee.define('game.Main').requires([
 
 			return data;
 
-		},
-
-
-
-		/*
-		 * CUSTOM API
-		 */
-
-		reshape: function(orientation, rotation) {
-
-			lychee.app.Main.prototype.reshape.call(this, orientation, rotation);
-
-		},
-
-		show: function() {},
-		hide: function() {}
+		}
 
 	};
 

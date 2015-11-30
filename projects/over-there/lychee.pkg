@@ -1,51 +1,62 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {
 			"html-nwjs/main": {
 				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-nwjs",
 						"html"
 					]
 				},
-				"variant": "application"
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/over-there",
+					"server": "/api/Server?identifier=/projects/over-there"
+				}
 			},
 			"html/main": {
 				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html"
 					]
 				},
-				"variant": "application"
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/over-there",
+					"server": "/api/Server?identifier=/projects/over-there"
+				}
 			},
-			"node/server": {
-				"build": "app.net.Server",
+			"node/main": {
+				"build": "app.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"app",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"node"
@@ -58,8 +69,10 @@
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
+			"Main": [
+				"js"
+			],
 			"entity": {
 				"Airlock": [
 					"js",
@@ -67,18 +80,22 @@
 					"png"
 				],
 				"Astronaut": [
+					"blue.png",
+					"green.png",
 					"js",
 					"json",
-					"blue.png",
 					"light.png",
-					"green.png",
-					"red.png",
 					"orange.png",
 					"pink.png",
 					"purple.png",
+					"red.png",
 					"yellow.png"
 				],
 				"Background": [
+					"js",
+					"png"
+				],
+				"Emblem": [
 					"js",
 					"png"
 				],
@@ -90,15 +107,9 @@
 					"js",
 					"json",
 					"png"
-				],
-				"Emblem": [
-					"js",
-					"png"
 				]
 			},
 			"net": {
-				"client": {},
-				"remote": {},
 				"Client": [
 					"js",
 					"json"
@@ -109,35 +120,28 @@
 			},
 			"state": {
 				"App": [
-					"fnt",
 					"js",
 					"json"
 				]
 			},
 			"ui": {
-				"Bubble": [
-					"fnt",
-					"js",
-					"json",
-					"png",
-					"avatar.json",
-					"avatar.png"
-				],
-				"Overlay": [
-					"js",
-					"fnt"
-				]
-			},
-			"Main": [
-				"js"
-			],
-			"index": [
-				"js",
-				"html"
-			]
-		}
-	},
-	"api": {
-		"files": {}
+				"entity": {
+					"Bubble": [
+						"avatar.json",
+						"avatar.png",
+						"fnt",
+						"js",
+						"json",
+						"png"
+					]
+				},
+				"layer": {
+					"Overlay": [
+						"js"
+					]
+				}
+			}
+		},
+		"tags": {}
 	}
 }

@@ -5,8 +5,23 @@ lowercase() {
 }
 
 OS=`lowercase \`uname\``;
+ARCH=`lowercase \`uname -m\``;
 
-LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../"; pwd);
+LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+CHILD_PID="";
+
+
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]; then
+	ARCH="x86_64";
+fi;
+
+if [ "$ARCH" == "i386" -o "$ARCH" == "i686" -o "$ARCH" == "i686-64" ]; then
+	ARCH="x86";
+fi;
+
+if [ "$ARCH" == "armv7l" -o "$ARCH" == "armv8" ]; then
+	ARCH="arm";
+fi;
 
 
 if [ "$OS" == "darwin" ]; then
@@ -21,64 +36,118 @@ fi;
 
 
 
-_put_API_Projects () {
+_print_help() {
 
-	action="$1";
-	identifier="$2";
+	echo "                                                           ";
+	echo -e "\u001b[37m\u001b[42mlycheeJS Helper\u001b[49m\u001b[39m";
+	echo "                                                           ";
+	echo " Usage: lycheejs-helper [lycheejs://Action]                ";
+	echo "        lycheejs-helper [env:Platform]                     ";
+	echo "                                                           ";
+	echo "                                                           ";
+	echo " Available Actions:                                        ";
+	echo "                                                           ";
+	echo "    boot=[Profile]                                         ";
+	echo "    profile=[Profile]&data=[JSON]                          ";
+	echo "    unboot                                                 ";
+	echo "                                                           ";
+	echo "    start=[Library/Project]                                ";
+	echo "    stop=[Library/Project]                                 ";
+	echo "    file=[Library/Project]                                 ";
+	echo "    edit=[Library/Project]                                 ";
+	echo "    web=[URL]                                              ";
+	echo "                                                           ";
+	echo "                                                           ";
+	echo " Available Platforms:                                      ";
+	echo "                                                           ";
+	echo "    html, html-nwjs, node, node-sdl                        ";
+	echo "                                                           ";
+	echo " Examples:                                                 ";
+	echo "                                                           ";
+	echo "    lycheejs-helper lycheejs://start=/projects/boilerplate ";
+	echo "    lycheejs-helper lycheejs://web=http://lycheejs.org     ";
+	echo "    lycheejs-helper env:node /path/to/program.js           ";
+	echo "                                                           ";
+	echo " Notes:                                                    ";
+	echo "                                                           ";
+	echo " The \"env:\" can be used as Shebang, like this:           ";
+	echo " #!/usr/local/bin/lycheejs-helper env:node                 ";
+	echo "                                                           ";
+
+}
+
+
+_handle_signal() {
+	kill -s "$1" "$CHILD_PID" 2>/dev/null;
+}
+
+_trap() {
+
+	handler="$1"; shift;
+	for signal; do
+		trap "$handler $signal" "$signal";
+	done;
+
+}
+
+_start_env () {
+
+	_trap _handle_signal INT HUP TERM EXIT;
+
+	$1 $2 $3 $4 $5 &
+
+	CHILD_PID=$!;
+	wait "$CHILD_PID";
+
+}
+
+_put_API_Project () {
+
+	identifier="$1";
+	action="$2";
 	apiurl="http://localhost:4848/api/Project?identifier=$identifier&action=$action";
 
 	curl -i -X PUT $apiurl 2>&1;
 
 }
 
+_put_API_Profile () {
+
+	identifier="$1";
+	data=$(echo $2 | base64 --decode);
+	apiurl="http://localhost:4848/api/Profile?identifier=$identifier";
+
+	curl -i -H "Content-Type: application/json" -X PUT -d "$data" $apiurl 2>&1;
+
+}
 
 
-url=$1;
-protocol=${url:0:8};
+
+protocol=$(echo $1 | cut -d":" -f 1);
+content=$(echo $1 | cut -d":" -f 2);
+
+
 
 if [ "$protocol" == "lycheejs" ]; then
 
-	action="";
-	resource="";
+	action=$(echo $content | cut -c 3- | cut -d"=" -f 1);
+	data="";
 
-	if [ "${url:11:4}" == "boot" ]; then
-		action="boot";
-		resource=${url#*=};
+
+	if [[ $content =~ .*=.* ]]; then
+		resource=$(echo $content | cut -d"=" -f 2);
+	else
+		resource="";
 	fi;
 
-	if [ "${url:11:6}" == "unboot" ]; then
-		action="unboot";
-		resource="...";
-	fi;
 
-	if [ "${url:11:5}" == "start" ]; then
-		action="start";
-		resource=${url#*=};
-	fi;
-
-	if [ "${url:11:4}" == "stop" ]; then
-		action="stop";
-		resource=${url#*=};
-	fi;
-
-	if [ "${url:11:4}" == "edit" ]; then
-		action="edit";
-		resource=${url#*=};
-	fi;
-
-	if [ "${url:11:5}" == "create" ]; then
-		action="create";
-		resource=${url#*=};
-	fi;
-
-	if [ "${url:11:4}" == "file" ]; then
-		action="file";
-		resource=${url#*=};
-	fi;
-
-	if [ "${url:11:3}" == "web" ]; then
-		action="web";
-		resource=${url#*=};
+	if [ "$action" == "profile" ]; then
+		# XXX: base64 encoded strings end with = (8 Bit) or == (16 Bit)
+		data=$(echo $1 | cut -d"=" -f 3-5);
+	elif [ "$action" == "unboot" ]; then
+		resource="DUMMY";
+	elif [ "$action" == "web" ]; then
+		resource=$(echo $1 | cut -c 16-);
 	fi;
 
 
@@ -94,9 +163,17 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				cd $LYCHEEJS_ROOT;
 
-				./bin/sorbet.sh stop 2>&1;
-				./bin/sorbet.sh start "$resource" 2>&1;
+				./bin/harvester.sh stop 2>&1;
+				./bin/harvester.sh start "$resource" 2>&1;
 				exit 0;
+
+			;;
+
+			profile)
+
+				cd $LYCHEEJS_ROOT;
+
+				_put_API_Profile "$resource" "$data";
 
 			;;
 
@@ -104,21 +181,21 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				cd $LYCHEEJS_ROOT;
 
-				./bin/sorbet.sh stop 2>&1;
+				./bin/harvester.sh stop 2>&1;
 				exit 0;
 
 			;;
 
 			start)
 
-				_put_API_Projects "start" "$resource";
+				_put_API_Project "$resource" "start";
 				exit 0;
 
 			;;
 
 			stop)
 
-				_put_API_Projects "stop" "$resource";
+				_put_API_Project "$resource" "stop";
 				exit 0;
 
 			;;
@@ -128,7 +205,7 @@ if [ "$protocol" == "lycheejs" ]; then
 				if [ -f ./bin/editor.sh ]; then
 
 					if [ "$OS" == "linux" -o "$OS" == "osx" ]; then
-						./bin/editor.sh "file://$LYCHEEJS_ROOT/projects/$resource/lychee.pkg" 2>&1;
+						./bin/editor.sh "$resource" 2>&1;
 						exit 0;
 					fi;
 
@@ -140,12 +217,12 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				if [ "$OS" == "linux" ]; then
 
-					xdg-open "file://$LYCHEEJS_ROOT/projects/$resource" 2>&1;
+					xdg-open "file://$LYCHEEJS_ROOT/$resource" 2>&1;
 					exit 0;
 
 				elif [ "$OS" == "osx" ]; then
 
-					open "file://$LYCHEEJS_ROOT/projects/$resource" 2>&1;
+					open "file://$LYCHEEJS_ROOT/$resource" 2>&1;
 					exit 0;
 
 				fi;
@@ -164,12 +241,29 @@ if [ "$protocol" == "lycheejs" ]; then
 
 				if [ "$OS" == "linux" ]; then
 
-					xdg-open "$clean_resource" 2>&1;
+					chrome1=`which google-chrome`;
+					chrome2=`which chromium-browser`;
+
+					if [ -x "$chrome1" ]; then
+						"$chrome1" "$clean_resource";
+					elif [ -x "$chrome2" ]; then
+						"$chrome2" "$clean_resource";
+					else
+						xdg-open "$clean_resource" 2>&1;
+					fi;
+
 					exit 0;
 
 				elif [ "$OS" == "osx" ]; then
 
-					open "$clean_resource" 2>&1;
+					chrome1="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+					if [ -x "$chrome1" ]; then
+						"$chrome1" "$clean_resource";
+					else
+						open "$clean_resource" 2>&1;
+					fi;
+
 					exit 0;
 
 				fi;
@@ -183,7 +277,67 @@ if [ "$protocol" == "lycheejs" ]; then
 
 	exit 0;
 
+elif [ "$protocol" == "env" ]; then
+
+	platform=$(echo $content | cut -d":" -f 2);
+	program=$2;
+
+
+	if [ -f "$program" ]; then
+
+		if [ "$platform" == "html" ]; then
+
+			if [ "$OS" == "linux" ]; then
+
+				chrome1=`which google-chrome`;
+				chrome2=`which chromium-browser`;
+
+				if [ -x "$chrome1" ]; then
+					"$chrome1" "$program";
+				elif [ -x "$chrome2" ]; then
+					"$chrome2" "$program";
+				else
+					xdg-open "$program" 2>&1;
+				fi;
+
+			elif [ "$OS" == "osx" ]; then
+
+				chrome1="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+				if [ -x "$chrome1" ]; then
+					"$chrome1" "$program";
+				else
+					open "$program" 2>&1;
+				fi;
+
+			fi;
+
+		elif [ "$platform" == "html-nwjs" ]; then
+
+			if [ "$OS" == "linux" ]; then
+				_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/$ARCH/nw $program $3 $4 $5;
+			elif [ "$OS" == "osx" ]; then
+				_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nw $program $3 $4 $5;
+			fi;
+
+		elif [ "$platform" == "node" ]; then
+
+			if [ "$OS" == "linux" ]; then
+				_start_env $LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node $program $3 $4 $5;
+			elif [ "$OS" == "osx" ]; then
+				_start_env $LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node $program $3 $4 $5;
+			fi;
+
+		fi;
+
+	fi;
+
+
+	exit 0;
+
 else
+
+	_print_help;
 
 	exit 1;
 

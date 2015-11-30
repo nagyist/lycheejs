@@ -1,16 +1,19 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
 		"environments": {
 			"html-nwjs/main": {
 				"build": "game.Main",
 				"debug": false,
-				"sandbox": false,
 				"packages": [
 					[
 						"game",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html-nwjs",
@@ -22,19 +25,19 @@
 			"html/main": {
 				"build": "game.Main",
 				"debug": false,
-				"sandbox": false,
-				"type": "folder",
 				"packages": [
 					[
 						"game",
 						"./lychee.pkg"
 					]
 				],
+				"sandbox": false,
 				"tags": {
 					"platform": [
 						"html"
 					]
 				},
+				"type": "folder",
 				"variant": "application"
 			}
 		},
@@ -42,29 +45,7 @@
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
-			"entity": {
-				"Background": [
-					"js",
-					"png"
-				],
-				"Track": [
-					"js",
-					"circuit.json",
-					"straight.json",
-					"valley.json"
-				],
-				"Emblem": [
-					"js",
-					"png"
-				]
-			},
-			"state": {
-				"Game": [
-					"js"
-				]
-			},
 			"Camera": [
 				"js"
 			],
@@ -77,13 +58,24 @@
 			"Renderer": [
 				"js"
 			],
-			"index": [
-				"js",
-				"html"
-			]
-		}
-	},
-	"api": {
-		"files": {}
+			"entity": {
+				"Background": [
+					"js",
+					"png"
+				],
+				"Track": [
+					"circuit.json",
+					"js",
+					"straight.json",
+					"valley.json"
+				]
+			},
+			"state": {
+				"Game": [
+					"js"
+				]
+			}
+		},
+		"tags": {}
 	}
 }

@@ -1,68 +1,12 @@
 
-lychee.define('tool.Main').requires([
-	'lychee.data.JSON',
-	'tool.state.Bootup',
-//	'tool.state.Console',
-	'tool.state.Profiles',
-	'tool.state.Remotes',
-	'tool.state.Status'
+lychee.define('app.Main').requires([
+	'app.state.Welcome',
+	'app.state.Profile',
+//	'app.state.Console',
+//	'app.state.Remote'
 ]).includes([
 	'lychee.app.Main'
-]).tags({
-	platform: 'html'
-}).exports(function(lychee, tool, global, attachments) {
-
-	var _JSON = lychee.data.JSON;
-
-	/*
-	 * HACKS
-	 */
-
-	(function(global) {
-
-		if (typeof global.addEventListener !== 'undefined') {
-
-			global.addEventListener('click', function(event) {
-
-				var target = event.target;
-				if (target.tagName === 'A' && target.href.match(/lycheejs:\/\//g)) {
-
-					setTimeout(function() {
-
-						var main = global.MAIN || null;
-						if (main !== null) {
-							main.loop.trigger('update', []);
-						}
-
-					}, 200);
-
-				}
-
-			}, true);
-
-		}
-
-	})(global);
-
-
-
-	/*
-	 * HELPERS
-	 */
-
-	var _load_api = function(callback, scope) {
-
-		var config = new Config('http://localhost:4848/api/Project?timestamp=' + Date.now());
-
-		config.onload = function(result) {
-			callback.call(scope, result);
-		};
-
-		config.load();
-
-	};
-
-
+]).exports(function(lychee, app, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -72,22 +16,14 @@ lychee.define('tool.Main').requires([
 
 		var settings = lychee.extend({
 
-			client:   null,
-			input:    null,
-			jukebox:  null,
-			renderer: null,
-			server:   null,
-
-			loop: {
-				update: 1/10,
-				render: 0
-			},
-
-			viewport: {
-				fullscreen: false
-			}
+			client: null,
+			server: null
 
 		}, data);
+
+
+		this.config  = null;
+		this.profile = null;
 
 
 		lychee.app.Main.call(this, settings);
@@ -99,27 +35,41 @@ lychee.define('tool.Main').requires([
 		 */
 
 		this.bind('load', function(oncomplete) {
-			oncomplete(true);
+
+			this.reload(function(config, profile) {
+				oncomplete(true);
+			}, this);
+
 		}, this, true);
 
 		this.bind('init', function() {
 
-			this.setState('bootup',   new tool.state.Bootup(this));
-			// this.setState('console',  new tool.state.Console(this));
-			this.setState('profiles', new tool.state.Profiles(this));
-			this.setState('remotes',  new tool.state.Remotes(this));
-			this.setState('status',   new tool.state.Status(this));
+			this.setState('welcome', new app.state.Welcome(this));
+			this.setState('profile', new app.state.Profile(this));
+			// this.setState('console',  new app.state.Remote(this));
+			// this.setState('remote',  new app.state.Remote(this));
 
 
-			_load_api(function(result) {
+			var state = this.getState('welcome');
+			if (state !== null) {
 
-				if (result === true) {
-					ui.changeState('status');
-				} else {
-					ui.changeState('bootup');
-				}
+				state.queryLayer('ui', 'menu').bind('#change', function(menu, value) {
 
-			}, this);
+					var layer = this.queryLayer('ui', value.toLowerCase());
+					var state = this.main.getState(value.toLowerCase());
+
+					if (layer !== null && this.main.state !== this) {
+						this.main.changeState('welcome', value.toLowerCase());
+					} else if (state !== null) {
+						this.main.changeState(value.toLowerCase());
+					}
+
+				}, state);
+
+			}
+
+
+			this.changeState('welcome', 'welcome');
 
 		}, this, true);
 
@@ -127,6 +77,64 @@ lychee.define('tool.Main').requires([
 
 
 	Class.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			var data = lychee.app.Main.prototype.serialize.call(this);
+			data['constructor'] = 'app.Main';
+
+			var settings = data['arguments'][0] || {};
+			var blob     = data['blob'] || {};
+
+
+			data['arguments'][0] = settings;
+			data['blob']         = Object.keys(blob).length > 0 ? blob : null;
+
+
+			return data;
+
+		},
+
+		reload: function(callback, scope) {
+
+			callback = callback instanceof Function ? callback : null;
+			scope    = scope !== undefined          ? scope    : this;
+
+
+			var that    = this;
+			var config  = new Config('http://localhost:4848/api/Project?timestamp=' + Date.now());
+			var profile = new Config('http://localhost:4848/api/Profile?timestamp=' + Date.now());
+
+
+			config.onload = function(result) {
+
+				if (this.buffer !== null) {
+					that.config = this;
+				}
+
+				profile.load();
+
+			};
+
+			profile.onload = function(result) {
+
+				if (this.buffer !== null) {
+					that.profile = this;
+				}
+
+				callback.call(scope, that.config, that.profile);
+
+			}
+
+			config.load();
+
+		}
 
 	};
 

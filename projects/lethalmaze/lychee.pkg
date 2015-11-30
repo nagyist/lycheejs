@@ -1,100 +1,153 @@
 {
+	"api": {
+		"files": {}
+	},
 	"build": {
-		"environments": {},
+		"environments": {
+			"html/main": {
+				"build": "game.Main",
+				"debug": false,
+				"packages": [
+					[
+						"game",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "/api/Server?identifier=/projects/lethalmaze",
+					"server": "/api/Server?identifier=/projects/lethalmaze"
+				}
+			},
+			"node/main": {
+				"build": "game.Main",
+				"debug": false,
+				"packages": [
+					[
+						"game",
+						"./lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "application"
+			}
+		},
 		"files": {}
 	},
 	"source": {
 		"environments": {},
-		"tags": {},
 		"files": {
-			"layer": {},
-			"effect": {
-				"Explosion": [
-					"js",
-					"json",
-					"png"
+			"Main": [
+				"js"
+			],
+			"app": {
+				"sprite": {
+					"Bullet": [
+						"js",
+						"json",
+						"png"
+					],
+					"Item": [
+						"js",
+						"json",
+						"png"
+					],
+					"Portal": [
+						"js",
+						"json",
+						"png",
+						"snd"
+					],
+					"Tank": [
+						"js",
+						"json",
+						"png",
+						"powerup.snd",
+						"shoot.snd"
+					],
+					"Terrain": [
+						"js",
+						"json",
+						"png"
+					],
+					"Wall": [
+						"js",
+						"json",
+						"png"
+					]
+				}
+			},
+			"data": {
+				"Level": [
+					"js"
 				]
 			},
-			"entity": {
-				"Bullet": [
-					"js",
-					"json",
-					"png"
-				],
-				"Item": [
-					"js",
-					"json",
-					"png"
-				],
-				"Tank": [
+			"effect": {
+				"Explosion": [
 					"js",
 					"json",
 					"png",
 					"snd"
 				],
-				"Wall": [
-					"js",
-					"json",
-					"png"
-				],
-				"Terrain": [
-					"js",
-					"json",
-					"png"
+				"Lightning": [
+					"js"
 				]
 			},
 			"net": {
-				"client": {
-					"Controller": [
-						"js"
-					]
-				},
-				"remote": {
-					"Controller": [
-						"js"
-					]
-				},
 				"Client": [
 					"js"
 				],
 				"Server": [
 					"js"
-				]
+				],
+				"client": {
+					"Control": [
+						"js"
+					]
+				},
+				"remote": {
+					"Control": [
+						"js"
+					]
+				}
 			},
 			"state": {
 				"Game": [
+					"fnt",
 					"js",
 					"json",
+					"kill.snd",
 					"levels.json",
-					"fnt",
-					"death.snd",
-					"explosion.snd",
-					"powerup.snd",
-					"msc"
-				],
-				"Game___OLD": [
-					"js"
+					"msc",
+					"spawn.snd"
 				]
 			},
-			"ui": {},
-			"Main": [
-				"js"
-			],
-			"index": [
-				"js",
-				"html"
-			],
-			"Controller": [
-				"js"
-			],
-			"data": {
-				"Level": [
-					"js"
-				]
+			"ui": {
+				"entity": {
+					"Timeout": [
+						"fnt",
+						"js",
+						"snd"
+					]
+				},
+				"layer": {
+					"Control": [
+						"js"
+					]
+				}
 			}
-		}
-	},
-	"api": {
-		"files": {}
+		},
+		"tags": {}
 	}
 }

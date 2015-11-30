@@ -5,11 +5,9 @@ lychee.define('app.net.Client').requires([
 	'lychee.net.Client'
 ]).exports(function(lychee, app, global, attachments) {
 
-	var _BitON = lychee.data.BitON;
-
-	var _ASTRONAUTS = attachments["json"].buffer;
-	var _ROOMS      = ['node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem'];
-	var _SENSORS    = {
+	var _CONFIG  = attachments["json"].buffer;
+	var _ROOMS   = ['node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem'];
+	var _SENSORS = {
 		destiny: {
 			pressure:    'USLAB000058',
 			temperature: 'USLAB000059',
@@ -28,10 +26,15 @@ lychee.define('app.net.Client').requires([
 	};
 
 
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
 	var Class = function(data) {
 
 		var settings = lychee.extend({
-			codec:     _BitON,
+			codec:     lychee.data.BitON,
 			reconnect: 10000
 		}, data);
 
@@ -49,7 +52,7 @@ lychee.define('app.net.Client').requires([
 		this.bind('connect', function() {
 
 			if (lychee.debug === true) {
-				console.log('(Over-There) app.net.Client: Remote connected');
+				console.log('app.net.Client: Remote connected');
 			}
 
 		}, this);
@@ -57,7 +60,7 @@ lychee.define('app.net.Client').requires([
 		this.bind('disconnect', function(code) {
 
 			if (lychee.debug === true) {
-				console.log('(Over-There) app.net.Client: Remote disconnected (' + code + ')');
+				console.log('app.net.Client: Remote disconnected (' + code + ')');
 			}
 
 		}, this);
@@ -90,7 +93,7 @@ lychee.define('app.net.Client').requires([
 			var _id = 0;
 			var _ACTIVITIES = ['sleep', 'sleep', 'science', 'sleep', 'sleep', 'science'];
 
-			_ASTRONAUTS.forEach(function(data) {
+			_CONFIG.forEach(function(data) {
 
 				_id++;
 				_id = _id % 6;
@@ -115,8 +118,6 @@ lychee.define('app.net.Client').requires([
 		/*
 		 * ENTITY API
 		 */
-
-		// deserialize: function(blob) {},
 
 		serialize: function() {
 

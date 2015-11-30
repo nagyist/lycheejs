@@ -3,8 +3,8 @@ lychee.define('game.entity.Background').includes([
 	'lychee.app.Entity'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _texture = attachments["png"];
-	var _config  = {
+	var _TEXTURE = attachments["png"];
+	var _CONFIG  = {
 		states: { 'default': 0 },
 		map:    {
 			'foreground': { x: 0, y: 0,   w: 1024, h: 512 },
@@ -12,6 +12,11 @@ lychee.define('game.entity.Background').includes([
 		}
 	};
 
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
@@ -30,11 +35,9 @@ lychee.define('game.entity.Background').includes([
 		delete settings.origin;
 
 
-		settings.states  = _config.states;
-		settings.texture = _texture;
-
-		settings.width   = settings.width  || 1024;
-		settings.height  = settings.height || 512;
+		settings.width  = settings.width  || 1024;
+		settings.height = settings.height || 512;
+		settings.states = _CONFIG.states;
 
 
 		lychee.app.Entity.call(this, settings);
@@ -45,6 +48,10 @@ lychee.define('game.entity.Background').includes([
 
 
 	Class.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
 
 		serialize: function() {
 
@@ -64,9 +71,8 @@ lychee.define('game.entity.Background').includes([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var texture = _texture;
-			var fgmap   = _config.map.foreground;
-			var bgmap   = _config.map.background;
+			var fgmap = _CONFIG.map.foreground;
+			var bgmap = _CONFIG.map.background;
 
 
 			var buffer = this.__buffer;
@@ -99,7 +105,7 @@ lychee.define('game.entity.Background').includes([
 					renderer.drawSprite(
 						px1,
 						py1,
-						texture,
+						_TEXTURE,
 						bgmap
 					);
 
@@ -116,7 +122,7 @@ lychee.define('game.entity.Background').includes([
 					renderer.drawSprite(
 						px2,
 						py2,
-						texture,
+						_TEXTURE,
 						fgmap
 					);
 
@@ -144,21 +150,6 @@ lychee.define('game.entity.Background').includes([
 				y1,
 				buffer
 			);
-
-
-			if (lychee.debug === true) {
-
-				renderer.drawBox(
-					x1,
-					y1,
-					x1 + this.width,
-					y1 + this.height,
-					'#ffff00',
-					false,
-					1
-				);
-
-			}
 
 		},
 

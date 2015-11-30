@@ -59,20 +59,14 @@ lychee.define('tool.Main').requires([
 		var location = global.location || null;
 		if (location instanceof Object) {
 
-			var url = (location.search || '?').substr(1);
-			if (url.length > 0) {
-				PROJECT = url;
+			var hash = location.hash || '';
+			if (hash.indexOf('#!') !== -1) {
+				PROJECT = location.hash.split('!')[1];
 			}
 
 		}
 
 	})(global);
-
-
-
-	/*
-	 * HELPERS
-	 */
 
 
 
@@ -102,7 +96,8 @@ lychee.define('tool.Main').requires([
 		}, data);
 
 
-		this.project = null;
+		this.project  = null;
+		this.projects = {};
 
 
 		lychee.app.Main.call(this, settings);
@@ -122,12 +117,9 @@ lychee.define('tool.Main').requires([
 			this.setState('project', new tool.state.Project(this));
 			this.setState('scene',   new tool.state.Scene(this));
 
-
-			if (PROJECT !== null) {
-				this.open(PROJECT);
-			} else {
-				this.changeState('project');
-			}
+			this.changeState('project', {
+				identifier: PROJECT || 'boilerplate'
+			});
 
 		}, this, true);
 
@@ -135,14 +127,6 @@ lychee.define('tool.Main').requires([
 
 
 	Class.prototype = {
-
-		open: function(url) {
-
-			return this.changeState('scene', {
-				url: url
-			});
-
-		}
 
 	};
 

@@ -3,7 +3,9 @@ lychee.define('app.entity.Astronaut').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, app, global, attachments) {
 
-	var _textures = [
+	var _id       = 0;
+	var _CONFIG   = attachments["json"].buffer;
+	var _TEXTURES = [
 		attachments["blue.png"],
 		attachments["light.png"],
 		attachments["green.png"],
@@ -14,29 +16,32 @@ lychee.define('app.entity.Astronaut').includes([
 		attachments["yellow.png"]
 	];
 
-	var _texture = attachments["png"];
-	var _config  = attachments["json"].buffer;
 
 
-	var _id = 0;
+	/*
+	 * IMPLEMENTATION
+	 */
 
 	var Class = function(data) {
 
 		var settings = lychee.extend({}, data);
 
 
-		this.nearest = null;
-
-		this.properties  = settings.properties;
+		this.properties = {};
 
 
-		settings.texture = _textures[_id++];
 		settings.width   = 32;
 		settings.height  = 32;
-		settings.map     = _config.map;
+		settings.map     = _CONFIG.map;
 		settings.shape   = lychee.app.Entity.SHAPE.rectangle;
-		settings.states  = _config.states;
-		settings.state   = settings.state || _config.state;
+		settings.states  = _CONFIG.states;
+		settings.state   = settings.state || _CONFIG.state;
+		settings.texture = _TEXTURES[_id++];
+
+
+		this.setProperties(settings.properties);
+
+		delete settings.properties;
 
 
 		lychee.app.Sprite.call(this, settings);
@@ -48,6 +53,10 @@ lychee.define('app.entity.Astronaut').includes([
 
 	Class.prototype = {
 
+		/*
+		 * ENTITY API
+		 */
+
 		serialize: function() {
 
 			var data = lychee.app.Sprite.prototype.serialize.call(this);
@@ -55,6 +64,31 @@ lychee.define('app.entity.Astronaut').includes([
 
 
 			return data;
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
+		setProperties: function(properties) {
+
+			properties = properties instanceof Object ? properties : null;
+
+
+			if (properties !== null) {
+
+				this.properties = properties;
+
+
+				return true;
+
+			}
+
+
+			return false;
 
 		}
 

@@ -12,9 +12,12 @@
 	<script src="/projects/cultivator/design/index.js"></script>
 
 	<!-- BOOTSTRAP -->
-	<script src="/lib/lychee/build/html/core.js"></script>
+	<script src="/libraries/lychee/build/html/core.js"></script>
 
 	<style>
+	.ico-download:before { content: "\e083"; }
+	.ico-refresh:before  { content: "\e098"; }
+	.ico-quit:before     { content: "\e07a"; }
 	#tool > article:nth-child(1) {
 		min-width: 320px;
 		max-width: 320px;
@@ -34,7 +37,8 @@
 	<li class="active" onclick="ui.changeState('tool');">Tool</li>
 	<li onclick="ui.changeState('help');">Help</li>
 	<aside>
-		<button class="ico-refresh ico-only" onclick="window.location.href='./index.html'"></button>
+		<button class="ico-refresh ico-only" title="Refresh" onclick="window.location.href='./index.html'"></button>
+		<button class="ico-quit ico-only" title="Quit" onclick="location.href='../index.html';"></button>
 	</aside>
 </menu>
 
@@ -68,8 +72,8 @@
 						</td>
 					</tr>
 					<tr>
-						<th>Space</th>
-						<td><input type="range" name="space" min="0" max="64" value="0"></td>
+						<th>Spacing</th>
+						<td><input type="range" name="spacing" min="0" max="64" value="0"></td>
 					</tr>
 					<tr>
 						<th>Outline</th>
@@ -122,7 +126,7 @@
 			<pre class="javascript">
 lychee.define('app.entity.Foo').exports(function(lychee, app, global, attachments) {
 
-  var font = attachments['fnt'];
+  var font = attachments["fnt"];
   if (font instanceof Font) {
     console.log('Yay, font available!', font);
   }
@@ -143,7 +147,6 @@ lychee.define('app.entity.Foo').exports(function(lychee, app, global, attachment
 (function(lychee, global) {
 
 	var environment = new lychee.Environment({
-		id:      'font',
 		debug:   false,
 		sandbox: false,
 		build:   'tool.Main',
@@ -156,17 +159,7 @@ lychee.define('app.entity.Foo').exports(function(lychee, app, global, attachment
 	});
 
 
-	lychee.setEnvironment(environment);
-
-	lychee.init(function(sandbox) {
-
-		var lychee = sandbox.lychee;
-		var tool   = sandbox.tool;
-
-		sandbox.MAIN = new tool.Main();
-		sandbox.MAIN.init();
-
-	});
+	lychee.envinit(environment, {});
 
 })(lychee, typeof global !== 'undefined' ? global : this);
 </script>

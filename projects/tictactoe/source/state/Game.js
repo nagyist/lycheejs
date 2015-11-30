@@ -1,17 +1,16 @@
 
 lychee.define('game.state.Game').requires([
 	'lychee.effect.Shake',
-	'lychee.ui.Background',
+	'lychee.app.sprite.Background',
 	'game.entity.Board',
-	'game.ui.Button',
 	'game.ui.Label'
 ]).includes([
 	'lychee.app.State'
 ]).exports(function(lychee, game, global, attachments) {
 
-	var _blob  = attachments["json"].buffer;
-	var _music = attachments["msc"];
-	var _sound = attachments["snd"];
+	var _BLOB  = attachments["json"].buffer;
+	var _MUSIC = attachments["msc"];
+	var _SOUND = attachments["snd"];
 
 
 
@@ -148,7 +147,7 @@ lychee.define('game.state.Game').requires([
 			});
 
 
-			this.jukebox.play(_sound);
+			this.jukebox.play(_SOUND);
 
 			this.loop.setTimeout(700, function() {
 
@@ -169,7 +168,7 @@ lychee.define('game.state.Game').requires([
 
 		var score = this.queryLayer('ui', 'score');
 		if (score !== null) {
-			score.setLabel(this.__scores.x + ' : ' + this.__scores.o);
+			score.setValue(this.__scores.x + ' : ' + this.__scores.o);
 		}
 
 	};
@@ -189,7 +188,7 @@ lychee.define('game.state.Game').requires([
 		this.__scores = { x: 0, o: 0 };
 
 
-		this.deserialize(_blob);
+		this.deserialize(_BLOB);
 
 
 
@@ -211,8 +210,9 @@ lychee.define('game.state.Game').requires([
 
 
 					entity = this.queryLayer('background', 'background');
-					entity.width  = width;
-					entity.height = height;
+					entity.width     = width;
+					entity.height    = height;
+					entity.__isDirty = true;
 
 				}
 
@@ -248,10 +248,6 @@ lychee.define('game.state.Game').requires([
 				entity.bind('#touch', _on_touch, this);
 			}.bind(this));
 
-			this.queryLayer('ui', 'back').bind('touch', function() {
-				this.main.changeState('menu');
-			}, this);
-
 		},
 
 
@@ -260,15 +256,9 @@ lychee.define('game.state.Game').requires([
 		 * CUSTOM API
 		 */
 
-		update: function(clock, delta) {
+		enter: function(oncomplete) {
 
-			lychee.app.State.prototype.update.call(this, clock, delta);
-
-		},
-
-		enter: function() {
-
-			lychee.app.State.prototype.enter.call(this);
+			lychee.app.State.prototype.enter.call(this, oncomplete);
 
 
 			this.__player   = 'x';
@@ -276,7 +266,7 @@ lychee.define('game.state.Game').requires([
 			this.__scores.o = 0;
 
 
-			this.jukebox.play(_music);
+			this.jukebox.play(_MUSIC);
 
 
 			var board = this.queryLayer('ui', 'board');
@@ -288,17 +278,17 @@ lychee.define('game.state.Game').requires([
 
 			var score = this.queryLayer('ui', 'score');
 			if (score !== null) {
-				score.setLabel('0 : 0');
+				score.setValue('0 : 0');
 			}
 
 		},
 
-		leave: function() {
+		leave: function(oncomplete) {
 
-			lychee.app.State.prototype.leave.call(this);
+			this.jukebox.stop(_MUSIC);
 
 
-			this.jukebox.stop(_music);
+			lychee.app.State.prototype.leave.call(this, oncomplete);
 
 		}
 
