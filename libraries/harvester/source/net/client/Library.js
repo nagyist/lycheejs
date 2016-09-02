@@ -3,8 +3,8 @@ lychee.define('harvester.net.client.Library').includes([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CACHE   = {};
-	var _Service = lychee.import('lychee.net.Service');
+	const _Service = lychee.import('lychee.net.Service');
+	const _CACHE   = {};
 
 
 
@@ -12,7 +12,7 @@ lychee.define('harvester.net.client.Library').includes([
 	 * HELPERS
 	 */
 
-	var _on_sync = function(data) {
+	const _on_sync = function(data) {
 
 		if (data instanceof Array) {
 
@@ -30,7 +30,7 @@ lychee.define('harvester.net.client.Library').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(client) {
+	let Composite = function(client) {
 
 		_Service.call(this, 'library', client, _Service.TYPE.client);
 
@@ -40,7 +40,7 @@ lychee.define('harvester.net.client.Library').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -48,7 +48,7 @@ lychee.define('harvester.net.client.Library').includes([
 
 		serialize: function() {
 
-			var data = _Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.client.Library';
 
 
@@ -64,7 +64,7 @@ lychee.define('harvester.net.client.Library').includes([
 
 		sync: function(data) {
 
-			var tunnel = this.tunnel;
+			let tunnel = this.tunnel;
 			if (tunnel !== null) {
 
 				tunnel.send({}, {
@@ -79,7 +79,7 @@ lychee.define('harvester.net.client.Library').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

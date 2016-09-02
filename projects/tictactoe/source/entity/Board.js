@@ -5,10 +5,10 @@ lychee.define('game.entity.Board').requires([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Layer   = lychee.import('lychee.ui.Layer');
-	var _Tile    = lychee.import('game.entity.Tile');
-	var _TEXTURE = attachments["png"];
-	var _CONFIG  = attachments["json"].buffer;
+	const _Layer   = lychee.import('lychee.ui.Layer');
+	const _Tile    = lychee.import('game.entity.Tile');
+	const _TEXTURE = attachments["png"];
+	const _CONFIG  = attachments["json"].buffer;
 
 
 
@@ -16,9 +16,9 @@ lychee.define('game.entity.Board').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.__statemap = _CONFIG.map['default'][0];
@@ -35,13 +35,13 @@ lychee.define('game.entity.Board').requires([
 
 		settings.entities = [];
 
-		for (var e = 0; e < 9; e++) {
+		for (let e = 0; e < 9; e++) {
 
-			var x = (e % 3) + 1;
-			var y = Math.floor(e / 3) + 1;
+			let x = (e % 3) + 1;
+			let y = Math.floor(e / 3) + 1;
 
-			var posx = -96 + (x * 64 + 16 * x - 64);
-			var posy = -96 + (y * 64 + 16 * y - 64);
+			let posx = -96 + (x * 64 + 16 * x - 64);
+			let posy = -96 + (y * 64 + 16 * y - 64);
 
 			settings.entities.push(new _Tile({
 				x:        x,
@@ -62,17 +62,15 @@ lychee.define('game.entity.Board').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
-
 		serialize: function() {
 
-			var data = _Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Board';
 
 
@@ -85,7 +83,7 @@ lychee.define('game.entity.Board').requires([
 			if (this.visible === false) return;
 
 
-			var alpha = this.alpha;
+			let alpha = this.alpha;
 
 
 			if (alpha !== 1) {
@@ -93,16 +91,16 @@ lychee.define('game.entity.Board').requires([
 			}
 
 
-			var texture = _TEXTURE || null;
+			let texture = _TEXTURE || null;
 			if (texture !== null) {
 
-				var map = this.__statemap || null;
+				let map = this.__statemap || null;
 				if (map !== null) {
 
-					var position = this.position;
+					let position = this.position;
 
-					var x1 = position.x + offsetX - this.width  / 2;
-					var y1 = position.y + offsetY - this.height / 2;
+					let x1 = position.x + offsetX - this.width  / 2;
+					let y1 = position.y + offsetY - this.height / 2;
 
 
 					renderer.drawSprite(
@@ -129,7 +127,7 @@ lychee.define('game.entity.Board').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

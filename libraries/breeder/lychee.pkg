@@ -50,7 +50,12 @@
 				"js"
 			],
 			"Template": [
-				"js"
+				"dist.tpl",
+				"harvester.tpl",
+				"index.tpl",
+				"js",
+				"json",
+				"main.tpl"
 			]
 		}
 	}

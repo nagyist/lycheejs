@@ -3,9 +3,9 @@ lychee.define('game.entity.Ball').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CONFIG  = attachments["json"].buffer;
-	var _TEXTURE = attachments["png"];
-	var _Sprite  = lychee.import('lychee.app.Sprite');
+	const _Sprite  = lychee.import('lychee.app.Sprite');
+	const _CONFIG  = attachments["json"].buffer;
+	const _TEXTURE = attachments["png"];
 
 
 
@@ -13,9 +13,9 @@ lychee.define('game.entity.Ball').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, _CONFIG, data);
+		let settings = Object.assign({}, _CONFIG, data);
 
 
 		settings.texture = _TEXTURE;
@@ -28,7 +28,7 @@ lychee.define('game.entity.Ball').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -36,7 +36,7 @@ lychee.define('game.entity.Ball').includes([
 
 		serialize: function() {
 
-			var data = _Sprite.prototype.serialize.call(this);
+			let data = _Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Ball';
 
 
@@ -47,6 +47,6 @@ lychee.define('game.entity.Ball').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

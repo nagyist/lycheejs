@@ -3,8 +3,8 @@ lychee.define('fertilizer.template.html-nwjs.Library').includes([
 	'fertilizer.Template'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Template = lychee.import('fertilizer.Template');
-	var _TEMPLATE = attachments["tpl"];
+	const _Template = lychee.import('fertilizer.Template');
+	const _TEMPLATE = attachments["tpl"];
 
 
 
@@ -12,7 +12,7 @@ lychee.define('fertilizer.template.html-nwjs.Library').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
 		_Template.call(this, data);
 
@@ -32,16 +32,16 @@ lychee.define('fertilizer.template.html-nwjs.Library').includes([
 
 		this.bind('build', function(oncomplete) {
 
-			var env   = this.environment;
-			var stash = this.stash;
+			let env   = this.environment;
+			let stash = this.stash;
 
 			if (env !== null && stash !== null) {
 
 				console.log('fertilizer: BUILD ' + env.id);
 
 
-				var sandbox = this.sandbox;
-				var index   = this.__index;
+				let sandbox = this.sandbox;
+				let index   = this.__index;
 
 
 				index.buffer = index.buffer.replaceObject({
@@ -71,15 +71,17 @@ lychee.define('fertilizer.template.html-nwjs.Library').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
-			var data = _Template.prototype.serialize.call(this);
+			let data = _Template.prototype.serialize.call(this);
 			data['constructor'] = 'fertilizer.template.html-nwjs.Library';
 
 
@@ -90,7 +92,7 @@ lychee.define('fertilizer.template.html-nwjs.Library').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -15,46 +15,62 @@ lychee.define('lychee.app.Main').requires([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Client   = lychee.import('lychee.net.Client');
+	const _Emitter  = lychee.import('lychee.event.Emitter');
+	const _Flow     = lychee.import('lychee.event.Flow');
+	const _Input    = lychee.import('lychee.Input');
+	const _Jukebox  = lychee.import('lychee.app.Jukebox');
+	const _Loop     = lychee.import('lychee.app.Loop');
+	const _Renderer = lychee.import('lychee.Renderer');
+	const _Server   = lychee.import('lychee.net.Server');
+	const _Stash    = lychee.import('lychee.Stash');
+	const _State    = lychee.import('lychee.app.State');
+	const _Storage  = lychee.import('lychee.Storage');
+	const _Viewport = lychee.import('lychee.Viewport');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _api_origin = '';
+	const _API_ORIGIN = (function(location) {
 
-	(function(location) {
+		let hostname = location.hostname || '';
+		let origin   = location.origin   || '';
+		let proto    = origin.split(':')[0];
 
-		var hostname = location.hostname || '';
-		var origin   = location.origin   || '';
-		var proto    = origin.split(':')[0];
+		if (/app|file|chrome-extension/g.test(proto)) {
 
-		if (proto.match(/app|file/g)) {
-
-			_api_origin = 'http://harvester.artificial.engineering:4848';
+			return 'http://harvester.artificial.engineering:4848';
 
 		} else if (hostname === 'localhost') {
 
-			_api_origin = 'http://localhost:4848';
+			return 'http://localhost:4848';
 
-		} else if (proto.match(/http|https/g)) {
+		} else if (/http|https/g.test(proto)) {
 
-			_api_origin = location.origin + ':4848';
+			return location.origin + ':4848';
+
+		} else {
+
+			return '';
 
 		}
 
 	})(global.location || {});
 
-
-	var _load_api = function(url, callback, scope) {
+	const _load_api = function(url, callback, scope) {
 
 		url = typeof url === 'string' ? url : '/api/server/connect?identifier=boilerplate';
 
 
 		if (/^http(s)\:\/\//g.test(url) === false) {
-			url = _api_origin + url;
+			url = _API_ORIGIN + url;
 		}
 
 
-		var config = new Config(url);
+		let config = new Config(url);
 
 		config.onload = function(result) {
 			callback.call(scope, result === true ? this.buffer : null);
@@ -64,59 +80,59 @@ lychee.define('lychee.app.Main').requires([
 
 	};
 
-	var _initialize = function() {
+	const _initialize = function() {
 
-		var settings = this.settings;
+		let settings = this.settings;
 
 		if (settings.client !== null) {
-			this.client = new lychee.net.Client(settings.client);
+			this.client = new _Client(settings.client);
 			this.client.connect();
 		}
 
 		if (settings.server !== null) {
-			this.server = new lychee.net.Server(settings.server);
+			this.server = new _Server(settings.server);
 			this.server.connect();
 		}
 
 		if (settings.input !== null) {
-			this.input = new lychee.Input(settings.input);
+			this.input = new _Input(settings.input);
 		}
 
 		if (settings.jukebox !== null) {
-			this.jukebox = new lychee.app.Jukebox(settings.jukebox);
+			this.jukebox = new _Jukebox(settings.jukebox);
 		}
 
 		if (settings.loop !== null) {
 
-			this.loop = new lychee.app.Loop(settings.loop);
+			this.loop = new _Loop(settings.loop);
 			this.loop.bind('render', _on_render, this);
 			this.loop.bind('update', _on_update, this);
 
 		}
 
 		if (settings.renderer !== null) {
-			this.renderer = new lychee.Renderer(settings.renderer);
+			this.renderer = new _Renderer(settings.renderer);
 		}
 
 		if (settings.stash !== null) {
 
-			this.stash = new lychee.Stash(settings.stash);
+			this.stash = new _Stash(settings.stash);
 			this.stash.bind('sync', function(data) {
 
-				var client = this.client;
+				let client = this.client;
 				if (client !== null) {
 
-					var service = client.getService('stash');
+					let service = client.getService('stash');
 					if (service !== null) {
 						service.sync(data);
 					}
 
 				}
 
-				var server = this.server;
+				let server = this.server;
 				if (server !== null) {
 
-					var service = server.getService('stash');
+					let service = server.getService('stash');
 					if (service !== null) {
 						service.sync(data);
 					}
@@ -129,23 +145,23 @@ lychee.define('lychee.app.Main').requires([
 
 		if (settings.storage !== null) {
 
-			this.storage = new lychee.Storage(settings.storage);
+			this.storage = new _Storage(settings.storage);
 			this.storage.bind('sync', function(data) {
 
-				var client = this.client;
+				let client = this.client;
 				if (client !== null) {
 
-					var service = client.getService('storage');
+					let service = client.getService('storage');
 					if (service !== null) {
 						service.sync(data);
 					}
 
 				}
 
-				var server = this.server;
+				let server = this.server;
 				if (server !== null) {
 
-					var service = server.getService('storage');
+					let service = server.getService('storage');
 					if (service !== null) {
 						service.sync(data);
 					}
@@ -158,7 +174,7 @@ lychee.define('lychee.app.Main').requires([
 
 		if (settings.viewport !== null) {
 
-			this.viewport = new lychee.Viewport();
+			this.viewport = new _Viewport();
 			this.viewport.bind('reshape', _on_reshape, this);
 			this.viewport.bind('hide',    _on_hide,    this);
 			this.viewport.bind('show',    _on_show,    this);
@@ -169,16 +185,16 @@ lychee.define('lychee.app.Main').requires([
 
 	};
 
-	var _on_hide = function() {
+	const _on_hide = function() {
 
-		var loop = this.loop;
+		let loop = this.loop;
 		if (loop !== null) {
 			loop.pause();
 		}
 
 	};
 
-	var _on_render = function(clock, delta) {
+	const _on_render = function(clock, delta) {
 
 		if (this.state !== null) {
 			this.state.render(clock, delta);
@@ -186,12 +202,12 @@ lychee.define('lychee.app.Main').requires([
 
 	};
 
-	var _on_reshape = function(orientation, rotation, width, height) {
+	const _on_reshape = function(orientation, rotation, width, height) {
 
-		var renderer = this.renderer;
+		let renderer = this.renderer;
 		if (renderer !== null) {
 
-			var settings = this.settings;
+			let settings = this.settings;
 			if (settings.renderer !== null) {
 				renderer.setWidth(settings.renderer.width);
 				renderer.setHeight(settings.renderer.height);
@@ -201,16 +217,16 @@ lychee.define('lychee.app.Main').requires([
 
 	};
 
-	var _on_show = function() {
+	const _on_show = function() {
 
-		var loop = this.loop;
+		let loop = this.loop;
 		if (loop !== null) {
 			loop.resume();
 		}
 
 	};
 
-	var _on_update = function(clock, delta) {
+	const _on_update = function(clock, delta) {
 
 		if (this.state !== null) {
 			this.state.update(clock, delta);
@@ -225,7 +241,7 @@ lychee.define('lychee.app.Main').requires([
 	 * and SERIALIZATION CACHE
 	 */
 
-	var _defaults = {
+	let _DEFAULTS = {
 
 		client: null,
 		server: null,
@@ -234,8 +250,9 @@ lychee.define('lychee.app.Main').requires([
 			delay:       0,
 			key:         true,
 			keymodifier: false,
-			touch:       true,
-			swipe:       true
+			scroll:      true,
+			swipe:       true,
+			touch:       true
 		},
 
 		jukebox: {
@@ -258,13 +275,13 @@ lychee.define('lychee.app.Main').requires([
 
 		stash: {
 			id:   'app',
-			type: lychee.Stash.TYPE.persistent
+			type: _Stash.TYPE.persistent
 		},
 
 		storage: {
 			id:    'app',
 			model: {},
-			type:  lychee.Storage.TYPE.persistent
+			type:  _Storage.TYPE.persistent
 		},
 
 		viewport: {
@@ -279,9 +296,9 @@ lychee.define('lychee.app.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(settings) {
+	let Composite = function(settings) {
 
-		this.settings = lychee.assignunlink({}, _defaults, settings);
+		this.settings = lychee.assignunlink({}, _DEFAULTS, settings);
 		this.defaults = lychee.assignunlink({}, this.settings);
 
 		this.client   = null;
@@ -299,12 +316,12 @@ lychee.define('lychee.app.Main').requires([
 		this.__states = {};
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -326,11 +343,11 @@ lychee.define('lychee.app.Main').requires([
 
 			if (blob.states instanceof Object) {
 
-				for (var id in blob.states) {
+				for (let id in blob.states) {
 
-					var stateblob = blob.states[id];
+					let stateblob = blob.states[id];
 
-					for (var a = 0, al = stateblob.arguments.length; a < al; a++) {
+					for (let a = 0, al = stateblob.arguments.length; a < al; a++) {
 						if (stateblob.arguments[a] === '#MAIN') {
 							stateblob.arguments[a] = this;
 						}
@@ -346,11 +363,11 @@ lychee.define('lychee.app.Main').requires([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.app.Main';
 
-			var settings = lychee.assignunlink({}, this.settings);
-			var blob     = data['blob'] || {};
+			let settings = lychee.assignunlink({}, this.settings);
+			let blob     = data['blob'] || {};
 
 
 			if (this.client !== null)   blob.client   = lychee.serialize(this.client);
@@ -369,7 +386,7 @@ lychee.define('lychee.app.Main').requires([
 
 				blob.states = {};
 
-				for (var id in this.__states) {
+				for (let id in this.__states) {
 					blob.states[id] = lychee.serialize(this.__states[id]);
 				}
 
@@ -392,9 +409,9 @@ lychee.define('lychee.app.Main').requires([
 
 		init: function() {
 
-			var flow       = new lychee.event.Flow();
-			var client_api = this.settings.client;
-			var server_api = this.settings.server;
+			let flow       = new _Flow();
+			let client_api = this.settings.client;
+			let server_api = this.settings.server;
 
 
 			flow.then('load-api');
@@ -404,8 +421,8 @@ lychee.define('lychee.app.Main').requires([
 
 			flow.bind('load-api', function(oncomplete) {
 
-				var c = typeof client_api === 'string';
-				var s = typeof server_api === 'string';
+				let c = typeof client_api === 'string';
+				let s = typeof server_api === 'string';
 
 
 				if (c === true && s === true) {
@@ -445,7 +462,7 @@ lychee.define('lychee.app.Main').requires([
 
 			flow.bind('load', function(oncomplete) {
 
-				var result = this.trigger('load', [ oncomplete ]);
+				let result = this.trigger('load', [ oncomplete ]);
 				if (result === false) {
 					oncomplete(true);
 				}
@@ -528,7 +545,7 @@ lychee.define('lychee.app.Main').requires([
 			id = typeof id === 'string' ? id : null;
 
 
-			if (lychee.interfaceof(lychee.app.State, state)) {
+			if (lychee.interfaceof(_State, state)) {
 
 				if (id !== null) {
 
@@ -587,9 +604,9 @@ lychee.define('lychee.app.Main').requires([
 			data = data !== undefined     ? data : null;
 
 
-			var that     = this;
-			var oldstate = this.state;
-			var newstate = this.__states[id] || null;
+			let that     = this;
+			let oldstate = this.state;
+			let newstate = this.__states[id] || null;
 
 
 			if (newstate !== null) {
@@ -630,7 +647,7 @@ lychee.define('lychee.app.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

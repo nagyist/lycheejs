@@ -1,18 +1,39 @@
 
-lychee.define('harvester.mod.Server').requires([
+lychee.define('harvester.mod.Server').tags({
+	platform: 'node'
+}).requires([
 	'harvester.data.Project',
 	'harvester.data.Server'
-]).exports(function(lychee, global, attachments) {
+]).supports(function(lychee, global) {
 
-	var _MIN_PORT      = 49152;
-	var _MAX_PORT      = 65534;
-	var _LOG_PROJECT   = null;
-	var _ROOT          = lychee.ROOT.lychee;
+	if (typeof global.require === 'function') {
 
-	var _child_process = require('child_process');
-	var _net           = require('net');
-	var _port          = _MIN_PORT;
-	var _Server        = lychee.import('harvester.data.Server');
+		try {
+
+			global.require('child_process');
+			global.require('net');
+
+			return true;
+
+		} catch(err) {
+
+		}
+
+	}
+
+
+	return false;
+
+}).exports(function(lychee, global, attachments) {
+
+	const _child_process = global.require('child_process');
+	const _net           = global.require('net');
+	const _Server        = lychee.import('harvester.data.Server');
+	const _MIN_PORT      = 49152;
+	let   _CUR_PORT      = _MIN_PORT;
+	const _MAX_PORT      = 65534;
+	let   _LOG_PROJECT   = null;
+	const _ROOT          = lychee.ROOT.lychee;
 
 
 
@@ -20,12 +41,12 @@ lychee.define('harvester.mod.Server').requires([
 	 * HELPERS
 	 */
 
-	var _report_error = function(text) {
+	const _report_error = function(text) {
 
-		var lines   = text.split('\n');
-		var line    = null;
-		var file    = null;
-		var message = null;
+		let lines   = text.split('\n');
+		let line    = null;
+		let file    = null;
+		let message = null;
 
 
 		if (lines.length > 0) {
@@ -40,8 +61,8 @@ lychee.define('harvester.mod.Server').requires([
 
 			lines.forEach(function(line) {
 
-				var err = line.substr(0, line.indexOf(':'));
-				if (err.match(/Error/g)) {
+				let err = line.substr(0, line.indexOf(':'));
+				if (/Error/g.test(err)) {
 					message = line.trim();
 				}
 
@@ -57,7 +78,7 @@ lychee.define('harvester.mod.Server').requires([
 
 	};
 
-	var _scan_port = function(callback, scope) {
+	const _scan_port = function(callback, scope) {
 
 		callback = callback instanceof Function ? callback : null;
 		scope    = scope !== undefined          ? scope    : this;
@@ -65,9 +86,9 @@ lychee.define('harvester.mod.Server').requires([
 
 		if (callback !== null) {
 
-			var socket = new _net.Socket();
-			var status = null;
-			var port   = _port++;
+			let socket = new _net.Socket();
+			let status = null;
+			let port   = _CUR_PORT++;
 
 
 			socket.setTimeout(100);
@@ -113,19 +134,18 @@ lychee.define('harvester.mod.Server').requires([
 
 	};
 
-	var _serve = function(project, host, port) {
+	const _serve = function(project, host, port) {
 
 		console.info('harvester.mod.Server: BOOTUP ("' + project + ' | ' + host + ':' + port + '")');
 
 
-		var server = null;
+		let server = null;
 
 		try {
 
 			server = _child_process.execFile(_ROOT + '/bin/helper.sh', [
 				'env:node',
 				_ROOT + project + '/harvester.js',
-				_ROOT,
 				port,
 				host
 			], {
@@ -171,7 +191,16 @@ lychee.define('harvester.mod.Server').requires([
 					}
 
 					lines.forEach(function(message) {
-						console.log('                      ' + message.trim());
+
+						let type = message.trim().substr(0, 3);
+						let line = message.trim().substr(3).trim();
+
+						if (type === '(L)') {
+							console.log('                      ' + line);
+						} else {
+							console.log('                      ' + message.trim());
+						}
+
 					});
 
 				}
@@ -212,7 +241,20 @@ lychee.define('harvester.mod.Server').requires([
 					}
 
 					lines.forEach(function(message) {
-						console.error('                      ' + message.trim());
+
+						let type = message.trim().substr(0, 3);
+						let line = message.trim().substr(3).trim();
+
+						if (type === '(I)') {
+							console.info('                      ' + line);
+						} else if (type === '(W)') {
+							console.warn('                      ' + line);
+						} else if (type === '(E)') {
+							console.error('                      ' + line);
+						} else {
+							console.error('                      ' + message.trim());
+						}
+
 					});
 
 				}
@@ -254,7 +296,7 @@ lychee.define('harvester.mod.Server').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * ENTITY API
@@ -281,7 +323,7 @@ lychee.define('harvester.mod.Server').requires([
 
 			if (project.identifier.indexOf('__') === -1 && project.server === null) {
 
-				var info = project.filesystem.info('/harvester.js');
+				let info = project.filesystem.info('/harvester.js');
 				if (info !== null && info.type === 'file') {
 					return true;
 				}
@@ -297,14 +339,14 @@ lychee.define('harvester.mod.Server').requires([
 
 			if (project.server === null) {
 
-				var info = project.filesystem.info('/harvester.js');
+				let info = project.filesystem.info('/harvester.js');
 				if (info !== null && info.type === 'file') {
 
 					_scan_port(function(port) {
 
 						if (port >= _MIN_PORT && port <= _MAX_PORT) {
 
-							var server = _serve(project.identifier, null, port);
+							let server = _serve(project.identifier, null, port);
 							if (server !== null) {
 
 								project.setServer(new _Server({

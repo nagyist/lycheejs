@@ -1,28 +1,33 @@
 
-lychee.define('lychee.net.Service').includes([
+lychee.define('lychee.net.Service').requires([
+	// 'lychee.net.Tunnel' // XXX: Causes circular dependency
+]).includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
+
+	const _Emitter  = lychee.import('lychee.event.Emitter');
+	const _SERVICES = [];
+
+
 
 	/*
 	 * HELPERS
 	 */
 
-	var _services = {};
+	const _plug_broadcast = function() {
 
-	var _plug_broadcast = function() {
-
-		var id = this.id;
+		let id = this.id;
 		if (id !== null) {
 
-			var cache = _services[id] || null;
+			let cache = _SERVICES[id] || null;
 			if (cache === null) {
-				cache = _services[id] = [];
+				cache = _SERVICES[id] = [];
 			}
 
 
-			var found = false;
+			let found = false;
 
-			for (var c = 0, cl = cache.length; c < cl; c++) {
+			for (let c = 0, cl = cache.length; c < cl; c++) {
 
 				if (cache[c] === this) {
 					found = true;
@@ -40,18 +45,18 @@ lychee.define('lychee.net.Service').includes([
 
 	};
 
-	var _unplug_broadcast = function() {
+	const _unplug_broadcast = function() {
 
 		this.setMulticast([]);
 
 
-		var id = this.id;
+		let id = this.id;
 		if (id !== null) {
 
-			var cache = _services[id] || null;
+			let cache = _SERVICES[id] || null;
 			if (cache !== null) {
 
-				for (var c = 0, cl = cache.length; c < cl; c++) {
+				for (let c = 0, cl = cache.length; c < cl; c++) {
 
 					if (cache[c] === this) {
 						cache.splice(c, 1);
@@ -72,11 +77,11 @@ lychee.define('lychee.net.Service').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(id, tunnel, type) {
+	let Composite = function(id, tunnel, type) {
 
 		id     = typeof id === 'string'                        ? id     : null;
 		tunnel = lychee.interfaceof(lychee.net.Tunnel, tunnel) ? tunnel : null;
-		type   = lychee.enumof(Class.TYPE, type)               ? type   : null;
+		type   = lychee.enumof(Composite.TYPE, type)           ? type   : null;
 
 
 		this.id     = id;
@@ -103,7 +108,7 @@ lychee.define('lychee.net.Service').includes([
 		}
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 
 
@@ -111,7 +116,7 @@ lychee.define('lychee.net.Service').includes([
 		 * INITIALIZATION
 		 */
 
-		if (this.type === Class.TYPE.remote) {
+		if (this.type === Composite.TYPE.remote) {
 
 			this.bind('plug',   _plug_broadcast,   this);
 			this.bind('unplug', _unplug_broadcast, this);
@@ -121,14 +126,14 @@ lychee.define('lychee.net.Service').includes([
 	};
 
 
-	Class.TYPE = {
+	Composite.TYPE = {
 		// 'default': 0, (deactivated)
 		'client': 1,
 		'remote': 2
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -138,19 +143,19 @@ lychee.define('lychee.net.Service').includes([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.net.Service';
 
-			var id     = null;
-			var tunnel = null;
-			var type   = null;
-			var blob   = (data['blob'] || {});
+			let id     = null;
+			let tunnel = null;
+			let type   = null;
+			let blob   = (data['blob'] || {});
 
 
 			if (this.id !== null)   id   = this.id;
 			if (this.type !== null) type = this.type;
 
-			if (this.type === Class.TYPE.client) {
+			if (this.type === Composite.TYPE.client) {
 				tunnel = '#MAIN.client';
 			} else {
 				tunnel = null;
@@ -184,8 +189,8 @@ lychee.define('lychee.net.Service').includes([
 			}
 
 
-			var type = this.type;
-			if (type === Class.TYPE.client) {
+			let type = this.type;
+			if (type === Composite.TYPE.client) {
 
 				if (service === null) {
 
@@ -211,13 +216,13 @@ lychee.define('lychee.net.Service').includes([
 
 				}
 
-			} else if (type === Class.TYPE.remote) {
+			} else if (type === Composite.TYPE.remote) {
 
 				if (data.service !== null) {
 
-					for (var m = 0, ml = this.__multicast.length; m < ml; m++) {
+					for (let m = 0, ml = this.__multicast.length; m < ml; m++) {
 
-						var tunnel = this.__multicast[m];
+						let tunnel = this.__multicast[m];
 						if (tunnel !== this.tunnel) {
 
 							data.data.tid = this.tunnel.host + ':' + this.tunnel.port;
@@ -253,8 +258,8 @@ lychee.define('lychee.net.Service').includes([
 			}
 
 
-			var type = this.type;
-			if (type === Class.TYPE.client) {
+			let type = this.type;
+			if (type === Composite.TYPE.client) {
 
 				if (service === null) {
 
@@ -280,16 +285,16 @@ lychee.define('lychee.net.Service').includes([
 
 				}
 
-			} else if (type === Class.TYPE.remote) {
+			} else if (type === Composite.TYPE.remote) {
 
 				if (data.service !== null) {
 
-					var broadcast = _services[this.id] || null;
+					let broadcast = _SERVICES[this.id] || null;
 					if (broadcast !== null) {
 
-						for (var b = 0, bl = broadcast.length; b < bl; b++) {
+						for (let b = 0, bl = broadcast.length; b < bl; b++) {
 
-							var tunnel = broadcast[b].tunnel;
+							let tunnel = broadcast[b].tunnel;
 							if (tunnel !== this.tunnel) {
 
 								data.data.tid = this.tunnel.host + ':' + this.tunnel.port;
@@ -324,7 +329,7 @@ lychee.define('lychee.net.Service').includes([
 
 			if (message !== null) {
 
-				var tunnel = this.tunnel;
+				let tunnel = this.tunnel;
 				if (tunnel !== null) {
 
 					tunnel.send({
@@ -349,7 +354,7 @@ lychee.define('lychee.net.Service').includes([
 
 			if (message !== null) {
 
-				var tunnel = this.tunnel;
+				let tunnel = this.tunnel;
 				if (tunnel !== null) {
 
 					tunnel.send({
@@ -368,21 +373,14 @@ lychee.define('lychee.net.Service').includes([
 
 		setMulticast: function(multicast) {
 
-			if (multicast instanceof Array) {
+			multicast = multicast instanceof Array ? multicast : null;
 
-				var valid = true;
-				var type  = this.type;
 
-				for (var m = 0, ml = multicast.length; m < ml; m++) {
+			if (multicast !== null) {
 
-					if (lychee.interfaceof(lychee.net.Tunnel, multicast[m]) === false) {
-						valid = false;
-						break;
-					}
-
-				}
-
-				this.__multicast = multicast;
+				this.__multicast = multicast.filter(function(instance) {
+					return lychee.interfaceof(lychee.net.Tunnel, instance);
+				});
 
 				return true;
 
@@ -396,7 +394,7 @@ lychee.define('lychee.net.Service').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

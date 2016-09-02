@@ -5,22 +5,22 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 	 * HELPERS
 	 */
 
-	var _draw_strike = function(x1, y1, x2, y2, color1, color2) {
+	const _draw_strike = function(x1, y1, x2, y2, color1, color2) {
 
-		var dx = x2 - x1;
-		var dy = y2 - y1;
+		let dx = x2 - x1;
+		let dy = y2 - y1;
 
-		var distance = Math.sqrt(dx * dx + dy * dy);
-		var width    = distance / 10;
+		let distance = Math.sqrt(dx * dx + dy * dy);
+		let width    = distance / 10;
 
-		var x = x1;
-		var y = y1;
+		let x = x1;
+		let y = y1;
 
-		for (var s = 0; s <= 10; s++) {
+		for (let s = 0; s <= 10; s++) {
 
-			var magnitude = (width * s) / distance;
-			var x3        = magnitude * x2 + (1 - magnitude) * x1;
-			var y3        = magnitude * y2 + (1 - magnitude) * y1;
+			let magnitude = (width * s) / distance;
+			let x3        = magnitude * x2 + (1 - magnitude) * x1;
+			let y3        = magnitude * y2 + (1 - magnitude) * y1;
 
 			if (s !== 0 && s !== 10) {
 				x3 += (Math.random() * width) - (width / 2);
@@ -75,9 +75,9 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(settings) {
+	let Composite = function(settings) {
 
-		this.type     = Class.TYPE.easeout;
+		this.type     = Composite.TYPE.easeout;
 		this.delay    = 0;
 		this.duration = 250;
 		this.position = { x: null, y: null };
@@ -90,10 +90,10 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 
 		// No data validation garbage allowed for effects
 
-		var type     = lychee.enumof(Class.TYPE, settings.type) ? settings.type           : null;
-		var delay    = typeof settings.delay === 'number'       ? (settings.delay | 0)    : null;
-		var duration = typeof settings.duration === 'number'    ? (settings.duration | 0) : null;
-		var position = settings.position instanceof Object      ? settings.position       : null;
+		let type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : null;
+		let delay    = typeof settings.delay === 'number'       ? (settings.delay | 0)    : null;
+		let duration = typeof settings.duration === 'number'    ? (settings.duration | 0) : null;
+		let position = settings.position instanceof Object      ? settings.position       : null;
 
 		if (type !== null) {
 			this.type = type;
@@ -115,7 +115,7 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 	};
 
 
-	Class.TYPE = {
+	Composite.TYPE = {
 		linear:        0,
 		easein:        1,
 		easeout:       2,
@@ -124,7 +124,7 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -134,12 +134,12 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
-			if (this.type !== Class.TYPE.easeout) settings.type     = this.type;
-			if (this.delay !== 0)                 settings.delay    = this.delay;
-			if (this.duration !== 250)            settings.duration = this.duration;
+			if (this.type !== Composite.TYPE.easeout) settings.type     = this.type;
+			if (this.delay !== 0)                     settings.delay    = this.delay;
+			if (this.duration !== 250)                settings.duration = this.duration;
 
 
 			if (this.position.x !== null || this.position.y !== null || this.position.z !== null) {
@@ -161,16 +161,16 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var t = (this.__clock - this.__start) / this.duration;
+			let t = (this.__clock - this.__start) / this.duration;
 			if (t > 0 && t <= 1) {
 
-				var origin   = this.__origin;
-				var position = this.position;
+				let origin   = this.__origin;
+				let position = this.position;
 
-				var x1 = origin.x   + offsetX;
-				var y1 = origin.y   + offsetY;
-				var x2 = position.x + offsetX;
-				var y2 = position.y + offsetY;
+				let x1 = origin.x   + offsetX;
+				let y1 = origin.y   + offsetY;
+				let x2 = position.x + offsetX;
+				let y2 = position.y + offsetY;
 
 
 				renderer.setAlpha(this.__alpha);
@@ -213,7 +213,7 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 			}
 
 
-			var t = (clock - this.__start) / this.duration;
+			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 
 				return true;
@@ -233,37 +233,37 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 			}
 
 
-			var origin = this.__origin.alpha;
-			var alpha  = 0;
+			let origin = this.__origin.alpha;
+			let alpha  = 0;
 
-			var a      = origin;
+			let a      = origin;
 
 			if (t <= 1) {
 
-				var f  = 0;
-				var da = alpha - origin;
+				let f  = 0;
+				let da = alpha - origin;
 
 
-				var type = this.type;
-				if (type === Class.TYPE.linear) {
+				let type = this.type;
+				if (type === Composite.TYPE.linear) {
 
 					a += t * da;
 
-				} else if (type === Class.TYPE.easein) {
+				} else if (type === Composite.TYPE.easein) {
 
 					f = 1 * Math.pow(t, 3);
 
 					a += f * da;
 
-				} else if (type === Class.TYPE.easeout) {
+				} else if (type === Composite.TYPE.easeout) {
 
 					f = Math.pow(t - 1, 3) + 1;
 
 					a += f * da;
 
-				} else if (type === Class.TYPE.bounceeasein) {
+				} else if (type === Composite.TYPE.bounceeasein) {
 
-					var k = 1 - t;
+					let k = 1 - t;
 
 					if ((k /= 1) < ( 1 / 2.75 )) {
 						f = 1 * ( 7.5625 * Math.pow(k, 2) );
@@ -277,7 +277,7 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 
 					a += (1 - f) * da;
 
-				} else if (type === Class.TYPE.bounceeaseout) {
+				} else if (type === Composite.TYPE.bounceeaseout) {
 
 					if ((t /= 1) < ( 1 / 2.75 )) {
 						f = 1 * ( 7.5625 * Math.pow(t, 2) );
@@ -312,7 +312,7 @@ lychee.define('game.effect.Lightning').exports(function(lychee, global, attachme
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

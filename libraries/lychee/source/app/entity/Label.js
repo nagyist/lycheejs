@@ -3,7 +3,8 @@ lychee.define('lychee.app.entity.Label').includes([
 	'lychee.app.Entity'
 ]).exports(function(lychee, global, attachments) {
 
-	var _FONT = attachments["fnt"];
+	const _Entity = lychee.import('lychee.app.Entity');
+	const _FONT   = attachments["fnt"];
 
 
 
@@ -11,9 +12,9 @@ lychee.define('lychee.app.entity.Label').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.font  = _FONT;
@@ -29,17 +30,17 @@ lychee.define('lychee.app.entity.Label').includes([
 
 		settings.width  = this.width;
 		settings.height = this.height;
-		settings.shape  = lychee.app.Entity.SHAPE.rectangle;
+		settings.shape  = _Entity.SHAPE.rectangle;
 
 
-		lychee.app.Entity.call(this, settings);
+		_Entity.call(this, settings);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -47,7 +48,7 @@ lychee.define('lychee.app.entity.Label').includes([
 
 		deserialize: function(blob) {
 
-			var font = lychee.deserialize(blob.font);
+			let font = lychee.deserialize(blob.font);
 			if (font !== null) {
 				this.setFont(font);
 			}
@@ -56,11 +57,11 @@ lychee.define('lychee.app.entity.Label').includes([
 
 		serialize: function() {
 
-			var data = lychee.app.Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.app.entity.Label';
 
-			var settings = data['arguments'][0];
-			var blob     = (data['blob'] || {});
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
 
 
 			if (this.value !== '') settings.value = this.value;
@@ -78,18 +79,15 @@ lychee.define('lychee.app.entity.Label').includes([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			if (this.visible === false) return;
+			let alpha    = this.alpha;
+			let position = this.position;
+
+			let x = position.x + offsetX;
+			let y = position.y + offsetY;
 
 
-			var alpha    = this.alpha;
-			var position = this.position;
-
-			var x = position.x + offsetX;
-			var y = position.y + offsetY;
-
-
-			var font  = this.font;
-			var value = this.value;
+			let font  = this.font;
+			let value = this.value;
 
 
 			if (alpha !== 1) {
@@ -152,10 +150,10 @@ lychee.define('lychee.app.entity.Label').includes([
 
 			if (value !== null) {
 
-				var font = this.font;
+				let font = this.font;
 				if (font !== null) {
 
-					var dim = font.measure(value);
+					let dim = font.measure(value);
 
 					this.width  = dim.realwidth;
 					this.height = dim.realheight;
@@ -177,7 +175,7 @@ lychee.define('lychee.app.entity.Label').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

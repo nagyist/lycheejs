@@ -36,6 +36,14 @@ elif [ "$OS" == "linux" ]; then
 	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
+elif [ "$OS" == "freebsd" ] || [ "$OS" == "netbsd" ]; then
+
+	# XXX: BSD requires Linux binary compatibility
+
+	OS="bsd";
+	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
+
 fi;
 
 if [ ! -f $LYCHEEJS_NODE ]; then
@@ -52,31 +60,8 @@ if [ ! -f "./libraries/lychee/build/node/core.js" ]; then
 fi;
 
 
+cd $LYCHEEJS_ROOT;
+$LYCHEEJS_NODE ./bin/fertilizer.js "$1" "$2" "$3" "$4";
 
-if [ -d "$LYCHEEJS_ROOT/$2" ]; then
-
-	SANDBOX_FLAG="";
-	if [ "$3" == "--sandbox" ] || [ "$4" == "--sandbox" ]; then
-		SANDBOX_FLAG="--sandbox";
-	fi;
-
-	DEBUG_FLAG="";
-	if [ "$3" == "--debug" ] || [ "$4" == "--debug" ]; then
-		DEBUG_FLAG="--debug";
-	fi;
-
-
-	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_NODE ./bin/fertilizer.js "$1" "$2" "$SANDBOX_FLAG" "$DEBUG_FLAG";
-
-	exit $?;
-
-else
-
-	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_NODE ./bin/fertilizer.js help;
-
-	exit 1;
-
-fi;
+exit $?;
 

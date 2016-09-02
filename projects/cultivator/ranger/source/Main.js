@@ -8,10 +8,10 @@ lychee.define('app.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee = lychee.import('lychee');
-	var _app    = lychee.import('app');
-	var _Client = lychee.import('harvester.net.Client');
-	var _Main   = lychee.import('lychee.app.Main');
+	const _lychee = lychee.import('lychee');
+	const _app    = lychee.import('app');
+	const _Client = lychee.import('harvester.net.Client');
+	const _Main   = lychee.import('lychee.app.Main');
 
 
 
@@ -19,9 +19,9 @@ lychee.define('app.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 
 			client: {},
 			server: null
@@ -48,7 +48,7 @@ lychee.define('app.Main').requires([
 
 		this.bind('init', function() {
 
-			var apiclient = this.settings.apiclient || null;
+			let apiclient = this.settings.apiclient || null;
 			if (apiclient !== null) {
 				this.client = new _Client(apiclient, this);
 			}
@@ -66,7 +66,7 @@ lychee.define('app.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -76,11 +76,11 @@ lychee.define('app.Main').requires([
 
 		serialize: function() {
 
-			var data = _Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'app.Main';
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			data['arguments'][0] = settings;
@@ -94,6 +94,6 @@ lychee.define('app.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

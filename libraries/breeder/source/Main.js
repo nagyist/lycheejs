@@ -6,10 +6,10 @@ lychee.define('breeder.Main').requires([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee  = lychee.import('lychee');
-	var _breeder = lychee.import('breeder');
-	var _Emitter = lychee.import('lychee.event.Emitter');
-	var _Input   = lychee.import('lychee.Input');
+	const _lychee   = lychee.import('lychee');
+	const _Emitter  = lychee.import('lychee.event.Emitter');
+	const _Input    = lychee.import('lychee.Input');
+	const _Template = lychee.import('breeder.Template');
 
 
 
@@ -17,7 +17,7 @@ lychee.define('breeder.Main').requires([
 	 * FEATURE DETECTION
 	 */
 
-	var _defaults = {
+	let _DEFAULTS = {
 
 		action:  null,
 		project: null,
@@ -31,13 +31,15 @@ lychee.define('breeder.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(settings) {
+	let Composite = function(settings) {
 
-		this.settings = _lychee.assignunlink({}, _defaults, settings);
+		this.settings = _lychee.assignunlink({}, _DEFAULTS, settings);
 		this.defaults = _lychee.assignunlink({}, this.settings);
 
 
 		_Emitter.call(this);
+
+		settings = null;
 
 
 
@@ -47,8 +49,8 @@ lychee.define('breeder.Main').requires([
 
 		this.bind('load', function() {
 
-			var action  = this.settings.action  || null;
-			var project = this.settings.project || null;
+			let action  = this.settings.action  || null;
+			let project = this.settings.project || null;
 
 			if (action !== null && project !== null) {
 
@@ -71,7 +73,7 @@ lychee.define('breeder.Main').requires([
 
 		this.bind('init', function(project, action) {
 
-			var template = new _breeder.Template({
+			let template = new _Template({
 				sandbox:  project,
 				settings: this.settings
 			});
@@ -109,20 +111,22 @@ lychee.define('breeder.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
-			var data = _Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'breeder.Main';
 
 
-			var settings = _lychee.assignunlink({}, this.settings);
-			var blob     = data['blob'] || {};
+			let settings = _lychee.assignunlink({}, this.settings);
+			let blob     = data['blob'] || {};
 
 
 			data['arguments'][0] = settings;
@@ -157,7 +161,7 @@ lychee.define('breeder.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -21,7 +21,7 @@ _get_version () {
 }
 
 USER_WHO=`whoami`;
-USER_LOG=`logname`;
+USER_LOG=`logname 2>/dev/null`;
 
 
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../../"; pwd);

@@ -3,16 +3,20 @@ lychee.define('app.net.client.Ping').includes([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Service = lychee.import('lychee.net.Service');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _on_pong = function(data) {
+	const _on_pong = function(data) {
 
 		data.pung = Date.now();
 
-		var ping = (data.pong - data.ping).toFixed(0);
-		var pong = (data.pung - data.pong).toFixed(0);
+		let ping = (data.pong - data.ping).toFixed(0);
+		let pong = (data.pung - data.pong).toFixed(0);
 
 
 		this.trigger('statistics', [ ping, pong ]);
@@ -25,9 +29,9 @@ lychee.define('app.net.client.Ping').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(client) {
+	let Composite = function(client) {
 
-		lychee.net.Service.call(this, 'ping', client, lychee.net.Service.TYPE.client);
+		_Service.call(this, 'ping', client, _Service.TYPE.client);
 
 
 		this.bind('pong', _on_pong, this);
@@ -35,7 +39,7 @@ lychee.define('app.net.client.Ping').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -45,7 +49,7 @@ lychee.define('app.net.client.Ping').includes([
 
 		serialize: function() {
 
-			var data = lychee.net.Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'app.net.client.Ping';
 			data['arguments']   = [ '#MAIN.client' ];
 
@@ -83,7 +87,7 @@ lychee.define('app.net.client.Ping').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

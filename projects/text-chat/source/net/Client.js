@@ -5,8 +5,8 @@ lychee.define('app.net.Client').requires([
 	'lychee.net.Client'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Chat   = lychee.import('lychee.net.client.Chat');
-	var _Client = lychee.import('lychee.net.Client');
+	const _Chat   = lychee.import('lychee.net.client.Chat');
+	const _Client = lychee.import('lychee.net.Client');
 
 
 
@@ -14,9 +14,9 @@ lychee.define('app.net.Client').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			reconnect: 10000
 		}, data);
 
@@ -53,17 +53,15 @@ lychee.define('app.net.Client').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
-
 		serialize: function() {
 
-			var data = _Client.prototype.serialize.call(this);
+			let data = _Client.prototype.serialize.call(this);
 			data['constructor'] = 'app.net.Client';
 
 
@@ -74,7 +72,7 @@ lychee.define('app.net.Client').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

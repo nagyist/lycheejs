@@ -3,8 +3,8 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 	'fertilizer.Template'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Template  = lychee.import('fertilizer.Template');
-	var _TEMPLATES = {
+	const _Template  = lychee.import('fertilizer.Template');
+	const _TEMPLATES = {
 		core:  null,
 		icon:  attachments["icon.png"],
 		index: attachments["index.tpl"]
@@ -16,7 +16,7 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
 		_Template.call(this, data);
 
@@ -35,10 +35,10 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 
 			console.log('fertilizer: CONFIGURE');
 
-			var that = this;
-			var load = 2;
-			var core = this.stash.read('/libraries/lychee/build/html-webview/core.js');
-			var icon = this.stash.read('./icon.png');
+			let that = this;
+			let load = 2;
+			let core = this.stash.read('/libraries/lychee/build/html-webview/core.js');
+			let icon = this.stash.read('./icon.png');
 
 			if (core !== null) {
 
@@ -85,8 +85,8 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 
 		this.bind('build', function(oncomplete) {
 
-			var env   = this.environment;
-			var stash = this.stash;
+			let env   = this.environment;
+			let stash = this.stash;
 
 
 			if (env !== null && stash !== null) {
@@ -94,10 +94,10 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 				console.log('fertilizer: BUILD ' + env.id);
 
 
-				var sandbox = this.sandbox;
-				var core    = this.__core;
-				var icon    = this.__icon;
-				var index   = this.__index;
+				let sandbox = this.sandbox;
+				let core    = this.__core;
+				let icon    = this.__icon;
+				let index   = this.__index;
 
 
 				index.buffer = index.buffer.replaceObject({
@@ -124,9 +124,9 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 
 		this.bind('package', function(oncomplete) {
 
-			var name    = this.environment.id.split('/')[2];
-			var sandbox = this.sandbox;
-			var shell   = this.shell;
+			let name    = this.environment.id.split('/')[2];
+			let sandbox = this.sandbox;
+			let shell   = this.shell;
 
 			if (name === 'cultivator') {
 				name = this.environment.id.split('/')[3];
@@ -164,15 +164,17 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
-			var data = _Template.prototype.serialize.call(this);
+			let data = _Template.prototype.serialize.call(this);
 			data['constructor'] = 'fertilizer.template.html-webview.Application';
 
 
@@ -183,7 +185,7 @@ lychee.define('fertilizer.template.html-webview.Application').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

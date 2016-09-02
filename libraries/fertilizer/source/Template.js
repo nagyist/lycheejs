@@ -6,8 +6,9 @@ lychee.define('fertilizer.Template').requires([
 	'lychee.event.Flow'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Stash = lychee.import('lychee.Stash');
-	var _Shell = lychee.import('fertilizer.data.Shell');
+	const _Flow  = lychee.import('lychee.event.Flow');
+	const _Stash = lychee.import('lychee.Stash');
+	const _Shell = lychee.import('fertilizer.data.Shell');
 
 
 
@@ -15,9 +16,9 @@ lychee.define('fertilizer.Template').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.environment = null;
@@ -36,14 +37,14 @@ lychee.define('fertilizer.Template').requires([
 		this.setSettings(settings.settings);
 
 
-		lychee.event.Flow.call(this);
+		_Flow.call(this);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -51,9 +52,9 @@ lychee.define('fertilizer.Template').requires([
 
 		deserialize: function(blob) {
 
-			var environment = lychee.deserialize(blob.environment);
-			var shell       = lychee.deserialize(blob.shell);
-			var stash       = lychee.deserialize(blob.stash);
+			let environment = lychee.deserialize(blob.environment);
+			let shell       = lychee.deserialize(blob.shell);
+			let stash       = lychee.deserialize(blob.stash);
 
 			if (environment !== null) {
 				this.setEnvironment(environment);
@@ -71,12 +72,12 @@ lychee.define('fertilizer.Template').requires([
 
 		serialize: function() {
 
-			var data = lychee.event.Flow.prototype.serialize.call(this);
+			let data = _Flow.prototype.serialize.call(this);
 			data['constructor'] = 'fertilizer.Template';
 
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.profile !== null)                 settings.profile  = this.profile;
@@ -179,7 +180,7 @@ lychee.define('fertilizer.Template').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

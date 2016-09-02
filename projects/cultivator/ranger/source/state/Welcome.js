@@ -10,10 +10,10 @@ lychee.define('app.state.Welcome').requires([
 	'lychee.ui.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Helper = lychee.import('lychee.ui.entity.Helper');
-	var _State  = lychee.import('lychee.ui.State');
-	var _BLOB   = attachments["json"].buffer;
-	var _helper = new _Helper();
+	const _Helper = lychee.import('lychee.ui.entity.Helper');
+	const _State  = lychee.import('lychee.ui.State');
+	const _BLOB   = attachments["json"].buffer;
+	const _helper = new _Helper();
 
 
 
@@ -21,7 +21,7 @@ lychee.define('app.state.Welcome').requires([
 	 * HELPERS
 	 */
 
-	var _on_sync = function(projects) {
+	let _on_sync = function(projects) {
 
 		this.queryLayer('ui', 'welcome > dialog').setVisible(false);
 		this.queryLayer('ui', 'welcome > status').setVisible(true);
@@ -29,14 +29,14 @@ lychee.define('app.state.Welcome').requires([
 
 		if (projects instanceof Array) {
 
-			var value = projects.map(function(project) {
+			let value = projects.map(function(project) {
 
-				var control = {
+				let control = {
 					label: [],
 					value: []
 				};
 
-				var web     = {
+				let web     = {
 					label: [],
 					value: []
 				};
@@ -84,7 +84,7 @@ lychee.define('app.state.Welcome').requires([
 
 			if (value.length > 0) {
 
-				var table = this.queryLayer('ui', 'welcome > status > 0');
+				let table = this.queryLayer('ui', 'welcome > status > 0');
 				if (table !== null) {
 					table.setValue(value);
 				}
@@ -101,7 +101,7 @@ lychee.define('app.state.Welcome').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -111,7 +111,7 @@ lychee.define('app.state.Welcome').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -132,7 +132,7 @@ lychee.define('app.state.Welcome').requires([
 
 				if (value === 'boot') {
 
-					var profile = this.queryLayer('ui', 'welcome > dialog > profile');
+					let profile = this.queryLayer('ui', 'welcome > dialog > profile');
 					if (profile !== null) {
 
 						_helper.setValue('boot=' + profile.value);
@@ -151,20 +151,20 @@ lychee.define('app.state.Welcome').requires([
 			}, this);
 
 
-			var viewport = this.viewport;
+			let viewport = this.viewport;
 			if (viewport !== null) {
 
 				entity = this.queryLayer('ui', 'welcome');
 				entity.bind('#relayout', function(blueprint) {
 
-					var element = this.queryLayer('ui', 'welcome > status');
+					let element = this.queryLayer('ui', 'welcome > status');
 					if (element !== null) {
 						element.width  = blueprint.width - 64;
 						element.height = blueprint.height;
 						element.trigger('relayout');
 					}
 
-					var entity = element.getEntity('0');
+					let entity = element.getEntity('0');
 					if (entity !== null && element !== null) {
 						entity.width  = element.width  - 32;
 						entity.height = element.height - 96;
@@ -178,7 +178,7 @@ lychee.define('app.state.Welcome').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'app.state.Welcome';
 
 
@@ -192,10 +192,10 @@ lychee.define('app.state.Welcome').requires([
 			this.queryLayer('ui', 'welcome > status').setVisible(false);
 
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('project');
+				let service = client.getService('project');
 				if (service !== null) {
 					service.bind('sync', _on_sync, this);
 					service.sync();
@@ -210,10 +210,10 @@ lychee.define('app.state.Welcome').requires([
 
 		leave: function(oncomplete) {
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('project');
+				let service = client.getService('project');
 				if (service !== null) {
 					service.unbind('sync', _on_sync, this);
 				}
@@ -228,6 +228,6 @@ lychee.define('app.state.Welcome').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

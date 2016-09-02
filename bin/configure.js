@@ -2,11 +2,18 @@
 
 
 
-(function() {
+(function(global) {
 
-	var _CORE      = '';
-	var _ASSETS    = {};
-	var _BOOTSTRAP = {};
+	const _fs        = require('fs');
+	const _path      = require('path');
+	const _process   = global.process;
+	let   _CORE      = '';
+	const _ASSETS    = {};
+	const _BOOTSTRAP = {};
+	let   _PACKAGE   = null;
+	const _PLATFORM  = _process.argv[2] || null;
+	const _ROOT      = _path.resolve(_process.cwd(), '.');
+
 
 
 	(function() {
@@ -28,9 +35,9 @@
 				}
 
 
-				var values = [];
+				let values = [];
 
-				for (var prop in object) {
+				for (let prop in object) {
 
 					if (Object.prototype.hasOwnProperty.call(object, prop)) {
 						values.push(object[prop]);
@@ -48,21 +55,14 @@
 
 
 
-	var _fs      = require('fs');
-	var _package = null;
-	var _path    = require('path');
-	var _root    = _path.resolve(process.cwd(), '.');
-
-
-
 	/*
 	 * HELPERS
 	 */
 
-	var _is_directory = function(path) {
+	const _is_directory = function(path) {
 
 		try {
-			var stat = _fs.lstatSync(path);
+			let stat = _fs.lstatSync(path);
 			return stat.isDirectory();
 		} catch(e) {
 			return false;
@@ -70,10 +70,10 @@
 
 	};
 
-	var _is_file = function(path) {
+	const _is_file = function(path) {
 
 		try {
-			var stat = _fs.lstatSync(path);
+			let stat = _fs.lstatSync(path);
 			return stat.isFile();
 		} catch(e) {
 			return false;
@@ -81,14 +81,14 @@
 
 	};
 
-	var _create_directory = function(path, mode) {
+	const _create_directory = function(path, mode) {
 
 		if (mode === undefined) {
-			mode = 0777 & (~process.umask());
+			mode = 0777 & (~_process.umask());
 		}
 
 
-		var is_directory = false;
+		let is_directory = false;
 
 		try {
 
@@ -117,7 +117,7 @@
 
 	};
 
-	var _remove_directory = function(path) {
+	const _remove_directory = function(path) {
 
 		path = _path.resolve(path);
 
@@ -140,10 +140,10 @@
 
 	};
 
-	var _get_projects = function(path) {
+	const _get_projects = function(path) {
 
-		var projects      = [];
-		var projects_root = _path.resolve(_root, path);
+		let projects      = [];
+		let projects_root = _path.resolve(_ROOT, path);
 
 		if (_is_directory(projects_root) === true) {
 
@@ -159,7 +159,7 @@
 
 	};
 
-	var _walk_directory = function(files, node, path, attachments) {
+	const _walk_directory = function(files, node, path, attachments) {
 
 		if (node instanceof Array) {
 
@@ -169,13 +169,11 @@
 
 			if (attachments === true) {
 
-				if (node.indexOf('json') !== -1)  files.push(path + '.json');
-				if (node.indexOf('fnt') !== -1)   files.push(path + '.fnt');
-				if (node.indexOf('msc') !== -1)   files.push(path + '.msc');
-				if (node.indexOf('pkg') !== -1)   files.push(path + '.pkg');
-				if (node.indexOf('png') !== -1)   files.push(path + '.png');
-				if (node.indexOf('snd') !== -1)   files.push(path + '.snd');
-				if (node.indexOf('store') !== -1) files.push(path + '.store');
+				node.filter(function(ext) {
+					return ext !== 'js';
+				}).forEach(function(ext) {
+					files.push(path + '.' + ext);
+				});
 
 			}
 
@@ -189,13 +187,13 @@
 
 	};
 
-	var _package_definitions = function(json) {
+	const _package_definitions = function(json) {
 
-		var files = [];
+		let files = [];
 
 		if (json !== null) {
 
-			var root = json.source.files || null;
+			let root = json.source.files || null;
 			if (root !== null) {
 				_walk_directory(files, root, '', false);
 			}
@@ -215,13 +213,13 @@
 
 	};
 
-	var _package_assets = function(json) {
+	const _package_assets = function(json) {
 
-		var files = [];
+		let files = [];
 
 		if (json !== null) {
 
-			var root = json.source.files || null;
+			let root = json.source.files || null;
 			if (root !== null) {
 				_walk_directory(files, root, '', true);
 			}
@@ -241,13 +239,13 @@
 
 	};
 
-	var _package_files = function(json) {
+	const _package_files = function(json) {
 
-		var files = [];
+		let files = [];
 
 		if (json !== null) {
 
-			var root = json.source.files || null;
+			let root = json.source.files || null;
 			if (root !== null) {
 				_walk_directory(files, root, '', false);
 			}
@@ -275,25 +273,25 @@
 
 	(function(libraries, projects, cultivator) {
 
-		var errors = 0;
+		let errors = 0;
 
-		console.log('> Checking Environment');
+		console.log('  (L) Checking Environment');
 
 
 		if (libraries.indexOf('./libraries/lychee') !== -1) {
 			console.log('\tprocess cwd: OKAY');
 		} else {
-			console.log('\tprocess cwd: FAIL (' + _root + ' is not the lychee.js directory)');
+			console.log('\tprocess cwd: FAIL (' + _ROOT + ' is not the lychee.js directory)');
 			errors++;
 		}
 
 
-		var data = null;
+		let data = null;
 
-		if (_is_file(_path.resolve(_root, './libraries/lychee/lychee.pkg')) === true) {
+		if (_is_file(_path.resolve(_ROOT, './libraries/lychee/lychee.pkg')) === true) {
 
 			try {
-				data = JSON.parse(_fs.readFileSync(_path.resolve(_root, './libraries/lychee/lychee.pkg')));
+				data = JSON.parse(_fs.readFileSync(_path.resolve(_ROOT, './libraries/lychee/lychee.pkg')));
 			} catch(e) {
 				data = null;
 			}
@@ -302,7 +300,7 @@
 
 
 		if (data !== null) {
-			_package = data;
+			_PACKAGE = data;
 			console.log('\t./libraries/lychee/lychee.pkg: OKAY');
 		} else {
 			console.log('\t./libraries/lychee/lychee.pkg: FAIL (Invalid JSON)');
@@ -310,75 +308,74 @@
 		}
 
 
-		if (_is_file(_path.resolve(_root, './libraries/lychee/source/platform/node/bootstrap.js')) === true) {
+		if (_is_file(_path.resolve(_ROOT, './libraries/lychee/source/platform/node/bootstrap.js')) === true) {
 
 			global = {};
 
 			try {
 
-				require(_path.resolve(_root, './libraries/lychee/source/core/lychee.js'));
-				require(_path.resolve(_root, './libraries/lychee/source/core/Asset.js'));
-				require(_path.resolve(_root, './libraries/lychee/source/core/Definition.js'));
-				require(_path.resolve(_root, './libraries/lychee/source/core/Environment.js'));
-				require(_path.resolve(_root, './libraries/lychee/source/core/Package.js'));
-				require(_path.resolve(_root, './libraries/lychee/source/platform/node/bootstrap.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/core/lychee.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/core/Asset.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/core/Definition.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/core/Environment.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/core/Package.js'));
+				require(_path.resolve(_ROOT, './libraries/lychee/source/platform/node/bootstrap.js'));
 
 				lychee.envinit(null);
 
 			} catch(e) {
+
+				console.log('\n\n\n');
+				console.log('Syntax Error in lychee.js core:');
+				console.log('- - - - - - - - - - - - - - - -');
+				console.log(e);
+				console.log('\n\n\n');
+
 				errors++;
+
 			}
 
 		}
 
 
 		if (errors === 0) {
-			console.log('> OKAY\n');
+			console.info('SUCCESS');
 		} else {
-			console.log('> FAIL\n');
-			process.exit(1);
+			console.error('FAILURE');
+			_process.exit(1);
 		}
 
 
-		console.log('> Cleaning lychee.js builds');
+		console.log('Cleaning lychee.js Projects and Libraries');
 
 		libraries.forEach(function(path) {
 
-			var real = _path.resolve(_root, path);
+			let real = _path.resolve(_ROOT, path);
 			if (_is_directory(real + '/build')) {
 				_remove_directory(real + '/build');
-				console.log('\t' + path + '/build: OKAY');
-			} else {
-				console.log('~\t' + path + '/build: SKIP');
 			}
 
 		});
 
 		projects.forEach(function(path) {
 
-			var real = _path.resolve(_root, path);
+			let real = _path.resolve(_ROOT, path);
 			if (_is_directory(real + '/build')) {
 				_remove_directory(real + '/build');
-				console.log('\t' + path + '/build: OKAY');
-			} else {
-				console.log('~\t' + path + '/build: SKIP');
 			}
 
 		});
 
 		cultivator.forEach(function(path) {
 
-			var real = _path.resolve(_root, path);
+			let real = _path.resolve(_ROOT, path);
 			if (_is_directory(real + '/build')) {
 				_remove_directory(real + '/build');
-				console.log('\t' + path + '/build: OKAY');
-			} else {
-				console.log('~\t' + path + '/build: SKIP');
 			}
 
 		});
 
-		console.log('> OKAY\n');
+		console.info('SUCCESS');
 
 	})(_get_projects('./libraries'), _get_projects('./projects'), _get_projects('./projects/cultivator'));
 
@@ -390,23 +387,23 @@
 
 	(function() {
 
-		console.log('> Distributing lychee.js library');
+		console.log('Distributing lychee.js Library');
 
 
-		var dist = _package_definitions(_package).filter(function(value) {
+		let dist = _package_definitions(_PACKAGE).filter(function(value) {
 			return value !== 'lychee.DIST';
 		});
 
-		var code = (function () {/*
+		let code = (function () {/*
 			lychee.define('lychee.DIST').requires([{{requires}}]).exports(function(lychee, global, attachments) {
 
-				var Class = function() {};
+				let Composite = function() {};
 
-				Class.prototype = {
+				Composite.prototype = {
 
 				};
 
-				return Class;
+				return Composite;
 
 			});
 
@@ -417,9 +414,9 @@
 		}).join(',\n\t') + '\n');
 
 
-		var result = true;
-		var path   = _path.resolve(_root, './libraries/lychee/source/DIST.js');
-		var dir    = _path.dirname(path);
+		let result = true;
+		let path   = _path.resolve(_ROOT, './libraries/lychee/source/DIST.js');
+		let dir    = _path.dirname(path);
 
 		if (_is_directory(dir) === false) {
 			_create_directory(dir);
@@ -440,10 +437,10 @@
 
 
 		if (result === true) {
-			console.log('> OKAY\n');
+			console.info('SUCCESS');
 		} else {
-			console.log('> FAIL\n');
-			process.exit(1);
+			console.error('FAILURE');
+			_process.exit(1);
 		}
 
 	})();
@@ -456,8 +453,8 @@
 
 	(function() {
 
-		var errors = 0;
-		var files  = _package_files(_package).filter(function(value) {
+		let errors = 0;
+		let files  = _package_files(_PACKAGE).filter(function(value) {
 			return value.substr(0, 4) === 'core';
 		});
 
@@ -470,12 +467,12 @@
 		}
 
 
-		console.log('> Generating lychee.js core');
+		console.log('Generating lychee.js Core');
 
 
 		files.forEach(function(file) {
 
-			var path = _path.resolve(_root, './libraries/lychee/source/' + file);
+			let path = _path.resolve(_ROOT, './libraries/lychee/source/' + file);
 			if (_is_file(path) === true) {
 				_CORE += _fs.readFileSync(path, 'utf8');
 			} else {
@@ -486,10 +483,10 @@
 
 
 		if (errors === 0) {
-			console.log('> OKAY\n');
+			console.info('SUCCESS');
 		} else {
-			console.log('> FAIL\n');
-			process.exit(1);
+			console.error('FAILURE');
+			_process.exit(1);
 		}
 
 	})();
@@ -502,37 +499,39 @@
 
 	(function() {
 
-		var errors    = 0;
-		var assets    = _package_assets(_package).filter(function(value) {
+		let errors    = 0;
+		let assets    = _package_assets(_PACKAGE).filter(function(value) {
 			return value.substr(0, 8) === 'platform' && value.substr(-3) !== '.js';
 		});
-		var bootstrap = {};
-		var files     = _package_files(_package).filter(function(value) {
+		let bootstrap = {};
+		let files     = _package_files(_PACKAGE).filter(function(value) {
 			return value.substr(0, 8) === 'platform' && value.indexOf('bootstrap.js') !== -1;
-		}).concat(_package_files(_package).filter(function(value) {
+		}).concat(_package_files(_PACKAGE).filter(function(value) {
 			return value.substr(0, 8) === 'platform' && value.indexOf('bootstrap.js') === -1;
 		}).sort(function(a, b) {
 			if (a > b) return  1;
 			if (a < b) return -1;
 			return 0;
 		}));
-		var platforms = Object.keys(_package.source.tags.platform);
+		let platforms = Object.keys(_PACKAGE.source.tags.platform).filter(function(platform) {
+			return _PLATFORM !== null ? platform === _PLATFORM : true;
+		});
 
 
-		console.log('> Generating lychee.js platform adapters');
+		console.log('Generating lychee.js Fertilizer Adapters');
 
 
 		assets.forEach(function(path) {
 
-			var asset = new lychee.Asset('/libraries/lychee/source/' + path);
+			let asset = new lychee.Asset('/libraries/lychee/source/' + path);
 			if (asset !== null) {
 
 				asset.onload = function(result) {
 
 					if (result === true) {
 
-						var id  = path.split('.').slice(0, -1).join('.');
-						var ext = path.split('/').pop().split('.').slice(1).join('.');
+						let id  = path.split('.')[0];
+						let ext = path.split('/').pop().split('.').slice(1).join('.');
 
 						if (_ASSETS[id] === undefined) {
 							_ASSETS[id] = {};
@@ -558,12 +557,12 @@
 				bootstrap[platform] = {};
 
 
-				var prefix = 'platform/' + platform + '/';
-				var base   = platform.indexOf('-') ? platform.split('-')[0] : null;
+				let prefix = 'platform/' + platform + '/';
+				let base   = platform.indexOf('-') ? platform.split('-')[0] : null;
 
 				if (base !== null) {
 
-					for (var file in bootstrap[base]) {
+					for (let file in bootstrap[base]) {
 						bootstrap[platform][file] = bootstrap[base][file];
 					}
 
@@ -576,12 +575,12 @@
 					return value.substr(prefix.length);
 				}).forEach(function(adapter) {
 
-					var id   = (prefix + adapter).split('.').slice(0, -1).join('.');
-					var path = _path.resolve(_root, './libraries/lychee/source/' + prefix + adapter);
+					let id   = (prefix + adapter).split('.').slice(0, -1).join('.');
+					let path = _path.resolve(_ROOT, './libraries/lychee/source/' + prefix + adapter);
 
 					if (_is_file(path) === true) {
 
-						var code = _fs.readFileSync(path, 'utf8');
+						let code = _fs.readFileSync(path, 'utf8');
 
 						if (adapter === 'bootstrap.js' && typeof bootstrap[platform]['bootstrap.js'] === 'string') {
 
@@ -589,18 +588,18 @@
 
 						} else if (_ASSETS[id] !== undefined) {
 
-							var i1   = code.indexOf('.exports(');
-							var tmp1 = '';
-							var tmp2 = [];
+							let i1   = code.indexOf('.exports(');
+							let tmp1 = '';
+							let tmp2 = [];
 
 							if (i1 !== -1) {
 
-								for (var ext in _ASSETS[id]) {
+								for (let ext in _ASSETS[id]) {
 									tmp2.push('\n\t"' + ext + '": lychee.deserialize(' + JSON.stringify(_ASSETS[id][ext]) + ')');
 								}
 
 								tmp1 += code.substr(0,  i1);
-								tmp1 += '.attaches({' + (tmp2.length > 0 ? tmp2.join(',') : '') + '})';
+								tmp1 += '.attaches({' + (tmp2.length > 0 ? tmp2.join(',') : '') + '\n})';
 								tmp1 += code.substr(i1, code.length - i1);
 
 
@@ -610,7 +609,7 @@
 
 							}
 
-							bootstrap[platform][adapter] = tmp1;
+							bootstrap[platform][adapter] = code;
 
 						} else {
 
@@ -638,10 +637,10 @@
 
 			Object.keys(_BOOTSTRAP).forEach(function(platform) {
 
-				var result = true;
-				var code   = _CORE + _BOOTSTRAP[platform];
-				var path   = _path.resolve(_root, './libraries/lychee/build/' + platform + '/core.js');
-				var dir    = _path.dirname(path);
+				let result = true;
+				let code   = _CORE + _BOOTSTRAP[platform];
+				let path   = _path.resolve(_ROOT, './libraries/lychee/build/' + platform + '/core.js');
+				let dir    = _path.dirname(path);
 
 				if (_is_directory(dir) === false) {
 					_create_directory(dir);
@@ -662,25 +661,25 @@
 
 
 				if (result === false) {
-					console.log('\t' + platform + ': FAIL (Could not write to "' + path + '")');
+					console.log('\t' + platform + ': FAILURE (Could not write to "' + path + '")');
 					errors++;
 				} else {
-					console.log('\t' + platform + ': OKAY');
+					console.log('\t' + platform + ': SUCCESS');
 				}
 
 			});
 
 
 			if (errors === 0) {
-				console.log('> OKAY\n');
+				console.info('SUCCESS');
 			} else {
-				console.log('> FAIL\n');
-				process.exit(1);
+				console.error('FAILURE');
+				_process.exit(1);
 			}
 
 		}, 1000);
 
 	})();
 
-})();
+})(typeof global !== 'undefined' ? global : this);
 

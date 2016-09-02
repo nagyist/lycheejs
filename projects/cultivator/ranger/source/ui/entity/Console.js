@@ -3,8 +3,8 @@ lychee.define('app.ui.entity.Console').includes([
 	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
-	var _FONT   = attachments["fnt"];
-	var _Entity = lychee.import('lychee.ui.Entity');
+	const _FONT   = attachments["fnt"];
+	const _Entity = lychee.import('lychee.ui.Entity');
 
 
 
@@ -12,9 +12,9 @@ lychee.define('app.ui.entity.Console').includes([
 	 * HELPERS
 	 */
 
-	var _render_buffer = function(renderer) {
+	const _render_buffer = function(renderer) {
 
-		var font = this.font;
+		let font = this.font;
 		if (font !== null && font.texture !== null) {
 
 			if (this.__buffer !== null) {
@@ -29,20 +29,20 @@ lychee.define('app.ui.entity.Console').includes([
 			renderer.setAlpha(1.0);
 
 
-			var lines  = this.__lines;
-			var buffer = this.__buffer;
-			var x1     = 0;
-			var x2     = buffer.width;
-			var y1     = 0;
-			var y2     = buffer.height;
-			var lh     = font.lineheight;
-			var ll     = lines.length;
+			let lines  = this.__lines;
+			let buffer = this.__buffer;
+			let x1     = 0;
+			let x2     = buffer.width;
+			let y1     = 0;
+			let y2     = buffer.height;
+			let lh     = font.lineheight;
+			let ll     = lines.length;
 			if (ll > 0) {
 
-				for (var l = 0; l < ll; l++) {
+				for (let l = 0; l < ll; l++) {
 
-					var line = lines[l];
-					var type = line.substr(0, 3);
+					let line = lines[l];
+					let type = line.substr(0, 3);
 
 					if (type === '(I)') {
 
@@ -95,9 +95,9 @@ lychee.define('app.ui.entity.Console').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.font  = _FONT;
@@ -132,7 +132,7 @@ lychee.define('app.ui.entity.Console').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -140,7 +140,7 @@ lychee.define('app.ui.entity.Console').includes([
 
 		deserialize: function(blob) {
 
-			var font = lychee.deserialize(blob.font);
+			let font = lychee.deserialize(blob.font);
 			if (font !== null) {
 				this.setFont(font);
 			}
@@ -149,7 +149,7 @@ lychee.define('app.ui.entity.Console').includes([
 
 		serialize: function() {
 
-			var data = _Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'app.ui.entity.Console';
 
 
@@ -162,12 +162,12 @@ lychee.define('app.ui.entity.Console').includes([
 			if (this.visible === false) return;
 
 
-			var alpha    = this.alpha;
-			var position = this.position;
-			var x        = position.x + offsetX;
-			var y        = position.y + offsetY;
-			var hwidth   = this.width  / 2;
-			var hheight  = this.height / 2;
+			let alpha    = this.alpha;
+			let position = this.position;
+			let x        = position.x + offsetX;
+			let y        = position.y + offsetY;
+			let hwidth   = this.width  / 2;
+			let hheight  = this.height / 2;
 
 
 			if (alpha !== 1) {
@@ -264,7 +264,7 @@ lychee.define('app.ui.entity.Console').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

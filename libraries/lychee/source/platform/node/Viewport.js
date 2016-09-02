@@ -5,30 +5,35 @@ lychee.define('Viewport').tags({
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	if (typeof process !== 'undefined') {
-
-		if (typeof process.stdout === 'object' && typeof process.stdout.on === 'function') {
-			return true;
-		}
-
+	if (
+		typeof global.process !== 'undefined'
+		&& typeof global.process.stdout === 'object'
+		&& typeof global.process.stdout.on === 'function'
+	) {
+		return true;
 	}
+
 
 	return false;
 
 }).exports(function(lychee, global, attachments) {
 
+	const _process   = global.process;
+	const _Emitter   = lychee.import('lychee.event.Emitter');
+	const _INSTANCES = [];
+
+
+
 	/*
 	 * EVENTS
 	 */
 
-	var _instances = [];
-
-	var _listeners = {
+	const _listeners = {
 
 		resize: function() {
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
-				_process_reshape.call(_instances[i], process.stdout.columns, process.stdout.rows);
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				_process_reshape.call(_INSTANCES[i], _process.stdout.columns, _process.stdout.rows);
 			}
 
 		}
@@ -43,15 +48,15 @@ lychee.define('Viewport').tags({
 
 	(function() {
 
-		var resize = true;
+		let resize = true;
 		if (resize === true) {
-			process.stdout.on('resize', _listeners.resize);
+			_process.stdout.on('resize', _listeners.resize);
 		}
 
 
 		if (lychee.debug === true) {
 
-			var methods = [];
+			let methods = [];
 
 			if (resize) methods.push('Resize');
 
@@ -71,7 +76,7 @@ lychee.define('Viewport').tags({
 	 * HELPERS
 	 */
 
-	var _process_reshape = function(width, height) {
+	const _process_reshape = function(width, height) {
 
 		if (width === this.width && height === this.height) {
 			return false;
@@ -82,9 +87,8 @@ lychee.define('Viewport').tags({
 		this.height = height;
 
 
-
-		var orientation = null;
-		var rotation    = null;
+		let orientation = null;
+		let rotation    = null;
 
 		if (width > height) {
 
@@ -109,21 +113,21 @@ lychee.define('Viewport').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.fullscreen = false;
-		this.width      = process.stdout.columns;
-		this.height     = process.stdout.rows;
+		this.width      = _process.stdout.columns;
+		this.height     = _process.stdout.rows;
 
 		this.__orientation = 0; // Unsupported
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
-		_instances.push(this);
+		_INSTANCES.push(this);
 
 
 		this.setFullscreen(settings.fullscreen);
@@ -139,7 +143,7 @@ lychee.define('Viewport').tags({
 			this.width  = 0;
 			this.height = 0;
 
-			_process_reshape.call(this, process.stdout.columns, process.stdout.rows);
+			_process_reshape.call(this, _process.stdout.columns, _process.stdout.rows);
 
 		}.bind(this), 100);
 
@@ -149,16 +153,16 @@ lychee.define('Viewport').tags({
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		destroy: function() {
 
-			var found = false;
+			let found = false;
 
-			for (var i = 0, il = _instances.length; i < il; i++) {
+			for (let i = 0, il = _INSTANCES.length; i < il; i++) {
 
-				if (_instances[i] === this) {
-					_instances.splice(i, 1);
+				if (_INSTANCES[i] === this) {
+					_INSTANCES.splice(i, 1);
 					found = true;
 					il--;
 					i--;
@@ -183,10 +187,10 @@ lychee.define('Viewport').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.Viewport';
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.fullscreen !== false) settings.fullscreen = this.fullscreen;
@@ -212,7 +216,7 @@ lychee.define('Viewport').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

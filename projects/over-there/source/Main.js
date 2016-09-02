@@ -7,18 +7,17 @@ lychee.define('app.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee = lychee.import('lychee');
-	var _app    = lychee.import('app');
-	var _Main   = lychee.import('lychee.app.Main');
+	const _app  = lychee.import('app');
+	const _Main = lychee.import('lychee.app.Main');
 
 
 	/*
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 
 			input: {
 				delay:       0,
@@ -49,6 +48,8 @@ lychee.define('app.Main').requires([
 
 		_Main.call(this, settings);
 
+		settings = null;
+
 
 
 		/*
@@ -69,7 +70,7 @@ lychee.define('app.Main').requires([
 
 		this.bind('init', function() {
 
-			var appclient = this.settings.appclient || null;
+			let appclient = this.settings.appclient || null;
 			if (appclient !== null) {
 
 				this.client = new _app.net.Client(appclient, this);
@@ -79,7 +80,7 @@ lychee.define('app.Main').requires([
 
 			}
 
-			var appserver = this.settings.appserver || null;
+			let appserver = this.settings.appserver || null;
 			if (appserver !== null) {
 				this.server = new _app.net.Server(appserver, this);
 			}
@@ -92,21 +93,19 @@ lychee.define('app.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
-
 		serialize: function() {
 
-			var data = _Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'app.Main';
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.settings.appclient !== null) { settings.client = this.settings.appclient; }
@@ -124,6 +123,6 @@ lychee.define('app.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

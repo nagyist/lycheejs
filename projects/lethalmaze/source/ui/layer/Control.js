@@ -6,9 +6,9 @@ lychee.define('game.ui.layer.Control').requires([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Button   = lychee.import('lychee.ui.entity.Button');
-	var _Joystick = lychee.import('lychee.ui.entity.Joystick');
-	var _Layer    = lychee.import('lychee.ui.Layer');
+	const _Button   = lychee.import('lychee.ui.entity.Button');
+	const _Joystick = lychee.import('lychee.ui.entity.Joystick');
+	const _Layer    = lychee.import('lychee.ui.Layer');
 
 
 
@@ -16,9 +16,9 @@ lychee.define('game.ui.layer.Control').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		settings.relayout = false;
@@ -40,14 +40,14 @@ lychee.define('game.ui.layer.Control').requires([
 			if (this.visible === false) return null;
 
 
-			var triggered = null;
-			var args      = [ id, {
+			let triggered = null;
+			let args      = [ id, {
 				x: position.x - this.offset.x,
 				y: position.y - this.offset.y
 			}, delta ];
 
 
-			var entity = this.getEntity(null, args[1]);
+			let entity = this.getEntity(null, args[1]);
 			if (entity !== null) {
 
 				if (typeof entity.trigger === 'function') {
@@ -55,7 +55,7 @@ lychee.define('game.ui.layer.Control').requires([
 					args[1].x -= entity.position.x;
 					args[1].y -= entity.position.y;
 
-					var result = entity.trigger('touch', args);
+					let result = entity.trigger('touch', args);
 					if (result === true) {
 						triggered = entity;
 					} else if (result !== false) {
@@ -102,14 +102,14 @@ lychee.define('game.ui.layer.Control').requires([
 			if (this.visible === false) return null;
 
 
-			var triggered = null;
-			var args      = [ id, state, {
+			let triggered = null;
+			let args      = [ id, state, {
 				x: position.x - this.offset.x,
 				y: position.y - this.offset.y
 			}, delta, swipe ];
 
 
-			var entity = this.getEntity(null, args[2]);
+			let entity = this.getEntity(null, args[2]);
 			if (entity !== null) {
 
 				if (typeof entity.trigger === 'function') {
@@ -117,7 +117,7 @@ lychee.define('game.ui.layer.Control').requires([
 					args[2].x -= entity.position.x;
 					args[2].y -= entity.position.y;
 
-					var result = entity.trigger('swipe', args);
+					let result = entity.trigger('swipe', args);
 					if (result === true) {
 						triggered = entity;
 					} else if (result !== false) {
@@ -150,15 +150,15 @@ lychee.define('game.ui.layer.Control').requires([
 		this.unbind('relayout');
 		this.bind('relayout', function() {
 
-			var entity = null;
-			var x1     = -1/2 * this.width;
-			var y1     = -1/2 * this.height;
-			var x2     =  1/2 * this.width;
-			var y2     =  1/2 * this.height;
+			let entity = null;
+			let x1     = -1/2 * this.width;
+			let y1     = -1/2 * this.height;
+			let x2     =  1/2 * this.width;
+			let y2     =  1/2 * this.height;
 
 
-			var joystick_w = 0;
-			var joystick_h = 0;
+			let joystick_w = 0;
+			let joystick_h = 0;
 
 			entity            = this.getEntity('@joystick');
 			joystick_w        = entity.width;
@@ -178,11 +178,11 @@ lychee.define('game.ui.layer.Control').requires([
 			if (this.visible === false) return null;
 
 
-			var args = [ key, name, delta ];
+			let args = [ key, name, delta ];
 
 			if (key === 'space' || key === 'enter') {
 
-				var button = this.getEntity('@button');
+				let button = this.getEntity('@button');
 
 				button.trigger('focus');
 				button.trigger('key', args);
@@ -190,7 +190,7 @@ lychee.define('game.ui.layer.Control').requires([
 
 			} else if (key.match(/w|a|s|d/g) || key.substr(0, 5) === 'arrow') {
 
-				var joystick = this.getEntity('@joystick');
+				let joystick = this.getEntity('@joystick');
 
 				joystick.trigger('focus');
 				joystick.trigger('key', args);
@@ -221,7 +221,7 @@ lychee.define('game.ui.layer.Control').requires([
 
 		this.getEntity('@joystick').bind('change', function(value) {
 
-			var direction = null;
+			let direction = null;
 
 			if (Math.abs(value.y) < 0.5) {
 
@@ -274,7 +274,7 @@ lychee.define('game.ui.layer.Control').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -282,7 +282,7 @@ lychee.define('game.ui.layer.Control').requires([
 
 		serialize: function() {
 
-			var data = _Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'game.ui.layer.Control';
 
 
@@ -293,7 +293,7 @@ lychee.define('game.ui.layer.Control').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

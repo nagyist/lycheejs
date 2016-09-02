@@ -3,7 +3,9 @@ lychee.define('game.net.remote.Control').includes([
 	'lychee.net.remote.Session'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Session = lychee.import('lychee.net.remote.Session');
+	let   _id       = 0;
+	const _Session  = lychee.import('lychee.net.remote.Session');
+	const _SESSIONS = {};
 
 
 
@@ -11,14 +13,11 @@ lychee.define('game.net.remote.Control').includes([
 	 * HELPERS
 	 */
 
-	var _id       = 0;
-	var _sessions = {};
+	const _on_plug = function() {
 
-	var _on_plug = function() {
+		let found = null;
 
-		var found = null;
-
-		Object.values(_sessions).forEach(function(session) {
+		Object.values(_SESSIONS).forEach(function(session) {
 
 			if (session.active === false && session.tunnels.length < 6) {
 				found = session;
@@ -35,10 +34,10 @@ lychee.define('game.net.remote.Control').includes([
 
 		} else {
 
-			var id = 'lethalmaze-' + _id++;
+			let id = 'lethalmaze-' + _id++;
 
 
-			found = _sessions[id] = {
+			found = _SESSIONS[id] = {
 				id:        id,
 				active:    false,
 				timeout:   10000,
@@ -48,15 +47,15 @@ lychee.define('game.net.remote.Control').includes([
 			};
 
 
-			var handle = setInterval(function() {
+			let handle = setInterval(function() {
 
-				var timeout = this.timeout;
+				let timeout = this.timeout;
 				if (timeout > 1000) {
 
 					this.timeout -= 1000;
 
 
-					for (var t = 0, tl = this.tunnels.length; t < tl; t++) {
+					for (let t = 0, tl = this.tunnels.length; t < tl; t++) {
 
 						this.tunnels[t].send({
 							sid:     this.id,
@@ -78,7 +77,7 @@ lychee.define('game.net.remote.Control').includes([
 					this.timeout = 0;
 
 
-					for (var t = 0, tl = this.tunnels.length; t < tl; t++) {
+					for (let t = 0, tl = this.tunnels.length; t < tl; t++) {
 
 						this.tunnels[t].send({
 							sid:       this.id,
@@ -99,14 +98,14 @@ lychee.define('game.net.remote.Control').includes([
 		}
 
 
-		var tunnel = this.tunnel;
+		let tunnel = this.tunnel;
 		if (tunnel !== null) {
 
 			tunnel.send({
-				sid:       found.id,
-				tid:       found.tunnels.indexOf(tunnel),
-				players:   found.players,
-				timeout:   found.timeout
+				sid:     found.id,
+				tid:     found.tunnels.indexOf(tunnel),
+				players: found.players,
+				timeout: found.timeout
 			}, {
 				id:    'control',
 				event: 'init'
@@ -116,12 +115,12 @@ lychee.define('game.net.remote.Control').includes([
 
 	};
 
-	var _on_control = function(data) {
+	const _on_control = function(data) {
 
-		for (var id in _sessions) {
+		for (let id in _SESSIONS) {
 
-			var session = _sessions[id];
-			var tid     = session.tunnels.indexOf(this.tunnel);
+			let session = _SESSIONS[id];
+			let tid     = session.tunnels.indexOf(this.tunnel);
 			if (tid !== -1) {
 
 				if (data.position instanceof Object) {
@@ -130,9 +129,9 @@ lychee.define('game.net.remote.Control').includes([
 				}
 
 
-				for (var t = 0, tl = session.tunnels.length; t < tl; t++) {
+				for (let t = 0, tl = session.tunnels.length; t < tl; t++) {
 
-					var tunnel = session.tunnels[t];
+					let tunnel = session.tunnels[t];
 					if (tunnel !== this.tunnel) {
 
 						tunnel.send({
@@ -157,15 +156,15 @@ lychee.define('game.net.remote.Control').includes([
 
 	};
 
-	var _on_unplug = function() {
+	const _on_unplug = function() {
 
-		var found = false;
+		let found = false;
 
 
-		for (var id in _sessions) {
+		for (let id in _SESSIONS) {
 
-			var session = _sessions[id];
-			var index   = session.tunnels.indexOf(this.tunnel);
+			let session = _SESSIONS[id];
+			let index   = session.tunnels.indexOf(this.tunnel);
 			if (index !== -1) {
 
 				session.players.splice(index, 1);
@@ -174,7 +173,7 @@ lychee.define('game.net.remote.Control').includes([
 				found = true;
 
 
-				for (var t = 0, tl = session.tunnels.length; t < tl; t++) {
+				for (let t = 0, tl = session.tunnels.length; t < tl; t++) {
 
 					session.tunnels[t].send({
 						sid:     session.id,
@@ -192,11 +191,11 @@ lychee.define('game.net.remote.Control').includes([
 		}
 
 
-		for (var id in _sessions) {
+		for (let id in _SESSIONS) {
 
-			var session = _sessions[id];
+			let session = _SESSIONS[id];
 			if (session.tunnels.length === 0) {
-				delete _sessions[id];
+				delete _SESSIONS[id];
 			}
 
 		}
@@ -212,13 +211,20 @@ lychee.define('game.net.remote.Control').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
-		var settings = {};
+		let settings = {};
 
 
 		_Session.call(this, 'control', remote, settings);
 
+		settings = null;
+
+
+
+		/*
+		 * INITIALIZATION
+		 */
 
 		this.bind('plug',    _on_plug,    this);
 		this.bind('unplug',  _on_unplug,  this);
@@ -227,7 +233,7 @@ lychee.define('game.net.remote.Control').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -235,7 +241,7 @@ lychee.define('game.net.remote.Control').includes([
 
 		serialize: function() {
 
-			var data = _Session.prototype.serialize.call(this);
+			let data = _Session.prototype.serialize.call(this);
 			data['constructor'] = 'game.net.remote.Control';
 
 
@@ -246,7 +252,7 @@ lychee.define('game.net.remote.Control').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -7,20 +7,29 @@ lychee.define('lychee.ui.Blueprint').requires([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Element  = lychee.import('lychee.ui.Element');
+	const _Layer    = lychee.import('lychee.ui.Layer');
+	const _Offset   = lychee.import('lychee.effect.Offset');
+	const _Position = lychee.import('lychee.effect.Position');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _validate_entity = function(entity) {
+	const _validate_entity = function(entity) {
 
 		if (entity instanceof Object) {
 
-			if (typeof entity.update === 'function' && typeof entity.render === 'function' && typeof entity.shape === 'number') {
-
-				if (typeof entity.setOrder === 'function' && typeof entity.isAtPosition === 'function') {
-					return true;
-				}
-
+			if (
+				typeof entity.update === 'function'
+				&& typeof entity.render === 'function'
+				&& typeof entity.shape === 'number'
+				&& typeof entity.setOrder === 'function'
+				&& typeof entity.isAtPosition === 'function'
+			) {
+				return true;
 			}
 
 		}
@@ -30,23 +39,23 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 	};
 
-	var _on_relayout = function() {
+	const _on_relayout = function() {
 
-		var fade    = this.__fade;
-		var visible = this.visible;
+		let fade    = this.__fade;
+		let visible = this.visible;
 
 		if (visible === true) {
 
-			var entity = null;
-			var type   = this.type;
-			var x1     = -1/2 * this.width;
-			var x2     =  1/2 * this.width;
-			var y1     = -1/2 * this.height;
-			var y2     =  1/2 * this.height;
-			var off_x  = x1 + 32;
-			var off_y  = y1 + 32;
-			var pos_x  = 0;
-			var pos_y  = 0;
+			let entity = null;
+			let type   = this.type;
+			let x1     = -1/2 * this.width;
+			let x2     =  1/2 * this.width;
+			let y1     = -1/2 * this.height;
+			let y2     =  1/2 * this.height;
+			let off_x  = x1 + 32;
+			let off_y  = y1 + 32;
+			let pos_x  = 0;
+			let pos_y  = 0;
 
 
 			this.__scroll.max_x = 0;
@@ -54,9 +63,9 @@ lychee.define('lychee.ui.Blueprint').requires([
 			this.__scroll.delta = 0;
 
 
-			if (type === Class.TYPE.grid) {
+			if (type === Composite.TYPE.grid) {
 
-				for (var e = 0, el = this.entities.length; e < el; e++) {
+				for (let e = 0, el = this.entities.length; e < el; e++) {
 
 					entity = this.entities[e];
 					pos_x  = off_x + entity.width  / 2;
@@ -93,8 +102,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 							y: pos_y - 3/2 * this.height
 						});
 
-						entity.addEffect(new lychee.effect.Position({
-							type:     lychee.effect.Position.TYPE.easeout,
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
 							delay:    100 * e,
 							duration: 300,
 							position: {
@@ -118,7 +127,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				}
 
-			} else if (type === Class.TYPE.view) {
+			} else if (type === Composite.TYPE.view) {
 
 				if (this.entities.length === 2) {
 
@@ -140,8 +149,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 							y: pos_y - 3/2 * this.height
 						});
 
-						entity.addEffect(new lychee.effect.Position({
-							type:     lychee.effect.Position.TYPE.easeout,
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
 							delay:    100,
 							duration: 300,
 							position: {
@@ -178,8 +187,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 							y: pos_y - 3/2 * this.height
 						});
 
-						entity.addEffect(new lychee.effect.Position({
-							type:     lychee.effect.Position.TYPE.easeout,
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
 							delay:    100,
 							duration: 300,
 							position: {
@@ -220,8 +229,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 							y: pos_y - 3/2 * this.height
 						});
 
-						entity.addEffect(new lychee.effect.Position({
-							type:     lychee.effect.Position.TYPE.easeout,
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
 							delay:    100,
 							duration: 300,
 							position: {
@@ -241,11 +250,11 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				}
 
-			} else if (type === Class.TYPE.full) {
+			} else if (type === Composite.TYPE.full) {
 
-				for (var e = 0, el = this.entities.length; e < el; e++) {
+				for (let e = 0, el = this.entities.length; e < el; e++) {
 
-					var entity = this.entities[e];
+					let entity = this.entities[e];
 
 					entity.position.x = 0;
 					entity.position.y = 0;
@@ -263,34 +272,34 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 	};
 
-	var _on_tab = function(name) {
+	const _on_tab = function(name) {
 
 		if (this.__focus.element === null) {
 			this.__focus.element = this.entities[0] || null;
 		}
 
 
-		var focus = this.__focus;
+		let focus = this.__focus;
 		if (focus.element !== null) {
 
-			var entities  = focus.element.entities;
-			var triggered = null;
+			let entities  = focus.element.entities;
+			let triggered = null;
 
 
 			if (name === 'tab') {
 
-				var e = focus.entity !== null ? entities.indexOf(focus.entity) : 0;
+				let e = focus.entity !== null ? entities.indexOf(focus.entity) : 0;
 
-				for (var el = entities.length; e < el; e++) {
+				for (let el = entities.length; e < el; e++) {
 
-					var entity = entities[e];
+					let entity = entities[e];
 					if (entity === focus.entity) {
 
 						entity.trigger('blur');
 
 					} else if (entity.visible === true) {
 
-						var result = entity.trigger('focus');
+						let result = entity.trigger('focus');
 						if (result === true && entity.state === 'active') {
 							triggered = entity;
 							break;
@@ -303,7 +312,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				if (triggered === null) {
 
-					var index = this.entities.indexOf(focus.element);
+					let index = this.entities.indexOf(focus.element);
 					if (index !== -1) {
 
 						focus.element = this.entities[index + 1] || null;
@@ -315,18 +324,18 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 			} else if (name === 'shift-tab') {
 
-				var e = focus.entity !== null ? entities.indexOf(focus.entity) : entities.length - 1;
+				let e = focus.entity !== null ? entities.indexOf(focus.entity) : entities.length - 1;
 
-				for (var el = entities.length; e >= 0; e--) {
+				for (let el = entities.length; e >= 0; e--) {
 
-					var entity = entities[e];
+					let entity = entities[e];
 					if (entity === focus.entity) {
 
 						entity.trigger('blur');
 
 					} else if (entity.visible === true) {
 
-						var result = entity.trigger('focus');
+						let result = entity.trigger('focus');
 						if (result === true && entity.state === 'active') {
 							triggered = entity;
 							break;
@@ -339,7 +348,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				if (triggered === null) {
 
-					var index = this.entities.indexOf(focus.element);
+					let index = this.entities.indexOf(focus.element);
 					if (index !== -1) {
 
 						focus.element = this.entities[index - 1] || null;
@@ -363,19 +372,19 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 	};
 
-	var _on_touch = function(id, position, delta) {
+	const _on_touch = function(id, position, delta) {
 
 		if (this.visible === false) return null;
 
 
-		var triggered = null;
-		var args      = [ id, {
+		let triggered = null;
+		let args      = [ id, {
 			x: position.x - this.offset.x,
 			y: position.y - this.offset.y
 		}, delta ];
 
 
-		var entity = this.getEntity(null, args[1]);
+		let entity = this.getEntity(null, args[1]);
 		if (entity !== null) {
 
 			if (typeof entity.trigger === 'function') {
@@ -383,7 +392,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 				args[1].x -= entity.position.x;
 				args[1].y -= entity.position.y;
 
-				var result = entity.trigger('touch', args);
+				let result = entity.trigger('touch', args);
 				if (result === true) {
 					triggered = entity;
 				} else if (result !== false) {
@@ -403,15 +412,15 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 	};
 
-	var _on_swipe = function(id, state, position, delta, swipe) {
+	const _on_swipe = function(id, state, position, delta, swipe) {
 
 		if (this.effects.length === 0) {
 
-			var scroll = this.__scroll;
-			var type   = this.type;
+			let scroll = this.__scroll;
+			let type   = this.type;
 
 
-			if (type === Class.TYPE.grid) {
+			if (type === Composite.TYPE.grid) {
 
 				if (state === 'start') {
 
@@ -426,7 +435,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 					if (Math.abs(swipe.y) >= 128) {
 
-						var offset_y = scroll.start;
+						let offset_y = scroll.start;
 
 						if (swipe.y > 0) {
 							offset_y += scroll.delta;
@@ -442,8 +451,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 						}
 
 
-						this.addEffect(new lychee.effect.Offset({
-							type:     lychee.effect.Offset.TYPE.easeout,
+						this.addEffect(new _Offset({
+							type:     _Offset.TYPE.easeout,
 							duration: 300,
 							offset:   {
 								y: offset_y
@@ -457,7 +466,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				}
 
-			} else if (type === Class.TYPE.view) {
+			} else if (type === Composite.TYPE.view) {
 
 				if (state === 'start') {
 
@@ -472,7 +481,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 					if (Math.abs(swipe.x) >= 128) {
 
-						var offset_x = scroll.start;
+						let offset_x = scroll.start;
 
 						if (swipe.x > 0) {
 							offset_x += scroll.delta;
@@ -488,8 +497,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 						}
 
 
-						this.addEffect(new lychee.effect.Offset({
-							type:     lychee.effect.Offset.TYPE.easeout,
+						this.addEffect(new _Offset({
+							type:     _Offset.TYPE.easeout,
 							duration: 300,
 							offset:   {
 								x: offset_x
@@ -518,12 +527,12 @@ lychee.define('lychee.ui.Blueprint').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
-		this.type = Class.TYPE.grid;
+		this.type = Composite.TYPE.grid;
 
 
 		this.__fade   = false;
@@ -547,7 +556,9 @@ lychee.define('lychee.ui.Blueprint').requires([
 		settings.relayout = false;
 
 
-		lychee.ui.Layer.call(this, settings);
+		_Layer.call(this, settings);
+
+		settings = null;
 
 
 
@@ -555,6 +566,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 		 * INITIALIZATION
 		 */
 
+		this.unbind('scroll');
 		this.unbind('touch');
 
 		this.bind('relayout', _on_relayout, this);
@@ -564,7 +576,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 		this.bind('key', function(key, name, delta) {
 
-			var focus = this.__focus;
+			let focus = this.__focus;
 
 
 			if (key === 'tab') {
@@ -596,7 +608,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 			} else if (focus.element !== null) {
 
-				var entity = focus.entity;
+				let entity = focus.entity;
 				if (entity !== null) {
 					entity.trigger('key', [ key, name, delta ]);
 				}
@@ -611,17 +623,69 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 		}, this);
 
+		this.bind('scroll', function(id, direction, position, delta) {
+
+			if (direction === 'up') {
+
+				_on_swipe.call(this, null, 'start');
+				_on_swipe.call(this, null, 'move', null, null, {
+					y: 128
+				});
+
+
+				return true;
+
+			} else if (direction === 'down') {
+
+				_on_swipe.call(this, null, 'start');
+				_on_swipe.call(this, null, 'move', null, null, {
+					y: -128
+				});
+
+
+				return true;
+
+			}
+
+
+			return false;
+
+		}, this);
+
 	};
 
 
-	Class.TYPE = {
+	Composite.TYPE = {
 		grid: 0,
 		view: 1,
 		full: 2
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			let data = _Layer.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.ui.Blueprint';
+
+			let settings = data['arguments'][0];
+
+
+			if (this.type !== Composite.TYPE.grid) settings.type = this.type;
+
+
+			return data;
+
+		},
+
+
 
 		/*
 		 * CUSTOM API
@@ -634,7 +698,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 			if (entity !== null) {
 
-				var index = this.entities.indexOf(entity);
+				let index = this.entities.indexOf(entity);
 				if (index === -1) {
 
 					this.entities.push(entity);
@@ -653,7 +717,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 		setType: function(type) {
 
-			type = lychee.enumof(Class.TYPE, type) ? type : null;
+			type = lychee.enumof(Composite.TYPE, type) ? type : null;
 
 
 			if (type !== null) {
@@ -674,7 +738,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 			if (visible === true || visible === false) {
 
-				var fade = false;
+				let fade = false;
 				if (this.visible === false && visible === true) {
 					fade = true;
 				}
@@ -701,7 +765,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

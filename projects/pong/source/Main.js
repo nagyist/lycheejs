@@ -5,9 +5,17 @@ lychee.define('game.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var Class = function(data) {
+	const _Main = lychee.import('lychee.app.Main');
 
-		var settings = Object.assign({
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Composite = function(data) {
+
+		let settings = Object.assign({
 
 			client: null,
 			server: null,
@@ -37,7 +45,9 @@ lychee.define('game.Main').requires([
 		}, data);
 
 
-		lychee.app.Main.call(this, settings);
+		_Main.call(this, settings);
+
+		settings = null;
 
 
 
@@ -59,11 +69,11 @@ lychee.define('game.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		serialize: function() {
 
-			var data = lychee.app.Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'game.Main';
 
 
@@ -74,6 +84,6 @@ lychee.define('game.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

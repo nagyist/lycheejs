@@ -3,11 +3,15 @@ lychee.define('app.net.remote.Ping').includes([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Service = lychee.import('lychee.net.Service');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _on_ping = function(data) {
+	const _on_ping = function(data) {
 
 		if (this.tunnel !== null) {
 
@@ -29,9 +33,9 @@ lychee.define('app.net.remote.Ping').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
-		lychee.net.Service.call(this, 'ping', remote, lychee.net.Service.TYPE.remote);
+		_Service.call(this, 'ping', remote, _Service.TYPE.remote);
 
 
 		this.bind('ping', _on_ping, this);
@@ -39,7 +43,7 @@ lychee.define('app.net.remote.Ping').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -49,7 +53,7 @@ lychee.define('app.net.remote.Ping').includes([
 
 		serialize: function() {
 
-			var data = lychee.net.Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'app.net.remote.Ping';
 			data['arguments']   = [ null ];
 
@@ -61,7 +65,7 @@ lychee.define('app.net.remote.Ping').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -3,8 +3,8 @@ lychee.define('harvester.mod.Updater').requires([
 	'harvester.net.Client'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Client = lychee.import('harvester.net.Client');
-	var _client = null;
+	const _Client = lychee.import('harvester.net.Client');
+	let   _CLIENT = null;
 
 
 
@@ -12,7 +12,7 @@ lychee.define('harvester.mod.Updater').requires([
 	 * HELPERS
 	 */
 
-	var _on_sync = function(project, data) {
+	let _on_sync = function(project, data) {
 
 		console.log('SYNCHRONIZING UPDATES', project, data);
 
@@ -24,7 +24,7 @@ lychee.define('harvester.mod.Updater').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * ENTITY API
@@ -49,9 +49,9 @@ lychee.define('harvester.mod.Updater').requires([
 
 		can: function(project) {
 
-			if (_client === null) {
+			if (_CLIENT === null) {
 
-				_client = new _Client({
+				_CLIENT = new _Client({
 					host: 'harvester.artificial.engineering',
 					port: 8080
 				});
@@ -59,9 +59,9 @@ lychee.define('harvester.mod.Updater').requires([
 			}
 
 
-			if (project.identifier.indexOf('__') === -1 && project.package !== null && project.filesystem !== null) {
+			if (project.identifier.indexOf('__') === -1 && project.package !== null) {
 
-				var service = _client.getService('update');
+				let service = _CLIENT.getService('update');
 				if (service !== null) {
 					return true;
 				}
@@ -77,7 +77,7 @@ lychee.define('harvester.mod.Updater').requires([
 
 			if (project.package !== null) {
 
-				var service = _client.getService('update');
+				let service = _CLIENT.getService('update');
 				if (service !== null) {
 
 					service.sync({

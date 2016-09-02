@@ -3,9 +3,10 @@ lychee.define('game.entity.Tile').includes([
 	'lychee.ui.Sprite'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Sprite  = lychee.import('lychee.ui.Sprite');
-	var _TEXTURE = attachments["png"];
-	var _CONFIG  = attachments["json"].buffer;
+	const _Entity  = lychee.import('lychee.ui.Entity');
+	const _Sprite  = lychee.import('lychee.ui.Sprite');
+	const _TEXTURE = attachments["png"];
+	const _CONFIG  = attachments["json"].buffer;
 
 
 
@@ -13,9 +14,9 @@ lychee.define('game.entity.Tile').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.x = settings.x;
@@ -26,7 +27,7 @@ lychee.define('game.entity.Tile').includes([
 		settings.map     = _CONFIG.map;
 		settings.width   = _CONFIG.width;
 		settings.height  = _CONFIG.height;
-		settings.shape   = lychee.ui.Entity.SHAPE.rectangle;
+		settings.shape   = _Entity.SHAPE.rectangle;
 		settings.states  = _CONFIG.states;
 		settings.state   = 'default';
 
@@ -38,7 +39,7 @@ lychee.define('game.entity.Tile').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -46,7 +47,7 @@ lychee.define('game.entity.Tile').includes([
 
 		serialize: function() {
 
-			var data = _Sprite.prototype.serialize.call(this);
+			let data = _Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Tile';
 
 
@@ -80,7 +81,7 @@ lychee.define('game.entity.Tile').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -39,6 +39,15 @@ elif [ "$OS" == "linux" ]; then
 	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 	PROJECT_ROOT=$(realpath --relative-to=$LYCHEEJS_ROOT $PWD);
 
+elif [ "$OS" == "freebsd" ] || [ "$OS" == "netbsd" ]; then
+
+	# XXX: BSD requires Linux binary compatibility
+
+	OS="bsd";
+	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
+	PROJECT_ROOT=$(realpath --relative-to=$LYCHEEJS_ROOT $PWD);
+
 fi;
 
 if [ ! -f $LYCHEEJS_NODE ]; then
@@ -47,28 +56,8 @@ if [ ! -f $LYCHEEJS_NODE ]; then
 fi;
 
 
+cd $LYCHEEJS_ROOT;
+$LYCHEEJS_NODE ./bin/breeder.js --project=/$PROJECT_ROOT "$1" "$2" "$3" "$4";
 
-case "$1" in
-
-	init)
-		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js init "" --project=/$PROJECT_ROOT;
-	;;
-
-	pull)
-		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js pull "$2" --project=/$PROJECT_ROOT;
-	;;
-
-	push)
-		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js push "" --project=/$PROJECT_ROOT;
-	;;
-
-	*)
-		cd $LYCHEEJS_ROOT;
-		$LYCHEEJS_NODE ./bin/breeder.js help;
-	;;
-
-esac;
+exit $?;
 

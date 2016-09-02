@@ -3,13 +3,17 @@ lychee.define('lychee.ui.Sprite').includes([
 	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Entity = lychee.import('lychee.ui.Entity');
+
+
+
 	/*
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.frame   = 0;
@@ -36,14 +40,14 @@ lychee.define('lychee.ui.Sprite').includes([
 		delete settings.map;
 
 
-		lychee.ui.Entity.call(this, settings);
+		_Entity.call(this, settings);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -51,7 +55,7 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		deserialize: function(blob) {
 
-			var texture = lychee.deserialize(blob.texture);
+			let texture = lychee.deserialize(blob.texture);
 			if (texture !== null) {
 				this.setTexture(texture);
 			}
@@ -60,11 +64,11 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		serialize: function() {
 
-			var data = lychee.ui.Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.Sprite';
 
-			var settings = data['arguments'][0];
-			var blob     = (data['blob'] || {});
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
 
 
 			if (this.__animation.active === true) {
@@ -83,24 +87,28 @@ lychee.define('lychee.ui.Sprite').includes([
 				settings.map = {};
 
 
-				for (var stateId in this.__map) {
+				for (let stateId in this.__map) {
 
 					settings.map[stateId] = [];
 
 
-					var frames = this.__map[stateId];
-					for (var f = 0, fl = frames.length; f < fl; f++) {
+					let frames = this.__map[stateId] || null;
+					if (frames !== null) {
 
-						var frame  = frames[f];
-						var sframe = {};
+						for (let f = 0, fl = frames.length; f < fl; f++) {
 
-						if (frame.x !== 0) sframe.x = frame.x;
-						if (frame.y !== 0) sframe.y = frame.y;
-						if (frame.w !== 0) sframe.w = frame.w;
-						if (frame.h !== 0) sframe.h = frame.h;
+							let frame  = frames[f];
+							let sframe = {};
+
+							if (frame.x !== 0) sframe.x = frame.x;
+							if (frame.y !== 0) sframe.y = frame.y;
+							if (frame.w !== 0) sframe.w = frame.w;
+							if (frame.h !== 0) sframe.h = frame.h;
 
 
-						settings.map[stateId].push(sframe);
+							settings.map[stateId].push(sframe);
+
+						}
 
 					}
 
@@ -123,15 +131,17 @@ lychee.define('lychee.ui.Sprite').includes([
 
 			if (this.visible === false) return;
 
+			_Entity.prototype.render.call(this, renderer, offsetX, offsetY);
 
-			var texture = this.texture;
+
+			let texture = this.texture;
 			if (texture !== null) {
 
-				var alpha    = this.alpha;
-				var position = this.position;
+				let alpha    = this.alpha;
+				let position = this.position;
 
-				var x1 = 0;
-				var y1 = 0;
+				let x1 = 0;
+				let y1 = 0;
 
 
 				if (alpha !== 1) {
@@ -139,7 +149,7 @@ lychee.define('lychee.ui.Sprite').includes([
 				}
 
 
-				var map = this.getMap();
+				let map = this.getMap();
 				if (map !== null) {
 
 					x1 = position.x + offsetX - map.w / 2;
@@ -154,8 +164,8 @@ lychee.define('lychee.ui.Sprite').includes([
 
 				} else {
 
-					var hw = (this.width  / 2) || this.radius;
-					var hh = (this.height / 2) || this.radius;
+					let hw = (this.width  / 2) || this.radius;
+					let hh = (this.height / 2) || this.radius;
 
 					x1 = position.x + offsetX - hw;
 					y1 = position.y + offsetY - hh;
@@ -179,17 +189,17 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		update: function(clock, delta) {
 
-			lychee.ui.Entity.prototype.update.call(this, clock, delta);
+			_Entity.prototype.update.call(this, clock, delta);
 
 
-			var animation = this.__animation;
+			let animation = this.__animation;
 
 			// 1. Animation (Interpolation)
 			if (animation.active === true) {
 
 				if (animation.start !== null) {
 
-					var t = (clock - animation.start) / animation.duration;
+					let t = (clock - animation.start) / animation.duration;
 					if (t <= 1) {
 
 						this.frame = Math.max(0, Math.ceil(t * animation.frames) - 1);
@@ -219,15 +229,18 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		setAnimation: function(settings) {
 
-			if (settings instanceof Object) {
-
-				var duration = typeof settings.duration === 'number' ? settings.duration : 1000;
-				var frame    = typeof settings.frame === 'number'    ? settings.frame    : 0;
-				var frames   = typeof settings.frames === 'number'   ? settings.frames   : 25;
-				var loop     = settings.loop === true;
+			settings = settings instanceof Object ? settings : null;
 
 
-				var animation = this.__animation;
+			if (settings !== null) {
+
+				let duration = typeof settings.duration === 'number' ? settings.duration : 1000;
+				let frame    = typeof settings.frame === 'number'    ? settings.frame    : 0;
+				let frames   = typeof settings.frames === 'number'   ? settings.frames   : 25;
+				let loop     = settings.loop === true;
+
+
+				let animation = this.__animation;
 
 				animation.start    = null;
 				animation.active   = true;
@@ -247,21 +260,26 @@ lychee.define('lychee.ui.Sprite').includes([
 		},
 
 		clearAnimation: function() {
+
 			this.__animation.active = false;
 			this.frame = 0;
+
 		},
 
 		setState: function(id) {
 
-			var result = lychee.ui.Entity.prototype.setState.call(this, id);
+			id = typeof id === 'string' ? id : null;
+
+
+			let result = _Entity.prototype.setState.call(this, id);
 			if (result === true) {
 
-				var map = this.__map[this.state] || null;
+				let map = this.__map[this.state] || null;
 				if (map !== null) {
 
 					if (map instanceof Array) {
 
-						var statemap = this.getStateMap();
+						let statemap = this.getStateMap();
 						if (statemap !== null && statemap instanceof Object) {
 
 							this.clearAnimation();
@@ -311,23 +329,16 @@ lychee.define('lychee.ui.Sprite').includes([
 			texture = texture instanceof Texture ? texture : null;
 
 
-			if (true) {
+			this.texture = texture;
 
-				this.texture = texture;
-
-				return true;
-
-			}
-
-
-			return false;
+			return true;
 
 		},
 
 		getMap: function() {
 
-			var state = this.state;
-			var frame = this.frame;
+			let state = this.state;
+			let frame = this.frame;
 
 			if (this.__map[state] instanceof Array && this.__map[state][frame] !== undefined) {
 				return this.__map[state][frame];
@@ -340,21 +351,24 @@ lychee.define('lychee.ui.Sprite').includes([
 
 		setMap: function(map) {
 
-			var valid = false;
+			map = map instanceof Object ? map : null;
 
-			if (map instanceof Object) {
 
-				for (var stateId in map) {
+			let valid = false;
 
-					var frames = map[stateId];
+			if (map !== null) {
+
+				for (let stateId in map) {
+
+					let frames = map[stateId];
 					if (frames instanceof Array) {
 
 						this.__map[stateId] = [];
 
 
-						for (var f = 0, fl = frames.length; f < fl; f++) {
+						for (let f = 0, fl = frames.length; f < fl; f++) {
 
-							var frame = frames[f];
+							let frame = frames[f];
 							if (frame instanceof Object) {
 
 								frame.x = typeof frame.x === 'number' ? frame.x : 0;
@@ -386,7 +400,7 @@ lychee.define('lychee.ui.Sprite').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

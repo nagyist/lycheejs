@@ -6,11 +6,11 @@ lychee.define('game.ui.entity.Timeout').requires([
 	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Alpha   = lychee.import('lychee.effect.Alpha');
-	var _Visible = lychee.import('lychee.effect.Visible');
-	var _Entity  = lychee.import('lychee.ui.Entity');
-	var _FONT    = attachments["fnt"];
-	var _SOUND   = attachments["snd"];
+	const _Alpha   = lychee.import('lychee.effect.Alpha');
+	const _Visible = lychee.import('lychee.effect.Visible');
+	const _Entity  = lychee.import('lychee.ui.Entity');
+	const _FONT    = attachments["fnt"];
+	const _SOUND   = attachments["snd"];
 
 
 
@@ -18,9 +18,9 @@ lychee.define('game.ui.entity.Timeout').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.timeout = 30000;
@@ -73,7 +73,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -81,7 +81,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 
 		serialize: function() {
 
-			var data = _Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'game.ui.entity.Timeout';
 
 
@@ -94,12 +94,12 @@ lychee.define('game.ui.entity.Timeout').requires([
 			if (this.visible === false) return;
 
 
-			var alpha    = this.alpha;
-			var position = this.position;
-			var x        = position.x + offsetX;
-			var y        = position.y + offsetY;
-			var hwidth   = this.width  / 2;
-			var hheight  = this.height / 2;
+			let alpha    = this.alpha;
+			let position = this.position;
+			let x        = position.x + offsetX;
+			let y        = position.y + offsetY;
+			let hwidth   = this.width  / 2;
+			let hheight  = this.height / 2;
 
 
 			if (alpha !== 1) {
@@ -107,7 +107,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 			}
 
 
-			var pulse = this.__pulse;
+			let pulse = this.__pulse;
 			if (pulse.active === true) {
 
 				renderer.setAlpha(pulse.alpha);
@@ -126,7 +126,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 			}
 
 
-			var label = '' + ((this.timeout / 1000) | 0);
+			let label = '' + ((this.timeout / 1000) | 0);
 			if (label === '0') {
 				label = 'Fight!';
 			}
@@ -148,14 +148,14 @@ lychee.define('game.ui.entity.Timeout').requires([
 
 		update: function(clock, delta) {
 
-			var pulse = this.__pulse;
+			let pulse = this.__pulse;
 			if (pulse.active === true) {
 
 				if (pulse.start === null) {
 					pulse.start = clock;
 				}
 
-				var t = (clock - pulse.start) / pulse.duration;
+				let t = (clock - pulse.start) / pulse.duration;
 				if (t <= 1) {
 					pulse.alpha = (1 - t);
 				} else {
@@ -183,7 +183,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 
 			if (timeout !== null) {
 
-				var pulse = this.__pulse;
+				let pulse = this.__pulse;
 
 
 				pulse.alpha  = 1.0;
@@ -249,7 +249,7 @@ lychee.define('game.ui.entity.Timeout').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

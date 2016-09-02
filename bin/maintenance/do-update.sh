@@ -2,7 +2,7 @@
 
 
 USER_WHO=`whoami`;
-USER_LOG=`logname`;
+USER_LOG=`logname 2>/dev/null`;
 
 
 LYCHEEJS_ROOT=$(cd "$(dirname "$0")/../../"; pwd);
@@ -66,13 +66,30 @@ elif [ "$LYCHEEJS_CHANGE" == "" ]; then
 
 	if [ ! -d $LYCHEEJS_FOLDER/bin/runtime ]; then
 
-		cd $LYCHEEJS_FOLDER;
-		git clone --depth 1 --branch master --single-branch https://github.com/Artificial-Engineering/lycheejs-runtime.git ./bin/runtime;
+		DOWNLOAD_URL=$(curl -s https://api.github.com/repos/Artificial-Engineering/lycheejs-runtime/releases/latest | grep browser_download_url | grep lycheejs-runtime | head -n 1 | cut -d'"' -f4);
+
+		if [ "$DOWNLOAD_URL" != "" ]; then
+
+			cd $LYCHEEJS_FOLDER/bin;
+			curl -sSL $DOWNLOAD_URL > $LYCHEEJS_FOLDER/bin/runtime.zip;
+
+			mkdir $LYCHEEJS_FOLDER/bin/runtime;
+			cd $LYCHEEJS_FOLDER/bin/runtime;
+			unzip ../runtime.zip;
+
+			chmod +x $LYCHEEJS_FOLDER/bin/runtime/bin/*.sh;
+			chmod +x $LYCHEEJS_FOLDER/bin/runtime/bin/helper/*/*/github-release;
+			chmod +x $LYCHEEJS_FOLDER/bin/runtime/*/update.sh;
+			chmod +x $LYCHEEJS_FOLDER/bin/runtime/*/package.sh;
+
+			rm $LYCHEEJS_FOLDER/bin/runtime.zip;
+
+		fi;
 
 	else
 
 		cd $LYCHEEJS_FOLDER/bin/runtime;
-		./bin/update.sh;
+		"./bin/do-update.sh";
 
 	fi;
 

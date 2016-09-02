@@ -3,9 +3,9 @@ lychee.define('game.entity.Background').includes([
 	'lychee.app.Entity'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Entity  = lychee.import('lychee.app.Entity');
-	var _TEXTURE = attachments["png"];
-	var _CONFIG  = {
+	const _Entity  = lychee.import('lychee.app.Entity');
+	const _TEXTURE = attachments["png"];
+	const _CONFIG  = {
 		states: { 'default': 0 },
 		map:    {
 			'foreground': { x: 0, y: 0,   w: 1024, h: 512 },
@@ -19,9 +19,9 @@ lychee.define('game.entity.Background').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.origin    = { bgx: 0, bgy: 0, fgx: 0, fgy: 0 };
@@ -48,7 +48,7 @@ lychee.define('game.entity.Background').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -56,7 +56,7 @@ lychee.define('game.entity.Background').includes([
 
 		serialize: function() {
 
-			var data = _Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'game.entity.Background';
 
 
@@ -72,11 +72,11 @@ lychee.define('game.entity.Background').includes([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var fgmap = _CONFIG.map.foreground;
-			var bgmap = _CONFIG.map.background;
+			let fgmap = _CONFIG.map.foreground;
+			let bgmap = _CONFIG.map.background;
 
 
-			var buffer = this.__buffer;
+			let buffer = this.__buffer;
 			if (buffer === null) {
 				buffer = this.__buffer = renderer.createBuffer(this.width, this.height);
 			}
@@ -87,8 +87,8 @@ lychee.define('game.entity.Background').includes([
 				renderer.setBuffer(buffer);
 
 
-				var px1 = this.origin.bgx - (bgmap.w / 2) - bgmap.w;
-				var py1 = this.origin.bgy - bgmap.h;
+				let px1 = this.origin.bgx - (bgmap.w / 2) - bgmap.w;
+				let py1 = this.origin.bgy - bgmap.h;
 
 
 				renderer.drawBox(
@@ -115,8 +115,8 @@ lychee.define('game.entity.Background').includes([
 				}
 
 
-				var px2 = this.origin.fgx - (fgmap.w / 2) - fgmap.w;
-				var py2 = this.origin.fgy - fgmap.h;
+				let px2 = this.origin.fgx - (fgmap.w / 2) - fgmap.w;
+				let py2 = this.origin.fgy - fgmap.h;
 
 				while (px2 < this.width) {
 
@@ -140,10 +140,10 @@ lychee.define('game.entity.Background').includes([
 			}
 
 
-			var position = this.position;
+			let position = this.position;
 
-			var x1 = position.x + offsetX - this.width  / 2;
-			var y1 = position.y + offsetY - this.height / 2;
+			let x1 = position.x + offsetX - this.width  / 2;
+			let y1 = position.y + offsetY - this.height / 2;
 
 
 			renderer.drawBuffer(
@@ -171,7 +171,7 @@ lychee.define('game.entity.Background').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

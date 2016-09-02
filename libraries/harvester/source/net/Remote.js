@@ -7,10 +7,10 @@ lychee.define('harvester.net.Remote').requires([
 	'lychee.net.Tunnel'
 ]).exports(function(lychee, global, attachments) {
 
-	var _BENCODE = lychee.import('lychee.codec.BENCODE');
-	var _BITON   = lychee.import('lychee.codec.BITON');
-	var _JSON    = lychee.import('lychee.codec.JSON');
-	var _Tunnel  = lychee.import('lychee.net.Tunnel');
+	const _Tunnel  = lychee.import('lychee.net.Tunnel');
+	const _BENCODE = lychee.import('lychee.codec.BENCODE');
+	const _BITON   = lychee.import('lychee.codec.BITON');
+	const _JSON    = lychee.import('lychee.codec.JSON');
 
 
 
@@ -18,9 +18,9 @@ lychee.define('harvester.net.Remote').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		_Tunnel.call(this, settings);
@@ -30,7 +30,7 @@ lychee.define('harvester.net.Remote').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -40,7 +40,7 @@ lychee.define('harvester.net.Remote').requires([
 
 		serialize: function() {
 
-			var data = _Tunnel.prototype.serialize.call(this);
+			let data = _Tunnel.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.Remote';
 
 
@@ -65,7 +65,7 @@ lychee.define('harvester.net.Remote').requires([
 				headers['content-control']             = 'no-transform';
 
 
-				var codec = this.codec;
+				let codec = this.codec;
 				if (codec === _BENCODE) {
 					headers['content-type'] = 'application/bencode; charset=utf-8';
 				} else if (codec === _BITON) {
@@ -75,7 +75,7 @@ lychee.define('harvester.net.Remote').requires([
 				}
 
 
-				var event = headers['event'] || null;
+				let event = headers['event'] || null;
 				if (event === 'error') {
 					headers['status'] = '400 Bad Request';
 				}
@@ -87,7 +87,7 @@ lychee.define('harvester.net.Remote').requires([
 
 			} else {
 
-				var payload = null;
+				let payload = null;
 
 				if (typeof data === 'string') {
 					payload = new Buffer(data, 'utf8');
@@ -114,7 +114,7 @@ lychee.define('harvester.net.Remote').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

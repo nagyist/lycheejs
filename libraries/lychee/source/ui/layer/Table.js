@@ -1,12 +1,17 @@
 
 lychee.define('lychee.ui.layer.Table').requires([
 	'lychee.effect.Alpha',
+	'lychee.ui.Entity',
 	'lychee.ui.entity.Label'
 ]).includes([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	var _FONT = attachments["fnt"];
+	const _Alpha  = lychee.import('lychee.effect.Alpha');
+	const _Entity = lychee.import('lychee.ui.Entity');
+	const _Label  = lychee.import('lychee.ui.entity.Label');
+	const _Layer  = lychee.import('lychee.ui.Layer');
+	const _FONT   = attachments["fnt"];
 
 
 
@@ -14,18 +19,18 @@ lychee.define('lychee.ui.layer.Table').requires([
 	 * HELPERS
 	 */
 
-	var _on_change = function(entity) {
+	const _on_change = function(entity) {
 
-		var index = this.entities.indexOf(entity);
+		let index = this.entities.indexOf(entity);
 		if (index !== -1) {
 
-			var label  = Object.keys(this.model);
-			var object = {};
+			let label  = Object.keys(this.model);
+			let object = {};
 
-			for (var e = Math.floor(index / label.length) * label.length, el = e + label.length; e < el; e++) {
+			for (let e = Math.floor(index / label.length) * label.length, el = e + label.length; e < el; e++) {
 
-				var property = label[e % label.length];
-				var value    = this.entities[e].value;
+				let property = label[e % label.length];
+				let value    = this.entities[e].value;
 
 				object[property] = value;
 
@@ -40,21 +45,21 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 	};
 
-	var _on_relayout = function() {
+	const _on_relayout = function() {
 
-		var entities = this.entities;
-		var label    = this.__label;
-		var type     = this.type;
-		var value    = this.value;
-		var x1       = -1/2 * this.width;
-		var y1       = -1/2 * this.height;
-		var dim_x    = 0;
-		var dim_y    = 0;
-		var off_x    = 0;
-		var off_y    = 0;
+		let entities = this.entities;
+		let label    = this.__label;
+		let type     = this.type;
+		let value    = this.value;
+		let x1       = -1/2 * this.width;
+		let y1       = -1/2 * this.height;
+		let dim_x    = 0;
+		let dim_y    = 0;
+		let off_x    = 0;
+		let off_y    = 0;
 
 
-		if (type === Class.TYPE.horizontal) {
+		if (type === Composite.TYPE.horizontal) {
 
 			off_x = 0;
 			off_y = 64;
@@ -62,23 +67,23 @@ lychee.define('lychee.ui.layer.Table').requires([
 			dim_y = 0;
 
 
-			for (var v = 0, vl = value.length; v < vl; v++) {
+			for (let v = 0, vl = value.length; v < vl; v++) {
 
 				dim_y = 0;
 
-				for (var l = 0, ll = label.length; l < ll; l++) {
+				for (let l = 0, ll = label.length; l < ll; l++) {
 					dim_y = Math.max(dim_y, entities[v * ll + l].height + 32);
 				}
 
 
-				for (var l = 0, ll = label.length; l < ll; l++) {
+				for (let l = 0, ll = label.length; l < ll; l++) {
 
-					var entity = entities[v * ll + l];
+					let entity = entities[v * ll + l];
 
 
 					entity.alpha = 0.0;
-					entity.addEffect(new lychee.effect.Alpha({
-						type:     lychee.effect.Alpha.TYPE.easeout,
+					entity.addEffect(new _Alpha({
+						type:     _Alpha.TYPE.easeout,
 						duration: 300
 					}));
 
@@ -96,7 +101,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 			}
 
-		} else if (type === Class.TYPE.vertical) {
+		} else if (type === Composite.TYPE.vertical) {
 
 			off_x = 128;
 			off_y = 0;
@@ -104,23 +109,23 @@ lychee.define('lychee.ui.layer.Table').requires([
 			dim_y = 0;
 
 
-			for (var l = 0, ll = label.length; l < ll; l++) {
+			for (let l = 0, ll = label.length; l < ll; l++) {
 
 				dim_y = 0;
 
-				for (var v = 0, vl = value.length; v < vl; v++) {
+				for (let v = 0, vl = value.length; v < vl; v++) {
 					dim_y = Math.max(dim_y, entities[v * ll + l].height + 32);
 				}
 
 
-				for (var v = 0, vl = value.length; v < vl; v++) {
+				for (let v = 0, vl = value.length; v < vl; v++) {
 
-					var entity = entities[v * ll + l];
+					let entity = entities[v * ll + l];
 
 
 					entity.alpha = 0.0;
-					entity.addEffect(new lychee.effect.Alpha({
-						type:     lychee.effect.Alpha.TYPE.easeout,
+					entity.addEffect(new _Alpha({
+						type:     _Alpha.TYPE.easeout,
 						duration: 300
 					}));
 
@@ -142,7 +147,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 	};
 
-	var _render_buffer = function(renderer) {
+	const _render_buffer = function(renderer) {
 
 		if (this.__buffer !== null) {
 			this.__buffer.resize(this.width, this.height);
@@ -156,15 +161,15 @@ lychee.define('lychee.ui.layer.Table').requires([
 		renderer.setAlpha(1.0);
 
 
-		var entities = this.entities;
-		var offset   = this.offset;
-		var el       = entities.length;
+		let entities = this.entities;
+		let offset   = this.offset;
+		let el       = entities.length;
 		if (el > 0) {
 
-			var ox = this.width  / 2 + offset.x;
-			var oy = this.height / 2 + offset.y;
+			let ox = this.width  / 2 + offset.x;
+			let oy = this.height / 2 + offset.y;
 
-			for (var e = 0; e < el; e++) {
+			for (let e = 0; e < el; e++) {
 
 				entities[e].render(
 					renderer,
@@ -187,14 +192,14 @@ lychee.define('lychee.ui.layer.Table').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.font  = _FONT;
 		this.model = {};
-		this.type  = Class.TYPE.horizontal;
+		this.type  = Composite.TYPE.horizontal;
 		this.value = [];
 
 		this.__cache  = [];
@@ -208,19 +213,21 @@ lychee.define('lychee.ui.layer.Table').requires([
 		this.setValue(settings.value);
 
 
-		if (this.type === Class.TYPE.horizontal) {
+		if (this.type === Composite.TYPE.horizontal) {
 			settings.width  = typeof settings.width === 'number'  ? settings.width  : 512;
 			settings.height = typeof settings.height === 'number' ? settings.height : 384;
-		} else if (this.type === Class.TYPE.vertical) {
+		} else if (this.type === Composite.TYPE.vertical) {
 			settings.width  = typeof settings.width === 'number'  ? settings.width  : 384;
 			settings.height = typeof settings.height === 'number' ? settings.height : 512;
 		}
 
-		settings.shape    = lychee.ui.Entity.SHAPE.rectangle;
+		settings.shape    = _Entity.SHAPE.rectangle;
 		settings.relayout = false;
 
 
-		lychee.ui.Layer.call(this, settings);
+		_Layer.call(this, settings);
+
+		settings = null;
 
 
 
@@ -234,13 +241,13 @@ lychee.define('lychee.ui.layer.Table').requires([
 	};
 
 
-	Class.TYPE = {
+	Composite.TYPE = {
 		horizontal: 0,
 		vertical:   1
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -248,7 +255,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 		deserialize: function(blob) {
 
-			var font = lychee.deserialize(blob.font);
+			let font = lychee.deserialize(blob.font);
 			if (font !== null) {
 				this.setFont(font);
 			}
@@ -256,9 +263,9 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 			if (blob.model instanceof Object) {
 
-				var model = {};
+				let model = {};
 
-				for (var property in blob.model) {
+				for (let property in blob.model) {
 					model[property] = lychee.deserialize(blob.model[property]);
 				}
 
@@ -275,14 +282,14 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 		serialize: function() {
 
-			var data = lychee.ui.Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.layer.Table';
 
-			var settings = data['arguments'][0];
-			var blob     = (data['blob'] || {});
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
 
 
-			if (this.type !== Class.TYPE.horizontal) settings.type = this.type;
+			if (this.type !== Composite.TYPE.horizontal) settings.type = this.type;
 
 
 			if (this.font !== null) blob.font = lychee.serialize(this.font);
@@ -292,7 +299,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 				blob.model = {};
 
-				for (var property in this.model) {
+				for (let property in this.model) {
 					blob.model[property] = this.model[property];
 				}
 
@@ -318,24 +325,24 @@ lychee.define('lychee.ui.layer.Table').requires([
 			if (this.visible === false) return;
 
 
-			var alpha    = this.alpha;
-			var entities = this.entities;
-			var font     = this.font;
-			var label    = this.__label;
-			var model    = this.model;
-			var position = this.position;
-			var type     = this.type;
-			var value    = this.value;
+			let alpha    = this.alpha;
+			let entities = this.entities;
+			let font     = this.font;
+			let label    = this.__label;
+			let model    = this.model;
+			let position = this.position;
+			let type     = this.type;
+			let value    = this.value;
 
 
-			var x1    = position.x + offsetX - this.width  / 2;
-			var y1    = position.y + offsetY - this.height / 2;
-			var x2    = position.x + offsetX + this.width  / 2;
-			var y2    = position.y + offsetY + this.height / 2;
-			var dim_x = 0;
-			var dim_y = 0;
-			var off_x = 0;
-			var off_y = 0;
+			let x1    = position.x + offsetX - this.width  / 2;
+			let y1    = position.y + offsetY - this.height / 2;
+			let x2    = position.x + offsetX + this.width  / 2;
+			let y2    = position.y + offsetY + this.height / 2;
+			let dim_x = 0;
+			let dim_y = 0;
+			let off_x = 0;
+			let off_y = 0;
 
 
 
@@ -344,7 +351,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 			}
 
 
-			if (type === Class.TYPE.horizontal) {
+			if (type === Composite.TYPE.horizontal) {
 
 				renderer.drawBox(
 					x1,
@@ -361,7 +368,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 				dim_x = this.width / label.length;
 				dim_y = 64;
 
-				for (var l = 0, ll = label.length; l < ll; l++) {
+				for (let l = 0, ll = label.length; l < ll; l++) {
 
 
 					renderer.drawBox(
@@ -385,7 +392,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 				}
 
-			} else if (type === Class.TYPE.vertical) {
+			} else if (type === Composite.TYPE.vertical) {
 
 				renderer.drawBox(
 					x1 + 128,
@@ -402,11 +409,11 @@ lychee.define('lychee.ui.layer.Table').requires([
 				dim_x = 128;
 				dim_y = 0;
 
-				for (var l = 0, ll = label.length; l < ll; l++) {
+				for (let l = 0, ll = label.length; l < ll; l++) {
 
 					dim_y = 0;
 
-					for (var v = 0, vl = value.length; v < vl; v++) {
+					for (let v = 0, vl = value.length; v < vl; v++) {
 						dim_y = Math.max(dim_y, entities[v * ll + l].height + 32);
 					}
 
@@ -497,9 +504,9 @@ lychee.define('lychee.ui.layer.Table').requires([
 				this.model   = {};
 				this.__cache = [];
 
-				for (var property in model) {
+				for (let property in model) {
 
-					var instance = model[property];
+					let instance = model[property];
 					if (instance !== null && typeof instance.setValue === 'function') {
 						this.model[property] = lychee.serialize(model[property]);
 					} else {
@@ -525,7 +532,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 		setType: function(type) {
 
-			type = lychee.enumof(Class.TYPE, type) ? type : null;
+			type = lychee.enumof(Composite.TYPE, type) ? type : null;
 
 
 			if (type !== null) {
@@ -550,23 +557,23 @@ lychee.define('lychee.ui.layer.Table').requires([
 
 			if (value !== null) {
 
-				var keys = Object.keys(this.model);
-				var val  = value.filter(function(v) {
+				let keys = Object.keys(this.model);
+				let val  = value.filter(function(v) {
 					return keys.join(',') === Object.keys(v).join(',');
 				});
 
 
 				if (keys.length * val.length > this.__cache.length) {
 
-					var cl = (keys.length * val.length - this.__cache.length) / keys.length;
-					for (var c = 0; c < cl; c++) {
+					let cl = (keys.length * val.length - this.__cache.length) / keys.length;
+					for (let c = 0; c < cl; c++) {
 
-						for (var k = 0, kl = keys.length; k < kl; k++) {
+						for (let k = 0, kl = keys.length; k < kl; k++) {
 
-							var key    = keys[k];
-							var entity = lychee.deserialize(this.model[key]);
+							let key    = keys[k];
+							let entity = lychee.deserialize(this.model[key]);
 							if (entity === null) {
-								entity = new lychee.ui.entity.Label({
+								entity = new _Label({
 									value: '(Invalid UI Entity)'
 								});
 							} else if (typeof entity.bind === 'function') {
@@ -583,14 +590,14 @@ lychee.define('lychee.ui.layer.Table').requires([
 				}
 
 
-				for (var v = 0, e = 0, vl = val.length; v < vl; v++) {
+				for (let v = 0, e = 0, vl = val.length; v < vl; v++) {
 
-					var object = val[v];
+					let object = val[v];
 
-					for (var property in object) {
+					for (let property in object) {
 
-						var entity = this.__cache[e];
-						var value  = object[property];
+						let entity = this.__cache[e];
+						let value  = object[property];
 
 						if (typeof value === 'string') {
 							entity.setValue(value);
@@ -624,7 +631,7 @@ lychee.define('lychee.ui.layer.Table').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -5,8 +5,8 @@ lychee.define('game.net.Server').requires([
 	'lychee.net.Server'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Control = lychee.import('game.net.remote.Control');
-	var _Server  = lychee.import('lychee.net.Server');
+	const _Control = lychee.import('game.net.remote.Control');
+	const _Server  = lychee.import('lychee.net.Server');
 
 
 
@@ -14,13 +14,15 @@ lychee.define('game.net.Server').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 		}, data);
 
 
 		_Server.call(this, settings);
+
+		settings = null;
 
 
 
@@ -48,7 +50,7 @@ lychee.define('game.net.Server').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -56,7 +58,7 @@ lychee.define('game.net.Server').requires([
 
 		serialize: function() {
 
-			var data = _Server.prototype.serialize.call(this);
+			let data = _Server.prototype.serialize.call(this);
 			data['constructor'] = 'game.net.Server';
 
 
@@ -67,7 +69,7 @@ lychee.define('game.net.Server').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

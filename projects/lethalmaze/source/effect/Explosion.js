@@ -1,9 +1,9 @@
 
 lychee.define('game.effect.Explosion').exports(function(lychee, global, attachments) {
 
-	var _CONFIG  = attachments["json"].buffer;
-	var _TEXTURE = attachments["png"];
-	var _SOUND   = attachments["snd"];
+	const _CONFIG  = attachments["json"].buffer;
+	const _TEXTURE = attachments["png"];
+	const _SOUND   = attachments["snd"];
 
 
 
@@ -11,7 +11,7 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(settings) {
+	let Composite = function(settings) {
 
 		this.delay    = 0;
 		this.duration = 250;
@@ -27,9 +27,9 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 
 		// No data validation garbage allowed for effects
 
-		var delay    = typeof settings.delay === 'number'    ? (settings.delay | 0)    : null;
-		var duration = typeof settings.duration === 'number' ? (settings.duration | 0) : null;
-		var position = settings.position instanceof Object   ? settings.position       : null;
+		let delay    = typeof settings.delay === 'number'    ? (settings.delay | 0)    : null;
+		let duration = typeof settings.duration === 'number' ? (settings.duration | 0) : null;
+		let position = settings.position instanceof Object   ? settings.position       : null;
 
 		if (delay !== null) {
 			this.delay = delay;
@@ -48,13 +48,13 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		// deserialize: function(blob) {},
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.delay !== 0)      settings.delay    = this.delay;
@@ -81,17 +81,17 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var t = (this.__clock - this.__start) / this.duration;
+			let t = (this.__clock - this.__start) / this.duration;
 			if (t > 0 && t <= 1) {
 
-				var frame    = (this.__frame | 0);
-				var map      = this.__map[frame] || null;
-				var position = this.position;
+				let frame    = (this.__frame | 0);
+				let map      = this.__map[frame] || null;
+				let position = this.position;
 
 				if (map !== null) {
 
-					var x1 = position.x + offsetX - map.w / 2;
-					var y1 = position.y + offsetY - map.h / 2;
+					let x1 = position.x + offsetX - map.w / 2;
+					let y1 = position.y + offsetY - map.h / 2;
 
 
 					renderer.drawSprite(
@@ -117,7 +117,7 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 			}
 
 
-			var t = (clock - this.__start) / this.duration;
+			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 
 				return true;
@@ -136,10 +136,9 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 			}
 
 
-			var origin = this.__origin;
-			var frame  = this.frame;
-
-			var f      = origin;
+			let origin = this.__origin;
+			let frame  = this.frame;
+			let f      = origin;
 
 			if (t <= 1) {
 
@@ -165,7 +164,7 @@ lychee.define('game.effect.Explosion').exports(function(lychee, global, attachme
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

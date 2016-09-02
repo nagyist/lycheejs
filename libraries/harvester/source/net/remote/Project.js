@@ -5,10 +5,8 @@ lychee.define('harvester.net.remote.Project').requires([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CACHE   = {};
-	var _MAIN    = null;
-	var _Service = lychee.import('lychee.net.Service');
-	var _Server  = lychee.import('harvester.mod.Server');
+	const _Service = lychee.import('lychee.net.Service');
+	const _Server  = lychee.import('harvester.mod.Server');
 
 
 
@@ -16,34 +14,21 @@ lychee.define('harvester.net.remote.Project').requires([
 	 * HELPERS
 	 */
 
-	var _serialize_web = function(project) {
+	const _serialize_web = function(project) {
 
-		var cache = _CACHE[project.identifier] || null;
-		if (cache === null) {
-
-			cache = _CACHE[project.identifier] = [];
-
-
-			if (_MAIN !== null) {
-
-				var hosts = _MAIN.getHosts();
-				if (hosts.length > 0) {
-					cache.push.apply(cache, hosts);
-				}
-
-			}
-
+		let main = global.MAIN || null;
+		if (main !== null) {
+			return main.getHosts();
 		}
 
-
-		return cache;
+		return [];
 
 	};
 
-	var _serialize = function(project) {
+	const _serialize = function(project) {
 
-		var filesystem = null;
-		var server     = null;
+		let filesystem = null;
+		let server     = null;
 
 		if (project.filesystem !== null) {
 			filesystem = project.filesystem.root;
@@ -70,13 +55,14 @@ lychee.define('harvester.net.remote.Project').requires([
 
 	};
 
+	const _on_start = function(data) {
 
-	var _on_start = function(data) {
+		let identifier = data.identifier || null;
+		let main       = global.MAIN     || null;
 
-		var identifier = data.identifier || null;
-		if (identifier !== null && _MAIN !== null) {
+		if (identifier !== null && main !== null) {
 
-			var project = _MAIN._projects[identifier] || null;
+			let project = main._projects[identifier] || null;
 			if (project !== null && project.server === null) {
 
 				_Server.process(project);
@@ -97,12 +83,14 @@ lychee.define('harvester.net.remote.Project').requires([
 
 	};
 
-	var _on_stop = function(data) {
+	const _on_stop = function(data) {
 
-		var identifier = data.identifier || null;
-		if (identifier !== null && _MAIN !== null) {
+		let identifier = data.identifier || null;
+		let main       = global.MAIN     || null;
 
-			var project = _MAIN._projects[identifier] || null;
+		if (identifier !== null && main !== null) {
+
+			let project = main._projects[identifier] || null;
 			if (project !== null && project.server !== null) {
 
 				project.server.destroy();
@@ -130,12 +118,9 @@ lychee.define('harvester.net.remote.Project').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
 		_Service.call(this, 'project', remote, _Service.TYPE.remote);
-
-
-		_MAIN = lychee.import('MAIN');
 
 
 		this.bind('start', _on_start, this);
@@ -144,7 +129,7 @@ lychee.define('harvester.net.remote.Project').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -152,7 +137,7 @@ lychee.define('harvester.net.remote.Project').requires([
 
 		serialize: function() {
 
-			var data = _Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.remote.Project';
 
 
@@ -168,10 +153,12 @@ lychee.define('harvester.net.remote.Project').requires([
 
 		index: function(data) {
 
-			var tunnel = this.tunnel;
-			if (tunnel !== null && _MAIN !== null) {
+			let main   = global.MAIN || null;
+			let tunnel = this.tunnel;
 
-				var projects = Object.values(_MAIN._projects).filter(function(project) {
+			if (main !== null && tunnel !== null) {
+
+				let projects = Object.values(main._projects).filter(function(project) {
 					return /cultivator/g.test(project.identifier) === false;
 				}).map(_serialize);
 
@@ -192,7 +179,7 @@ lychee.define('harvester.net.remote.Project').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

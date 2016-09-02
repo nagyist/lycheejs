@@ -16,19 +16,19 @@ lychee.define('game.state.Game').requires([
 	'lychee.app.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Explosion = lychee.import('game.effect.Explosion');
-	var _Lightning = lychee.import('game.effect.Lightning');
-	var _Bullet    = lychee.import('game.app.sprite.Bullet');
-	var _Item      = lychee.import('game.app.sprite.Item');
-	var _Shake     = lychee.import('lychee.effect.Shake');
-	var _State     = lychee.import('lychee.app.State');
-	var _Tank      = lychee.import('game.app.sprite.Tank');
-	var _Wall      = lychee.import('game.app.sprite.Wall');
-	var _LEVEL     = lychee.import('game.data.LEVEL');
-	var _BLOB      = attachments["json"].buffer;
-	var _LEVELS    = attachments["levels.json"].buffer;
-	var _MUSIC     = attachments["msc"];
-	var _SOUNDS    = {
+	const _Explosion = lychee.import('game.effect.Explosion');
+	const _Lightning = lychee.import('game.effect.Lightning');
+	const _Bullet    = lychee.import('game.app.sprite.Bullet');
+	const _Item      = lychee.import('game.app.sprite.Item');
+	const _Shake     = lychee.import('lychee.effect.Shake');
+	const _State     = lychee.import('lychee.app.State');
+	const _Tank      = lychee.import('game.app.sprite.Tank');
+	const _Wall      = lychee.import('game.app.sprite.Wall');
+	const _LEVEL     = lychee.import('game.data.LEVEL');
+	const _BLOB      = attachments["json"].buffer;
+	const _LEVELS    = attachments["levels.json"].buffer;
+	const _MUSIC     = attachments["msc"];
+	const _SOUNDS    = {
 		kill:  attachments["kill.snd"],
 		spawn: attachments["spawn.snd"]
 	};
@@ -39,12 +39,12 @@ lychee.define('game.state.Game').requires([
 	 * HELPERS
 	 */
 
-	var _lightning = function(position) {
+	const _lightning_effect = function(position) {
 
 		position = position instanceof Object ? position : null;
 
 
-		var portal = this.queryLayer('game', 'portals > portal');
+		let portal = this.queryLayer('game', 'portals > portal');
 		if (portal !== null) {
 
 			portal.addEffect(new _Lightning({
@@ -59,20 +59,20 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _explode = function(position) {
+	const _explode = function(position) {
 
 		position = position instanceof Object ? position : null;
 
 
-		var objects = this.queryLayer('game', 'objects');
-		var terrain = this.queryLayer('game', 'terrain');
+		let objects = this.queryLayer('game', 'objects');
+		let terrain = this.queryLayer('game', 'terrain');
 
 		if (objects !== null && terrain !== null) {
 
 			if (objects.effects.length === 0 && terrain.effects.length === 0) {
 
-				var diff_x = Math.random() > 0.5 ? -8 : 8;
-				var diff_y = Math.random() > 0.5 ? -8 : 8;
+				let diff_x = Math.random() > 0.5 ? -8 : 8;
+				let diff_y = Math.random() > 0.5 ? -8 : 8;
 
 
 				objects.addEffect(new _Shake({
@@ -89,7 +89,7 @@ lychee.define('game.state.Game').requires([
 						x: diff_x / 2,
 						y: diff_y / 2
 					}
-				}))
+				}));
 
 			}
 
@@ -110,31 +110,31 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _respawn = function(tank) {
+	const _respawn = function(tank) {
 
 		_kill.call(this, tank);
 
 
-		var objects = this.queryLayer('game', 'objects');
-		var portal  = this.queryLayer('game', 'portals > portal');
+		let objects = this.queryLayer('game', 'objects');
+		let portal  = this.queryLayer('game', 'portals > portal');
 
 		if (objects !== null && portal.effects.length > 0) {
 
-			for (var pe = 0, pel = portal.effects.length; pe < pel; pe++) {
+			for (let pe = 0, pel = portal.effects.length; pe < pel; pe++) {
 
-				var effect   = portal.effects[pe];
-				var position = effect.position;
+				let effect   = portal.effects[pe];
+				let position = effect.position;
 
 				if (effect instanceof _Lightning) {
 
-					var valid = Math.abs(position.x) > portal.width || Math.abs(position.y) > portal.height;
+					let valid = Math.abs(position.x) > portal.width || Math.abs(position.y) > portal.height;
 					if (valid === true && effect.__alpha < 0.5) {
 
 						position.x = ((position.x / tank.width)  | 0) * tank.width  + tank.width  / 2;
 						position.y = ((position.y / tank.height) | 0) * tank.height + tank.height / 2;
 
 
-						var entity = objects.getEntity(null, position);
+						let entity = objects.getEntity(null, position);
 						if (entity === null) {
 
 							tank.position.x = position.x;
@@ -167,9 +167,9 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _spawn = function(tank) {
+	const _spawn = function(tank) {
 
-		var objects = this.queryLayer('game', 'objects');
+		let objects = this.queryLayer('game', 'objects');
 		if (objects.entities.indexOf(tank) === -1) {
 
 			tank.removeEffects();
@@ -190,9 +190,9 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _kill = function(tank) {
+	const _kill = function(tank) {
 
-		var objects = this.queryLayer('game', 'objects');
+		let objects = this.queryLayer('game', 'objects');
 		if (objects.entities.indexOf(tank) !== -1) {
 
 			tank.removeEffects();
@@ -202,23 +202,23 @@ lychee.define('game.state.Game').requires([
 
 		}
 
-		var index = this.__players.indexOf(tank);
+		let index = this.__players.indexOf(tank);
 		if (index !== -1) {
 			this.__players.splice(index, 1);
 		}
 
 	};
 
-	var _on_init = function(data) {
+	const _on_init = function(data) {
 
-		var control = this.queryLayer('ui', 'control');
-		var timeout = this.queryLayer('ui', 'timeout');
+		let control = this.queryLayer('ui', 'control');
+		let timeout = this.queryLayer('ui', 'timeout');
 
 		if (control !== null && timeout !== null) {
 
-			for (var p = 0, pl = data.players.length; p < pl; p++) {
+			for (let p = 0, pl = data.players.length; p < pl; p++) {
 
-				var tank = this.__players[p] || null;
+				let tank = this.__players[p] || null;
 				if (tank !== null) {
 
 					if (data.tid === p) {
@@ -240,11 +240,11 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _on_control = function(data) {
+	const _on_control = function(data) {
 
-		var player = this.__player;
-		var result = false;
-		var tid    = data.tid;
+		let player = this.__player;
+		let result = false;
+		let tid    = data.tid;
 
 		if (tid !== null) {
 			player = this.__players[tid] || null;
@@ -253,10 +253,10 @@ lychee.define('game.state.Game').requires([
 
 		if (data.positions !== undefined) {
 
-			for (var p = 0, pl = data.positions.length; p < pl; p++) {
+			for (let p = 0, pl = data.positions.length; p < pl; p++) {
 
-				var pos   = data.positions[p] || null;
-				var other = this.__players[p] || null;
+				let pos   = data.positions[p] || null;
+				let other = this.__players[p] || null;
 				if (pos !== null && other !== null) {
 
 					if (pos.x !== -1 && pos.y !== -1) {
@@ -279,15 +279,15 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var bullets  = this.queryLayer('game', 'bullets');
-			var objects  = this.queryLayer('game', 'objects');
-			var entity   = null;
-			var position = {
+			let bullets  = this.queryLayer('game', 'bullets');
+			let objects  = this.queryLayer('game', 'objects');
+			let entity   = null;
+			let position = {
 				x: player.position.x,
 				y: player.position.y
 			};
 
-			var velocity = {
+			let velocity = {
 				x: 0,
 				y: 0
 			};
@@ -361,13 +361,13 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _on_update = function(data) {
+	const _on_update = function(data) {
 
 		if (data.players === undefined) return;
 
 
-		var control = this.queryLayer('ui', 'control');
-		var timeout = this.queryLayer('ui', 'timeout');
+		let control = this.queryLayer('ui', 'control');
+		let timeout = this.queryLayer('ui', 'timeout');
 
 
 		if (timeout !== null) {
@@ -377,9 +377,9 @@ lychee.define('game.state.Game').requires([
 
 		if (this.__players.length < data.players.length) {
 
-			for (var p = 0, pl = data.players.length; p < pl; p++) {
+			for (let p = 0, pl = data.players.length; p < pl; p++) {
 
-				var tank = this.__tanks[p] || null;
+				let tank = this.__tanks[p] || null;
 				if (tank !== null) {
 
 					if (data.tid === p) {
@@ -394,9 +394,9 @@ lychee.define('game.state.Game').requires([
 
 		} else if (this.__players.length > data.players.length) {
 
-			for (var p = 0, pl = this.__players.length; p < pl; p++) {
+			for (let p = 0, pl = this.__players.length; p < pl; p++) {
 
-				var tank = this.__tanks[p] || null;
+				let tank = this.__tanks[p] || null;
 				if (tank !== null) {
 
 					if (p >= data.players.length) {
@@ -426,10 +426,10 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _on_start = function(data) {
+	const _on_start = function(data) {
 
-		var control = this.queryLayer('ui', 'control');
-		var timeout = this.queryLayer('ui', 'timeout');
+		let control = this.queryLayer('ui', 'control');
+		let timeout = this.queryLayer('ui', 'timeout');
 
 		if (control !== null && timeout !== null) {
 
@@ -448,7 +448,7 @@ lychee.define('game.state.Game').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -468,17 +468,17 @@ lychee.define('game.state.Game').requires([
 		 * INITIALIZATION
 		 */
 
-		var viewport = this.viewport;
+		let viewport = this.viewport;
 		if (viewport !== null) {
 
 			viewport.bind('reshape', function(orientation, rotation) {
 
-				var renderer = this.renderer;
+				let renderer = this.renderer;
 				if (renderer !== null) {
 
-					var entity = null;
-					var width  = renderer.width;
-					var height = renderer.height;
+					let entity = null;
+					let width  = renderer.width;
+					let height = renderer.height;
 
 
 					entity = this.queryLayer('ui', 'control');
@@ -505,7 +505,7 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -513,7 +513,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -529,31 +529,31 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			var bullets = this.queryLayer('game', 'bullets');
-			var objects = this.queryLayer('game', 'objects');
-			var portal  = this.queryLayer('game', 'portals > portal');
+			let bullets = this.queryLayer('game', 'bullets');
+			let objects = this.queryLayer('game', 'objects');
+			let portal  = this.queryLayer('game', 'portals > portal');
 
 			if (bullets !== null && objects !== null) {
 
-				var entities = objects.entities;
-				var items    = this.__items;
-				var players  = this.__players;
+				let entities = objects.entities;
+				let items    = this.__items;
+				let players  = this.__players;
 
 
-				for (var p = 0, pl = players.length; p < pl; p++) {
+				for (let p = 0, pl = players.length; p < pl; p++) {
 
-					var player = players[p];
+					let player = players[p];
 
-					for (var e = 0, el = entities.length; e < el; e++) {
+					for (let e = 0, el = entities.length; e < el; e++) {
 
-						var entity = entities[e];
+						let entity = entities[e];
 						if (entity === player) continue;
 
 						if (entity.collidesWith(player)) {
 
 							if (entity instanceof _Item) {
 
-								var result = player.powerup();
+								let result = player.powerup();
 								if (result === true) {
 
 									items.push(entity);
@@ -572,13 +572,13 @@ lychee.define('game.state.Game').requires([
 				}
 
 
-				for (var p = 0, pl = players.length; p < pl; p++) {
+				for (let p = 0, pl = players.length; p < pl; p++) {
 
-					var player = players[p];
+					let player = players[p];
 
-					for (var b = 0, bl = this.__bullets[p].length; b < bl; b++) {
+					for (let b = 0, bl = this.__bullets[p].length; b < bl; b++) {
 
-						var bullet = this.__bullets[p][b];
+						let bullet = this.__bullets[p][b];
 
 						if (bullet.collidesWith(portal)) {
 
@@ -587,7 +587,7 @@ lychee.define('game.state.Game').requires([
 
 						} else {
 
-							var entity = objects.getEntity(null, bullet.position);
+							let entity = objects.getEntity(null, bullet.position);
 							if (entity !== null && entity !== player) {
 
 								if (entity instanceof _Tank) {
@@ -616,9 +616,9 @@ lychee.define('game.state.Game').requires([
 					}
 
 
-					for (var pe = 0, pel = portal.effects.length; pe < pel; pe++) {
+					for (let pe = 0, pel = portal.effects.length; pe < pel; pe++) {
 
-						var effect = portal.effects[pe];
+						let effect = portal.effects[pe];
 						if (effect.__alpha > 0.5) {
 
 							if (player.isAtPosition(effect.position)) {
@@ -634,12 +634,12 @@ lychee.define('game.state.Game').requires([
 
 				if (portal.effects.length > 0) {
 
-					for (var pe = 0, pel = portal.effects.length; pe < pel; pe++) {
+					for (let pe = 0, pel = portal.effects.length; pe < pel; pe++) {
 
-						var effect = portal.effects[pe];
+						let effect = portal.effects[pe];
 						if (effect instanceof _Lightning && effect.__start !== null && effect.__start < clock) {
 
-							var entity = objects.getEntity(null, effect.position);
+							let entity = objects.getEntity(null, effect.position);
 							if (entity !== null && entity instanceof _Wall) {
 								_explode.call(this, effect.position);
 								objects.removeEntity(entity);
@@ -656,10 +656,10 @@ lychee.define('game.state.Game').requires([
 
 					// XXX: Don't spawn the latest collected item again (player still above it)
 
-					for (var i = 0, il = 4; i < il; i++) {
+					for (let i = 0, il = 4; i < il; i++) {
 
 						objects.addEntity(items[i]);
-						_lightning.call(this, items[i].position);
+						_lightning_effect.call(this, items[i].position);
 
 						items.splice(i, 1);
 						il--;
@@ -690,7 +690,7 @@ lychee.define('game.state.Game').requires([
 			_State.prototype.enter.call(this, oncomplete);
 
 
-			var level = _LEVEL.decode(_LEVELS[data.level] || null) || null;
+			let level = _LEVEL.decode(_LEVELS[data.level] || null) || null;
 			if (level !== null) {
 
 				this.__bullets = [];
@@ -700,14 +700,14 @@ lychee.define('game.state.Game').requires([
 				this.__players = [];
 
 
-				var objects = this.queryLayer('game', 'objects');
+				let objects = this.queryLayer('game', 'objects');
 				if (objects !== null) {
 
 					objects.entities = [];
 
-					for (var o = 0, ol = level.objects.length; o < ol; o++) {
+					for (let o = 0, ol = level.objects.length; o < ol; o++) {
 
-						var object = level.objects[o];
+						let object = level.objects[o];
 
 						object.position.x -= objects.width  / 2;
 						object.position.y -= objects.height / 2;
@@ -725,14 +725,14 @@ lychee.define('game.state.Game').requires([
 				}
 
 
-				var terrain = this.queryLayer('game', 'terrain');
+				let terrain = this.queryLayer('game', 'terrain');
 				if (terrain !== null) {
 
 					terrain.entities = [];
 
-					for (var t = 0, tl = level.terrain.length; t < tl; t++) {
+					for (let t = 0, tl = level.terrain.length; t < tl; t++) {
 
-						var obj = level.terrain[t];
+						let obj = level.terrain[t];
 
 						obj.position.x -= terrain.width  / 2;
 						obj.position.y -= terrain.height / 2;
@@ -745,11 +745,11 @@ lychee.define('game.state.Game').requires([
 				}
 
 
-				var client = this.client;
+				let client = this.client;
 				if (client !== null) {
 
-					var control = this.queryLayer('ui', 'control');
-					var service = client.getService('control');
+					let control = this.queryLayer('ui', 'control');
+					let service = client.getService('control');
 
 					if (control !== null && service !== null) {
 
@@ -770,7 +770,7 @@ lychee.define('game.state.Game').requires([
 								};
 
 
-								var result = _on_control.call(this, data);
+								let result = _on_control.call(this, data);
 								if (result === true) {
 									service.control(data);
 								}
@@ -790,13 +790,13 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var input = this.input;
+			let input = this.input;
 			if (input !== null) {
 
 				input.unbind('key');
 				input.bind('key', function(key, name, delta) {
 
-					var control = this.queryLayer('ui', 'control');
+					let control = this.queryLayer('ui', 'control');
 					if (control !== null && control.visible === true) {
 						control.trigger('key', [ key, name, delta ]);
 					}
@@ -806,7 +806,7 @@ lychee.define('game.state.Game').requires([
 				input.unbind('touch', null, this);
 				input.bind('touch', function(id, position, delta) {
 
-					var control = this.queryLayer('ui', 'control');
+					let control = this.queryLayer('ui', 'control');
 					if (control !== null && control.visible === true) {
 						control.trigger('touch', [ id, position, delta ]);
 					}
@@ -816,7 +816,7 @@ lychee.define('game.state.Game').requires([
 				input.unbind('swipe', null, this);
 				input.bind('swipe', function(id, state, position, delta, swipe) {
 
-					var control = this.queryLayer('ui', 'control');
+					let control = this.queryLayer('ui', 'control');
 					if (control !== null && control.visible === true) {
 						control.trigger('swipe', [ id, state, position, delta, swipe ]);
 					}
@@ -826,7 +826,7 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var jukebox = this.jukebox;
+			let jukebox = this.jukebox;
 			if (jukebox !== null) {
 				jukebox.setVolume(0.25);
 				jukebox.play(_MUSIC);
@@ -840,14 +840,14 @@ lychee.define('game.state.Game').requires([
 			this.queryLayer('game', 'objects').setEntities([]);
 
 
-			var jukebox = this.jukebox;
+			let jukebox = this.jukebox;
 			if (jukebox !== null) {
 				jukebox.stop(_MUSIC);
 				jukebox.setVolume(1.0);
 			}
 
 
-			var input = this.input;
+			let input = this.input;
 			if (input !== null) {
 
 				input.unbind('key',   null, this);
@@ -857,7 +857,7 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var control = this.queryLayer('ui', 'control');
+			let control = this.queryLayer('ui', 'control');
 			if (control !== null) {
 
 				control.unbind('change', null, this);
@@ -866,16 +866,16 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var timeout = this.queryLayer('ui', 'timeout');
+			let timeout = this.queryLayer('ui', 'timeout');
 			if (timeout !== null) {
 				timeout.setVisible(true);
 			}
 
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('control');
+				let service = client.getService('control');
 				if (service !== null) {
 
 					service.unbind('init',    _on_init,    this);
@@ -895,7 +895,7 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

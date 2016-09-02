@@ -3,11 +3,11 @@ lychee.define('app.ui.entity.Bubble').includes([
 	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Entity  = lychee.import('lychee.ui.Entity');
-	var _CONFIG  = attachments["json"].buffer;
-	var _FONT    = attachments["fnt"];
-	var _TEXTURE = attachments["png"];
-	var _AVATAR  = {
+	const _Entity  = lychee.import('lychee.ui.Entity');
+	const _CONFIG  = attachments["json"].buffer;
+	const _FONT    = attachments["fnt"];
+	const _TEXTURE = attachments["png"];
+	const _AVATAR  = {
 		config:  attachments["avatar.json"].buffer,
 		texture: attachments["avatar.png"]
 	};
@@ -18,9 +18,9 @@ lychee.define('app.ui.entity.Bubble').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.key   = 'urine';
@@ -47,7 +47,7 @@ lychee.define('app.ui.entity.Bubble').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -55,12 +55,12 @@ lychee.define('app.ui.entity.Bubble').includes([
 
 		serialize: function() {
 
-			var data = _Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'app.ui.entity.Bubble';
 
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.key !== 'urine') settings.key   = this.key;
@@ -76,10 +76,10 @@ lychee.define('app.ui.entity.Bubble').includes([
 			if (this.visible === false) return;
 
 
-			var alpha    = this.alpha;
-			var position = this.position;
-			var map      = null;
-			var radius   = this.radius;
+			let alpha    = this.alpha;
+			let position = this.position;
+			let map      = null;
+			let radius   = this.radius;
 
 
 			if (alpha !== 1) {
@@ -206,7 +206,7 @@ lychee.define('app.ui.entity.Bubble').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

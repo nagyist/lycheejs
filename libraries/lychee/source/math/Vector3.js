@@ -1,137 +1,171 @@
 
 lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachments) {
 
-	var _type = typeof Float32Array !== 'undefined' ? Float32Array : Array;
 
 
-	var Class = function() {
+	/*
+	 * IMPLEMENTATION
+	 */
 
-		this._data = new _type(3);
+	let Composite = function(data) {
+
+		let settings = Object.assign({}, data);
+
+
+		this.x = typeof settings.x === 'number' ? (settings.x | 0) : 0;
+		this.y = typeof settings.y === 'number' ? (settings.y | 0) : 0;
+		this.z = typeof settings.z === 'number' ? (settings.z | 0) : 0;
+
+
+		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			let settings = {};
+
+
+			if (this.x !== 0) settings.x = this.x;
+			if (this.y !== 0) settings.y = this.y;
+			if (this.z !== 0) settings.z = this.z;
+
+
+			return {
+				'constructor': 'lychee.math.Vector3',
+				'arguments':   [ settings ],
+				'blob':        null
+			};
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
 
 		clone: function() {
 
-			var clone = new Class();
-
-			this.copy(clone);
-
-			return clone;
+			return new Composite({
+				x: this.x,
+				y: this.y,
+				z: this.z
+			});
 
 		},
 
 		copy: function(vector) {
 
-			vector.set(this._data[0], this._data[1], this._data[2]);
+			vector.set(this.x, this.y, this.z);
+
+
+			return this;
 
 		},
 
 		set: function(x, y, z) {
 
-			var d = this._data;
+			this.x = x;
+			this.y = y;
+			this.z = z;
 
 
-			d[0] = x;
-			d[1] = y;
-			d[2] = z;
+			return this;
 
 		},
 
 		add: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x += vector.x;
+			this.y += vector.y;
+			this.z += vector.z;
 
 
-			d[0] += v[0];
-			d[1] += v[1];
-			d[2] += v[2];
+			return this;
 
 		},
 
-		subtract: function(vector) {
+		sub: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x -= vector.x;
+			this.y -= vector.y;
+			this.z -= vector.z;
 
 
-			d[0] -= v[0];
-			d[1] -= v[1];
-			d[2] -= v[2];
+			return this;
 
 		},
 
 		multiply: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x *= vector.x;
+			this.y *= vector.y;
+			this.z *= vector.z;
 
 
-			d[0] *= v[0];
-			d[1] *= v[1];
-			d[2] *= v[2];
+			return this;
 
 		},
 
 		divide: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x /= vector.x;
+			this.y /= vector.y;
+			this.z /= vector.z;
 
 
-			d[0] /= v[0];
-			d[1] /= v[1];
-			d[2] /= v[2];
+			return this;
 
 		},
 
 		min: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x = Math.min(this.x, vector.x);
+			this.y = Math.min(this.y, vector.y);
+			this.z = Math.min(this.z, vector.z);
 
 
-			d[0] = Math.min(d[0], v[0]);
-			d[1] = Math.min(d[1], v[1]);
-			d[2] = Math.min(d[2], v[2]);
+			return this;
 
 		},
 
 		max: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x = Math.max(this.x, vector.x);
+			this.y = Math.max(this.y, vector.y);
+			this.z = Math.max(this.z, vector.z);
 
 
-			d[0] = Math.max(d[0], v[0]);
-			d[1] = Math.max(d[1], v[1]);
-			d[2] = Math.max(d[2], v[2]);
+			return this;
 
 		},
 
 		scale: function(scale) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x *= scale;
+			this.y *= scale;
+			this.z *= scale;
 
 
-			d[0] *= scale;
-			d[1] *= scale;
-			d[2] *= scale;
+			return this;
 
 		},
 
 		distance: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
-
-			var x = v[0] - d[0];
-			var y = v[1] - d[1];
-			var z = v[2] - d[2];
+			let x = vector.x - this.x;
+			let y = vector.y - this.y;
+			let z = vector.z - this.z;
 
 
 			return Math.sqrt(x * x + y * y + z * z);
@@ -140,12 +174,9 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 
 		squaredDistance: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
-
-			var x = v[0] - d[0];
-			var y = v[1] - d[1];
-			var z = v[2] - d[2];
+			let x = vector.x - this.x;
+			let y = vector.y - this.y;
+			let z = vector.z - this.z;
 
 
 			return (x * x + y * y + z * z);
@@ -154,11 +185,9 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 
 		length: function() {
 
-			var d = this._data;
-
-			var x = d[0];
-			var y = d[1];
-			var z = d[2];
+			let x = this.x;
+			let y = this.y;
+			let z = this.z;
 
 
 			return Math.sqrt(x * x + y * y + z * z);
@@ -167,11 +196,9 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 
 		squaredLength: function() {
 
-			var d = this._data;
-
-			var x = d[0];
-			var y = d[1];
-			var z = d[2];
+			let x = this.x;
+			let y = this.y;
+			let z = this.z;
 
 
 			return (x * x + y * y + z * z);
@@ -180,149 +207,150 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 
 		invert: function() {
 
-			var d = this._data;
+			this.x *= -1;
+			this.y *= -1;
+			this.z *= -1;
 
-			d[0] *= -1;
-			d[1] *= -1;
-			d[2] *= -1;
+
+			return this;
 
 		},
 
 		normalize: function() {
 
-			var d = this._data;
-
-			var x = d[0];
-			var y = d[1];
-			var z = d[2];
+			let x = this.x;
+			let y = this.y;
+			let z = this.z;
 
 
-			var length = (x * x + y * y + z * z);
+			let length = (x * x + y * y + z * z);
 			if (length > 0) {
 
 				length = 1 / Math.sqrt(length);
 
-				d[0] *= length;
-				d[1] *= length;
-				d[2] *= length;
+				this.x *= length;
+				this.x *= length;
+				this.z *= length;
 
 			}
+
+
+			return this;
 
 		},
 
 		scalar: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
-
-
-			return (d[0] * v[0] + d[1] * v[1] + d[2] * v[2]);
+			return (this.x * vector.x + this.y * vector.y + this.z * vector.z);
 
 		},
 
 		cross: function(vector) {
 
-			var d = this._data;
-			var v = vector._data;
+			let ax = this.x;
+			let ay = this.y;
+			let az = this.z;
 
-			var ax = d[0];
-			var ay = d[1];
-			var az = d[2];
-
-			var bx = v[0];
-			var by = v[1];
-			var bz = v[2];
+			let bx = vector.x;
+			let by = vector.y;
+			let bz = vector.z;
 
 
-			d[0] = ay * bz - az * by;
-			d[1] = az * bx - ax * bz;
-			d[2] = ax * by - ay * bx;
+			this.x = ay * bz - az * by;
+			this.y = az * bx - ax * bz;
+			this.z = ax * by - ay * bx;
+
+
+			return this;
 
 		},
 
 		interpolate: function(vector, t) {
 
-			var d = this._data;
-			var v = vector._data;
+			let dx = (vector.x - this.x);
+			let dy = (vector.y - this.y);
+			let dz = (vector.z - this.z);
 
 
-			d[0] += t * (v[0] - d[0]);
-			d[1] += t * (v[1] - d[1]);
-			d[2] += t * (v[2] - d[2]);
+			this.x += t * dx;
+			this.y += t * dy;
+			this.z += t * dz;
+
+
+			return this;
 
 		},
 
 		interpolateAdd: function(vector, t) {
 
-			var d = this._data;
-			var v = vector._data;
+ 			this.x += t * vector.x;
+			this.y += t * vector.y;
+			this.z += t * vector.z;
 
 
- 			d[0] += t * v[0];
-			d[1] += t * v[1];
-			d[2] += t * v[2];
+			return this;
 
 		},
 
 		interpolateSet: function(vector, t) {
 
-			var d = this._data;
-			var v = vector._data;
+			this.x = t * vector.x;
+			this.y = t * vector.y;
+			this.z = t * vector.z;
 
 
- 			d[0] = t * v[0];
-			d[1] = t * v[1];
-			d[2] = t * v[2];
+			return this;
 
 		},
 
-		applyMatrix4: function(matrix) {
+		applyMatrix: function(matrix) {
 
-			var d = this._data;
-			var m = matrix._data;
-
-			var x = d[0];
-			var y = d[1];
-			var z = d[2];
+			let x = this.x;
+			let y = this.y;
+			let z = this.z;
+			let m = matrix.data;
 
 
-			d[0] = m[0]*x  +  m[4]*y  + m[8]*z  + m[12];
-			d[1] = m[1]*x  +  m[5]*y  + m[9]*z  + m[13];
-			d[2] = m[2]*x  +  m[6]*y  + m[10]*z + m[14];
+			this.x = m[0] * x + m[4] * y + m[8]  * z + m[12];
+			this.y = m[1] * x + m[5] * y + m[9]  * z + m[13];
+			this.z = m[2] * x + m[6] * y + m[10] * z + m[14];
+
+
+			return this;
 
 		},
 
 		applyQuaternion: function(quaternion) {
 
-			var d = this._data;
-			var q = quaternion._data;
+			let vx = this.x;
+			let vy = this.y;
+			let vz = this.z;
+
+			let q  = quarternion.data;
+			let qx = q[0];
+			let qy = q[1];
+			let qz = q[2];
+			let qw = q[3];
+
+			let ix =  qw * vx + qy * vz - qz * vy;
+			let iy =  qw * vy + qz * vx - qx * vz;
+			let iz =  qw * vz + qx * vy - qy * vx;
+			let iw = -qx * vx - qy * vy - qz * vz;
 
 
-			var vx = d[0];
-			var vy = d[1];
-			var vz = d[2];
-
-			var qx = q[0];
-			var qy = q[1];
-			var qz = q[2];
-			var qw = q[3];
-
-			var ix =  qw * vx + qy * vz - qz * vy;
-			var iy =  qw * vy + qz * vx - qx * vz;
-			var iz =  qw * vz + qx * vy - qy * vx;
-			var iw = -qx * vx - qy * vy - qz * vz;
+			this.x = ix * qw + iw * -qx + iy * -qz - iz * -qy;
+			this.y = iy * qw + iw * -qy + iz * -qx - ix * -qz;
+			this.z = iz * qw + iw * -qz + ix * -qy - iy * -qx;
 
 
-			d[0] = ix * qw + iw * -qx + iy * -qz - iz * -qy;
-			d[1] = iy * qw + iw * -qy + iz * -qx - ix * -qz;
-			d[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx;
+			return this;
 
 		}
 
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

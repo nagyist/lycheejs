@@ -5,12 +5,11 @@ lychee.define('lychee.ui.entity.Download').tags({
 	'lychee.ui.entity.Button'
 ]).supports(function(lychee, global) {
 
-	if (typeof global.document !== 'undefined') {
-
-		if (typeof global.document.createElement === 'function') {
-			return true;
-		}
-
+	if (
+		typeof global.document !== 'undefined'
+		&& typeof global.document.createElement === 'function'
+	) {
+		return true;
 	}
 
 
@@ -18,11 +17,15 @@ lychee.define('lychee.ui.entity.Download').tags({
 
 }).exports(function(lychee, global, attachments) {
 
+	const _Button = lychee.import('lychee.ui.entity.Button');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _MIME = {
+	const _MIME_TYPE = {
 		'Config':  { name: 'Entity', ext: 'json',    mime: 'application/json'         },
 		'Font':    { name: 'Entity', ext: 'fnt',     mime: 'application/json'         },
 		'Music':   {
@@ -37,22 +40,21 @@ lychee.define('lychee.ui.entity.Download').tags({
 		'Stuff':   { name: 'Entity', ext: 'stuff',   mime: 'application/octet-stream' }
 	};
 
+	const _download = function(asset) {
 
-	var _download = function(asset) {
-
-		var data = asset.serialize();
-		var url  = data.arguments[0];
-		var name = url.split('/').pop();
-		var mime = _MIME[data.constructor] || _MIME['Stuff'];
+		let data = asset.serialize();
+		let url  = data.arguments[0];
+		let name = url.split('/').pop();
+		let mime = _MIME_TYPE[data.constructor] || _MIME_TYPE['Stuff'];
 
 
 		if (data.blob !== null) {
 
-			if (data.constructor.match(/Music|Sound/)) {
+			if (/Music|Sound/.test(data.constructor)) {
 
-				for (var ext in mime) {
+				for (let ext in mime) {
 
-					var element = global.document.createElement('a');
+					let element = global.document.createElement('a');
 
 					element.download = name + '.' + ext;
 					element.href     = data.blob.buffer[ext];
@@ -67,7 +69,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 					name = mime.name + '.' + mime.ext;
 				}
 
-				var element = global.document.createElement('a');
+				let element = global.document.createElement('a');
 
 				element.download = name;
 				element.href     = data.blob.buffer;
@@ -86,9 +88,9 @@ lychee.define('lychee.ui.entity.Download').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			label: 'DOWNLOAD'
 		}, data);
 
@@ -101,7 +103,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 		delete settings.value;
 
 
-		lychee.ui.entity.Button.call(this, settings);
+		_Button.call(this, settings);
 
 		settings = null;
 
@@ -123,7 +125,29 @@ lychee.define('lychee.ui.entity.Download').tags({
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			let data = _Button.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.ui.entity.Download';
+
+
+			return data;
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
 
 		setValue: function(value) {
 
@@ -159,7 +183,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

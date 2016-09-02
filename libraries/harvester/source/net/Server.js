@@ -7,14 +7,14 @@ lychee.define('harvester.net.Server').requires([
 	'lychee.net.Server'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CODEC    = {
+	const _File     = lychee.import('harvester.net.server.File');
+	const _Redirect = lychee.import('harvester.net.server.Redirect');
+	const _Remote   = lychee.import('harvester.net.Remote');
+	const _Server   = lychee.import('lychee.net.Server');
+	const _CODEC    = {
 		encode: function(data) { return data; },
 		decode: function(data) { return data; }
 	};
-	var _File     = lychee.import('harvester.net.server.File');
-	var _Redirect = lychee.import('harvester.net.server.Redirect');
-	var _Remote   = lychee.import('harvester.net.Remote');
-	var _Server   = lychee.import('lychee.net.Server');
 
 
 
@@ -22,9 +22,9 @@ lychee.define('harvester.net.Server').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			codec:  _CODEC,
 			remote: _Remote,
 			type:   _Server.TYPE.HTTP
@@ -45,7 +45,7 @@ lychee.define('harvester.net.Server').requires([
 
 			remote.bind('receive', function(payload, headers) {
 
-				var method = headers['method'];
+				let method = headers['method'];
 				if (method === 'OPTIONS') {
 
 					this.send({}, {
@@ -58,10 +58,10 @@ lychee.define('harvester.net.Server').requires([
 
 				} else {
 
-					var redirect = _Redirect.receive.call({ tunnel: this }, payload, headers);
+					let redirect = _Redirect.receive.call({ tunnel: this }, payload, headers);
 					if (redirect === false) {
 
-						var file = _File.receive.call({ tunnel: this }, payload, headers);
+						let file = _File.receive.call({ tunnel: this }, payload, headers);
 						if (file === false) {
 
 							this.send('File not found.', {
@@ -85,7 +85,7 @@ lychee.define('harvester.net.Server').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -95,7 +95,7 @@ lychee.define('harvester.net.Server').requires([
 
 		serialize: function() {
 
-			var data = _Server.prototype.serialize.call(this);
+			let data = _Server.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.Server';
 
 
@@ -106,7 +106,7 @@ lychee.define('harvester.net.Server').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -14,21 +14,26 @@ lychee.define('Input').tags({
 
 }).exports(function(lychee, global, attachments) {
 
+	const _Emitter   = lychee.import('lychee.event.Emitter');
+	const _INSTANCES = [];
+
+
+
 	/*
 	 * EVENTS
 	 */
 
-	var _instances = [];
+	let _mouseactive = false;
+	let _wheelactive = Date.now();
 
-	var _mouseactive = false;
-	var _listeners = {
+	const _listeners = {
 
 		keydown: function(event) {
 
-			var handled = false;
+			let handled = false;
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
-				handled = _process_key.call(_instances[i], event.keyCode, event.ctrlKey, event.altKey, event.shiftKey) || handled;
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				handled = _process_key.call(_INSTANCES[i], event.keyCode, event.ctrlKey, event.altKey, event.shiftKey) || handled;
 			}
 
 
@@ -41,18 +46,18 @@ lychee.define('Input').tags({
 
 		touchstart: function(event) {
 
-			var handled = false;
+			let handled = false;
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
 
 				if (event.touches && event.touches.length) {
 
-					for (var t = 0, tl = event.touches.length; t < tl; t++) {
-						handled = _process_touch.call(_instances[i], t, event.touches[t].pageX, event.touches[t].pageY) || handled;
+					for (let t = 0, tl = event.touches.length; t < tl; t++) {
+						handled = _process_touch.call(_INSTANCES[i], t, event.touches[t].pageX, event.touches[t].pageY) || handled;
 					}
 
 				} else {
-					handled = _process_touch.call(_instances[i], 0, event.pageX, event.pageY) || handled;
+					handled = _process_touch.call(_INSTANCES[i], 0, event.pageX, event.pageY) || handled;
 				}
 
 			}
@@ -68,16 +73,16 @@ lychee.define('Input').tags({
 
 		touchmove: function(event) {
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
 
 				if (event.touches && event.touches.length) {
 
-					for (var t = 0, tl = event.touches.length; t < tl; t++) {
-						_process_swipe.call(_instances[i], t, 'move', event.touches[t].pageX, event.touches[t].pageY);
+					for (let t = 0, tl = event.touches.length; t < tl; t++) {
+						_process_swipe.call(_INSTANCES[i], t, 'move', event.touches[t].pageX, event.touches[t].pageY);
 					}
 
 				} else {
-					_process_swipe.call(_instances[i], 0, 'move', event.pageX, event.pageY);
+					_process_swipe.call(_INSTANCES[i], 0, 'move', event.pageX, event.pageY);
 				}
 
 			}
@@ -86,16 +91,16 @@ lychee.define('Input').tags({
 
 		touchend: function(event) {
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
 
 				if (event.touches && event.touches.length) {
 
-					for (var t = 0, tl = event.touches.length; t < tl; t++) {
-						_process_swipe.call(_instances[i], t, 'end', event.touches[t].pageX, event.touches[t].pageY);
+					for (let t = 0, tl = event.touches.length; t < tl; t++) {
+						_process_swipe.call(_INSTANCES[i], t, 'end', event.touches[t].pageX, event.touches[t].pageY);
 					}
 
 				} else {
-					_process_swipe.call(_instances[i], 0, 'end', event.pageX, event.pageY);
+					_process_swipe.call(_INSTANCES[i], 0, 'end', event.pageX, event.pageY);
 				}
 
 			}
@@ -107,10 +112,10 @@ lychee.define('Input').tags({
 			_mouseactive = true;
 
 
-			var handled = false;
+			let handled = false;
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
-				handled = _process_touch.call(_instances[i], 0, event.pageX, event.pageY) || handled;
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				handled = _process_touch.call(_INSTANCES[i], 0, event.pageX, event.pageY) || handled;
 			}
 
 
@@ -124,13 +129,17 @@ lychee.define('Input').tags({
 
 		mousemove: function(event) {
 
-			if (_mouseactive === false) return;
+			if (_mouseactive === false) {
+				event.preventDefault();
+				event.stopPropagation();
+				return;
+			}
 
 
-			var handled = false;
+			let handled = false;
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
-				handled = _process_swipe.call(_instances[i], 0, 'move', event.pageX, event.pageY) || handled;
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				handled = _process_swipe.call(_INSTANCES[i], 0, 'move', event.pageX, event.pageY) || handled;
 			}
 
 
@@ -148,8 +157,24 @@ lychee.define('Input').tags({
 
 			_mouseactive = false;
 
-			for (var i = 0, l = _instances.length; i < l; i++) {
-				_process_swipe.call(_instances[i], 0, 'end', event.pageX, event.pageY);
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				_process_swipe.call(_INSTANCES[i], 0, 'end', event.pageX, event.pageY);
+			}
+
+		},
+
+		mousewheel: function(event) {
+
+			let time = Date.now();
+			if (time < _wheelactive + 100) {
+				_wheelactive = time;
+				return;
+			}
+
+			_wheelactive = time;
+
+			for (let i = 0, l = _INSTANCES.length; i < l; i++) {
+				_process_scroll.call(_INSTANCES[i], 0, event.pageX, event.pageY, event.wheelDeltaX, event.wheelDeltaY);
 			}
 
 		}
@@ -164,9 +189,9 @@ lychee.define('Input').tags({
 
 	(function() {
 
-		var keyboard = 'onkeydown' in global;
-		var touch    = 'ontouchstart' in global;
-		var mouse    = 'onmousedown' in global;
+		let keyboard = 'onkeydown' in global;
+		let touch    = 'ontouchstart' in global;
+		let mouse    = 'onmousedown' in global;
 
 
 		if (typeof global.addEventListener === 'function') {
@@ -187,6 +212,7 @@ lychee.define('Input').tags({
 				global.addEventListener('mousemove',  _listeners.mousemove,  true);
 				global.addEventListener('mouseup',    _listeners.mouseend,   true);
 				global.addEventListener('mouseout',   _listeners.mouseend,   true);
+				global.addEventListener('mousewheel', _listeners.mousewheel, true);
 
 			}
 
@@ -195,7 +221,7 @@ lychee.define('Input').tags({
 
 		if (lychee.debug === true) {
 
-			var methods = [];
+			let methods = [];
 
 			if (keyboard) methods.push('Keyboard');
 			if (touch)    methods.push('Touch');
@@ -217,7 +243,7 @@ lychee.define('Input').tags({
 	 * HELPERS
 	 */
 
-	var _KEYMAP = {
+	const _KEYMAP = {
 
 		 8:  'backspace',
 		 9:  'tab',
@@ -304,7 +330,7 @@ lychee.define('Input').tags({
 
 	};
 
-	var _SPECIALMAP = {
+	const _SPECIALMAP = {
 
 		48:  [ '0', ')' ],
 		49:  [ '1', '!' ],
@@ -332,13 +358,9 @@ lychee.define('Input').tags({
 
 	};
 
-	var _process_key = function(code, ctrl, alt, shift) {
+	const _process_key = function(code, ctrl, alt, shift) {
 
-		if (this.key === false) return false;
-
-
-		// 1. Validate key event
-		if (_KEYMAP[code] === undefined && _SPECIALMAP[code] === undefined) {
+		if (this.key === false) {
 			return false;
 		}
 
@@ -348,15 +370,11 @@ lychee.define('Input').tags({
 		shift = shift === true;
 
 
-		// 2. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.key;
-		if (delta < this.delay) {
-			return true;
-		}
+		if (_KEYMAP[code] === undefined && _SPECIALMAP[code] === undefined) {
 
+			return false;
 
-		// 3. Check for current key being a modifier
-		if (this.keymodifier === false) {
+		} else if (this.keymodifier === false) {
 
 			if (code === 16 && shift === true) {
 				return true;
@@ -373,11 +391,20 @@ lychee.define('Input').tags({
 		}
 
 
-		var key  = null;
-		var name = null;
-		var tmp  = null;
+		let key  = null;
+		let name = null;
+		let tmp  = null;
+		let handled = false;
+		let delta = Date.now() - this.__clock.key;
 
-		// 3a. Check for special characters (that can be shifted)
+		if (delta < this.delay) {
+			return true;
+		} else {
+			this.__clock.key = Date.now();
+		}
+
+
+		// 0. Computation: Special Characters
 		if (_SPECIALMAP[code] !== undefined) {
 
 			tmp  = _SPECIALMAP[code];
@@ -390,8 +417,7 @@ lychee.define('Input').tags({
 
 			name += tmp[0];
 
-
-		// 3b. Check for normal characters
+		// 0. Computation: Normal Characters
 		} else if (_KEYMAP[code] !== undefined) {
 
 			key  = _KEYMAP[code];
@@ -415,8 +441,7 @@ lychee.define('Input').tags({
 		}
 
 
-		var handled = false;
-
+		// 1. Event API
 		if (key !== null) {
 
 			// bind('key') and bind('ctrl-a');
@@ -428,48 +453,42 @@ lychee.define('Input').tags({
 		}
 
 
-		this.__clock.key = Date.now();
-
-
 		return handled;
 
 	};
 
-	var _process_touch = function(id, x, y) {
+	const _process_scroll = function(id, x, y, dx, dy) {
 
-		if (this.touch === false && this.swipe === true) {
-
-			if (this.__swipes[id] === null) {
-				_process_swipe.call(this, id, 'start', x, y);
-			}
-
-			return true;
-
-		} else if (this.touch === false) {
-
+		if (this.scroll === false) {
 			return false;
-
 		}
 
 
-		// 1. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.touch;
+		let direction = null;
+		let position  = { x: x, y: y };
+		let handled   = false;
+		let delta     = Date.now() - this.__clock.scroll;
+
 		if (delta < this.delay) {
 			return true;
+		} else {
+			this.__clock.scroll = Date.now();
 		}
 
 
-		var handled = false;
+		// 0. Computation
+		if (Math.abs(dx) > Math.abs(dy)) {
+			direction = dx < 0 ? 'right' : 'left';
+		} else {
+			direction = dy < 0 ? 'down'  : 'up';
+		}
 
-		handled = this.trigger('touch', [ id, { x: x, y: y }, delta ]) || handled;
 
+		// 1. Event API
+		if (direction !== null) {
 
-		this.__clock.touch = Date.now();
+			handled = this.trigger('scroll', [ id, direction, position, delta ]) || handled;
 
-
-		// 2. Fire Swipe Start, but only for tracked touches
-		if (this.__swipes[id] === null) {
-			handled = _process_swipe.call(this, id, 'start', x, y) || handled;
 		}
 
 
@@ -477,21 +496,26 @@ lychee.define('Input').tags({
 
 	};
 
-	var _process_swipe = function(id, state, x, y) {
+	let _process_swipe = function(id, state, x, y) {
 
-		if (this.swipe === false) return false;
-
-
-		// 1. Only fire after the enforced delay
-		var delta = Date.now() - this.__clock.swipe;
-		if (delta < this.delay) {
-			return true;
+		if (this.swipe === false) {
+			return false;
 		}
 
 
-		var position = { x: x, y: y };
-		var swipe    = { x: 0, y: 0 };
+		let position = { x: x, y: y };
+		let swipe    = { x: 0, y: 0 };
+		let handled  = false;
+		let delta    = Date.now() - this.__clock.swipe;
 
+		if (delta < this.delay) {
+			return true;
+		} else {
+			this.__clock.swipe = Date.now();
+		}
+
+
+		// 0. Computation: Swipe Functionality
 		if (this.__swipes[id] !== null) {
 
 			// FIX for touchend events
@@ -506,9 +530,7 @@ lychee.define('Input').tags({
 		}
 
 
-		var handled = false;
-
-
+		// 1. Event API
 		if (state === 'start') {
 
 			handled = this.trigger(
@@ -539,7 +561,46 @@ lychee.define('Input').tags({
 		}
 
 
-		this.__clock.swipe = Date.now();
+		return handled;
+
+	};
+
+	const _process_touch = function(id, x, y) {
+
+		if (this.touch === false && this.swipe === true) {
+
+			if (this.__swipes[id] === null) {
+				_process_swipe.call(this, id, 'start', x, y);
+			}
+
+			return true;
+
+		} else if (this.touch === false) {
+
+			return false;
+
+		}
+
+
+		let position = { x: x, y: y };
+		let handled  = false;
+		let delta    = Date.now() - this.__clock.touch;
+
+		if (delta < this.delay) {
+			return true;
+		} else {
+			this.__clock.touch = Date.now();
+		}
+
+
+		// 1. Event API
+		handled = this.trigger('touch', [ id, position, delta ]) || handled;
+
+
+		// 1. Event API: Swipe only for tracked Touches
+		if (this.__swipes[id] === null) {
+			handled = _process_swipe.call(this, id, 'start', x, y) || handled;
+		}
 
 
 		return handled;
@@ -552,21 +613,23 @@ lychee.define('Input').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.delay       = 0;
 		this.key         = false;
 		this.keymodifier = false;
 		this.touch       = false;
+		this.scroll      = false;
 		this.swipe       = false;
 
 		this.__clock   = {
-			key:   Date.now(),
-			touch: Date.now(),
-			swipe: Date.now()
+			key:    Date.now(),
+			scroll: Date.now(),
+			swipe:  Date.now(),
+			touch:  Date.now()
 		};
 		this.__swipes  = {
 			0: null, 1: null,
@@ -580,29 +643,30 @@ lychee.define('Input').tags({
 		this.setDelay(settings.delay);
 		this.setKey(settings.key);
 		this.setKeyModifier(settings.keymodifier);
-		this.setTouch(settings.touch);
+		this.setScroll(settings.scroll);
 		this.setSwipe(settings.swipe);
+		this.setTouch(settings.touch);
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
-		_instances.push(this);
+		_INSTANCES.push(this);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		destroy: function() {
 
-			var found = false;
+			let found = false;
 
-			for (var i = 0, il = _instances.length; i < il; i++) {
+			for (let i = 0, il = _INSTANCES.length; i < il; i++) {
 
-				if (_instances[i] === this) {
-					_instances.splice(i, 1);
+				if (_INSTANCES[i] === this) {
+					_INSTANCES.splice(i, 1);
 					found = true;
 					il--;
 					i--;
@@ -627,10 +691,10 @@ lychee.define('Input').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.Input';
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.delay !== 0)           settings.delay       = this.delay;
@@ -716,6 +780,21 @@ lychee.define('Input').tags({
 
 		},
 
+		setScroll: function(scroll) {
+
+			if (scroll === true || scroll === false) {
+
+				this.scroll = scroll;
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
 		setSwipe: function(swipe) {
 
 			if (swipe === true || swipe === false) {
@@ -734,7 +813,7 @@ lychee.define('Input').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

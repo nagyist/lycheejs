@@ -1,15 +1,19 @@
 
 (function(lychee, global) {
 
+	let _filename = null;
+
+
+
 	/*
 	 * FEATURE DETECTION
 	 */
 
 	(function(location, selfpath) {
 
-		var origin = location.origin || '';
-		var cwd    = (location.pathname || '');
-		var proto  = origin.split(':')[0];
+		let origin = location.origin || '';
+		let cwd    = (location.pathname || '');
+		let proto  = origin.split(':')[0];
 
 
 		// Hint: CDNs might have no proper redirect to index.html
@@ -18,7 +22,7 @@
 		}
 
 
-		if (proto.match(/http|https/g) !== null) {
+		if (/http|https/g.test(proto)) {
 
 			// Hint: The harvester (HTTP server) understands
 			// /projects/* and /libraries/* requests.
@@ -30,10 +34,10 @@
 				lychee.ROOT.project = cwd === '/' ? '' : cwd;
 			}
 
-		} else if (proto.match(/app|file/g) !== null) {
+		} else if (/app|file|chrome-extension/g.test(proto)) {
 
-			var tmp1 = selfpath.indexOf('/libraries/lychee');
-			var tmp2 = selfpath.indexOf('://');
+			let tmp1 = selfpath.indexOf('/libraries/lychee');
+			let tmp2 = selfpath.indexOf('://');
 
 			if (tmp1 !== -1 && tmp2 !== -1) {
 				lychee.ROOT.lychee = selfpath.substr(0, tmp1).substr(tmp2 + 3);
@@ -42,7 +46,7 @@
 			}
 
 
-			var tmp3 = selfpath.split('/').slice(0, 3).join('/');
+			let tmp3 = selfpath.split('/').slice(0, 3).join('/');
 			if (tmp3.substr(0, 13) === '/opt/lycheejs') {
 				lychee.ROOT.lychee = tmp3;
 			}
@@ -54,7 +58,7 @@
 
 		}
 
-	})(global.location || {}, document.currentScript.src || '');
+	})(global.location || {}, (document.currentScript || {}).src || '');
 
 
 
@@ -62,17 +66,17 @@
 	 * HELPERS
 	 */
 
-	var _load_asset = function(settings, callback, scope) {
+	const _load_asset = function(settings, callback, scope) {
 
-		var path = lychee.environment.resolve(settings.url);
-		var xhr  = new XMLHttpRequest();
+		let path = lychee.environment.resolve(settings.url);
+		let xhr  = new XMLHttpRequest();
 
 		xhr.open('GET', path, true);
 
 
 		if (settings.headers instanceof Object) {
 
-			for (var header in settings.headers) {
+			for (let header in settings.headers) {
 				xhr.setRequestHeader(header, settings.headers[header]);
 			}
 
@@ -114,19 +118,19 @@
 	 * POLYFILLS
 	 */
 
-	var _log     = console.log   || function() {};
-	var _info    = console.info  || console.log;
-	var _warn    = console.warn  || console.log;
-	var _error   = console.error || console.log;
-	var _std_out = '';
-	var _std_err = '';
+	const  _log     = console.log   || function() {};
+	const  _info    = console.info  || console.log;
+	const  _warn    = console.warn  || console.log;
+	const  _error   = console.error || console.log;
+	let    _std_out = '';
+	let    _std_err = '';
 
 
 	console.log = function() {
 
-		var al   = arguments.length;
-		var args = [ '(L)' ];
-		for (var a = 0; a < al; a++) {
+		let al   = arguments.length;
+		let args = [ '(L)' ];
+		for (let a = 0; a < al; a++) {
 			args.push(arguments[a]);
 		}
 
@@ -137,9 +141,9 @@
 
 	console.info = function() {
 
-		var al   = arguments.length;
-		var args = [ '(I)' ];
-		for (var a = 0; a < al; a++) {
+		let al   = arguments.length;
+		let args = [ '(I)' ];
+		for (let a = 0; a < al; a++) {
 			args.push(arguments[a]);
 		}
 
@@ -150,9 +154,9 @@
 
 	console.warn = function() {
 
-		var al   = arguments.length;
-		var args = [ '(W)' ];
-		for (var a = 0; a < al; a++) {
+		let al   = arguments.length;
+		let args = [ '(W)' ];
+		for (let a = 0; a < al; a++) {
 			args.push(arguments[a]);
 		}
 
@@ -163,9 +167,9 @@
 
 	console.error = function() {
 
-		var al   = arguments.length;
-		var args = [ '(E)' ];
-		for (var a = 0; a < al; a++) {
+		let al   = arguments.length;
+		let args = [ '(E)' ];
+		for (let a = 0; a < al; a++) {
 			args.push(arguments[a]);
 		}
 
@@ -188,7 +192,7 @@
 
 	console.serialize = function() {
 
-		var blob = {};
+		let blob = {};
 
 
 		if (_std_out.length > 0) blob.stdout = _std_out;
@@ -205,30 +209,92 @@
 
 
 	/*
+	 * EASTER EGG
+	 */
+
+	(function(log, console) {
+
+		let css = [
+			'font-family:monospace;font-size:16px;color:#ffffff;background:#405050',
+			'font-family:monospace;font-size:16px;color:#d0494b;background:#405050'
+		];
+
+		let is_chrome  = /Chrome/g.test(navigator.userAgent.split(' ').slice(-2, -1)[0] || '');
+		let is_opera   = /OPR/g.test(navigator.userAgent.split(' ').slice(-1) || '');
+		let is_safari  = /AppleWebKit/g.test(navigator.userAgent);
+		let is_firefox = !!(console.firebug || console.exception);
+
+
+		if (is_chrome || is_opera) {
+
+			log.call(console, '%c                                        ',                                         css[0]);
+			log.call(console, '%c      %c\u2597\u2584\u2596%c        lychee.%cjs%c ' + lychee.VERSION + '      ',   css[0], css[1], css[0], css[1], css[0]);
+			log.call(console, '%c    \u259c\u2584%c\u259d\u2580\u2598%c\u2584\u259b      Isomorphic Engine      ',  css[0], css[1], css[0]);
+			log.call(console, '%c    \u259f\u2580\u2580\u2580\u2580\u2580\u2599    https://lychee.js.org    ',      css[0]);
+			log.call(console, '%c                                        ',                                         css[0]);
+
+		} else if (is_firefox) {
+
+			log.call(console, '%c                                        ',                                         css[0]);
+			log.call(console, '%c      %c\u2597\u2584\u2596%c        lychee.%cjs%c ' + lychee.VERSION + '      ',   css[0], css[1], css[0], css[1], css[0]);
+			log.call(console, '%c    \u259c\u2584%c\u259d\u2580\u2598%c\u2584\u259b      Isomorphic Engine      ',  css[0], css[1], css[0]);
+			log.call(console, '%c   \u259f\u2580\u2580\u2580\u2580\u2580\u2599    https://lychee.js.org   ',        css[0]);
+			log.call(console, '%c                                        ',                                         css[0]);
+			log.call(console, '%c    Please use Chrome/Chromium/Opera    ',                                         css[0]);
+			log.call(console, '%c    We recommend the Blink Dev Tools    ',                                         css[0]);
+			log.call(console, '%c                                        ',                                         css[0]);
+
+		} else if (is_safari) {
+
+			log.call(console, '%c                                        ',                                         css[0]);
+			log.call(console, '%c      %c\u2597\u2584\u2596%c        lychee.%cjs%c ' + lychee.VERSION + '      ',   css[0], css[1], css[0], css[1], css[0]);
+			log.call(console, '%c    \u259c\u2584%c\u259d\u2580\u2598%c\u2584\u259b      Isomorphic Engine      ',  css[0], css[1], css[0]);
+			log.call(console, '%c    \u259f\u2580\u2580\u2580\u2580\u2580\u2599    https://lychee.js.org    ',      css[0]);
+			log.call(console, '%c                                        ',                                         css[0]);
+			log.call(console, '%c    Please use Chrome/Chromium/Opera    ',                                         css[0]);
+			log.call(console, '%c    We recommend the Blink Dev Tools    ',                                         css[0]);
+			log.call(console, '%c                                        ',                                         css[0]);
+
+		} else {
+
+			log.call(console, '    lychee.js ' + lychee.VERSION + '                   ');
+			log.call(console, '    Isomorphic Engine                   ');
+			log.call(console, '                                        ');
+			log.call(console, '    Please use Chrome/Chromium/Opera    ');
+			log.call(console, '    We recommend the Blink Dev Tools    ');
+			log.call(console, '                                        ');
+
+		}
+
+	})(_log, console);
+
+
+
+	/*
 	 * FEATURE DETECTION
 	 */
 
-	var _audio_supports_ogg = false;
-	var _audio_supports_mp3 = false;
+	let _audio_supports_ogg = false;
+	let _audio_supports_mp3 = false;
 
 	(function() {
 
-		var _buffer_cache = {};
-		var _load_buffer  = function(url) {
+		let _buffer_cache = {};
+		let _load_buffer  = function(url) {
 
-			var cache = _buffer_cache[url] || null;
+			let cache = _buffer_cache[url] || null;
 			if (cache === null) {
 
-				var xhr = new XMLHttpRequest();
+				let xhr = new XMLHttpRequest();
 
 				xhr.open('GET', url, true);
 				xhr.responseType = 'arraybuffer';
 				xhr.onload = function() {
 
-					var bytes  = new Uint8Array(xhr.response);
-					var buffer = new Buffer(bytes.length);
+					let bytes  = new Uint8Array(xhr.response);
+					let buffer = new Buffer(bytes.length);
 
-					for (var b = 0, bl = bytes.length; b < bl; b++) {
+					for (let b = 0, bl = bytes.length; b < bl; b++) {
 						buffer[b] = bytes[b];
 					}
 
@@ -247,10 +313,10 @@
 		};
 
 
-		var consol = 'console' in global && typeof console !== 'undefined';
-		var audio  = 'Audio' in global && typeof Audio !== 'undefined';
-		var buffer = true;
-		var image  = 'Image' in global && typeof Image !== 'undefined';
+		let consol = 'console' in global && typeof console !== 'undefined';
+		let audio  = 'Audio' in global && typeof Audio !== 'undefined';
+		let buffer = true;
+		let image  = 'Image' in global && typeof Image !== 'undefined';
 
 
 		if (consol) {
@@ -264,7 +330,7 @@
 
 		if (audio) {
 
-			var audiotest = new Audio();
+			let audiotest = new Audio();
 
 			[ 'application/ogg', 'audio/ogg', 'audio/ogg; codecs=theora, vorbis' ].forEach(function(variant) {
 
@@ -329,10 +395,10 @@
 
 			if (encoding === 'base64' || encoding === 'binary') {
 
-				var url = this.src;
+				let url = this.src;
 				if (url !== '' && url.substr(0, 5) !== 'data:') {
 
-					var buffer = _load_buffer(url);
+					let buffer = _load_buffer(url);
 					if (buffer !== null) {
 						return buffer.toString(encoding);
 					}
@@ -340,10 +406,10 @@
 				}
 
 
-				var index = url.indexOf('base64,') + 7;
+				let index = url.indexOf('base64,') + 7;
 				if (index > 7) {
 
-					var tmp = new Buffer(url.substr(index, url.length - index), 'base64');
+					let tmp = new Buffer(url.substr(index, url.length - index), 'base64');
 					if (tmp.length > 0) {
 						return tmp.toString(encoding);
 					}
@@ -396,10 +462,10 @@
 
 			if (encoding === 'base64' || encoding === 'binary') {
 
-				var url = this.src;
+				let url = this.src;
 				if (url !== '' && url.substr(0, 5) !== 'data:') {
 
-					var buffer = _load_buffer(url);
+					let buffer = _load_buffer(url);
 					if (buffer !== null) {
 						return buffer.toString(encoding);
 					}
@@ -407,10 +473,10 @@
 				}
 
 
-				var index = url.indexOf('base64,') + 7;
+				let index = url.indexOf('base64,') + 7;
 				if (index > 7) {
 
-					var tmp = new Buffer(url.substr(index, url.length - index), 'base64');
+					let tmp = new Buffer(url.substr(index, url.length - index), 'base64');
 					if (tmp.length > 0) {
 						return tmp.toString(encoding);
 					}
@@ -430,7 +496,7 @@
 
 		if (lychee.debug === true) {
 
-			var methods = [];
+			let methods = [];
 
 			if (consol) methods.push('console');
 			if (audio)  methods.push('Audio');
@@ -453,12 +519,12 @@
 	 * BUFFER IMPLEMENTATION
 	 */
 
-	var _coerce = function(num) {
+	const _coerce = function(num) {
 		num = ~~Math.ceil(+num);
 		return num < 0 ? 0 : num;
 	};
 
-	var _clean_base64 = function(str) {
+	const _clean_base64 = function(str) {
 
 		str = str.trim().replace(/[^+\/0-9A-z]/g, '');
 
@@ -470,22 +536,22 @@
 
 	};
 
-	var _utf8_to_bytes = function(str) {
+	const _utf8_to_bytes = function(str) {
 
-		var bytes = [];
+		let bytes = [];
 
-		for (var s = 0; s < str.length; s++) {
+		for (let s = 0; s < str.length; s++) {
 
-			var byt = str.charCodeAt(s);
+			let byt = str.charCodeAt(s);
 			if (byt <= 0x7F) {
 				bytes.push(byt);
 			} else {
 
-				var start = s;
+				let start = s;
 				if (byt >= 0xD800 && byt <= 0xDFF) s++;
 
-				var tmp = encodeURIComponent(str.slice(start, s + 1)).substr(1).split('%');
-				for (var t = 0; t < tmp.length; t++) {
+				let tmp = encodeURIComponent(str.slice(start, s + 1)).substr(1).split('%');
+				for (let t = 0; t < tmp.length; t++) {
 					bytes.push(parseInt(tmp[t], 16));
 				}
 
@@ -497,7 +563,7 @@
 
 	};
 
-	var _decode_utf8_char = function(str) {
+	const _decode_utf8_char = function(str) {
 
 		try {
 			return decodeURIComponent(str);
@@ -507,15 +573,15 @@
 
 	};
 
-	var _utf8_to_string = function(buffer, start, end) {
+	const _utf8_to_string = function(buffer, start, end) {
 
 		end = Math.min(buffer.length, end);
 
 
-		var str = '';
-		var tmp = '';
+		let str = '';
+		let tmp = '';
 
-		for (var b = start; b < end; b++) {
+		for (let b = start; b < end; b++) {
 
 			if (buffer[b] <= 0x7F) {
 				str += _decode_utf8_char(tmp) + String.fromCharCode(buffer[b]);
@@ -530,64 +596,65 @@
 
 	};
 
-	var _base64_to_bytes = function(str) {
+	const _decode_base64 = (function() {
+
+		const _PLUS   = '+'.charCodeAt(0);
+		const _SLASH  = '/'.charCodeAt(0);
+		const _NUMBER = '0'.charCodeAt(0);
+		const _LOWER  = 'a'.charCodeAt(0);
+		const _UPPER  = 'A'.charCodeAt(0);
+
+		return function(elt) {
+
+			let code = elt.charCodeAt(0);
+
+			if (code === _PLUS)        return 62;
+			if (code === _SLASH)       return 63;
+			if (code  <  _NUMBER)      return -1;
+			if (code  <  _NUMBER + 10) return code - _NUMBER + 26 + 26;
+			if (code  <  _UPPER  + 26) return code - _UPPER;
+			if (code  <  _LOWER  + 26) return code - _LOWER  + 26;
+
+		};
+
+	})();
+
+	const _base64_to_bytes = function(str) {
 
 		if (str.length % 4 === 0) {
 
-			var length       = str.length;
-			var placeholders = '=' === str.charAt(length - 2) ? 2 : '=' === str.charAt(length - 1) ? 1 : 0;
+			let length       = str.length;
+			let placeholders = '=' === str.charAt(length - 2) ? 2 : '=' === str.charAt(length - 1) ? 1 : 0;
 
-			var bytes = new Array(length * 3/4 - placeholders);
-			var l     = placeholders > 0 ? str.length - 4 : str.length;
+			let bytes = new Array(length * 3/4 - placeholders);
+			let l     = placeholders > 0 ? str.length - 4 : str.length;
 
+			let tmp;
+			let b = 0;
+			let i = 0;
 
-			var _decode = (function() {
+			while (i < l) {
 
-				var _PLUS   = '+'.charCodeAt(0);
-				var _SLASH  = '/'.charCodeAt(0);
-				var _NUMBER = '0'.charCodeAt(0);
-				var _LOWER  = 'a'.charCodeAt(0);
-				var _UPPER  = 'A'.charCodeAt(0);
-
-				return function(elt) {
-
-					var code = elt.charCodeAt(0);
-
-					if (code === _PLUS)        return 62;
-					if (code === _SLASH)       return 63;
-					if (code  <  _NUMBER)      return -1;
-					if (code  <  _NUMBER + 10) return code - _NUMBER + 26 + 26;
-					if (code  <  _UPPER  + 26) return code - _UPPER;
-					if (code  <  _LOWER  + 26) return code - _LOWER  + 26;
-
-				};
-
-			})();
-
-
-			var tmp;
-			var b = 0;
-
-			for (var i = 0; i < l; i += 4) {
-
-				tmp = (_decode(str.charAt(i)) << 18) | (_decode(str.charAt(i + 1)) << 12) | (_decode(str.charAt(i + 2)) << 6) | (_decode(str.charAt(i + 3)));
+				tmp = (_decode_base64(str.charAt(i)) << 18) | (_decode_base64(str.charAt(i + 1)) << 12) | (_decode_base64(str.charAt(i + 2)) << 6) | (_decode_base64(str.charAt(i + 3)));
 
 				bytes[b++] = (tmp & 0xFF0000) >> 16;
 				bytes[b++] = (tmp & 0xFF00)   >>  8;
 				bytes[b++] =  tmp & 0xFF;
+
+				i += 4;
 
 			}
 
 
 			if (placeholders === 2) {
 
-				tmp = (_decode(str.charAt(i)) << 2)  | (_decode(str.charAt(i + 1)) >> 4);
+				tmp = (_decode_base64(str.charAt(i)) << 2)  | (_decode_base64(str.charAt(i + 1)) >> 4);
 
 				bytes[b++] = tmp        & 0xFF;
 
 			} else if (placeholders === 1) {
 
-				tmp = (_decode(str.charAt(i)) << 10) | (_decode(str.charAt(i + 1)) << 4) | (_decode(str.charAt(i + 2)) >> 2);
+				tmp = (_decode_base64(str.charAt(i)) << 10) | (_decode_base64(str.charAt(i + 1)) << 4) | (_decode_base64(str.charAt(i + 2)) >> 2);
 
 				bytes[b++] = (tmp >> 8) & 0xFF;
 				bytes[b++] =  tmp       & 0xFF;
@@ -604,32 +671,31 @@
 
 	};
 
-	var _base64_to_string = function(buffer, start, end) {
+	const _encode_base64 = (function() {
 
-		var bytes      = buffer.slice(start, end);
-		var extrabytes = bytes.length % 3;
-		var l          = bytes.length - extrabytes;
-		var str        = '';
+		const _TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+		return function(num) {
+			return _TABLE.charAt(num);
+		};
+
+	})();
+
+	const _base64_to_string = function(buffer, start, end) {
+
+		let bytes      = buffer.slice(start, end);
+		let extrabytes = bytes.length % 3;
+		let l          = bytes.length - extrabytes;
+		let str        = '';
 
 
-		var _encode = (function() {
+		let tmp;
 
-			var _TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-			return function(num) {
-				return _TABLE.charAt(num);
-			};
-
-		})();
-
-
-		var tmp;
-
-		for (var i = 0; i < l; i += 3) {
+		for (let i = 0; i < l; i += 3) {
 
 			tmp = (bytes[i] << 16) + (bytes[i + 1] << 8) + (bytes[i + 2]);
 
-			str += (_encode(tmp >> 18 & 0x3F) + _encode(tmp >> 12 & 0x3F) + _encode(tmp >> 6 & 0x3F) + _encode(tmp & 0x3F));
+			str += (_encode_base64(tmp >> 18 & 0x3F) + _encode_base64(tmp >> 12 & 0x3F) + _encode_base64(tmp >> 6 & 0x3F) + _encode_base64(tmp & 0x3F));
 
 		}
 
@@ -638,17 +704,17 @@
 
 			tmp = (bytes[bytes.length - 2] << 8) + (bytes[bytes.length - 1]);
 
-			str += _encode( tmp >> 10);
-			str += _encode((tmp >>  4) & 0x3F);
-			str += _encode((tmp <<  2) & 0x3F);
+			str += _encode_base64( tmp >> 10);
+			str += _encode_base64((tmp >>  4) & 0x3F);
+			str += _encode_base64((tmp <<  2) & 0x3F);
 			str += '=';
 
 		} else if (extrabytes === 1) {
 
 			tmp = bytes[bytes.length - 1];
 
-			str += _encode( tmp >>  2);
-			str += _encode((tmp <<  4) & 0x3F);
+			str += _encode_base64( tmp >>  2);
+			str += _encode_base64((tmp <<  4) & 0x3F);
 			str += '==';
 
 		}
@@ -658,11 +724,11 @@
 
 	};
 
-	var _binary_to_bytes = function(str) {
+	const _binary_to_bytes = function(str) {
 
-		var bytes = [];
+		let bytes = [];
 
-		for (var s = 0; s < str.length; s++) {
+		for (let s = 0; s < str.length; s++) {
 			bytes.push(str.charCodeAt(s) & 0xFF);
 		}
 
@@ -670,14 +736,14 @@
 
 	};
 
-	var _binary_to_string = function(buffer, start, end) {
+	const _binary_to_string = function(buffer, start, end) {
 
 		end = Math.min(buffer.length, end);
 
 
-		var str = '';
+		let str = '';
 
-		for (var b = start; b < end; b++) {
+		for (let b = start; b < end; b++) {
 			str += String.fromCharCode(buffer[b]);
 		}
 
@@ -685,14 +751,14 @@
 
 	};
 
-	var _hex_to_string = function(buffer, start, end) {
+	const _hex_to_string = function(buffer, start, end) {
 
 		end = Math.min(buffer.length, end);
 
 
-		var str = '';
+		let str = '';
 
-		for (var b = start; b < end; b++) {
+		for (let b = start; b < end; b++) {
 			str += String.fromCharCode(buffer[i]);
 		}
 
@@ -700,9 +766,9 @@
 
 	};
 
-	var _copy_buffer = function(source, target, offset, length) {
+	const _copy_buffer = function(source, target, offset, length) {
 
-		var i = 0;
+		let i = 0;
 
 		for (i = 0; i < length; i++) {
 
@@ -717,9 +783,9 @@
 
 	};
 
-	var _copy_hexadecimal = function(source, target, offset, length) {
+	const _copy_hexadecimal = function(source, target, offset, length) {
 
-		var strlen = source.length;
+		let strlen = source.length;
 		if (strlen % 2 !== 0) {
 			throw new Error('Invalid hex string');
 		}
@@ -729,11 +795,11 @@
 		}
 
 
-		var i = 0;
+		let i = 0;
 
 		for (i = 0; i < length; i++) {
 
-			var num = parseInt(source.substr(i * 2, 2), 16);
+			let num = parseInt(source.substr(i * 2, 2), 16);
 			if (isNaN(num)) {
 				return i;
 			}
@@ -749,9 +815,9 @@
 
 
 
-	var Buffer = function(subject, encoding) {
+	const Buffer = function(subject, encoding) {
 
-		var type = typeof subject;
+		let type = typeof subject;
 		if (type === 'string' && encoding === 'base64') {
 			subject = _clean_base64(subject);
 		}
@@ -760,15 +826,7 @@
 		this.length = 0;
 
 
-		if (Buffer.isBuffer(subject)) {
-
-			this.length = subject.length;
-
-			for (var b = 0; b < this.length; b++) {
-				this[b] = subject[b];
-			}
-
-		} else if (type === 'string') {
+		if (type === 'string') {
 
 			this.length = Buffer.byteLength(subject, encoding);
 
@@ -778,8 +836,16 @@
 
 			this.length = _coerce(subject);
 
-			for (var n = 0; n < this.length; n++) {
+			for (let n = 0; n < this.length; n++) {
 				this[n] = 0;
+			}
+
+		} else if (Buffer.isBuffer(subject)) {
+
+			this.length = subject.length;
+
+			for (let b = 0; b < this.length; b++) {
+				this[b] = subject[b];
 			}
 
 		}
@@ -795,7 +861,7 @@
 		encoding = typeof encoding === 'string' ? encoding : 'utf8';
 
 
-		var length = 0;
+		let length = 0;
 
 		if (encoding === 'utf8') {
 			length = _utf8_to_bytes(str).length;
@@ -813,7 +879,13 @@
 	};
 
 	Buffer.isBuffer = function(buffer) {
-		return buffer instanceof Buffer;
+
+		if (buffer instanceof Buffer) {
+			return true;
+		}
+
+		return false;
+
 	};
 
 	Buffer.prototype = {
@@ -841,14 +913,14 @@
 
 			end = Math.min(end, this.length);
 
-			var diff        = end - start;
-			var target_diff = target.length - target_start;
+			let diff        = end - start;
+			let target_diff = target.length - target_start;
 			if (target_diff < diff) {
 				end = target_diff + start;
 			}
 
 
-			for (var b = 0; b < diff; b++) {
+			for (let b = 0; b < diff; b++) {
 				target[b + target_start] = this[b + start];
 			}
 
@@ -859,9 +931,9 @@
 			callback = callback instanceof Function ? callback : function(value) { return value; };
 
 
-			var clone = new Buffer(this.length);
+			let clone = new Buffer(this.length);
 
-			for (var b = 0; b < this.length; b++) {
+			for (let b = 0; b < this.length; b++) {
 				clone[b] = callback(this[b], b);
 			}
 
@@ -871,7 +943,7 @@
 
 		slice: function(start, end) {
 
-			var length = this.length;
+			let length = this.length;
 
 			start = typeof start === 'number' ? (start | 0) : 0;
 			end   = typeof end === 'number'   ? (end   | 0) : length;
@@ -880,10 +952,10 @@
 			end   = Math.min(end,   length);
 
 
-			var diff  = end - start;
-			var clone = new Buffer(diff);
+			let diff  = end - start;
+			let clone = new Buffer(diff);
 
-			for (var b = 0; b < diff; b++) {
+			for (let b = 0; b < diff; b++) {
 				clone[b] = this[b + start];
 			}
 
@@ -897,7 +969,7 @@
 			encoding = typeof encoding === 'string' ? encoding : 'utf8';
 
 
-			var remaining = this.length - offset;
+			let remaining = this.length - offset;
 			if (typeof length === 'string') {
 				encoding = length;
 				length   = remaining;
@@ -908,7 +980,7 @@
 			}
 
 
-			var diff = 0;
+			let diff = 0;
 
 			if (encoding === 'utf8') {
 				diff = _copy_buffer(_utf8_to_bytes(str),   this, offset, length);
@@ -937,7 +1009,7 @@
 			}
 
 
-			var str = '';
+			let str = '';
 
 			if (encoding === 'utf8') {
 				str = _utf8_to_string(this,   start, end);
@@ -962,10 +1034,9 @@
 	 * CONFIG IMPLEMENTATION
 	 */
 
-	var _config_cache = {};
+	const _CONFIG_CACHE = {};
 
-
-	var _clone_config = function(origin, clone) {
+	const _clone_config = function(origin, clone) {
 
 		if (origin.buffer !== null) {
 
@@ -978,7 +1049,7 @@
 	};
 
 
-	var Config = function(url) {
+	const Config = function(url) {
 
 		url = typeof url === 'string' ? url : null;
 
@@ -992,10 +1063,10 @@
 
 		if (url !== null) {
 
-			if (_config_cache[url] !== undefined) {
-				_clone_config(_config_cache[url], this);
+			if (_CONFIG_CACHE[url] !== undefined) {
+				_clone_config(_CONFIG_CACHE[url], this);
 			} else {
-				_config_cache[url] = this;
+				_CONFIG_CACHE[url] = this;
 			}
 
 		}
@@ -1016,11 +1087,11 @@
 
 		serialize: function() {
 
-			var blob = {};
+			let blob = {};
 
 
 			if (this.buffer !== null) {
-				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.buffer), 'utf8').toString('base64');
+				blob.buffer = 'data:application/json;base64,' + new Buffer(JSON.stringify(this.buffer, null, '\t'), 'utf8').toString('base64');
 			}
 
 
@@ -1053,7 +1124,7 @@
 				}
 			}, function(raw) {
 
-				var data = null;
+				let data = null;
 				try {
 					data = JSON.parse(raw);
 				} catch(err) {
@@ -1092,9 +1163,9 @@
 	 * FONT IMPLEMENTATION
 	 */
 
-	var _parse_font = function() {
+	const _parse_font = function() {
 
-		var data = this.__buffer;
+		let data = this.__buffer;
 
 		if (typeof data.kerning === 'number' && typeof data.spacing === 'number') {
 
@@ -1107,8 +1178,8 @@
 
 		if (data.texture !== undefined) {
 
-			var texture = new Texture(data.texture);
-			var that    = this;
+			let texture = new Texture(data.texture);
+			let that    = this;
 
 			texture.onload = function() {
 				that.texture = this;
@@ -1134,12 +1205,17 @@
 
 		if (data.map instanceof Array) {
 
-			var offset = this.spacing;
+			let offset = this.spacing;
+			let url    = this.url;
 
-			for (var c = 0, cl = this.charset.length; c < cl; c++) {
+			if (_CHAR_CACHE[url] === undefined) {
+				_CHAR_CACHE[url] = {};
+			}
 
-				var id  = this.charset[c];
-				var chr = {
+			for (let c = 0, cl = this.charset.length; c < cl; c++) {
+
+				let id  = this.charset[c];
+				let chr = {
 					width:      data.map[c] + this.spacing * 2,
 					height:     this.lineheight,
 					realwidth:  data.map[c],
@@ -1150,8 +1226,7 @@
 
 				offset += chr.width;
 
-
-				this.__charset[id] = chr;
+				_CHAR_CACHE[url][id] = chr;
 
 			}
 
@@ -1160,10 +1235,10 @@
 	};
 
 
-	var _font_cache = {};
+	const _CHAR_CACHE = {};
+	const _FONT_CACHE = {};
 
-
-	var _clone_font = function(origin, clone) {
+	const _clone_font = function(origin, clone) {
 
 		if (origin.__buffer !== null) {
 
@@ -1177,7 +1252,7 @@
 	};
 
 
-	var Font = function(url) {
+	const Font = function(url) {
 
 		url = typeof url === 'string' ? url : null;
 
@@ -1195,23 +1270,28 @@
 		this.__buffer   = null;
 		this.__load     = true;
 
-		this.__charset     = {};
-		this.__charset[''] = {
-			width:      0,
-			height:     this.lineheight,
-			realwidth:  0,
-			realheight: this.lineheight,
-			x:          0,
-			y:          0
-		};
-
 
 		if (url !== null) {
 
-			if (_font_cache[url] !== undefined) {
-				_clone_font(_font_cache[url], this);
+			if (_CHAR_CACHE[url] === undefined) {
+
+				_CHAR_CACHE[url]     = {};
+				_CHAR_CACHE[url][''] = {
+					width:      0,
+					height:     this.lineheight,
+					realwidth:  0,
+					realheight: this.lineheight,
+					x:          0,
+					y:          0
+				};
+
+			}
+
+
+			if (_FONT_CACHE[url] !== undefined) {
+				_clone_font(_FONT_CACHE[url], this);
 			} else {
-				_font_cache[url] = this;
+				_FONT_CACHE[url] = this;
 			}
 
 		}
@@ -1233,7 +1313,7 @@
 
 		serialize: function() {
 
-			var blob = {};
+			let blob = {};
 
 
 			if (this.__buffer !== null) {
@@ -1251,33 +1331,35 @@
 
 		measure: function(text) {
 
-			text = typeof text === 'string' ? text : null;
+			text = typeof text === 'string' ? text : '';
 
 
-			if (text !== null) {
+			let cache = _CHAR_CACHE[this.url] || null;
+			if (cache !== null) {
 
-				if (text.length === 1) {
+				let tl = text.length;
+				if (tl === 1) {
 
-					if (this.__charset[text] !== undefined) {
-						return this.__charset[text];
+					if (cache[text] !== undefined) {
+						return cache[text];
 					}
 
-				} else if (text.length > 1) {
+				} else if (tl > 1) {
 
-					var data = this.__charset[text] || null;
+					let data = cache[text] || null;
 					if (data === null) {
 
-						var width = 0;
+						let width = 0;
 
-						for (var t = 0, tl = text.length; t < tl; t++) {
-							var chr = this.measure(text[t]);
+						for (let t = 0; t < tl; t++) {
+							let chr = this.measure(text[t]);
 							width  += chr.realwidth + this.kerning;
 						}
 
 
 						// TODO: Embedded Font ligatures will set x and y values based on settings.map
 
-						data = this.__charset[text] = {
+						data = cache[text] = {
 							width:      width,
 							height:     this.lineheight,
 							realwidth:  width,
@@ -1293,10 +1375,13 @@
 
 				}
 
+
+				return cache[''];
+
 			}
 
 
-			return this.__charset[''];
+			return null;
 
 		},
 
@@ -1321,7 +1406,7 @@
 				}
 			}, function(raw) {
 
-				var data = null;
+				let data = null;
 				try {
 					data = JSON.parse(raw);
 				} catch(err) {
@@ -1355,10 +1440,9 @@
 	 * MUSIC IMPLEMENTATION
 	 */
 
-	var _music_cache = {};
+	const _MUSIC_CACHE = {};
 
-
-	var _clone_music = function(origin, clone) {
+	const _clone_music = function(origin, clone) {
 
 		if (origin.buffer !== null) {
 
@@ -1381,7 +1465,7 @@
 	};
 
 
-	var Music = function(url) {
+	const Music = function(url) {
 
 		url = typeof url === 'string' ? url : null;
 
@@ -1398,10 +1482,10 @@
 
 		if (url !== null) {
 
-			if (_music_cache[url] !== undefined) {
-				_clone_music(_music_cache[url], this);
+			if (_MUSIC_CACHE[url] !== undefined) {
+				_clone_music(_MUSIC_CACHE[url], this);
 			} else {
-				_music_cache[url] = this;
+				_MUSIC_CACHE[url] = this;
 			}
 
 		}
@@ -1415,8 +1499,8 @@
 
 			if (blob.buffer instanceof Object) {
 
-				var url  = null;
-				var type = null;
+				let url  = null;
+				let type = null;
 
 				if (_audio_supports_ogg === true) {
 
@@ -1437,8 +1521,8 @@
 
 				if (url !== null && type !== null) {
 
-					var that   = this;
-					var buffer = new Audio();
+					let that   = this;
+					let buffer = new Audio();
 
 					buffer.addEventListener('ended', function() {
 						that.play();
@@ -1461,7 +1545,7 @@
 
 		serialize: function() {
 
-			var blob = {};
+			let blob = {};
 
 
 			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
@@ -1501,8 +1585,8 @@
 			}
 
 
-			var url  = this.url;
-			var type = null;
+			let url  = this.url;
+			let type = null;
 
 			if (_audio_supports_ogg === true) {
 				type = type || 'ogg';
@@ -1513,8 +1597,8 @@
 
 			if (url !== null && type !== null) {
 
-				var that   = this;
-				var buffer = new Audio();
+				let that   = this;
+				let buffer = new Audio();
 
 				buffer.onload = function() {
 
@@ -1648,10 +1732,9 @@
 	 * SOUND IMPLEMENTATION
 	 */
 
-	var _sound_cache = {};
+	const _SOUND_CACHE = {};
 
-
-	var _clone_sound = function(origin, clone) {
+	const _clone_sound = function(origin, clone) {
 
 		if (origin.buffer !== null) {
 
@@ -1675,7 +1758,7 @@
 	};
 
 
-	var Sound = function(url) {
+	const Sound = function(url) {
 
 		url = typeof url === 'string' ? url : null;
 
@@ -1692,10 +1775,10 @@
 
 		if (url !== null) {
 
-			if (_sound_cache[url] !== undefined) {
-				_clone_sound(_sound_cache[url], this);
+			if (_SOUND_CACHE[url] !== undefined) {
+				_clone_sound(_SOUND_CACHE[url], this);
 			} else {
-				_sound_cache[url] = this;
+				_SOUND_CACHE[url] = this;
 			}
 
 		}
@@ -1709,8 +1792,8 @@
 
 			if (blob.buffer instanceof Object) {
 
-				var url  = null;
-				var type = null;
+				let url  = null;
+				let type = null;
 
 				if (_audio_supports_ogg === true) {
 
@@ -1731,8 +1814,8 @@
 
 				if (url !== null && type !== null) {
 
-					var that   = this;
-					var buffer = new Audio();
+					let that   = this;
+					let buffer = new Audio();
 
 					buffer.addEventListener('ended', function() {
 						that.stop();
@@ -1755,7 +1838,7 @@
 
 		serialize: function() {
 
-			var blob = {};
+			let blob = {};
 
 
 			if (this.__buffer.ogg !== null || this.__buffer.mp3 !== null) {
@@ -1795,8 +1878,8 @@
 			}
 
 
-			var url  = this.url;
-			var type = null;
+			let url  = this.url;
+			let type = null;
 
 			if (_audio_supports_ogg === true) {
 				type = type || 'ogg';
@@ -1807,8 +1890,8 @@
 
 			if (url !== null && type !== null) {
 
-				var that   = this;
-				var buffer = new Audio();
+				let that   = this;
+				let buffer = new Audio();
 
 				buffer.onload = function() {
 
@@ -1943,11 +2026,10 @@
 	 * TEXTURE IMPLEMENTATION
 	 */
 
-	var _texture_id    = 0;
-	var _texture_cache = {};
+	let   _TEXTURE_ID    = 0;
+	const _TEXTURE_CACHE = {};
 
-
-	var _clone_texture = function(origin, clone) {
+	const _clone_texture = function(origin, clone) {
 
 		// Keep reference of Texture ID for OpenGL alike platforms
 		clone.id = origin.id;
@@ -1966,12 +2048,12 @@
 	};
 
 
-	var Texture = function(url) {
+	const Texture = function(url) {
 
 		url = typeof url === 'string' ? url : null;
 
 
-		this.id     = _texture_id++;
+		this.id     = _TEXTURE_ID++;
 		this.url    = url;
 		this.onload = null;
 		this.buffer = null;
@@ -1983,10 +2065,10 @@
 
 		if (url !== null && url.substr(0, 10) !== 'data:image') {
 
-			if (_texture_cache[url] !== undefined) {
-				_clone_texture(_texture_cache[url], this);
+			if (_TEXTURE_CACHE[url] !== undefined) {
+				_clone_texture(_TEXTURE_CACHE[url], this);
 			} else {
-				_texture_cache[url] = this;
+				_TEXTURE_CACHE[url] = this;
 			}
 
 		}
@@ -2000,8 +2082,8 @@
 
 			if (typeof blob.buffer === 'string') {
 
-				var that  = this;
-				var image = new Image();
+				let that  = this;
+				let image = new Image();
 
 				image.onload = function() {
 					that.buffer = this;
@@ -2018,7 +2100,7 @@
 
 		serialize: function() {
 
-			var blob = {};
+			let blob = {};
 
 
 			if (this.buffer !== null) {
@@ -2048,10 +2130,10 @@
 			}
 
 
-			var buffer;
-			var that = this;
+			let buffer;
+			let that = this;
 
-			var url  = this.url;
+			let url = this.url;
 			if (url.substr(0, 5) === 'data:') {
 
 				if (url.substr(0, 15) === 'data:image/png;') {
@@ -2068,7 +2150,7 @@
 						that.buffer.toString('base64');
 
 
-						var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						let is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
 						if (lychee.debug === true && is_power_of_two === false) {
 							console.warn('bootstrap.js: Texture at data:image/png; is NOT power-of-two');
 						}
@@ -2122,7 +2204,7 @@
 						that.buffer.toString('base64');
 
 
-						var is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						let is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
 						if (lychee.debug === true && is_power_of_two === false) {
 							console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
 						}
@@ -2169,13 +2251,12 @@
 
 
 	/*
-	 * PRELOADER IMPLEMENTATION
+	 * STUFF IMPLEMENTATION
 	 */
 
-	var _stuff_cache = {};
+	const _STUFF_CACHE = {};
 
-
-	var _clone_stuff = function(origin, clone) {
+	const _clone_stuff = function(origin, clone) {
 
 		if (origin.buffer !== null) {
 
@@ -2187,13 +2268,15 @@
 
 	};
 
-	var _execute_stuff = function(callback, stuff) {
+	const _execute_stuff = function(callback, stuff) {
 
-		var type = stuff.url.split('/').pop().split('.').pop();
+		let type = stuff.url.split('/').pop().split('.').pop();
 		if (type === 'js' && stuff.__ignore === false) {
 
-			var tmp = document.createElement('script');
+			_filename = stuff.url;
 
+
+			let tmp = document.createElement('script');
 
 			tmp._filename = stuff.url;
 			tmp.async     = true;
@@ -2230,7 +2313,7 @@
 	};
 
 
-	var Stuff = function(url, ignore) {
+	const Stuff = function(url, ignore) {
 
 		url    = typeof url === 'string' ? url : null;
 		ignore = ignore === true;
@@ -2246,10 +2329,10 @@
 
 		if (url !== null) {
 
-			if (_stuff_cache[url] !== undefined) {
-				_clone_stuff(_stuff_cache[url], this);
+			if (_STUFF_CACHE[url] !== undefined) {
+				_clone_stuff(_STUFF_CACHE[url], this);
 			} else {
-				_stuff_cache[url] = this;
+				_STUFF_CACHE[url] = this;
 			}
 
 		}
@@ -2270,9 +2353,9 @@
 
 		serialize: function() {
 
-			var blob = {};
-			var type = this.url.split('/').pop().split('.').pop();
-			var mime = 'application/octet-stream';
+			let blob = {};
+			let type = this.url.split('/').pop().split('.').pop();
+			let mime = 'application/octet-stream';
 
 
 			if (type === 'js') {
@@ -2351,7 +2434,6 @@
 	global.Music   = Music;
 	global.Sound   = Sound;
 	global.Texture = Texture;
-
 	global.Stuff   = Stuff;
 
 
@@ -2361,6 +2443,8 @@
 
 			if (document.currentScript) {
 				return document.currentScript._filename;
+			} else if (_filename !== null) {
+				return _filename;
 			}
 
 			return null;

@@ -12,12 +12,12 @@ lychee.define('harvester.net.Client').requires([
 	'lychee.net.Tunnel'
 ]).exports(function(lychee, global, attachments) {
 
-	var _BENCODE = lychee.import('lychee.codec.BENCODE');
-	var _BITON   = lychee.import('lychee.codec.BITON');
-	var _JSON    = lychee.import('lychee.codec.JSON');
-	var _Client  = lychee.import('lychee.net.Client');
-	var _Tunnel  = lychee.import('lychee.net.Tunnel');
-	var _client  = lychee.import('harvester.net.client');
+	const _client  = lychee.import('harvester.net.client');
+	const _Client  = lychee.import('lychee.net.Client');
+	const _Tunnel  = lychee.import('lychee.net.Tunnel');
+	const _BENCODE = lychee.import('lychee.codec.BENCODE');
+	const _BITON   = lychee.import('lychee.codec.BITON');
+	const _JSON    = lychee.import('lychee.codec.JSON');
 
 
 
@@ -25,9 +25,9 @@ lychee.define('harvester.net.Client').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			host:      'localhost',
 			port:      4848,
 			codec:     _JSON,
@@ -74,7 +74,7 @@ lychee.define('harvester.net.Client').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -84,7 +84,7 @@ lychee.define('harvester.net.Client').requires([
 
 		serialize: function() {
 
-			var data = _Tunnel.prototype.serialize.call(this);
+			let data = _Tunnel.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.Client';
 
 
@@ -105,7 +105,7 @@ lychee.define('harvester.net.Client').requires([
 
 			if (data instanceof Object) {
 
-				var codec = this.codec;
+				let codec = this.codec;
 				if (codec === _BENCODE) {
 					headers['content-type'] = 'application/bencode; charset=utf-8';
 				} else if (codec === _BITON) {
@@ -121,7 +121,7 @@ lychee.define('harvester.net.Client').requires([
 
 			} else {
 
-				var payload = null;
+				let payload = null;
 
 				if (typeof data === 'string') {
 					payload = new Buffer(data, 'utf8');
@@ -148,7 +148,7 @@ lychee.define('harvester.net.Client').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

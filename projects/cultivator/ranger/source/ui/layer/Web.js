@@ -5,8 +5,8 @@ lychee.define('app.ui.layer.Web').includes([
 	'lychee.ui.entity.Helper'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Helper = lychee.import('lychee.ui.entity.Helper');
-	var _Layer  = lychee.import('lychee.ui.Layer');
+	const _Helper = lychee.import('lychee.ui.entity.Helper');
+	const _Layer  = lychee.import('lychee.ui.Layer');
 
 
 
@@ -14,10 +14,10 @@ lychee.define('app.ui.layer.Web').includes([
 	 * HELPERS
 	 */
 
-	var _on_relayout = function() {
+	const _on_relayout = function() {
 
-		var label = this.label;
-		var value = this.value;
+		let label = this.label;
+		let value = this.value;
 
 		if (label.length === value.length) {
 
@@ -25,22 +25,22 @@ lychee.define('app.ui.layer.Web').includes([
 
 				this.entities = [];
 
-				for (var l = 0, ll = label.length; l < ll; l++) {
+				for (let l = 0, ll = label.length; l < ll; l++) {
 					this.entities.push(new _Helper());
 				}
 
 			}
 
 
-			var x1         = -1/2 * this.width;
-			var y1         = -1/2 * this.height;
-			var horizontal = this.width > this.height;
-			var offset     = 0;
+			let x1         = -1/2 * this.width;
+			let y1         = -1/2 * this.height;
+			let horizontal = this.width > this.height;
+			let offset     = 0;
 
 
-			for (var v = 0, vl = value.length; v < vl; v++) {
+			for (let v = 0, vl = value.length; v < vl; v++) {
 
-				var entity = this.entities[v];
+				let entity = this.entities[v];
 
 				entity.setLabel(label[v]);
 				entity.setValue(value[v]);
@@ -74,9 +74,9 @@ lychee.define('app.ui.layer.Web').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Class = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.label = [];
@@ -110,7 +110,7 @@ lychee.define('app.ui.layer.Web').includes([
 
 		serialize: function() {
 
-			var data = _Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'app.ui.layer.Web';
 
 

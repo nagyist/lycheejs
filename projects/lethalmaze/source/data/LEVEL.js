@@ -6,11 +6,11 @@ lychee.define('game.data.LEVEL').requires([
 	'game.app.sprite.Wall'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Item    = lychee.import('game.app.sprite.Item');
-	var _Tank    = lychee.import('game.app.sprite.Tank');
-	var _Terrain = lychee.import('game.app.sprite.Terrain');
-	var _Wall    = lychee.import('game.app.sprite.Wall');
-	var _TILE    = 32;
+	const _Item    = lychee.import('game.app.sprite.Item');
+	const _Tank    = lychee.import('game.app.sprite.Tank');
+	const _Terrain = lychee.import('game.app.sprite.Terrain');
+	const _Wall    = lychee.import('game.app.sprite.Wall');
+	const _TILE    = 32;
 
 
 
@@ -18,7 +18,7 @@ lychee.define('game.data.LEVEL').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		// deserialize: function(blob) {},
 
@@ -38,16 +38,16 @@ lychee.define('game.data.LEVEL').requires([
 
 			if (data !== null) {
 
-				var dim_x = 0;
-				var dim_y = 0;
+				let dim_x = 0;
+				let dim_y = 0;
 
 
 				if (data.terrain instanceof Array) {
 
 					data.terrain.forEach(function(entity) {
 
-						var x = (entity.position.x / _TILE) | 0;
-						var y = (entity.position.y / _TILE) | 0;
+						let x = (entity.position.x / _TILE) | 0;
+						let y = (entity.position.y / _TILE) | 0;
 
 						dim_x = Math.max(dim_x, x);
 						dim_y = Math.max(dim_y, y);
@@ -57,8 +57,8 @@ lychee.define('game.data.LEVEL').requires([
 				}
 
 
-				var blob = new Array(dim_y);
-				for (var b = 0, bl = blob.length; b < bl; b++) {
+				let blob = new Array(dim_y);
+				for (let b = 0, bl = blob.length; b < bl; b++) {
 					blob[b] = new Array(dim_x).fill(0);
 				}
 
@@ -67,10 +67,10 @@ lychee.define('game.data.LEVEL').requires([
 
 					data.objects.forEach(function(entity) {
 
-						var x = (entity.position.x / _TILE) | 0;
-						var y = (entity.position.y / _TILE) | 0;
+						let x = (entity.position.x / _TILE) | 0;
+						let y = (entity.position.y / _TILE) | 0;
 
-						var type = 0;
+						let type = 0;
 						if (entity instanceof _Wall) {
 							type = 1;
 						} else if (entity instanceof _Tank) {
@@ -103,7 +103,7 @@ lychee.define('game.data.LEVEL').requires([
 
 			if (data !== null) {
 
-				var cache = {
+				let cache = {
 					terrain: [],
 					objects: []
 				};
@@ -113,7 +113,7 @@ lychee.define('game.data.LEVEL').requires([
 
 					line.forEach(function(type, x) {
 
-						var position = {
+						let position = {
 							x: x + 0.5,
 							y: y + 0.5
 						};

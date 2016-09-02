@@ -5,10 +5,8 @@ lychee.define('harvester.net.remote.Library').requires([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CACHE   = {};
-	var _MAIN    = null;
-	var _Service = lychee.import('lychee.net.Service');
-	var _Server  = lychee.import('harvester.mod.Server');
+	const _Service = lychee.import('lychee.net.Service');
+	const _Server  = lychee.import('harvester.mod.Server');
 
 
 
@@ -16,10 +14,10 @@ lychee.define('harvester.net.remote.Library').requires([
 	 * HELPERS
 	 */
 
-	var _serialize = function(library) {
+	const _serialize = function(library) {
 
-		var filesystem = null;
-		var server     = null;
+		let filesystem = null;
+		let server     = null;
 
 		if (library.filesystem !== null) {
 			filesystem = library.filesystem.root;
@@ -45,13 +43,14 @@ lychee.define('harvester.net.remote.Library').requires([
 
 	};
 
+	const _on_start = function(data) {
 
-	var _on_start = function(data) {
+		let identifier = data.identifier || null;
+		let main       = global.MAIN     || null;
 
-		var identifier = data.identifier || null;
-		if (identifier !== null && _MAIN !== null) {
+		if (identifier !== null && main !== null) {
 
-			var library = _MAIN._libraries[identifier] || null;
+			let library = main._libraries[identifier] || null;
 			if (library !== null && library.server === null) {
 
 				_Server.process(library);
@@ -72,12 +71,14 @@ lychee.define('harvester.net.remote.Library').requires([
 
 	};
 
-	var _on_stop = function(data) {
+	const _on_stop = function(data) {
 
-		var identifier = data.identifier || null;
-		if (identifier !== null && _MAIN !== null) {
+		let identifier = data.identifier || null;
+		let main       = global.MAIN     || null;
 
-			var library = _MAIN._libraries[identifier] || null;
+		if (identifier !== null && main !== null) {
+
+			let library = main._libraries[identifier] || null;
 			if (library !== null && library.server !== null) {
 
 				library.server.destroy();
@@ -105,12 +106,9 @@ lychee.define('harvester.net.remote.Library').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
 		_Service.call(this, 'library', remote, _Service.TYPE.remote);
-
-
-		_MAIN = lychee.import('MAIN');
 
 
 		this.bind('start', _on_start, this);
@@ -119,7 +117,7 @@ lychee.define('harvester.net.remote.Library').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -127,7 +125,7 @@ lychee.define('harvester.net.remote.Library').requires([
 
 		serialize: function() {
 
-			var data = _Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.remote.Library';
 
 
@@ -143,10 +141,12 @@ lychee.define('harvester.net.remote.Library').requires([
 
 		index: function(data) {
 
-			var tunnel = this.tunnel;
-			if (tunnel !== null && _MAIN !== null) {
+			let main   = global.MAIN || null;
+			let tunnel = this.tunnel;
 
-				var libraries = Object.values(_MAIN._libraries).filter(function(library) {
+			if (main !== null && tunnel !== null) {
+
+				let libraries = Object.values(main._libraries).filter(function(library) {
 					return /cultivator/g.test(library.identifier) === false;
 				}).map(_serialize);
 
@@ -163,7 +163,7 @@ lychee.define('harvester.net.remote.Library').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

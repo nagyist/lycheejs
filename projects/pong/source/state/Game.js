@@ -11,15 +11,17 @@ lychee.define('game.state.Game').requires([
 	'lychee.app.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _BLOB   = attachments["json"].buffer;
-	var _MUSIC  = attachments["music.msc"];
-	var _SOUNDS = {
+	const _Color  = lychee.import('lychee.effect.Color');
+	const _Shake  = lychee.import('lychee.effect.Shake');
+	const _State  = lychee.import('lychee.app.State');
+	const _BLOB   = attachments["json"].buffer;
+	const _MUSIC  = attachments["music.msc"];
+	const _SOUNDS = {
 		boo:   attachments["boo.snd"],
 		cheer: attachments["cheer.snd"],
 		ping:  attachments["ping.snd"],
 		pong:  attachments["pong.snd"]
 	};
-	var _State  = lychee.import('lychee.app.State');
 
 
 
@@ -27,9 +29,9 @@ lychee.define('game.state.Game').requires([
 	 * HELPERS
 	 */
 
-	var _on_touch = function(id, position, delta) {
+	const _on_touch = function(id, position, delta) {
 
-		var renderer = this.renderer;
+		let renderer = this.renderer;
 		if (renderer !== null) {
 
 			position.y -= renderer.offset.y;
@@ -42,20 +44,20 @@ lychee.define('game.state.Game').requires([
 
 	};
 
-	var _reset_game = function(winner) {
+	const _reset_game = function(winner) {
 
 		winner = typeof winner === 'string' ? winner : null;
 
 
-		var ball = this.queryLayer('game', 'ball');
+		let ball = this.queryLayer('game', 'ball');
 		if (ball !== null) {
 
-			var position = {
+			let position = {
 				x: 0,
 				y: 0
 			};
 
-			var velocity = {
+			let velocity = {
 				x: 150 + Math.random() * 100,
 				y: 100 + Math.random() * 100
 			};
@@ -81,7 +83,7 @@ lychee.define('game.state.Game').requires([
 		}
 
 
-		var score = this.queryLayer('ui', 'score');
+		let score = this.queryLayer('ui', 'score');
 		if (score !== null) {
 			score.setValue(this.__score.player + ' - ' + this.__score.enemy);
 		}
@@ -98,7 +100,7 @@ lychee.define('game.state.Game').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -127,17 +129,17 @@ lychee.define('game.state.Game').requires([
 		 * INITIALIZATION
 		 */
 
-		var viewport = this.viewport;
+		let viewport = this.viewport;
 		if (viewport !== null) {
 
 			viewport.bind('reshape', function(orientation, rotation) {
 
-				var renderer = this.renderer;
+				let renderer = this.renderer;
 				if (renderer !== null) {
 
-					var entity = null;
-					var width  = renderer.width;
-					var height = renderer.height;
+					let entity = null;
+					let width  = renderer.width;
+					let height = renderer.height;
 
 
 					entity = this.queryLayer('bg', 'background');
@@ -165,7 +167,7 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -175,7 +177,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -195,7 +197,7 @@ lychee.define('game.state.Game').requires([
 
 			// Allow AI playing while welcome dialog is visible
 
-			var welcome = this.queryLayer('ui', 'welcome');
+			let welcome = this.queryLayer('ui', 'welcome');
 			if (welcome !== null) {
 
 				welcome.setVisible(true);
@@ -216,13 +218,13 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var jukebox = this.jukebox;
+			let jukebox = this.jukebox;
 			if (jukebox !== null) {
 				jukebox.play(_MUSIC);
 			}
 
 
-			lychee.app.State.prototype.enter.call(this, oncomplete);
+			_State.prototype.enter.call(this, oncomplete);
 
 		},
 
@@ -231,34 +233,34 @@ lychee.define('game.state.Game').requires([
 			this.input.unbind('touch', _on_touch, this);
 
 
-			var jukebox = this.jukebox;
+			let jukebox = this.jukebox;
 			if (jukebox !== null) {
 				jukebox.stop(_MUSIC);
 			}
 
 
-			lychee.app.State.prototype.leave.call(this, oncomplete);
+			_State.prototype.leave.call(this, oncomplete);
 
 		},
 
 		update: function(clock, delta) {
 
-			lychee.app.State.prototype.update.call(this, clock, delta);
+			_State.prototype.update.call(this, clock, delta);
 
 
-			var jukebox    = this.jukebox;
-			var renderer   = this.renderer;
-			var background = this.queryLayer('bg', 'background');
-			var gamelayer  = this.getLayer('game');
-			var uilayer    = this.getLayer('ui');
+			let jukebox    = this.jukebox;
+			let renderer   = this.renderer;
+			let background = this.queryLayer('bg', 'background');
+			let gamelayer  = this.getLayer('game');
+			let uilayer    = this.getLayer('ui');
 
-			var ball     = this.queryLayer('game', 'ball');
-			var player   = this.queryLayer('game', 'player');
-			var enemy    = this.queryLayer('game', 'enemy');
-			var hwidth   = renderer.width / 2;
-			var hheight  = renderer.height / 2;
-			var position = ball.position;
-			var velocity = ball.velocity;
+			let ball     = this.queryLayer('game', 'ball');
+			let player   = this.queryLayer('game', 'player');
+			let enemy    = this.queryLayer('game', 'enemy');
+			let hwidth   = renderer.width / 2;
+			let hheight  = renderer.height / 2;
+			let position = ball.position;
+			let velocity = ball.velocity;
 
 
 			/*
@@ -298,8 +300,8 @@ lychee.define('game.state.Game').requires([
 				velocity.x = Math.abs(velocity.x);
 				jukebox.play(_SOUNDS.ping);
 
-				gamelayer.addEffect(new lychee.effect.Shake({
-					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+				gamelayer.addEffect(new _Shake({
+					type:     _Shake.TYPE.bounceeaseout,
 					duration: 300,
 					shake:    {
 						x: (Math.random() * 16) | 0,
@@ -307,8 +309,8 @@ lychee.define('game.state.Game').requires([
 					}
 				}));
 
-				uilayer.addEffect(new lychee.effect.Shake({
-					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+				uilayer.addEffect(new _Shake({
+					type:     _Shake.TYPE.bounceeaseout,
 					duration: 300,
 					shake:    {
 						x: (Math.random() * 16) | 0,
@@ -317,8 +319,8 @@ lychee.define('game.state.Game').requires([
 				}));
 
 				background.setColor('#14a5e2');
-				background.addEffect(new lychee.effect.Color({
-					type:     lychee.effect.Color.TYPE.linear,
+				background.addEffect(new _Color({
+					type:     _Color.TYPE.linear,
 					duration: 1000,
 					color:    '#050a0d'
 				}));
@@ -329,8 +331,8 @@ lychee.define('game.state.Game').requires([
 				velocity.x = -1 * Math.abs(velocity.x);
 				jukebox.play(_SOUNDS.pong);
 
-				gamelayer.addEffect(new lychee.effect.Shake({
-					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+				gamelayer.addEffect(new _Shake({
+					type:     _Shake.TYPE.bounceeaseout,
 					duration: 300,
 					shake:    {
 						x: (Math.random() * 16) | 0,
@@ -338,8 +340,8 @@ lychee.define('game.state.Game').requires([
 					}
 				}));
 
-				uilayer.addEffect(new lychee.effect.Shake({
-					type:     lychee.effect.Shake.TYPE.bounceeaseout,
+				uilayer.addEffect(new _Shake({
+					type:     _Shake.TYPE.bounceeaseout,
 					duration: 300,
 					shake:    {
 						x: (Math.random() * 16) | 0,
@@ -348,8 +350,8 @@ lychee.define('game.state.Game').requires([
 				}));
 
 				background.setColor('#de1010');
-				background.addEffect(new lychee.effect.Color({
-					type:     lychee.effect.Color.TYPE.easeout,
+				background.addEffect(new _Color({
+					type:     _Color.TYPE.easeout,
 					duration: 1000,
 					color:    '#050a0d'
 				}));
@@ -362,7 +364,7 @@ lychee.define('game.state.Game').requires([
 			 * 3: AI LOGIC
 			 */
 
-			var ai = this.__ai;
+			let ai = this.__ai;
 
 			if (ai.clock === null) {
 				ai.clock = clock;
@@ -398,7 +400,7 @@ lychee.define('game.state.Game').requires([
 			 * 4: PLAYER LOGIC
 			 */
 
-			var target = this.__player.target;
+			let target = this.__player.target;
 			if (target.y !== null) {
 
 				if (target.y > player.position.y - 10 && target.y < player.position.y + 10) {
@@ -425,6 +427,6 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

@@ -36,6 +36,14 @@ elif [ "$OS" == "linux" ]; then
 	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
+elif [ "$OS" == "freebsd" ] || [ "$OS" == "netbsd" ]; then
+
+	# XXX: BSD requires Linux binary compatibility
+
+	OS="bsd";
+	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
+
 fi;
 
 if [ ! -f $LYCHEEJS_NODE ]; then
@@ -53,19 +61,8 @@ fi;
 
 
 
-if [ -d "$LYCHEEJS_ROOT/$2" ]; then
+cd $LYCHEEJS_ROOT;
+$LYCHEEJS_NODE ./bin/strainer.js "$1" "$2" "$3" "$4";
 
-	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_NODE ./bin/strainer.js "$1" "$2";
-
-	exit 0;
-
-else
-
-	cd $LYCHEEJS_ROOT;
-	$LYCHEEJS_NODE ./bin/strainer.js help;
-
-	exit 1;
-
-fi;
+exit $?;
 

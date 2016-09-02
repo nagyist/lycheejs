@@ -1,7 +1,13 @@
 
 lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachments) {
 
-	var Class = function(settings) {
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Composite = function(settings) {
 
 		this.delay = 0;
 		this.sound = true;
@@ -11,8 +17,8 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 
 		// No data validation garbage allowed for effects
 
-		var delay = typeof settings.delay === 'number' ? (settings.delay | 0) : null;
-		var sound = settings.sound instanceof Sound    ? settings.sound       : null;
+		let delay = typeof settings.delay === 'number' ? (settings.delay | 0) : null;
+		let sound = settings.sound instanceof Sound    ? settings.sound       : null;
 
 		if (delay !== null) {
 			this.delay = delay;
@@ -25,7 +31,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -35,7 +41,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.delay !== 0)    settings.delay = this.delay;
@@ -60,7 +66,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 			}
 
 
-			var t = (clock - this.__start) / this.delay;
+			let t = (clock - this.__start) / this.delay;
 			if (t < 0) {
 				return true;
 			}
@@ -72,7 +78,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 
 			} else {
 
-				var sound = this.sound;
+				let sound = this.sound;
 				if (sound !== null) {
 					sound.play();
 				}
@@ -87,7 +93,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

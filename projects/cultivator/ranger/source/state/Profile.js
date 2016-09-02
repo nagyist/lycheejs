@@ -10,12 +10,12 @@ lychee.define('app.state.Profile').requires([
 	'lychee.ui.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Helper = lychee.import('lychee.ui.entity.Helper');
-	var _State  = lychee.import('lychee.ui.State');
-	var _JSON   = lychee.import('lychee.codec.JSON');
-	var _BLOB   = attachments["json"].buffer;
-	var _CACHE  = {};
-	var _helper = new _Helper();
+	const _Helper = lychee.import('lychee.ui.entity.Helper');
+	const _State  = lychee.import('lychee.ui.State');
+	const _JSON   = lychee.import('lychee.codec.JSON');
+	const _BLOB   = attachments["json"].buffer;
+	const _CACHE  = {};
+	const _helper = new _Helper();
 
 
 
@@ -23,12 +23,12 @@ lychee.define('app.state.Profile').requires([
 	 * HELPERS
 	 */
 
-	var _on_sync = function(profiles) {
+	const _on_sync = function(profiles) {
 
 		if (profiles instanceof Array) {
 
-			var layer = this.queryLayer('ui', 'profile');
-			var that  = this;
+			let layer = this.queryLayer('ui', 'profile');
+			let that  = this;
 
 
 			profiles.forEach(function(profile) {
@@ -36,7 +36,7 @@ lychee.define('app.state.Profile').requires([
 				_CACHE[profile.identifier] = profile;
 
 
-				var entity = layer.getEntity(profile.identifier);
+				let entity = layer.getEntity(profile.identifier);
 				if (entity === null) {
 					entity = lychee.deserialize(lychee.serialize(layer.getEntity('development')));
 					entity.bind('#change', _on_change, that);
@@ -56,16 +56,16 @@ lychee.define('app.state.Profile').requires([
 
 	};
 
-	var _on_change = function(entity, action) {
+	const _on_change = function(entity, action) {
 
 		if (action === 'save') {
 
-			var identifier = entity.label;
-			var host       = entity.getEntity('host').value;
-			var port       = entity.getEntity('port').value;
-			var debug      = entity.getEntity('debug').value;
-			var sandbox    = entity.getEntity('sandbox').value;
-			var profile    = _CACHE[identifier] || null;
+			let identifier = entity.label;
+			let host       = entity.getEntity('host').value;
+			let port       = entity.getEntity('port').value;
+			let debug      = entity.getEntity('debug').value;
+			let sandbox    = entity.getEntity('sandbox').value;
+			let profile    = _CACHE[identifier] || null;
 			if (profile !== null) {
 
 				profile = _CACHE[identifier] = {
@@ -77,7 +77,7 @@ lychee.define('app.state.Profile').requires([
 				};
 
 
-				var data = _JSON.encode(profile);
+				let data = _JSON.encode(profile);
 				if (data !== null) {
 					_helper.setValue('profile=' + identifier + '?data=' + data.toString('base64'));
 					_helper.trigger('touch');
@@ -95,7 +95,7 @@ lychee.define('app.state.Profile').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -105,7 +105,7 @@ lychee.define('app.state.Profile').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -116,7 +116,7 @@ lychee.define('app.state.Profile').requires([
 			_State.prototype.deserialize.call(this, blob);
 
 
-			var entity = this.queryLayer('ui', 'profile > development');
+			let entity = this.queryLayer('ui', 'profile > development');
 			if (entity !== null) {
 				entity.bind('#change', _on_change, this);
 			}
@@ -125,7 +125,7 @@ lychee.define('app.state.Profile').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'app.state.Profile';
 
 
@@ -135,10 +135,10 @@ lychee.define('app.state.Profile').requires([
 
 		enter: function(oncomplete, data) {
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('profile');
+				let service = client.getService('profile');
 				if (service !== null) {
 					service.bind('sync', _on_sync, this);
 					service.sync();
@@ -153,10 +153,10 @@ lychee.define('app.state.Profile').requires([
 
 		leave: function(oncomplete) {
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('profile');
+				let service = client.getService('profile');
 				if (service !== null) {
 					service.unbind('sync', _on_sync, this);
 				}
@@ -171,7 +171,7 @@ lychee.define('app.state.Profile').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

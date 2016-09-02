@@ -3,9 +3,9 @@ lychee.define('app.entity.Background').includes([
 	'lychee.app.sprite.Background'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Background = lychee.import('lychee.app.sprite.Background');
-	var _TEXTURE    = attachments["png"];
-	var _CONFIG     = {
+	const _Background = lychee.import('lychee.app.sprite.Background');
+	const _TEXTURE    = attachments["png"];
+	const _CONFIG     = {
 		repeat: true,
 		states: { 'default': 0 },
 		map:    { 'default': [{ x: 0, y: 0, w: 512, h: 512 }] }
@@ -17,9 +17,9 @@ lychee.define('app.entity.Background').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		settings.map     = _CONFIG.map;
@@ -35,7 +35,7 @@ lychee.define('app.entity.Background').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -43,7 +43,7 @@ lychee.define('app.entity.Background').includes([
 
 		serialize: function() {
 
-			var data = _Background.prototype.serialize.call(this);
+			let data = _Background.prototype.serialize.call(this);
 			data['constructor'] = 'app.entity.Background';
 
 
@@ -54,7 +54,7 @@ lychee.define('app.entity.Background').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

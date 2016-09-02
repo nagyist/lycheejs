@@ -34,7 +34,7 @@
 <script>
 (function(lychee, global) {
 
-	var environment = lychee.deserialize(${blob});
+	let environment = lychee.deserialize(${blob});
 	if (environment !== null) {
 		lychee.envinit(environment, ${profile});
 	}

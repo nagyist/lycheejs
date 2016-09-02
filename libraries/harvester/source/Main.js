@@ -12,26 +12,22 @@ lychee.define('harvester.Main').requires([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
-	var _harvester = lychee.import('harvester');
-	var _mod       = {
+	const _harvester   = lychee.import('harvester');
+	const _mod         = {
 		Fertilizer: lychee.import('harvester.mod.Fertilizer'),
 		Packager:   lychee.import('harvester.mod.Packager'),
 		Server:     lychee.import('harvester.mod.Server'),
 		Strainer:   lychee.import('harvester.mod.Strainer'),
 		Updater:    lychee.import('harvester.mod.Updater')
 	};
+	const _setInterval = global.setInterval;
+	const _setTimeout  = global.setTimeout;
+	const _Emitter     = lychee.import('lychee.event.Emitter');
+	const _LIBRARIES   = {};
+	const _PROJECTS    = {};
+	const _PUBLIC_IPS  = (function() {
 
-
-
-	/*
-	 * HELPERS
-	 */
-
-	var _LIBRARIES  = {};
-	var _PROJECTS   = {};
-	var _PUBLIC_IPS = (function() {
-
-		var os = null;
+		let os = null;
 
 		try {
 			os = require('os');
@@ -42,8 +38,7 @@ lychee.define('harvester.Main').requires([
 		if (os !== null) {
 
 
-			var candidates = [];
-
+			let candidates = [];
 
 			Object.values(os.networkInterfaces()).forEach(function(iface) {
 
@@ -63,7 +58,6 @@ lychee.define('harvester.Main').requires([
 
 			});
 
-
 			return candidates.unique();
 
 		}
@@ -73,16 +67,21 @@ lychee.define('harvester.Main').requires([
 
 	})();
 
-	var _initialize = function(sandbox) {
 
-		var libraries = Object.values(_LIBRARIES);
-		var projects  = Object.values(_PROJECTS);
 
-		var Fertilizer = _mod.Fertilizer;
-		var Packager   = _mod.Packager;
-		var Server     = _mod.Server;
-		var Strainer   = _mod.Strainer;
-		var Updater    = _mod.Updater;
+	/*
+	 * HELPERS
+	 */
+
+	const _initialize = function(sandbox) {
+
+		let libraries  = Object.values(_LIBRARIES);
+		let projects   = Object.values(_PROJECTS);
+		let Fertilizer = _mod.Fertilizer;
+		let Packager   = _mod.Packager;
+		let Server     = _mod.Server;
+		let Strainer   = _mod.Strainer;
+		let Updater    = _mod.Updater;
 
 
 		if (sandbox === true) {
@@ -135,7 +134,7 @@ lychee.define('harvester.Main').requires([
 		 * BOOTUP: PROJECTS
 		 */
 
-		setTimeout(function() {
+		_setTimeout(function() {
 
 			projects.forEach(function(project, p) {
 
@@ -153,7 +152,7 @@ lychee.define('harvester.Main').requires([
 
 				if (Fertilizer !== null && Fertilizer.can(project) === true) {
 
-					setTimeout(function() {
+					_setTimeout(function() {
 						Fertilizer.process(project);
 					}, p * 2000);
 
@@ -169,7 +168,7 @@ lychee.define('harvester.Main').requires([
 		 * INTERVAL
 		 */
 
-		setInterval(function() {
+		_setInterval(function() {
 
 			libraries.forEach(function(library) {
 
@@ -198,27 +197,18 @@ lychee.define('harvester.Main').requires([
 	 * FEATURE DETECTION
 	 */
 
-	var _defaults = {
-
-		host:    null,
-		port:    null,
-		sandbox: false
-
-	};
-
-
 	(function(libraries, projects) {
 
-		var filesystem = new _harvester.data.Filesystem();
+		let filesystem = new _harvester.data.Filesystem();
 
 
 		filesystem.dir('/libraries').filter(function(value) {
-			return !value.match(/README\.md/);
+			return /README\.md/.test(value) === false;
 		}).map(function(value) {
 			return '/libraries/' + value;
 		}).forEach(function(identifier) {
 
-			var info1 = filesystem.info(identifier + '/lychee.pkg');
+			let info1 = filesystem.info(identifier + '/lychee.pkg');
 			if ((info1 !== null && info1.type === 'file')) {
 				libraries[identifier] = new _harvester.data.Project(identifier);
 			}
@@ -226,13 +216,13 @@ lychee.define('harvester.Main').requires([
 		});
 
 		filesystem.dir('/projects').filter(function(value) {
-			return !value.match(/cultivator|README\.md/);
+			return /cultivator|README\.md/.test(value) === false;
 		}).map(function(value) {
 			return '/projects/' + value;
 		}).forEach(function(identifier) {
 
-			var info1 = filesystem.info(identifier + '/index.html');
-			var info2 = filesystem.info(identifier + '/lychee.pkg');
+			let info1 = filesystem.info(identifier + '/index.html');
+			let info2 = filesystem.info(identifier + '/lychee.pkg');
 			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
 				projects[identifier] = new _harvester.data.Project(identifier);
 			}
@@ -240,13 +230,13 @@ lychee.define('harvester.Main').requires([
 		});
 
 		filesystem.dir('/projects/cultivator').filter(function(value) {
-			return !value.match(/design|index\.html|robots\.txt/);
+			return /design|index\.html|robots\.txt/.test(value) === false;
 		}).map(function(value) {
 			return '/projects/cultivator/' + value;
 		}).forEach(function(identifier) {
 
-			var info1 = filesystem.info(identifier + '/index.html');
-			var info2 = filesystem.info(identifier + '/lychee.pkg');
+			let info1 = filesystem.info(identifier + '/index.html');
+			let info2 = filesystem.info(identifier + '/lychee.pkg');
 			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
 				projects[identifier] = new _harvester.data.Project(identifier);
 			}
@@ -261,9 +251,9 @@ lychee.define('harvester.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(settings) {
+	let Composite = function(settings) {
 
-		this.settings = lychee.assignunlink({}, _defaults, settings);
+		this.settings = lychee.assignunlink({ host: null, port: null, sandbox: false }, settings);
 		this.defaults = lychee.assignunlink({}, this.settings);
 
 
@@ -280,7 +270,7 @@ lychee.define('harvester.Main').requires([
 		settings.sandbox = settings.sandbox === true;
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 
 
@@ -308,8 +298,10 @@ lychee.define('harvester.Main').requires([
 			this.server.connect();
 
 
-			console.log('\n\n');
-			console.log('Open your web browser and surf to one of the following hosts:');
+			console.log('\n');
+			console.info('+-------------------------------------------------------+');
+			console.info('| Open one of these URLs with a Blink-based Web Browser |');
+			console.info('+-------------------------------------------------------+');
 			console.log('\n');
 			this.getHosts().forEach(function(host) {
 				console.log(host);
@@ -326,7 +318,7 @@ lychee.define('harvester.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -334,13 +326,13 @@ lychee.define('harvester.Main').requires([
 
 		deserialize: function(blob) {
 
-			var admin = lychee.deserialize(blob.admin);
+			let admin = lychee.deserialize(blob.admin);
 			if (admin !== null) {
 				this.admin = admin;
 			}
 
 
-			var server = lychee.deserialize(blob.server);
+			let server = lychee.deserialize(blob.server);
 			if (server !== null) {
 				this.server = server;
 			}
@@ -349,12 +341,12 @@ lychee.define('harvester.Main').requires([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.Main';
 
 
-			var settings = lychee.assignunlink({}, this.settings);
-			var blob     = data['blob'] || {};
+			let settings = lychee.assignunlink({}, this.settings);
+			let blob     = data['blob'] || {};
 
 
 			if (this.admin !== null)  blob.admin  = lychee.serialize(this.admin);
@@ -384,9 +376,9 @@ lychee.define('harvester.Main').requires([
 
 		destroy: function() {
 
-			for (var identifier in _PROJECTS) {
+			for (let identifier in _PROJECTS) {
 
-				var project = _PROJECTS[identifier];
+				let project = _PROJECTS[identifier];
 				if (project.server !== null) {
 
 					if (typeof project.server.destroy === 'function') {
@@ -421,13 +413,13 @@ lychee.define('harvester.Main').requires([
 
 		getHosts: function() {
 
-			var hosts  = [];
-			var server = this.server;
+			let hosts  = [];
+			let server = this.server;
 
 			if (server !== null) {
 
-				var host = server.host || null;
-				var port = server.port;
+				let host = server.host || null;
+				let port = server.port;
 
 				if (host === null) {
 					hosts.push.apply(hosts, _PUBLIC_IPS);
@@ -457,7 +449,7 @@ lychee.define('harvester.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

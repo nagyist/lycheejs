@@ -4,13 +4,18 @@ lychee.define('lychee.app.State').requires([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
+	const _App_layer = lychee.import('lychee.app.Layer');
+	const _Ui_layer  = lychee.import('lychee.ui.Layer');
+
+
+
 	/*
 	 * HELPERS
 	 */
 
-	var _get_id = function(entity) {
+	const _get_id = function(entity) {
 
-		for (var id in this.__map) {
+		for (let id in this.__map) {
 
 			if (this.__map[id] === entity) {
 				return id;
@@ -23,7 +28,7 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _recursive_deserialize = function(oldlayer, newlayer) {
+	const _recursive_deserialize = function(oldlayer, newlayer) {
 
 		if (typeof oldlayer.setType === 'function') {
 			oldlayer.setType(newlayer.type);
@@ -34,11 +39,11 @@ lychee.define('lychee.app.State').requires([
 		}
 
 
-		for (var e = 0, el = newlayer.entities.length; e < el; e++) {
+		for (let e = 0, el = newlayer.entities.length; e < el; e++) {
 
-			var entity = newlayer.entities[e];
-			var id     = _get_id.call(newlayer, entity);
-			var other  = oldlayer.getEntity(id);
+			let entity = newlayer.entities[e];
+			let id     = _get_id.call(newlayer, entity);
+			let other  = oldlayer.getEntity(id);
 
 			if (other === null) {
 
@@ -54,12 +59,12 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _on_key = function(key, name, delta) {
+	const _on_key = function(key, name, delta) {
 
-		var focus = this.__focus;
+		let focus = this.__focus;
 		if (focus !== null) {
 
-			var result = focus.trigger('key', [ key, name, delta ]);
+			let result = focus.trigger('key', [ key, name, delta ]);
 			if (result === true) {
 
 				if (focus.state === 'default') {
@@ -72,18 +77,18 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _on_reshape = function(orientation, rotation, width, height) {
+	const _on_reshape = function(orientation, rotation, width, height) {
 
-		var renderer = this.renderer;
+		let renderer = this.renderer;
 		if (renderer !== null) {
 
-			var position = {
+			let position = {
 				x: 1/2 * renderer.width,
 				y: 1/2 * renderer.height
 			};
 
 
-			for (var id in this.__layers) {
+			for (let id in this.__layers) {
 				this.__layers[id].setPosition(position);
 				this.__layers[id].trigger('relayout');
 			}
@@ -92,18 +97,61 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _on_swipe = function(id, type, position, delta, swipe) {
+	const _on_scroll = function(id, direction, position, delta) {
 
-		var touch = this.__touches[id];
+		let args = [ id, direction, {
+			x: 0,
+			y: 0
+		}, delta ];
+
+
+		let x = position.x;
+		let y = position.y;
+
+
+		let renderer = this.renderer;
+		if (renderer !== null) {
+
+			x -= renderer.offset.x;
+			y -= renderer.offset.y;
+
+		}
+
+
+		for (let lid in this.__layers) {
+
+			let layer = this.__layers[lid];
+			if (layer.visible === false) continue;
+
+			if (lychee.interfaceof(_Ui_layer, layer)) {
+
+				args[2].x = x - layer.position.x;
+				args[2].y = y - layer.position.y;
+
+
+				let result = layer.trigger('scroll', args);
+				if (result !== true && result !== false && result !== null) {
+					break;
+				}
+
+			}
+
+		}
+
+	};
+
+	const _on_swipe = function(id, type, position, delta, swipe) {
+
+		let touch = this.__touches[id];
 		if (touch.entity !== null) {
 
 			if (touch.layer.visible === false) return;
 
 
-			var args   = [ id, type, position, delta, swipe ];
-			var result = false;
+			let args   = [ id, type, position, delta, swipe ];
+			let result = false;
 
-			var renderer = this.renderer;
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
 				args[2].x -= renderer.offset.x;
@@ -158,19 +206,19 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _on_touch = function(id, position, delta) {
+	const _on_touch = function(id, position, delta) {
 
-		var args = [ id, {
+		let args = [ id, {
 			x: 0,
 			y: 0
 		}, delta ];
 
 
-		var x = position.x;
-		var y = position.y;
+		let x = position.x;
+		let y = position.y;
 
 
-		var renderer = this.renderer;
+		let renderer = this.renderer;
 		if (renderer !== null) {
 
 			x -= renderer.offset.x;
@@ -179,21 +227,21 @@ lychee.define('lychee.app.State').requires([
 		}
 
 
-		var touch_layer  = null;
-		var touch_entity = null;
+		let touch_layer  = null;
+		let touch_entity = null;
 
-		for (var lid in this.__layers) {
+		for (let lid in this.__layers) {
 
-			var layer = this.__layers[lid];
+			let layer = this.__layers[lid];
 			if (layer.visible === false) continue;
 
-			if (lychee.interfaceof(lychee.ui.Layer, layer)) {
+			if (lychee.interfaceof(_Ui_layer, layer)) {
 
 				args[1].x = x - layer.position.x;
 				args[1].y = y - layer.position.y;
 
 
-				var result = layer.trigger('touch', args);
+				let result = layer.trigger('touch', args);
 				if (result !== true && result !== false && result !== null) {
 
 					touch_entity = result;
@@ -208,8 +256,8 @@ lychee.define('lychee.app.State').requires([
 		}
 
 
-		var old_focus = this.__focus;
-		var new_focus = touch_entity;
+		let old_focus = this.__focus;
+		let new_focus = touch_entity;
 
 		// 1. Reset Touch trace data if no Entity was touched
 		if (new_focus === null) {
@@ -246,7 +294,7 @@ lychee.define('lychee.app.State').requires([
 		// 3. Prepare UI Swipe event
 		if (touch_entity !== null) {
 
-			var touch = this.__touches[id];
+			let touch = this.__touches[id];
 
 			touch.entity = new_focus;
 			touch.layer  = touch_layer;
@@ -262,7 +310,7 @@ lychee.define('lychee.app.State').requires([
 
 	};
 
-	var _trace_entity_offset = function(entity, layer, offsetX, offsetY) {
+	const _trace_entity_offset = function(entity, layer, offsetX, offsetY) {
 
 		if (offsetX === undefined || offsetY === undefined) {
 
@@ -283,14 +331,14 @@ lychee.define('lychee.app.State').requires([
 
 		} else if (layer.entities !== undefined) {
 
-			var entities = layer.entities;
-			for (var e = entities.length - 1; e >= 0; e--) {
+			let entities = layer.entities;
+			for (let e = entities.length - 1; e >= 0; e--) {
 
-				var dx = layer.offset.x + entities[e].position.x;
-				var dy = layer.offset.y + entities[e].position.y;
+				let dx = layer.offset.x + entities[e].position.x;
+				let dy = layer.offset.y + entities[e].position.y;
 
 
-				var result = _trace_entity_offset.call(
+				let result = _trace_entity_offset.call(
 					this,
 					entity,
 					entities[e],
@@ -317,7 +365,7 @@ lychee.define('lychee.app.State').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		this.main     = main          || null;
 		this.client   = main.client   || null;
@@ -331,9 +379,10 @@ lychee.define('lychee.app.State').requires([
 		this.viewport = main.viewport || null;
 
 
-		this.__layers  = {};
-		this.__focus   = null;
-		this.__touches = [
+		this.__layers_map = [];
+		this.__layers     = {};
+		this.__focus      = null;
+		this.__touches    = [
 			{ entity: null, layer: null, offset: { x: 0, y: 0 } },
 			{ entity: null, layer: null, offset: { x: 0, y: 0 } },
 			{ entity: null, layer: null, offset: { x: 0, y: 0 } },
@@ -352,7 +401,7 @@ lychee.define('lychee.app.State').requires([
 		 * INITIALIZATION
 		 */
 
-		var viewport = this.viewport;
+		let viewport = this.viewport;
 		if (viewport !== null) {
 			viewport.bind('reshape', _on_reshape, this);
 		}
@@ -360,7 +409,7 @@ lychee.define('lychee.app.State').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -370,10 +419,10 @@ lychee.define('lychee.app.State').requires([
 
 			if (blob.layers) {
 
-				for (var laid in blob.layers) {
+				for (let laid in blob.layers) {
 
-					var tmp1 = this.__layers[laid] || null;
-					var tmp2 = lychee.deserialize(blob.layers[laid]);
+					let tmp1 = this.__layers[laid] || null;
+					let tmp2 = lychee.deserialize(blob.layers[laid]);
 
 					if (tmp1 === null && tmp2 !== null) {
 
@@ -393,15 +442,15 @@ lychee.define('lychee.app.State').requires([
 
 		serialize: function() {
 
-			var settings = this.main !== null ? '#MAIN' : null;
-			var blob     = {};
+			let settings = this.main !== null ? '#MAIN' : null;
+			let blob     = {};
 
 
 			if (Object.keys(this.__layers).length > 0) {
 
 				blob.layers = {};
 
-				for (var lid in this.__layers) {
+				for (let lid in this.__layers) {
 					blob.layers[lid] = lychee.serialize(this.__layers[lid]);
 				}
 
@@ -421,11 +470,12 @@ lychee.define('lychee.app.State').requires([
 			oncomplete = oncomplete instanceof Function ? oncomplete : null;
 
 
-			var input = this.input;
+			let input = this.input;
 			if (input !== null) {
-				input.bind('key',   _on_key,   this);
-				input.bind('touch', _on_touch, this);
-				input.bind('swipe', _on_swipe, this);
+				input.bind('key',    _on_key,    this);
+				input.bind('scroll', _on_scroll, this);
+				input.bind('swipe',  _on_swipe,  this);
+				input.bind('touch',  _on_touch,  this);
 			}
 
 
@@ -440,15 +490,15 @@ lychee.define('lychee.app.State').requires([
 			oncomplete = oncomplete instanceof Function ? oncomplete : null;
 
 
-			var focus = this.__focus;
+			let focus = this.__focus;
 			if (focus !== null) {
 				focus.trigger('blur');
 			}
 
 
-			for (var t = 0, tl = this.__touches.length; t < tl; t++) {
+			for (let t = 0, tl = this.__touches.length; t < tl; t++) {
 
-				var touch = this.__touches[t];
+				let touch = this.__touches[t];
 				if (touch.entity !== null) {
 					touch.entity = null;
 					touch.layer  = null;
@@ -460,11 +510,12 @@ lychee.define('lychee.app.State').requires([
 			this.__focus = null;
 
 
-			var input = this.input;
+			let input = this.input;
 			if (input !== null) {
-				input.unbind('swipe', _on_swipe, this);
-				input.unbind('touch', _on_touch, this);
-				input.unbind('key',   _on_key,   this);
+				input.unbind('touch',  _on_touch,  this);
+				input.unbind('swipe',  _on_swipe,  this);
+				input.unbind('scroll', _on_scroll, this);
+				input.unbind('key',    _on_key,    this);
 			}
 
 
@@ -479,7 +530,7 @@ lychee.define('lychee.app.State').requires([
 			custom = custom === true;
 
 
-			var renderer = this.renderer;
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
 				if (custom === false) {
@@ -487,9 +538,10 @@ lychee.define('lychee.app.State').requires([
 				}
 
 
-				for (var id in this.__layers) {
+				let layers_map = this.__layers_map;
+				for (let l = 0, ll = layers_map.length; l < ll; l++) {
 
-					var layer = this.__layers[id];
+					let layer = this.__layers[layers_map[l]];
 					if (layer.visible === false) continue;
 
 					layer.render(
@@ -511,9 +563,9 @@ lychee.define('lychee.app.State').requires([
 
 		update: function(clock, delta) {
 
-			for (var id in this.__layers) {
+			for (let id in this.__layers) {
 
-				var layer = this.__layers[id];
+				let layer = this.__layers[id];
 				if (layer.visible === false) continue;
 
 				layer.update(clock, delta);
@@ -530,8 +582,8 @@ lychee.define('lychee.app.State').requires([
 
 		setLayer: function(id, layer) {
 
-			id    = typeof id === 'string'                                                                      ? id    : null;
-			layer = (lychee.interfaceof(lychee.app.Layer, layer) || lychee.interfaceof(lychee.ui.Layer, layer)) ? layer : null;
+			id    = typeof id === 'string'                                                          ? id    : null;
+			layer = (lychee.interfaceof(_App_layer, layer) || lychee.interfaceof(_Ui_layer, layer)) ? layer : null;
 
 
 			if (id !== null) {
@@ -539,6 +591,7 @@ lychee.define('lychee.app.State').requires([
 				if (layer !== null) {
 
 					this.__layers[id] = layer;
+					this.__layers_map = Object.keys(this.__layers).sort();
 
 					return true;
 
@@ -573,13 +626,13 @@ lychee.define('lychee.app.State').requires([
 
 			if (id !== null && query !== null) {
 
-				var layer = this.getLayer(id);
+				let layer = this.getLayer(id);
 				if (layer !== null) {
 
-					var entity = layer;
-					var ids    = query.split(' > ');
+					let entity = layer;
+					let ids    = query.split(' > ');
 
-					for (var i = 0, il = ids.length; i < il; i++) {
+					for (let i = 0, il = ids.length; i < il; i++) {
 
 						entity = entity.getEntity(ids[i]);
 
@@ -609,6 +662,7 @@ lychee.define('lychee.app.State').requires([
 			if (id !== null && this.__layers[id] !== undefined) {
 
 				delete this.__layers[id];
+				this.__layers_map = Object.keys(this.__layers).sort();
 
 				return true;
 
@@ -622,7 +676,7 @@ lychee.define('lychee.app.State').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

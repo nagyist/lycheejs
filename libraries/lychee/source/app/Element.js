@@ -6,7 +6,10 @@ lychee.define('lychee.app.Element').requires([
 	'lychee.app.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	var _FONTS = {
+	const _Label = lychee.import('lychee.app.entity.Label');
+	const _Layer = lychee.import('lychee.app.Layer');
+	const _Text  = lychee.import('lychee.app.entity.Text');
+	const _FONTS = {
 		label: attachments["label.fnt"],
 		order: attachments["order.fnt"]
 	};
@@ -17,29 +20,29 @@ lychee.define('lychee.app.Element').requires([
 	 * HELPERS
 	 */
 
-	var _on_relayout = function() {
+	const _on_relayout = function() {
 
-		var content = this.__content;
-		var entity  = null;
-		var label   = null;
-		var layout  = [
+		let content = this.__content;
+		let entity  = null;
+		let label   = null;
+		let layout  = [
 			this.getEntity('@order'),
 			this.getEntity('@label')
 		];
 
 
-		var x1 = -1/2 * this.width;
-		var x2 =  1/2 * this.width;
-		var y1 = -1/2 * this.height;
-		var y2 =  1/2 * this.height;
+		let x1 = -1/2 * this.width;
+		let x2 =  1/2 * this.width;
+		let y1 = -1/2 * this.height;
+		let y2 =  1/2 * this.height;
 
 
 		if (content.length % 2 === 0) {
 
-			var offset   = 64 + 16;
-			var boundary = 0;
+			let offset   = 64 + 16;
+			let boundary = 0;
 
-			for (var c = 0, cl = content.length; c < cl; c += 2) {
+			for (let c = 0, cl = content.length; c < cl; c += 2) {
 
 				entity   = content[c]     || null;
 				label    = content[c + 1] || null;
@@ -94,9 +97,9 @@ lychee.define('lychee.app.Element').requires([
 		}
 
 
-		var entities = this.entities;
-		var index    = -1;
-		var order_w  = 0;
+		let entities = this.entities;
+		let index    = -1;
+		let order_w  = 0;
 
 
 		entity            = layout[0];
@@ -116,13 +119,14 @@ lychee.define('lychee.app.Element').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
-		this.label = 'CONTENT';
-		this.order = 1;
+		this.label     = 'CONTENT';
+		this.options   = [];
+		this.order     = 1;
 
 		this.__content = [];
 
@@ -132,7 +136,7 @@ lychee.define('lychee.app.Element').requires([
 		settings.relayout = false;
 
 
-		lychee.app.Layer.call(this, settings);
+		_Layer.call(this, settings);
 
 
 
@@ -140,12 +144,12 @@ lychee.define('lychee.app.Element').requires([
 		 * INITIALIZATION
 		 */
 
-		lychee.app.Layer.prototype.setEntity.call(this, '@order', new lychee.app.entity.Label({
+		_Layer.prototype.setEntity.call(this, '@order', new _Label({
 			font:  _FONTS.order,
 			value: '' + this.order
 		}));
 
-		lychee.app.Layer.prototype.setEntity.call(this, '@label', new lychee.app.entity.Label({
+		_Layer.prototype.setEntity.call(this, '@label', new _Label({
 			font:  _FONTS.label,
 			value: this.label
 		}));
@@ -164,7 +168,7 @@ lychee.define('lychee.app.Element').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -172,7 +176,7 @@ lychee.define('lychee.app.Element').requires([
 
 		deserialize: function(blob) {
 
-			lychee.app.Layer.prototype.deserialize.call(this, blob);
+			_Layer.prototype.deserialize.call(this, blob);
 
 			this.trigger('relayout');
 
@@ -180,11 +184,11 @@ lychee.define('lychee.app.Element').requires([
 
 		serialize: function() {
 
-			var data = lychee.app.Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.app.Element';
 
-			var settings = data['arguments'][0];
-			var blob     = (data['blob'] || {});
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
 
 
 			if (this.label !== 'CONTENT') settings.label = this.label;
@@ -203,12 +207,12 @@ lychee.define('lychee.app.Element').requires([
 			if (this.visible === false) return;
 
 
-			var alpha    = this.alpha;
-			var position = this.position;
-			var x        = position.x + offsetX;
-			var y        = position.y + offsetY;
-			var hwidth   = this.width  / 2;
-			var hheight  = this.height / 2;
+			let alpha    = this.alpha;
+			let position = this.position;
+			let x        = position.x + offsetX;
+			let y        = position.y + offsetY;
+			let hwidth   = this.width  / 2;
+			let hheight  = this.height / 2;
 
 
 			if (alpha !== 1) {
@@ -234,7 +238,7 @@ lychee.define('lychee.app.Element').requires([
 			);
 
 			if (alpha !== 0) {
-				lychee.app.Layer.prototype.render.call(this, renderer, offsetX, offsetY);
+				_Layer.prototype.render.call(this, renderer, offsetX, offsetY);
 			}
 
 			if (alpha !== 1) {
@@ -251,7 +255,7 @@ lychee.define('lychee.app.Element').requires([
 
 		addEntity: function(entity) {
 
-			var result = lychee.app.Layer.prototype.addEntity.call(this, entity);
+			let result = _Layer.prototype.addEntity.call(this, entity);
 			if (result === true) {
 				this.__content.push(entity);
 				this.__content.push(null);
@@ -267,12 +271,12 @@ lychee.define('lychee.app.Element').requires([
 			position = position instanceof Object ? position : null;
 
 
-			var found = null;
+			let found = null;
 
 
 			if (id !== null) {
 
-				var num = parseInt(id, 10);
+				let num = parseInt(id, 10);
 
 				if (this.__map[id] !== undefined) {
 					found = this.__map[id];
@@ -284,9 +288,9 @@ lychee.define('lychee.app.Element').requires([
 
 				if (typeof position.x === 'number' && typeof position.y === 'number') {
 
-					for (var e = this.entities.length - 1; e >= 0; e--) {
+					for (let e = this.entities.length - 1; e >= 0; e--) {
 
-						var entity = this.entities[e];
+						let entity = this.entities[e];
 						if (entity.visible === false) continue;
 
 						if (entity.isAtPosition(position) === true) {
@@ -307,10 +311,10 @@ lychee.define('lychee.app.Element').requires([
 
 		setEntity: function(id, entity) {
 
-			var result = lychee.app.Layer.prototype.setEntity.call(this, id, entity);
+			let result = _Layer.prototype.setEntity.call(this, id, entity);
 			if (result === true) {
 
-				var label = new lychee.app.entity.Label({
+				let label = new lychee.app.entity.Label({
 					value: id.charAt(0).toUpperCase() + id.substr(1)
 				});
 
@@ -318,7 +322,7 @@ lychee.define('lychee.app.Element').requires([
 				this.entities.push(label);
 
 
-				var index = this.__content.length - 1;
+				let index = this.__content.length - 1;
 				if (this.__content[index] === null) {
 					this.__content[index] = label;
 				}
@@ -331,14 +335,14 @@ lychee.define('lychee.app.Element').requires([
 
 		removeEntity: function(entity) {
 
-			var result = lychee.app.Layer.prototype.removeEntity.call(this, entity);
+			let result = _Layer.prototype.removeEntity.call(this, entity);
 			if (result === true) {
 
-				var index = this.__content.indexOf(entity);
+				let index = this.__content.indexOf(entity);
 				if (index !== -1) {
 
-					var label = this.__content[index + 1];
-					var tmp   = this.entities.indexOf(label);
+					let label = this.__content[index + 1];
+					let tmp   = this.entities.indexOf(label);
 					if (tmp !== -1) {
 						this.entities.splice(tmp, 1);
 					}
@@ -374,6 +378,12 @@ lychee.define('lychee.app.Element').requires([
 
 		},
 
+		setOptions: function(options) {
+
+			return false;
+
+		},
+
 		setOrder: function(order) {
 
 			order = typeof order === 'number' ? (order | 0) : null;
@@ -397,7 +407,7 @@ lychee.define('lychee.app.Element').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

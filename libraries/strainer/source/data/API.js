@@ -1,7 +1,7 @@
 
 lychee.define('strainer.data.API').exports(function(lychee, global, attachments) {
 
-	var _JSON = {
+	const _JSON = {
 		encode: JSON.stringify,
 		decode: JSON.parse
 	};
@@ -12,12 +12,12 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 	 * HELPERS
 	 */
 
-	var _WHITESPACE = new Array(513).join(' ');
+	const _WHITESPACE = new Array(513).join(' ');
 
-	var _readable_params = function(params) {
+	const _readable_params = function(params) {
 
-		var opt = -1;
-		var str = '';
+		let opt = -1;
+		let str = '';
 
 
 		params.forEach(function(param, i) {
@@ -44,9 +44,9 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _readable_values = function(properties, force) {
+	const _readable_values = function(properties, force) {
 
-		var that = this;
+		let that = this;
 
 
 		if (properties.length > 0) {
@@ -62,12 +62,12 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _readable_value = function(property, force) {
+	const _readable_value = function(property, force) {
 
 		force = force === true;
 
 
-		var val = undefined;
+		let val = undefined;
 
 
 		switch (property.type) {
@@ -78,11 +78,11 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 					val = property.values[0];
 				} else {
 
-					var enam = this.enums[property.name.toUpperCase()];
+					let enam = this.enums[property.name.toUpperCase()];
 					if (enam !== undefined) {
 
-						var vals = [].slice.call(enam.values, 1);
-						var rand = vals[Math.floor(Math.random() * vals.length)] || null;
+						let vals = [].slice.call(enam.values, 1);
+						let rand = vals[Math.floor(Math.random() * vals.length)] || null;
 						if (rand !== null) {
 							val = this.identifier + '.' + property.name.toUpperCase() + '.' + rand.name;
 						}
@@ -119,10 +119,10 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 					Object.keys(val).forEach(function(key, k) {
 
-						var number_values = [ 1337, 137, 13.37, 133.7 ];
-						var string_values = [ 'foo', 'bar', 'qux', 'doo' ];
+						let number_values = [ 1337, 137, 13.37, 133.7 ];
+						let string_values = [ 'foo', 'bar', 'qux', 'doo' ];
 
-						var org = val[key];
+						let org = val[key];
 						if (typeof org === 'number') {
 							val[key] = number_values[k];
 						} else if (typeof org === 'string') {
@@ -177,7 +177,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _readable_types = function(raw) {
+	const _readable_types = function(raw) {
 
 		if (raw instanceof Array) {
 
@@ -198,7 +198,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _readable_type = function(raw) {
+	const _readable_type = function(raw) {
 
 		if (typeof raw === 'string') {
 			return raw;
@@ -209,9 +209,9 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _dynamic_type = function(raw) {
+	const _dynamic_type = function(raw) {
 
-		var typ = undefined;
+		let typ = undefined;
 
 		if (raw === 'null') {
 			typ = 'null';
@@ -235,9 +235,9 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _dynamic_value = function(raw) {
+	const _dynamic_value = function(raw) {
 
-		var val = undefined;
+		let val = undefined;
 
 		if (raw === 'null') {
 			val = null;
@@ -269,18 +269,25 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		} else if (raw.substr(0, 1) === '\'') {
 			val = raw.substr(1, raw.indexOf('\'', 1) - 1);
+		} else if (raw.substr(0, 3) === 'new') {
+
+			let construct = raw.substr(0, raw.indexOf('(')).split(' ')[1].trim();
+			if (/Buffer|Font|Music|Sound|Texture|Stuff|/g.test(construct)) {
+				val = construct;
+			}
+
 		}
 
 		return val;
 
 	};
 
-	var _parse_head_identifier = function(code){
+	const _parse_head_identifier = function(code){
 
-		var that = this;
-		var i1   = code.indexOf('lychee.define(') + 14;
-		var i2   = code.indexOf(')', i1);
-		var id   = null;
+		let that = this;
+		let i1   = code.indexOf('lychee.define(') + 14;
+		let i2   = code.indexOf(')', i1);
+		let id   = null;
 
 
 		if (i1 > 14 && i2 > i1) {
@@ -304,14 +311,30 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_head_tags = function(code) {
+	const _parse_head_attaches = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('.tags(') + 6;
-		var i2   = code.indexOf(')', i1);
+		let that = this;
+		let i1   = code.indexOf('.attaches(') + 10;
+		let i2   = code.indexOf(')', i1);
 
 
-		var tags = {};
+		let attaches = {};
+
+
+		if (Object.keys(attaches).length > 0) {
+			that.attaches = attaches;
+		}
+
+	};
+
+	const _parse_head_tags = function(code) {
+
+		let that = this;
+		let i1   = code.indexOf('.tags(') + 6;
+		let i2   = code.indexOf(')', i1);
+
+
+		let tags = {};
 
 
 		if (i1 > 6 && i2 > i1) {
@@ -329,21 +352,21 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 				line = line.replace('}', '');
 
 
-				var tmp = line.trim();
+				let tmp = line.trim();
 				if (tmp.indexOf(':') !== -1) {
 
-					var key = tmp.split(':')[0].trim();
-					var val = tmp.split(':')[1].trim();
+					let key = tmp.split(':')[0].trim();
+					let val = tmp.split(':')[1].trim();
 
 					if (val.substr(-1) === ',') {
 						val = val.substr(0, val.length - 1);
 					}
 
 
-					var k0 = key.substr(0, 1);
-					var k1 = key.substr(-1);
-					var v0 = val.substr(0, 1);
-					var v1 = val.substr(-1);
+					let k0 = key.substr(0, 1);
+					let k1 = key.substr(-1);
+					let v0 = val.substr(0, 1);
+					let v1 = val.substr(-1);
 
 					if (k0 === '\'' && k1 === '\'') {
 						key = key.substr(1, key.length - 2);
@@ -386,14 +409,14 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_head_requires = function(code) {
+	const _parse_head_requires = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('.requires(') + 10;
-		var i2   = code.indexOf(')', i1);
+		let that = this;
+		let i1   = code.indexOf('.requires(') + 10;
+		let i2   = code.indexOf(')', i1);
 
 
-		var requires = [];
+		let requires = [];
 
 
 		if (i1 > 10 && i2 > i1) {
@@ -405,7 +428,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		code.split('\n').filter(function(line) {
 
-			var tmp = line.trim();
+			let tmp = line.trim();
 			if (tmp === '[' || tmp === ']') {
 				return false;
 			} else if (tmp.substr(0, 2) === '//') {
@@ -417,7 +440,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		}).forEach(function(line) {
 
-			var tmp = line.trim();
+			let tmp = line.trim();
 			if (tmp.substr(tmp.length - 1, 1) === ',') {
 				tmp = tmp.substr(0, tmp.length - 1);
 			}
@@ -440,14 +463,14 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_head_includes = function(code) {
+	const _parse_head_includes = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('.includes(') + 10;
-		var i2   = code.indexOf(')', i1);
+		let that = this;
+		let i1   = code.indexOf('.includes(') + 10;
+		let i2   = code.indexOf(')', i1);
 
 
-		var includes = [];
+		let includes = [];
 
 
 		if (i1 > 10 && i2 > i1) {
@@ -459,7 +482,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		code.split('\n').filter(function(line) {
 
-			var tmp = line.trim();
+			let tmp = line.trim();
 			if (tmp === '[' || tmp === ']') {
 				return false;
 			} else if (tmp.substr(0, 2) === '//') {
@@ -471,7 +494,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		}).forEach(function(line) {
 
-			var tmp = line.trim();
+			let tmp = line.trim();
 			if (tmp.substr(tmp.length - 1, 1) === ',') {
 				tmp = tmp.substr(0, tmp.length - 1);
 			}
@@ -494,18 +517,18 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_body_enums = function(code) {
+	const _parse_body_enums = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('\n\tvar Class = ') + 14;
-		var i2   = code.indexOf('\n\t};', i1 + 14)  +  4;
-		var i3   = code.indexOf('\n\tClass.prototype = {');
+		let that = this;
+		let i1   = code.indexOf('\n\tlet Composite = ') + 18;
+		let i2   = code.indexOf('\n\t};', i1 + 14) + 4;
+		let i3   = code.indexOf('\n\tComposite.prototype = {');
 
-		var enam   = '';
-		var values = [];
+		let enam   = '';
+		let values = [];
 
 
-		if (i1 > 14 && i2 > i1 && i3 > i2) {
+		if (i1 > 18 && i2 > i1 && i3 > i2) {
 			code = code.substr(i2, i3 - i2);
 		} else {
 			code = '';
@@ -514,7 +537,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		code.split('\n').filter(function(line) {
 
-			if (line.substr(0, 7) === '\tClass.') {
+			if (line.substr(0, 11) === '\tComposite.') {
 				return true;
 			}
 
@@ -527,14 +550,14 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		}).forEach(function(line) {
 
-			if (line.substr(0, 7) === '\tClass.') {
+			if (line.substr(0, 11) === '\tComposite.') {
 
-				enam   = line.split('=')[0].split('Class.')[1].trim();
+				enam   = line.split('=')[0].split('Composite.')[1].trim();
 				values = [];
 
 			} else if (line.substr(0, 2) === '\t\t' && line.indexOf(':') !== -1) {
 
-				var key, typ, val;
+				let key, typ, val;
 
 				key = line.substr(0, line.indexOf(':')).trim();
 				val = line.split(':')[1].trim();
@@ -569,21 +592,21 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_body_events = function(code) {
+	const _parse_body_events = function(code) {
 
-		var that = this;
+		let that = this;
 
 
 		code.split('\n').filter(function(line) {
 			return line.indexOf('this.trigger(\'') !== -1;
 		}).forEach(function(line) {
 
-			var event  = line.split('this.trigger(\'')[1].split('\'')[0];
-			var params = [];
+			let event  = line.split('this.trigger(\'')[1].split('\'')[0];
+			let params = [];
 
 			if (line.indexOf('[') !== -1 && line.indexOf(']') !== -1) {
 
-				var params = line.substr(line.indexOf('[') + 1, line.indexOf(']') - line.indexOf('[') - 1).split(',').map(function(value) {
+				let params = line.substr(line.indexOf('[') + 1, line.indexOf(']') - line.indexOf('[') - 1).split(',').map(function(value) {
 
 					return {
 						name:   value.trim(),
@@ -610,17 +633,16 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 		});
 
-
 	};
 
-	var _parse_body_properties = function(code) {
+	const _parse_body_properties = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('\n\tvar Class = ') + 14;
-		var i2   = code.indexOf('\n\t};', i1)       +  3;
+		let that = this;
+		let i1   = code.indexOf('\n\tlet Composite = ') + 18;
+		let i2   = code.indexOf('\n\t};', i1) + 3;
 
 
-		if (i1 > 14 && i2 > i1) {
+		if (i1 > 18 && i2 > i1) {
 			code = code.substr(i1, i2 - i1);
 		} else {
 			code = '';
@@ -631,16 +653,16 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 			if (line.substr(0, 7) === '\t\tthis\.' && line.indexOf('=') !== -1) {
 
-				var i     = line.indexOf('=');
-				var key   = line.substr(7, i - 7).trim();
-				var value = line.substr(i + 1, line.indexOf(';', i + 1) - i - 1).trim();
-				var val   = undefined;
-				var typ   = undefined;
+				let i     = line.indexOf('=');
+				let key   = line.substr(7, i - 7).trim();
+				let value = line.substr(i + 1, line.indexOf(';', i + 1) - i - 1).trim();
+				let val   = undefined;
+				let typ   = undefined;
 
 				if (key.substr(0, 2) !== '__') {
 
-					var val = _dynamic_value(value);
-					var typ = _dynamic_type(value);
+					let val = _dynamic_value(value);
+					let typ = _dynamic_type(value);
 
 					if (val === undefined) {
 
@@ -649,7 +671,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 							typ = 'Font';
 						}
 
-						if (value === '_texture') {
+						if (value === '_TEXTURE') {
 							val = 'Texture';
 							typ = 'Texture';
 						}
@@ -661,7 +683,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 							val = line.split(':')[1].split(';')[0].trim();
 							val = _dynamic_value(val);
 
-						} else if (value.substr(0, 6) === 'Class.') {
+						} else if (value.substr(0, 10) === 'Composite.') {
 
 							typ = 'Enum';
 							val = value;
@@ -687,21 +709,21 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 	};
 
-	var _parse_body_methods = function(code) {
+	const _parse_body_methods = function(code) {
 
-		var that = this;
-		var i1   = code.indexOf('\n\tClass.prototype = {') + 21;
-		var i2   = code.indexOf('\n\t};', i1)              +  4;
-		var i3   = code.indexOf('\n\tvar Module = {')      + 16;
-		var i4   = code.indexOf('\n\t};', i3)              +  4;
+		let that = this;
+		let i1   = code.indexOf('\n\tComposite.prototype = {') + 25;
+		let i2   = code.indexOf('\n\t};', i1) + 4;
+		let i3   = code.indexOf('\n\tlet Module = {') + 16;
+		let i4   = code.indexOf('\n\t};', i3) + 4;
 
-		var method = '';
-		var params = [];
-		var types  = [];
-		var values = [];
+		let method = '';
+		let params = [];
+		let types  = [];
+		let values = [];
 
 
-		if (i1 > 21 && i2 > i1) {
+		if (i1 > 25 && i2 > i1) {
 			code = code.substr(i1, i2 - i1);
 		} else if (i3 > 16 && i4 > i3) {
 			code = code.substr(i3, i4 - i3);
@@ -754,14 +776,24 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 			} else if (line.substr(0, 3) === '\t\t\t' && line.indexOf('return') !== -1) {
 
-				var value = line.trim().split('return')[1].split(';')[0].trim();
+				let value = line.trim().split('return')[1].split(';')[0].trim();
 				if (value.substr(0, 5) === 'this.') {
 
 					// TODO: Resolver for properties?
 
+					console.info(method, value);
+
+				} else if (value.substr(0, 1) === '_') {
+
+					values.push(true);
+					values.push(false);
+					types.push('Boolean');
+
 				} else if (value !== '') {
+
 					values.push(_dynamic_value(value));
 					types.push(_dynamic_type(value));
+
 				} else {
 					values.push(undefined);
 					types.push('void');
@@ -769,7 +801,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 			} else if (line.substr(0, 3) === '\t\t\t' && line.indexOf('=') !== -1) {
 
-				var key, typ, val;
+				let key, typ, val;
 
 				params.forEach(function(param) {
 
@@ -778,6 +810,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 						key = line.substr(0, line.indexOf('=')).trim();
 						val = undefined;
 						typ = undefined;
+
 
 						if (line.indexOf('typeof') !== -1) {
 
@@ -819,12 +852,17 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 						}
 
+
+						if (typ === undefined && val === undefined) {
+							console.warn(method, param.name, line);
+						}
+
 					}
 
 
 					if (typ !== undefined && val !== undefined) {
 
-						var data = params.find(function(value) {
+						let data = params.find(function(value) {
 							return value.name === key;
 						}) || null;
 
@@ -866,18 +904,18 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 	 * ENCODER AND DECODER
 	 */
 
-	var _encode = function() {
+	const _encode = function() {
 
 // TODO: Encoding from object to string
 
 	};
 
-	var _decode = function(stream) {
+	const _decode = function(stream) {
 
 		stream = stream.trim().substr(0, 13) === 'lychee.define' ? stream : '';
 
 
-		var object = {
+		let object = {
 			TYPE: null,
 			HEAD: {
 				identifier: null,
@@ -897,25 +935,31 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 		};
 
 
-		if (stream.indexOf('return Class;') !== -1) {
-			object.TYPE = 'Class';
+		if (stream.indexOf('return Composite;') !== -1) {
+			object.TYPE = 'Composite';
 		} else if (stream.indexOf('return Module;') !== -1) {
 			object.TYPE = 'Module';
 		}
 
 
-		_parse_head_identifier.call(object.HEAD, stream);
-		_parse_head_tags.call(      object.HEAD, stream);
-		_parse_head_requires.call(  object.HEAD, stream);
-		_parse_head_includes.call(  object.HEAD, stream);
-//		_parse_head_attaches.call(  object.HEAD, stream);
-//		_parse_head_supports.call(  object.HEAD, stream);
-//		_parse_head_exports.call(   object.HEAD, stream);
+		if (stream.length > 0) {
 
-		_parse_body_enums.call(     object.BODY, stream);
-		_parse_body_events.call(    object.BODY, stream);
-		_parse_body_properties.call(object.BODY, stream);
-		_parse_body_methods.call(   object.BODY, stream);
+			_parse_head_identifier.call(object.HEAD, stream);
+			_parse_head_tags.call(      object.HEAD, stream);
+			_parse_head_requires.call(  object.HEAD, stream);
+			_parse_head_includes.call(  object.HEAD, stream);
+			_parse_head_attaches.call(  object.HEAD, stream);
+
+// TODO: Parser for supports/exports
+//			_parse_head_supports.call(  object.HEAD, stream);
+//			_parse_head_exports.call(   object.HEAD, stream);
+
+			_parse_body_enums.call(     object.BODY, stream);
+			_parse_body_events.call(    object.BODY, stream);
+			_parse_body_properties.call(object.BODY, stream);
+			_parse_body_methods.call(   object.BODY, stream);
+
+		}
 
 
 		return object;
@@ -928,7 +972,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		// deserialize: function(blob) {},
 
@@ -965,7 +1009,7 @@ lychee.define('strainer.data.API').exports(function(lychee, global, attachments)
 
 			if (data !== null) {
 
-				var object = _decode(data);
+				let object = _decode(data);
 				if (object !== undefined) {
 					return object;
 				}

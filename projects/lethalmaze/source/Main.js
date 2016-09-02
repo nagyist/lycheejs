@@ -7,9 +7,8 @@ lychee.define('game.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee = lychee.import('lychee');
-	var _game   = lychee.import('game');
-	var _Main   = lychee.import('lychee.app.Main');
+	const _game   = lychee.import('game');
+	const _Main   = lychee.import('lychee.app.Main');
 
 
 
@@ -17,9 +16,9 @@ lychee.define('game.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 
 			input: {
 				delay:       0,
@@ -66,19 +65,19 @@ lychee.define('game.Main').requires([
 
 		this.bind('init', function() {
 
-			var gameclient = this.settings.gameclient;
+			let gameclient = this.settings.gameclient;
 			if (gameclient !== null) {
 
-				this.client = new _game.net.Client(gameclient, this);
+				this.client = new _game.net.Client(gameclient);
 				this.client.bind('connect', function() {
 					this.changeState('game');
 				}, this);
 
 			}
 
-			var gameserver = this.settings.gameserver;
+			let gameserver = this.settings.gameserver;
 			if (gameserver !== null) {
-				this.server = new _game.net.Server(gameserver, this);
+				this.server = new _game.net.Server(gameserver);
 			}
 
 
@@ -93,7 +92,7 @@ lychee.define('game.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -103,11 +102,11 @@ lychee.define('game.Main').requires([
 
 		serialize: function() {
 
-			var data = _Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'game.Main';
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.settings.gameclient !== null) { settings.client = this.defaults.client; }
@@ -125,6 +124,6 @@ lychee.define('game.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

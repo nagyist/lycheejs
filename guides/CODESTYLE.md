@@ -7,7 +7,7 @@
   - [Definitions](#definitions)
 2. [Definition Layout](#definition-layout)
   - [Modules](#modules)
-  - [Classes](#classes)
+  - [Composites](#composites)
   - [Callbacks](#callbacks)
 3. [Code Layout](#code-layout)
   - [Editorconfig](#editorconfig)
@@ -88,12 +88,12 @@ The lychee.js Definition system always uses so-called Definition closures in ord
   - `IMPLEMENTATION` section
   - `ENTITY API` section
   - `CUSTOM API` section
-  - return of `Class`, `Module` or `Callback`
+  - return of `Composite`, `Module` or `Callback`
 
 An important mention here is that three Definition types supported:
 
 - `Module` is a singleton that has only properties and methods, but no prototype. Its `deserialize()` call returns a `reference`.
-- `Class` is a dynamic class implementation with public methods on its prototype. It is called using the `new <Definition>()` keyword. Its `deserialize()` call returns a `constructor`.
+- `Composite` is a dynamic composite implementation with public methods on its prototype. It is called using the `new <Definition>()` keyword. Its `deserialize()` call returns a `constructor`.
 - `Callback` is a simple function that can not be called with the `new` keyword. Its `deserialize()` call returns a `reference`.
 
 
@@ -106,9 +106,9 @@ A basic layout of a `Module` looks like this:
 lychee.define('my.ENCODER').requires([
 	// optional requirements
 	'my.Other'
-]).exports(function(lychee, my, global, attachments) {
+]).exports(function(lychee, global, attachments) {
 
-	var _Other = my.Other;
+	const _Other = lychee.import('my.Other');
 
 
 
@@ -116,11 +116,11 @@ lychee.define('my.ENCODER').requires([
 	 * HELPERS
 	 */
 
-	var _encode = function(data) {
+	const _encode = function(data) {
 		return null;
 	};
 
-	var _decode = function(data) {
+	const _decode = function(data) {
 		return null;
 	};
 
@@ -130,7 +130,7 @@ lychee.define('my.ENCODER').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * ENTITY API
@@ -187,7 +187,7 @@ lychee.define('my.ENCODER').requires([
 
 
 
-### Classes
+### Composites
 
 ```javascript
 lychee.define('my.Definition').tags({
@@ -209,10 +209,12 @@ lychee.define('my.Definition').tags({
 
 	return false;
 
-}).exports(function(lychee, my, global, attachments) {
+}).exports(function(lychee, global, attachments) {
 
-	var _Other         = my.Other;
-	var _shared_memory = [];
+	const _Emitter       = lychee.import('lychee.event.Emitter');
+	const _Entity        = lychee.import('lychee.game.Entity');
+	const _Other         = lychee.import('my.Other');
+	const _SHARED_MEMORY = [];
 
 
 
@@ -220,10 +222,10 @@ lychee.define('my.Definition').tags({
 	 * HELPERS
 	 */
 
-	var _do_fancy_stuff = function() {
+	const _do_fancy_stuff = function() {
 
-		for (var s = 0, sl = _shared_memory.length; s++) {
-			_shared_memory[s].update(); // stub API for demo usage
+		for (let s = 0, sl = _SHARED_MEMORY.length; s++) {
+			_SHARED_MEMORY[s].update(); // stub API for demo usage
 		}
 
 	};
@@ -234,9 +236,9 @@ lychee.define('my.Definition').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = lychee.extend({}, data);
+		let settings = lychee.extend({}, data);
 
 
 		this.custom = null;
@@ -246,18 +248,18 @@ lychee.define('my.Definition').tags({
 
 
 		// This order has to be identical to lychee.Definition.prototype.includes() call
-		lychee.game.Entity.call(this, settings);
-		lychee.event.Emitter.call(this);
+		_Entity.call(this, settings);
+		_Emitter.call(this);
 
 
-		_shared_memory.push(this);
+		_SHARED_MEMORY.push(this);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * CUSTOM API
@@ -290,7 +292,7 @@ lychee.define('my.Definition').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 ```
@@ -300,9 +302,9 @@ lychee.define('my.Definition').tags({
 ### Callbacks
 
 ```javascript
-lychee.define('my.Definition').exports(function(lychee, my, global, attachments) {
+lychee.define('my.Definition').exports(function(lychee, global, attachments) {
 
-	var _device = null;
+	let _device = null;
 
 
 
@@ -326,7 +328,7 @@ lychee.define('my.Definition').exports(function(lychee, my, global, attachments)
 	 * IMPLEMENTATION
 	 */
 
-	var Callback = function() {
+	let Callback = function() {
 
 		return _device; // stub API for demo usage
 
@@ -349,13 +351,13 @@ Use `Tab` and NOT whitespaces. Our `Tab` is equivalent to `4 Whitespaces`.
 
 ```javascript
 // GOOD
-var data = _CACHE[id];
+let data = _CACHE[id];
 if (data !== null) {
     data.load(); // data is all in the same column.
 }
 
 // BAD
-var data = _CACHE[id];
+let data = _CACHE[id];
 if (data !== null) {
   data.load(); // This is not easy to rasterize.
 }
@@ -371,12 +373,12 @@ Whitespaces are necessary between operators.
 
 ```javascript
 // GOOD
-var y = 15;
-var x = 3 * 4 + (y / 3);
+let y = 15;
+let x = 3 * 4 + (y / 3);
 
 // BAD
-var y=15;
-var x=3*4+(y/3);
+let y=15;
+let x=3*4+(y/3);
 ```
 
 
@@ -385,12 +387,12 @@ One empty line is necessary when there's either a new condition
 of code.
 
 ```javascript
-var data = _CACHE[id] || null;
+let data = _CACHE[id] || null;
 if (data !== null) {
 
     data.onload = function() {
 
-        var buffer = this.buffer;
+        let buffer = this.buffer;
         if (buffer instanceof Object) {
 
             buffer.blub = 'test';
@@ -410,11 +412,11 @@ Two empty lines are necessary when there's a new leave-branch
 condition or logical difference in the algorithm behaviour.
 
 ```javascript
-var _my_method = function(data) {
+const _my_method = function(data) {
 
     if (data !== null) {
 
-        var filtered = [];
+        let filtered = [];
 
         data.forEach(function(entry) {
 
@@ -451,10 +453,10 @@ the memory layout and behaviour of those.
 
 
 ```javascript
-var _Entity = lychee.app.Entity;
-var _CACHE  = {};
+const _Entity = lychee.app.Entity;
+const _CACHE  = {};
 
-var Constructor = function(settings) {
+let Constructor = function(settings) {
 
     this.entity = new _Entity(settings);
 
@@ -463,19 +465,19 @@ var Constructor = function(settings) {
 };
 
 
-var foo = new Constructor({ woop: true });
-var bar = new Constructor({ woop: true });
+let foo = new Constructor({ woop: true });
+let bar = new Constructor({ woop: true });
 ```
 
 As `lychee.define` or `new lychee.Definition()` uses a Definition
 closure, you have full advantages of using shared and static variables
 within the Definition closure. Shared variables all have to be assigned
-at the top (See above section Class Definition Layout).
+at the top (See above section Composite Definition Layout).
 
 
 ### Naming (Properties and Methods)
 
-Properties of Classes and Modules are named accordingly to their visibility.
+Properties of Composites and Modules are named accordingly to their visibility.
 
 - Public properties are written lowercase.
 - Protected properties are written lowercase and have a prefixed underscore.
@@ -485,9 +487,9 @@ Properties of Classes and Modules are named accordingly to their visibility.
 - The `setName` method is always called in the `Constructor`, so that it accepts a `settings[name]` value.
 
 ```javascript
-var Class = function(data) {
+let Composite = function(data) {
 
-    var settings = lychee.extend({}, data);
+    let settings = lychee.extend({}, data);
 
 
     this.blob = null;
@@ -500,9 +502,11 @@ var Class = function(data) {
     this.setBlob(settings.blob);
     this.setFlag(settings.flag);
 
+	settings = null;
+
 };
 
-Class.prototype = {
+Composite.prototype = {
 
     setBlob: function(blob) {
 
@@ -558,7 +562,7 @@ Never use a `==` (abstract comparison).
 - `!== undefined` is used for `Scope Object` (used to call a `Function` or `callback`).
 
 ```javascript
-var _my_method = function(flag, data, blob, num, str, callback, scope) {
+const _my_method = function(flag, data, blob, num, str, callback, scope) {
 
     flag     = flag === true;
     data     = data instanceof Array        ? data      : null;
@@ -590,15 +594,15 @@ in the `lychee.Asset` implementation) are compatible with the
 
 - `instanceof` is used for `Config`, `Font`, `Music`, `Sound`, `Texture` and `Stuff`.
 - `lychee.enumof()` is used for `Enum`.
-- `lychee.interfaceof()` is used for `Interface` or `Class`.
+- `lychee.interfaceof()` is used for `Interface` or `Composite`.
 
 ```javascript
-var _MODE = {
+const _MODE = {
     'default': 0,
     'woop':    1
 };
 
-var _my_method = function(config, service, mode) {
+const _my_method = function(config, service, mode) {
 
     config  = config instanceof Config                        ? config  : null;
     service = lychee.interfaceof(lychee.net.Service, service) ? service : null;
@@ -634,8 +638,8 @@ There are basically these variants on what a `Function` might return:
 - `true` or `false` is returned by a `Function` that validates data or sets a state.
 
 ```javascript
-var _CACHE    = [ 'foo', 'bar' ];
-var _get_data = function() {
+const _CACHE    = [ 'foo', 'bar' ];
+const _get_data = function() {
 
 	if (_CACHE.length > 0) {
 		return _CACHE[0];
@@ -647,9 +651,9 @@ var _get_data = function() {
 };
 
 
-var _filter_data = function(data) {
+const _filter_data = function(data) {
 
-	var filtered = data.map(function(entry) {
+	let filtered = data.map(function(entry) {
 		return entry.id.substr(0, 6) === 'lychee';
 	});
 
@@ -659,7 +663,7 @@ var _filter_data = function(data) {
 };
 
 
-var _update_data = function(data) {
+const _update_data = function(data) {
 
 	data.forEach(function(entry) {
 		entry.count++;
@@ -722,7 +726,9 @@ lychee.define('my.ui.Menu').includes([
 	'lychee.ui.Select'
 ]).exports(function(lychee, global, attachments) {
 
-	var _font = attachments["fnt"];
+	const _Entity = lychee.import('lychee.ui.Entity');
+	const _Select = lychee.import('lychee.ui.Select');
+	const _FONT   = attachments["fnt"];
 
 
 
@@ -730,9 +736,9 @@ lychee.define('my.ui.Menu').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = lychee.extend({}, data);
+		let settings = lychee.extend({}, data);
 
 
 		this.state       = 'default';
@@ -748,12 +754,14 @@ lychee.define('my.ui.Menu').includes([
 		delete settings.type;
 
 
-		settings.font   = _font;
+		settings.font   = _FONT;
 		settings.width  = 256;
 		settings.height = 512;
 
 
-		lychee.ui.Select.call(this, settings);
+		_Select.call(this, settings);
+
+		settings = null;
 
 
 
@@ -771,13 +779,10 @@ lychee.define('my.ui.Menu').includes([
 
 		}, this);
 
-
-		settings = null;
-
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -793,11 +798,11 @@ lychee.define('my.ui.Menu').includes([
 
 		serialize: function() {
 
-			var data = lychee.ui.Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'my.ui.Menu';
 
-			var settings = data['arguments'][0];
-			var blob     = (data['blob'] || {});
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
 
 
 			if (this.type !== 'awesome') settings.type = this.type;
@@ -825,7 +830,7 @@ lychee.define('my.ui.Menu').includes([
 			state = typeof state === 'string' ? state : null;
 
 
-			var result = lychee.ui.Select.prototype.setState.call(this, state);
+			let result = _Select.prototype.setState.call(this, state);
 			if (result === true) {
 
 				this.__behaviour = 'awesome';
@@ -844,7 +849,7 @@ lychee.define('my.ui.Menu').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 ```

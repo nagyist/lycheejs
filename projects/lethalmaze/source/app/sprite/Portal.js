@@ -6,13 +6,13 @@ lychee.define('game.app.sprite.Portal').requires([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Entity    = lychee.import('lychee.app.Entity');
-	var _Lightning = lychee.import('game.effect.Lightning');
-	var _Sound     = lychee.import('lychee.effect.Sound');
-	var _Sprite    = lychee.import('lychee.app.Sprite');
-	var _TEXTURE   = attachments["png"];
-	var _CONFIG    = attachments["json"].buffer;
-	var _SOUND     = attachments["snd"];
+	const _Entity    = lychee.import('lychee.app.Entity');
+	const _Lightning = lychee.import('game.effect.Lightning');
+	const _Sound     = lychee.import('lychee.effect.Sound');
+	const _Sprite    = lychee.import('lychee.app.Sprite');
+	const _TEXTURE   = attachments["png"];
+	const _CONFIG    = attachments["json"].buffer;
+	const _SOUND     = attachments["snd"];
 
 
 
@@ -20,14 +20,14 @@ lychee.define('game.app.sprite.Portal').requires([
 	 * HELPERS
 	 */
 
-	var _update_effects = function() {
+	const _update_effects = function() {
 
-		for (var e = 0; e < 8; e++) {
+		for (let e = 0; e < 8; e++) {
 
-			var delay    = (e * Math.random() * 2000) | 0;
-			var duration = (e * 2000 + Math.random() * 1000) | 0;
-			var f        = Math.random() * 2 * Math.PI;
-			var position = { x: Math.sin(f) * 64, y: Math.cos(f) * 64 };
+			let delay    = (e * Math.random() * 2000) | 0;
+			let duration = (e * 2000 + Math.random() * 1000) | 0;
+			let f        = Math.random() * 2 * Math.PI;
+			let position = { x: Math.sin(f) * 64, y: Math.cos(f) * 64 };
 
 
 			position.x *= Math.random() * 5;
@@ -62,9 +62,9 @@ lychee.define('game.app.sprite.Portal').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data, main) {
+	let Composite = function(data, main) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		settings.collision = _Entity.COLLISION.A;
@@ -84,7 +84,7 @@ lychee.define('game.app.sprite.Portal').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -92,7 +92,7 @@ lychee.define('game.app.sprite.Portal').requires([
 
 		serialize: function() {
 
-			var data = _Sprite.prototype.serialize.call(this);
+			let data = _Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'game.app.sprite.Portal';
 
 
@@ -102,14 +102,14 @@ lychee.define('game.app.sprite.Portal').requires([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var texture = this.texture;
+			let texture = this.texture;
 			if (texture !== null) {
 
-				var alpha    = this.alpha;
-				var position = this.position;
+				let alpha    = this.alpha;
+				let position = this.position;
 
-				var x1 = 0;
-				var y1 = 0;
+				let x1 = 0;
+				let y1 = 0;
 
 
 				if (alpha !== 1) {
@@ -117,7 +117,7 @@ lychee.define('game.app.sprite.Portal').requires([
 				}
 
 
-				var map = this.getMap();
+				let map = this.getMap();
 				if (map !== null) {
 
 					x1 = position.x + offsetX - map.w / 2;
@@ -132,8 +132,8 @@ lychee.define('game.app.sprite.Portal').requires([
 
 				} else {
 
-					var hw = (this.width / 2)  || this.radius;
-					var hh = (this.height / 2) || this.radius;
+					let hw = (this.width / 2)  || this.radius;
+					let hh = (this.height / 2) || this.radius;
 
 					x1 = position.x + offsetX - hw;
 					y1 = position.y + offsetY - hh;
@@ -172,7 +172,7 @@ lychee.define('game.app.sprite.Portal').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

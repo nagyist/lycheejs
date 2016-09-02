@@ -7,13 +7,11 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	try {
-
-		if (typeof global.XMLHttpRequest === 'function') {
-			return true;
-		}
-
-	} catch(err) {
+	if (
+		typeof global.XMLHttpRequest === 'function'
+		|| typeof global.XMLHttpRequest === 'object'
+	) {
+		return true;
 	}
 
 
@@ -21,8 +19,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _Protocol = lychee.import('lychee.net.protocol.HTTP');
-	var _XHR      = global.XMLHttpRequest;
+	const _Emitter  = lychee.import('lychee.event.Emitter');
+	const _Protocol = lychee.import('lychee.net.protocol.HTTP');
+	const _XHR      = global.XMLHttpRequest;
 
 
 
@@ -30,12 +29,12 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	 * HELPERS
 	 */
 
-	var _uppercase = function(str) {
+	const _uppercase = function(str) {
 
-		var tmp = str.split('-');
+		let tmp = str.split('-');
 
-		for (var t = 0, tl = tmp.length; t < tl; t++) {
-			var ch = tmp[t];
+		for (let t = 0, tl = tmp.length; t < tl; t++) {
+			let ch = tmp[t];
 			tmp[t] = ch.charAt(0).toUpperCase() + ch.substr(1);
 		}
 
@@ -43,10 +42,10 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 	};
 
-	var _receive_xhr = function(raw_headers, raw_payload) {
+	const _receive_xhr = function(raw_headers, raw_payload) {
 
-		var blob = null;
-		var view = null;
+		let blob = null;
+		let view = null;
 
 
 		if (typeof raw_payload === 'string') {
@@ -58,23 +57,23 @@ lychee.define('lychee.net.socket.HTTP').tags({
 			blob = new Buffer(raw_payload.byteLength);
 			view = new Uint8Array(raw_payload);
 
-			for (var v = 0, vl = blob.length; v < vl; v++) {
+			for (let v = 0, vl = blob.length; v < vl; v++) {
 				blob[v] = view[v];
 			}
 
 		}
 
 
-		var headers = {};
-		var payload = blob;
+		let headers = {};
+		let payload = blob;
 
 		raw_headers.split('\r\n').forEach(function(line) {
 
-			var i1 = line.indexOf(':');
+			let i1 = line.indexOf(':');
 			if (i1 !== -1) {
 
-				var key = line.substr(0, i1).trim().toLowerCase();
-				var val = line.substr(i1 + 1).trim();
+				let key = line.substr(0, i1).trim().toLowerCase();
+				let val = line.substr(i1 + 1).trim();
 
 				if (key.substr(0, 2) === 'x-') {
 					headers['@' + key.substr(2)] = val;
@@ -94,16 +93,16 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 	};
 
-	var _reconnect_xhr = function(chunk, headers, binary) {
+	const _reconnect_xhr = function(chunk, headers, binary) {
 
-		var connection = this.__connection;
+		let connection = this.__connection;
 		if (connection !== null) {
 
-			var tmp    = chunk.toString('utf8').split('\n')[0].trim().split(' ');
-			var method = tmp[0];
-			var url    = 'http://' + connection.host + ':' + connection.port + tmp[1];
-			var socket = new _XHR();
-			var that   = this;
+			let tmp    = chunk.toString('utf8').split('\n')[0].trim().split(' ');
+			let method = tmp[0];
+			let url    = 'http://' + connection.host + ':' + connection.port + tmp[1];
+			let socket = new _XHR();
+			let that   = this;
 
 
 			socket.open(method, url, true);
@@ -111,12 +110,12 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 			socket.onload = function() {
 
-				var chunks = _receive_xhr.call(that, socket.getAllResponseHeaders(), socket.response);
+				let chunks = _receive_xhr.call(that, socket.getAllResponseHeaders(), socket.response);
 				if (chunks.length > 0) {
 
-					for (var c = 0, cl = chunks.length; c < cl; c++) {
+					for (let c = 0, cl = chunks.length; c < cl; c++) {
 
-						var chunk = chunks[c];
+						let chunk = chunks[c];
 						if (chunk.payload !== null) {
 							that.trigger('receive', [ chunk.payload, chunk.headers ]);
 						}
@@ -137,7 +136,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 				that.disconnect();
 			};
 
-			for (var key in headers) {
+			for (let key in headers) {
 
 				if (key.charAt(0) === '@') {
 					socket.setRequestHeader(_uppercase('x-' + key.substr(1)), headers[key]);
@@ -157,9 +156,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 	};
 
-	var _connect_socket = function(socket, protocol) {
+	const _connect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection !== socket) {
 
 			// TODO: connect socket events
@@ -173,9 +172,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 	};
 
-	var _disconnect_socket = function(socket, protocol) {
+	const _disconnect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection === socket) {
 
 			// TODO: disconnect socket events
@@ -202,18 +201,18 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function() {
+	let Composite = function() {
 
 		this.__connection = null;
 		this.__protocol   = null;
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -223,7 +222,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.net.socket.HTTP';
 
 
@@ -244,9 +243,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 			connection = typeof connection === 'object' ? connection : null;
 
 
-			var that     = this;
-			var url      = host.match(/:/g) !== null ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
-			var protocol = null;
+			let that     = this;
+			let url      = /:/g.test(host) ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
+			let protocol = null;
 
 
 			if (host !== null && port !== null) {
@@ -287,14 +286,14 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 			if (payload !== null) {
 
-				var connection = this.__connection;
-				var protocol   = this.__protocol;
+				let connection = this.__connection;
+				let protocol   = this.__protocol;
 
 				if (connection !== null && protocol !== null) {
 
 					// XXX: HTML XHR does not support Buffer data
-					var chunk = protocol.send(payload, headers, binary);
-					// var enc   = binary === true ? 'binary' : 'utf8';
+					let chunk = protocol.send(payload, headers, binary);
+					// let enc   = binary === true ? 'binary' : 'utf8';
 
 
 					// XXX: Web XHR does not support halfopen Sockets
@@ -306,10 +305,10 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 						if (binary === true) {
 
-							var blob = new ArrayBuffer(chunk.length);
-							var view = new Uint8Array(blob);
+							let blob = new ArrayBuffer(chunk.length);
+							let view = new Uint8Array(blob);
 
-							for (var c = 0, cl = chunk.length; c < cl; c++) {
+							for (let c = 0, cl = chunk.length; c < cl; c++) {
 								view[c] = chunk[c];
 							}
 
@@ -331,8 +330,8 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 		disconnect: function() {
 
-			var connection = this.__connection;
-			var protocol   = this.__protocol;
+			let connection = this.__connection;
+			let protocol   = this.__protocol;
 
 			if (connection !== null && protocol !== null) {
 
@@ -351,7 +350,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

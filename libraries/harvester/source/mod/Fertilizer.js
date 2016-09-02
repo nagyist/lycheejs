@@ -5,13 +5,17 @@ lychee.define('harvester.mod.Fertilizer').tags({
 	'harvester.data.Filesystem'
 ]).supports(function(lychee, global) {
 
-	try {
+	if (typeof global.require === 'function') {
 
-		require('child_process');
+		try {
 
-		return true;
+			global.require('child_process');
 
-	} catch(err) {
+			return true;
+
+		} catch(err) {
+
+		}
 
 	}
 
@@ -20,10 +24,11 @@ lychee.define('harvester.mod.Fertilizer').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _child_process = require('child_process');
-	var _Filesystem    = lychee.import('harvester.data.Filesystem');
-	var _CACHE         = { active: false, queue: [] };
-	var _ROOT          = new _Filesystem().root;
+	const _child_process = global.require('child_process');
+	const _setInterval   = global.setInterval;
+	const _Filesystem    = lychee.import('harvester.data.Filesystem');
+	const _CACHE         = { active: false, queue: [] };
+	const _ROOT          = new _Filesystem().root;
 
 
 
@@ -33,11 +38,11 @@ lychee.define('harvester.mod.Fertilizer').tags({
 
 	(function(cache) {
 
-		setInterval(function() {
+		_setInterval(function() {
 
 			if (cache.active === false) {
 
-				var tmp = cache.queue.splice(0, 1);
+				let tmp = cache.queue.splice(0, 1);
 				if (tmp.length === 1) {
 
 					cache.active = true;
@@ -57,23 +62,15 @@ lychee.define('harvester.mod.Fertilizer').tags({
 	 * HELPERS
 	 */
 
-	var _is_queue = function(project, target) {
+	const _is_queue = function(project, target) {
 
-		var found = false;
-
-		_CACHE.queue.forEach(function(entry) {
-
-			if (entry.project === project && entry.target === target) {
-				found = true;
-			}
-
-		});
-
-		return found;
+		return _CACHE.queue.find(function(entry) {
+			return entry.project === project && entry.target === target;
+		}) !== undefined;
 
 	};
 
-	var _fertilize = function(project, target) {
+	const _fertilize = function(project, target) {
 
 		_child_process.execFile(_ROOT + '/bin/fertilizer.sh', [
 			target,
@@ -100,7 +97,7 @@ lychee.define('harvester.mod.Fertilizer').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * ENTITY API
@@ -125,27 +122,20 @@ lychee.define('harvester.mod.Fertilizer').tags({
 
 		can: function(project) {
 
-			if (project.package !== null) {
+			if (project.identifier.indexOf('__') === -1 && project.package !== null) {
 
-				var build = project.package.json.build || null;
+				let build = project.package.json.build || null;
 				if (build !== null) {
 
-					var environments = build.environments || null;
+					let environments = build.environments || null;
 					if (environments !== null) {
 
-						var targets = Object.keys(environments);
+						let targets = Object.keys(environments).filter(function(target) {
+							return _is_queue(project.identifier, target) === false;
+						});
+
 						if (targets.length > 0) {
-
-							var root = project.filesystem.root.substr(_ROOT.length);
-
-							targets = targets.filter(function(target) {
-								return _is_queue(root, target) === false;
-							});
-
-							if (targets.length > 0) {
-								return true;
-							}
-
+							return true;
 						}
 
 					}
@@ -163,33 +153,22 @@ lychee.define('harvester.mod.Fertilizer').tags({
 
 			if (project.filesystem !== null && project.package !== null) {
 
-				var build = project.package.json.build || null;
+				let build = project.package.json.build || null;
 				if (build !== null) {
 
-					var environments = build.environments || null;
+					let environments = build.environments || null;
 					if (environments !== null) {
 
-						var targets = Object.keys(environments);
-						if (targets.length > 0) {
+						Object.keys(environments).filter(function(target) {
+							return _is_queue(project.identifier, target) === false;
+						}).forEach(function(target) {
 
-							targets = targets.filter(function(target) {
-								return _is_queue(project.identifier, target) === false;
+							_CACHE.queue.push({
+								project: project.identifier,
+								target:  target
 							});
 
-							if (targets.length > 0) {
-
-								targets.forEach(function(target) {
-
-									_CACHE.queue.push({
-										project: project.identifier,
-										target:  target
-									});
-
-								});
-
-							}
-
-						}
+						});
 
 					}
 

@@ -1,31 +1,175 @@
 
 lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition : (function(global) {
 
-	var lychee = global.lychee;
+	const lychee = global.lychee;
 
-	var Class = function(id) {
+
+
+	/*
+	 * HELPERS
+	 */
+
+	const _lint = function(method) {
+
+		let code  = method.toString();
+		let file  = this.__file;
+		let lines = code.split('\n');
+
+
+		lines.forEach(function(line, l) {
+
+			let curr = line.trim();
+			let next = (lines[l + 1] || '').trim();
+
+			if (curr.substr(0, 2) !== '//') {
+
+				let next_lim = next.substr(0, 1);
+
+				if (curr.substr(curr.length - 1, 1) === ')' && next_lim !== '}' && next_lim !== ']') {
+					console.warn('lychee.Definition: Missing trailing ";" (' + file + '#L' + l + ')');
+					console.warn(curr);
+				}
+
+			}
+
+		});
+
+	};
+
+	const _fuzz_asset = function(type) {
+
+		let asset = {
+			url: '/tmp/Dummy.' + type,
+			serialize: function() {
+				return null;
+			}
+		};
+
+
+		let file = this.__file;
+		if (file !== null) {
+			asset.url = file.split('.').slice(0, -1).join('.') + '.' + type;
+		}
+
+
+		Object.defineProperty(asset, 'buffer', {
+			get: function() {
+				console.warn('lychee.Definition: Injecting Attachment "' + this.url + '" (' + file + ')');
+				return null;
+			},
+			set: function() {
+				return false;
+			},
+			enumerable:   true,
+			configurable: false
+		});
+
+
+		return asset;
+
+	};
+
+	const _fuzz_id = function() {
+
+		let file = this.__file;
+		if (file !== null) {
+
+			let packages = lychee.environment.packages.filter(function(pkg) {
+				return pkg.type === 'source';
+			}).map(function(pkg) {
+
+				return {
+					id:  pkg.id,
+					url: pkg.url.split('/').slice(0, -1).join('/')
+				};
+
+			});
+
+
+			let ns  = file.split('/');
+			let pkg = packages.find(function(pkg) {
+				return file.substr(0, pkg.url.length) === pkg.url;
+			}) || null;
+
+
+			if (pkg !== null) {
+
+				let tmp_i = ns.indexOf('source');
+				let tmp_s = ns[ns.length - 1];
+
+				if (/\.js$/g.test(tmp_s)) {
+					ns[ns.length - 1] = tmp_s.split('.').slice(0, -1).join('.');
+				}
+
+				let classId = '';
+				if (tmp_i !== -1) {
+					classId = ns.slice(tmp_i + 1).join('.');
+				}
+
+
+				this.id        = pkg.id + '.' + classId;
+				this.classId   = classId;
+				this.packageId = pkg.id;
+
+			}
+
+		}
+
+	};
+
+
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Composite = function(id) {
 
 		id = typeof id === 'string' ? id : '';
 
 
-		if (id.match(/\./)) {
+		this.id        = '';
+		this.classId   = '';
+		this.packageId = '';
 
-			var tmp = id.split('.');
+		this.__file    = lychee.Environment.__FILENAME || null;
+
+
+		if (/\./.test(id)) {
+
+			let tmp = id.split('.');
 
 			this.id        = id;
 			this.classId   = tmp.slice(1).join('.');
 			this.packageId = tmp[0];
 
-		} else {
+		} else if (/^([A-Za-z0-9\.]+)/g.test(id) === true) {
 
 			this.id        = 'lychee.' + id;
 			this.classId   = id;
 			this.packageId = 'lychee';
 
+		} else {
+
+			let fuzz_id = _fuzz_id.call(this);
+			if (fuzz_id === true) {
+				console.warn('lychee.Definition: Injecting Identifier "' + this.id + '" (' + this.__file + ')');
+			} else {
+				console.error('lychee.Definition: Invalid Identifier "' + id + '" (' + this.__file + ')');
+			}
+
 		}
 
 
-		this._attaches = {};
+		this._attaches = {
+			'json':  _fuzz_asset.call(this, 'json'),
+			'fnt':   _fuzz_asset.call(this, 'fnt'),
+			'msc':   _fuzz_asset.call(this, 'msc'),
+			'pkg':   _fuzz_asset.call(this, 'pkg'),
+			'png':   _fuzz_asset.call(this, 'png'),
+			'snd':   _fuzz_asset.call(this, 'snd'),
+			'store': _fuzz_asset.call(this, 'store')
+		};
 		this._tags     = {};
 		this._requires = [];
 		this._includes = [];
@@ -38,7 +182,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -48,9 +192,9 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (blob.attaches instanceof Object) {
 
-				var attachesmap = {};
+				let attachesmap = {};
 
-				for (var aid in blob.attaches) {
+				for (let aid in blob.attaches) {
 					attachesmap[aid] = lychee.deserialize(blob.attaches[aid]);
 				}
 
@@ -71,7 +215,10 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 			}
 
 
-			var index1, index2, tmp, bindargs;
+			let index1   = 0;
+			let index2   = 0;
+			let tmp      = null;
+			let bindargs = null;
 
 			if (typeof blob.supports === 'string') {
 
@@ -107,16 +254,21 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 		serialize: function() {
 
-			var settings = {};
-			var blob     = {};
+			let settings = {};
+			let blob     = {};
 
 
 			if (Object.keys(this._attaches).length > 0) {
 
 				blob.attaches = {};
 
-				for (var aid in this._attaches) {
-					blob.attaches[aid] = lychee.serialize(this._attaches[aid]);
+				for (let aid in this._attaches) {
+
+					let asset = lychee.serialize(this._attaches[aid]);
+					if (asset !== null) {
+						blob.attaches[aid] = asset;
+					}
+
 				}
 
 			}
@@ -125,7 +277,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 				blob.tags = {};
 
-				for (var tid in this._tags) {
+				for (let tid in this._tags) {
 					blob.tags[tid] = this._tags[tid];
 				}
 
@@ -158,9 +310,9 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (map !== null) {
 
-				for (var id in map) {
+				for (let id in map) {
 
-					var value = map[id];
+					let value = map[id];
 					if (value instanceof Font || value instanceof Music || value instanceof Sound || value instanceof Texture || value !== undefined) {
 						this._attaches[id] = map[id];
 					}
@@ -180,7 +332,10 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 
 			if (callback !== null) {
+
 				this._exports = callback;
+				_lint.call(this, this._exports);
+
 			}
 
 
@@ -195,9 +350,9 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (definitions !== null) {
 
-				for (var d = 0, dl = definitions.length; d < dl; d++) {
+				for (let d = 0, dl = definitions.length; d < dl; d++) {
 
-					var definition = definitions[d];
+					let definition = definitions[d];
 					if (typeof definition === 'string') {
 
 						if (definition.indexOf('.') !== -1 && this._includes.indexOf(definition) === -1) {
@@ -222,9 +377,9 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (definitions !== null) {
 
-				for (var d = 0, dl = definitions.length; d < dl; d++) {
+				for (let d = 0, dl = definitions.length; d < dl; d++) {
 
-					var definition = definitions[d];
+					let definition = definitions[d];
 					if (typeof definition === 'string') {
 
 						if (definition.indexOf('.') !== -1 && this._requires.indexOf(definition) === -1) {
@@ -249,6 +404,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (callback !== null) {
 				this._supports = callback;
+				_lint.call(this, this._supports);
 			}
 
 
@@ -263,9 +419,9 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (map !== null) {
 
-				for (var id in map) {
+				for (let id in map) {
 
-					var value = map[id];
+					let value = map[id];
 					if (typeof value === 'string') {
 						this._tags[id] = value;
 					}
@@ -282,7 +438,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 	};
 
 
-	return Class;
+	return Composite;
 
 })(typeof window !== 'undefined' ? window : (typeof global !== 'undefined' ? global : this));
 

@@ -11,10 +11,10 @@ lychee.define('harvester.net.Admin').requires([
 	'lychee.net.Server'
 ]).exports(function(lychee, global, attachments) {
 
-	var _JSON   = lychee.import('lychee.codec.JSON');
-	var _Remote = lychee.import('harvester.net.Remote');
-	var _Server = lychee.import('lychee.net.Server');
-	var _remote = lychee.import('harvester.net.remote');
+	const _remote = lychee.import('harvester.net.remote');
+	const _Remote = lychee.import('harvester.net.Remote');
+	const _Server = lychee.import('lychee.net.Server');
+	const _JSON   = lychee.import('lychee.codec.JSON');
 
 
 
@@ -22,9 +22,9 @@ lychee.define('harvester.net.Admin').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			host:   'localhost',
 			port:   4848,
 			codec:  _JSON,
@@ -54,7 +54,7 @@ lychee.define('harvester.net.Admin').requires([
 
 			remote.bind('receive', function(payload, headers) {
 
-				var method = headers['method'];
+				let method = headers['method'];
 				if (method === 'OPTIONS') {
 
 					remote.send({}, {
@@ -85,7 +85,7 @@ lychee.define('harvester.net.Admin').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -95,8 +95,8 @@ lychee.define('harvester.net.Admin').requires([
 
 		serialize: function() {
 
-			var data = _Server.prototype.serialize.call(this);
-			data['constructor'] = 'harvester.net.Server';
+			let data = _Server.prototype.serialize.call(this);
+			data['constructor'] = 'harvester.net.Admin';
 
 
 			return data;
@@ -106,7 +106,7 @@ lychee.define('harvester.net.Admin').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

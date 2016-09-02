@@ -7,13 +7,17 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	try {
+	if (typeof global.require === 'function') {
 
-		require('net');
+		try {
 
-		return true;
+			global.require('net');
 
-	} catch(err) {
+			return true;
+
+		} catch(err) {
+		}
+
 	}
 
 
@@ -21,8 +25,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _Protocol = lychee.import('lychee.net.protocol.HTTP');
-	var _net      = require('net');
+	const _net      = global.require('net');
+	const _Emitter  = lychee.import('lychee.event.Emitter');
+	const _Protocol = lychee.import('lychee.net.protocol.HTTP');
 
 
 
@@ -30,17 +35,17 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	 * HELPERS
 	 */
 
-	var _connect_socket = function(socket, protocol) {
+	const _connect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection !== socket) {
 
 			socket.on('data', function(blob) {
 
-				var chunks = protocol.receive(blob);
+				let chunks = protocol.receive(blob);
 				if (chunks.length > 0) {
 
-					for (var c = 0, cl = chunks.length; c < cl; c++) {
+					for (let c = 0, cl = chunks.length; c < cl; c++) {
 						that.trigger('receive', [ chunks[c].payload, chunks[c].headers ]);
 					}
 
@@ -76,9 +81,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 	};
 
-	var _disconnect_socket = function(socket, protocol) {
+	const _disconnect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection === socket) {
 
 			socket.removeAllListeners('data');
@@ -106,18 +111,18 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function() {
+	let Composite = function() {
 
 		this.__connection = null;
 		this.__protocol   = null;
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -127,7 +132,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.net.socket.HTTP';
 
 
@@ -148,9 +153,9 @@ lychee.define('lychee.net.socket.HTTP').tags({
 			connection = typeof connection === 'object' ? connection : null;
 
 
-			var that     = this;
-			var url      = host.match(/:/g) !== null ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
-			var protocol = null;
+			let that     = this;
+			let url      = /:/g.test(host) ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
+			let protocol = null;
 
 
 			if (host !== null && port !== null) {
@@ -208,13 +213,13 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 			if (payload !== null) {
 
-				var connection = this.__connection;
-				var protocol   = this.__protocol;
+				let connection = this.__connection;
+				let protocol   = this.__protocol;
 
 				if (connection !== null && protocol !== null) {
 
-					var chunk = protocol.send(payload, headers, binary);
-					var enc   = binary === true ? 'binary' : 'utf8';
+					let chunk = protocol.send(payload, headers, binary);
+					let enc   = binary === true ? 'binary' : 'utf8';
 
 					if (chunk !== null) {
 						connection.write(chunk, enc);
@@ -228,8 +233,8 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 		disconnect: function() {
 
-			var connection = this.__connection;
-			var protocol   = this.__protocol;
+			let connection = this.__connection;
+			let protocol   = this.__protocol;
 
 			if (connection !== null && protocol !== null) {
 
@@ -248,7 +253,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

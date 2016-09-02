@@ -5,21 +5,21 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 	 * HELPERS
 	 */
 
-	var _sphere_sphere = function(a, b) {
+	const _sphere_sphere = function(a, b) {
 
-		var dx  = Math.sqrt(Math.pow(b.position.x - a.position.x, 2));
-		var dy  = Math.sqrt(Math.pow(b.position.y - a.position.y, 2));
-		var dz  = Math.sqrt(Math.pow(b.position.z - a.position.z, 2));
+		let dx  = Math.sqrt(Math.pow(b.position.x - a.position.x, 2));
+		let dy  = Math.sqrt(Math.pow(b.position.y - a.position.y, 2));
+		let dz  = Math.sqrt(Math.pow(b.position.z - a.position.z, 2));
 
-		var rxy = 0;
-		var rxz = 0;
+		let rxy = 0;
+		let rxz = 0;
 
-		if (a.shape === Class.SHAPE.sphere) {
+		if (a.shape === Composite.SHAPE.sphere) {
 			rxy += a.radius;
 			rxz += a.radius;
 		}
 
-		if (b.shape === Class.SHAPE.sphere) {
+		if (b.shape === Composite.SHAPE.sphere) {
 			rxy += b.radius;
 			rxz += b.radius;
 		}
@@ -28,43 +28,43 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 	};
 
-	var _sphere_cuboid = function(a, b) {
+	const _sphere_cuboid = function(a, b) {
 
-		var r  = a.radius;
-		var hw = b.width  / 2;
-		var hh = b.height / 2;
-		var hd = b.depth  / 2;
+		let r  = a.radius;
+		let hw = b.width  / 2;
+		let hh = b.height / 2;
+		let hd = b.depth  / 2;
 
-		var ax = a.position.x;
-		var ay = a.position.y;
-		var az = a.position.z;
+		let ax = a.position.x;
+		let ay = a.position.y;
+		let az = a.position.z;
 
-		var bx = b.position.x;
-		var by = b.position.y;
-		var bz = b.position.z;
+		let bx = b.position.x;
+		let by = b.position.y;
+		let bz = b.position.z;
 
-		var colx = (ax + r >= bx - hw) && (ax - r <= bx + hw);
-		var coly = (ay + r >= by - hh) && (ay - r <= by + hh);
+		let colx = (ax + r >= bx - hw) && (ax - r <= bx + hw);
+		let coly = (ay + r >= by - hh) && (ay - r <= by + hh);
 
-		if (a.shape === Class.SHAPE.circle) {
+		if (a.shape === Composite.SHAPE.circle) {
 			r = 0;
 		}
 
-		var colz = (az + r >= bz - hd) && (az - r <= bz + hd);
+		let colz = (az + r >= bz - hd) && (az - r <= bz + hd);
 
 		return (colx && coly && colz);
 
 	};
 
-	var _cuboid_cuboid = function(a, b) {
+	const _cuboid_cuboid = function(a, b) {
 
-		var dx = Math.abs(b.position.x - a.position.x);
-		var dy = Math.abs(b.position.y - a.position.y);
-		var dz = Math.abs(b.position.z - a.position.z);
+		let dx = Math.abs(b.position.x - a.position.x);
+		let dy = Math.abs(b.position.y - a.position.y);
+		let dz = Math.abs(b.position.z - a.position.z);
 
-		var hw = (a.width  + b.width)  / 2;
-		var hh = (a.height + b.height) / 2;
-		var hd = (a.depth  + b.depth)  / 2;
+		let hw = (a.width  + b.width)  / 2;
+		let hh = (a.height + b.height) / 2;
+		let hd = (a.depth  + b.depth)  / 2;
 
 		return (dx <= hw && dy <= hh && dz <= hd);
 
@@ -76,9 +76,9 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.width  = typeof settings.width === 'number'  ? settings.width  : 0;
@@ -87,9 +87,9 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
 
 		this.alpha     = 1;
-		this.collision = Class.COLLISION.none;
+		this.collision = Composite.COLLISION.none;
 		this.effects   = [];
-		this.shape     = Class.SHAPE.rectangle;
+		this.shape     = Composite.SHAPE.rectangle;
 		this.state     = 'default';
 		this.position  = { x: 0, y: 0, z: 0 };
 		this.velocity  = { x: 0, y: 0, z: 0 };
@@ -101,7 +101,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 			this.__states = { 'default': null };
 
-			for (var id in settings.states) {
+			for (let id in settings.states) {
 
 				if (settings.states.hasOwnProperty(id)) {
 					this.__states[id] = settings.states[id];
@@ -125,7 +125,8 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 	};
 
 
-	Class.COLLISION = {
+	// Same ENUM values as lychee.ui.Entity
+	Composite.COLLISION = {
 		none: 0,
 		A:    1,
 		B:    2,
@@ -135,7 +136,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 
 	// Same ENUM values as lychee.ui.Entity
-	Class.SHAPE = {
+	Composite.SHAPE = {
 		circle:    0,
 		rectangle: 1,
 		sphere:    2,
@@ -143,7 +144,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -153,7 +154,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.width  !== 0) settings.width  = this.width;
@@ -162,8 +163,8 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 			if (this.radius !== 0) settings.radius = this.radius;
 
 			if (this.alpha !== 1)                        settings.alpha     = this.alpha;
-			if (this.collision !== Class.COLLISION.none) settings.collision = this.collision;
-			if (this.shape !== Class.SHAPE.rectangle)    settings.shape     = this.shape;
+			if (this.collision !== Composite.COLLISION.none) settings.collision = this.collision;
+			if (this.shape !== Composite.SHAPE.rectangle)    settings.shape     = this.shape;
 			if (this.state !== 'default')                settings.state     = this.state;
 			if (Object.keys(this.__states).length > 1)   settings.states    = this.__states;
 
@@ -200,8 +201,8 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var effects = this.effects;
-			for (var e = 0, el = effects.length; e < el; e++) {
+			let effects = this.effects;
+			for (let e = 0, el = effects.length; e < el; e++) {
 				effects[e].render(renderer, offsetX, offsetY);
 			}
 
@@ -209,16 +210,16 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		update: function(clock, delta) {
 
-			var velocity = this.velocity;
+			let velocity = this.velocity;
 
 			if (velocity.x !== 0 || velocity.y !== 0 || velocity.z !== 0) {
 
-				var x = this.position.x;
-				var y = this.position.y;
-				var z = this.position.z;
+				let x = this.position.x;
+				let y = this.position.y;
+				let z = this.position.z;
 
 
-				var vt = delta / 1000;
+				let vt = delta / 1000;
 
 				if (velocity.x !== 0) {
 					x += velocity.x * vt;
@@ -240,10 +241,10 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 			}
 
 
-			var effects = this.effects;
-			for (var e = 0, el = this.effects.length; e < el; e++) {
+			let effects = this.effects;
+			for (let e = 0, el = this.effects.length; e < el; e++) {
 
-				var effect = this.effects[e];
+				let effect = this.effects[e];
 				if (effect.update(this, clock, delta) === false) {
 					this.removeEffect(effect);
 					el--;
@@ -266,29 +267,48 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 				if (typeof position.x === 'number' && typeof position.y === 'number') {
 
-					var ax = position.x;
-					var ay = position.y;
-					var bx = this.position.x;
-					var by = this.position.y;
+					let ax = position.x;
+					let ay = position.y;
+					let bx = this.position.x;
+					let by = this.position.y;
 
 
-					var shape = this.shape;
-					if (shape === Class.SHAPE.circle) {
+					let shape = this.shape;
+					if (shape === Composite.SHAPE.circle) {
 
-						var dist = Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay - by, 2));
+						let dist = Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay - by, 2));
 						if (dist < this.radius) {
 							return true;
 						}
 
-					} else if (shape === Class.SHAPE.rectangle) {
+					} else if (shape === Composite.SHAPE.sphere) {
 
-						var hwidth  = this.width  / 2;
-						var hheight = this.height / 2;
-						var colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
-						var colY    = (ay >= by - hheight) && (ay <= by + hheight);
+						let dist = Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay - by, 2) + Math.pow(az - bz, 2));
+						if (dist < this.radius) {
+							return true;
+						}
+
+					} else if (shape === Composite.SHAPE.rectangle) {
+
+						let hwidth  = this.width  / 2;
+						let hheight = this.height / 2;
+						let colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
+						let colY    = (ay >= by - hheight) && (ay <= by + hheight);
 
 
 						return colX && colY;
+
+					} else if (shape === Composite.SHAPE.cuboid) {
+
+						let hwidth  = this.width  / 2;
+						let hheight = this.height / 2;
+						let hdepth  = this.depth  / 2;
+						let colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
+						let colY    = (ay >= by - hheight) && (ay <= by + hheight);
+						let colZ    = (az >= bz - hheight) && (az <= bz + hheight);
+
+
+						return colX && colY && colZ;
 
 					}
 
@@ -308,24 +328,24 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 			if (entity !== null) {
 
-				var none = Class.COLLISION.none;
+				let none = Composite.COLLISION.none;
 				if (this.collision !== entity.collision || this.collision === none || entity.collision === none) {
 					return false;
 				}
 
 
-				var circle    = Class.SHAPE.circle;
-				var sphere    = Class.SHAPE.sphere;
-				var rectangle = Class.SHAPE.rectangle;
-				var cuboid    = Class.SHAPE.cuboid;
+				let circle    = Composite.SHAPE.circle;
+				let sphere    = Composite.SHAPE.sphere;
+				let rectangle = Composite.SHAPE.rectangle;
+				let cuboid    = Composite.SHAPE.cuboid;
 
-				var shapeA    = this.shape;
-				var shapeB    = entity.shape;
+				let shapeA    = this.shape;
+				let shapeB    = entity.shape;
 
-				var issphereA = shapeA === circle    || shapeA === sphere;
-				var issphereB = shapeB === circle    || shapeB === sphere;
-				var iscuboidA = shapeA === rectangle || shapeA === cuboid;
-				var iscuboidB = shapeB === rectangle || shapeB === cuboid;
+				let issphereA = shapeA === circle    || shapeA === sphere;
+				let issphereB = shapeB === circle    || shapeB === sphere;
+				let iscuboidA = shapeA === rectangle || shapeA === cuboid;
+				let iscuboidB = shapeB === rectangle || shapeB === cuboid;
 
 				if (issphereA && issphereB) {
 					return _sphere_sphere(this, entity);
@@ -364,7 +384,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		setCollision: function(collision) {
 
-			collision = lychee.enumof(Class.COLLISION, collision) ? collision : null;
+			collision = lychee.enumof(Composite.COLLISION, collision) ? collision : null;
 
 
 			if (collision !== null) {
@@ -387,7 +407,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 			if (effect !== null) {
 
-				var index = this.effects.indexOf(effect);
+				let index = this.effects.indexOf(effect);
 				if (index === -1) {
 
 					this.effects.push(effect);
@@ -410,7 +430,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 			if (effect !== null) {
 
-				var index = this.effects.indexOf(effect);
+				let index = this.effects.indexOf(effect);
 				if (index !== -1) {
 
 					this.effects.splice(index, 1);
@@ -428,9 +448,9 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		removeEffects: function() {
 
-			var effects = this.effects;
+			let effects = this.effects;
 
-			for (var e = 0, el = effects.length; e < el; e++) {
+			for (let e = 0, el = effects.length; e < el; e++) {
 
 				effects[e].update(this, Infinity, 0);
 				this.removeEffect(effects[e]);
@@ -467,7 +487,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		setShape: function(shape) {
 
-			shape = lychee.enumof(Class.SHAPE, shape) ? shape : null;
+			shape = lychee.enumof(Composite.SHAPE, shape) ? shape : null;
 
 
 			if (shape !== null) {
@@ -528,7 +548,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

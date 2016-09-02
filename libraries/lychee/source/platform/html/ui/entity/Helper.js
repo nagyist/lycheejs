@@ -5,12 +5,13 @@ lychee.define('lychee.ui.entity.Helper').tags({
 	'lychee.ui.entity.Button'
 ]).supports(function(lychee, global) {
 
-	if (typeof global.document !== 'undefined' && typeof global.document.createElement === 'function') {
-
-		if (typeof global.location !== 'undefined' && typeof global.location.href === 'string') {
-			return true;
-		}
-
+	if (
+		typeof global.document !== 'undefined'
+		&& typeof global.document.createElement === 'function'
+		&& typeof global.location !== 'undefined'
+		&& typeof global.location.href === 'string'
+	) {
+		return true;
 	}
 
 
@@ -18,8 +19,9 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _texture = attachments["png"];
-	var _config  = attachments["json"].buffer;
+	const _Button  = lychee.import('lychee.ui.entity.Button');
+	const _CONFIG  = attachments["json"].buffer;
+	const _TEXTURE = attachments["png"];
 
 
 
@@ -27,16 +29,16 @@ lychee.define('lychee.ui.entity.Helper').tags({
 	 * HELPERS
 	 */
 
-	var _is_value = function(value) {
+	const _is_value = function(value) {
 
 		value = typeof value === 'string' ? value : null;
 
 
 		if (value !== null) {
 
-			var action   = value.split('=')[0] || '';
-			var resource = value.split('=')[1] || '';
-			var data     = value.split('=')[2] || '';
+			let action   = value.split('=')[0] || '';
+			let resource = value.split('=')[1] || '';
+			let data     = value.split('=')[2] || '';
 
 
 			if (action === 'boot' && resource !== '') {
@@ -51,7 +53,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 				return true;
 
-			} else if (action.match(/start|stop|edit|file|web/g) && resource !== '') {
+			} else if (/start|stop|edit|file|web/g.test(action) && resource !== '') {
 
 				return true;
 
@@ -68,10 +70,10 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 	};
 
-	var _help = function(value) {
+	const _help = function(value) {
 
-		var action  = value.split('=')[0];
-		var element = global.document.createElement('a');
+		let action  = value.split('=')[0];
+		let element = global.document.createElement('a');
 
 
 		if (action === 'refresh') {
@@ -93,9 +95,9 @@ lychee.define('lychee.ui.entity.Helper').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			label: 'HELPER'
 		}, data);
 
@@ -103,7 +105,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 		this.__action = null;
 
 
-		lychee.ui.entity.Button.call(this, settings);
+		_Button.call(this, settings);
 
 		settings = null;
 
@@ -120,15 +122,17 @@ lychee.define('lychee.ui.entity.Helper').tags({
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
-			var data = lychee.ui.entity.Button.prototype.serialize.call(this);
+			let data = _Button.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.entity.Helper';
 
 
@@ -141,15 +145,15 @@ lychee.define('lychee.ui.entity.Helper').tags({
 			if (this.visible === false) return;
 
 
-			var action   = this.__action;
-			var alpha    = this.alpha;
-			var font     = this.font;
-			var label    = this.label;
-			var position = this.position;
-			var x        = position.x + offsetX;
-			var y        = position.y + offsetY;
-			var hwidth   = this.width  / 2;
-			var hheight  = this.height / 2;
+			let action   = this.__action;
+			let alpha    = this.alpha;
+			let font     = this.font;
+			let label    = this.label;
+			let position = this.position;
+			let x        = position.x + offsetX;
+			let y        = position.y + offsetY;
+			let hwidth   = this.width  / 2;
+			let hheight  = this.height / 2;
 
 
 			if (alpha !== 1) {
@@ -167,7 +171,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 			);
 
 
-			var pulse = this.__pulse;
+			let pulse = this.__pulse;
 			if (pulse.active === true) {
 
 				renderer.setAlpha(pulse.alpha);
@@ -188,7 +192,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 			if (action !== null) {
 
-				var map = _config.map[action] || null;
+				let map = _CONFIG.map[action] || null;
 				if (map !== null) {
 
 					if (this.width > 96) {
@@ -196,7 +200,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 						renderer.drawSprite(
 							x - hwidth,
 							y - hheight,
-							_texture,
+							_TEXTURE,
 							map[0]
 						);
 
@@ -213,7 +217,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 						renderer.drawSprite(
 							x - map[0].w / 2,
 							y - hheight,
-							_texture,
+							_TEXTURE,
 							map[0]
 						);
 
@@ -278,7 +282,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

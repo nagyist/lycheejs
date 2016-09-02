@@ -6,11 +6,10 @@
  * BOOTSTRAP
  */
 
-var _root = process.argv[2];
-var _port = parseInt(process.argv[3], 10);
-var _host = process.argv[4] === 'null' ? null : process.argv[4];
+const _PORT = parseInt(process.argv[2], 10);
+const _HOST = process.argv[3] === 'null' ? null : process.argv[3];
 
-require(_root + '/libraries/lychee/build/node/core.js')(__dirname);
+require('/opt/lycheejs/libraries/lychee/build/node/core.js')(__dirname);
 
 
 
@@ -27,8 +26,8 @@ require(_root + '/libraries/lychee/build/node/core.js')(__dirname);
 		renderer: null,
 		client:   null,
 		server:   {
-			host: _host,
-			port: _port
+			host: _HOST,
+			port: _PORT
 		}
 	});
 

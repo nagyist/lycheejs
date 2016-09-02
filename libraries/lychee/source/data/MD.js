@@ -5,7 +5,7 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 	 * HELPERS
 	 */
 
-	var _Stream = function(buffer, mode) {
+	const _Stream = function(buffer, mode) {
 
 		this.__buffer = typeof buffer === 'string'        ? buffer : '';
 		this.__mode   = lychee.enumof(_Stream.MODE, mode) ? mode   : 0;
@@ -35,7 +35,7 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 		read: function(bytes) {
 
-			var buffer = '';
+			let buffer = '';
 
 			buffer       += this.__buffer.substr(this.__index, bytes);
 			this.__index += bytes;
@@ -46,12 +46,12 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 		search: function(array) {
 
-			var bytes = Infinity;
+			let bytes = Infinity;
 
-			for (var a = 0, al = array.length; a < al; a++) {
+			for (let a = 0, al = array.length; a < al; a++) {
 
-				var token = array[a];
-				var size  = this.__buffer.indexOf(token, this.__index + 1) - this.__index;
+				let token = array[a];
+				let size  = this.__buffer.indexOf(token, this.__index + 1) - this.__index;
 				if (size > -1 && size < bytes) {
 					bytes = size;
 				}
@@ -87,9 +87,9 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 	 * ENCODER and DECODER
 	 */
 
-	var _encode_inline = function(entities) {
+	const _encode_inline = function(entities) {
 
-		var text = '';
+		let text = '';
 
 
 		entities.forEach(function(entity) {
@@ -133,11 +133,11 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 	};
 
-	var _encode = function(stream, data) {
+	const _encode = function(stream, data) {
 
-		for (var d = 0, dl = data.length; d < dl; d++) {
+		for (let d = 0, dl = data.length; d < dl; d++) {
 
-			var entity = data[d];
+			let entity = data[d];
 
 			if (entity.token === 'Article') {
 
@@ -149,7 +149,7 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 			} else if (entity.token === 'Headline') {
 
-				var type = '################'.substr(0, entity.type);
+				let type = '################'.substr(0, entity.type);
 
 				stream.write(type);
 				stream.write(' ');
@@ -185,17 +185,17 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 	};
 
-	var _decode_inline = function(text) {
+	const _decode_inline = function(text) {
 
-		var entities    = [];
-		var last_entity = null;
+		let entities    = [];
+		let last_entity = null;
 
 
-		text.split(/\s/g).forEach(function(str) {
+        text.match(/(\[[^\)]+\)|[^\s]+)/gi).forEach(function(str) {
 
-			var entity = null;
-			var suffix = null;
-			var value  = '';
+			let entity = null;
+			let suffix = null;
+			let value  = '';
 
 
 			if (str.substr(-1).match(/\.|\,|\?|\!/g)) {
@@ -204,14 +204,14 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 			}
 
 
-			var b_code   = str.substr(0, 1) === '`';
-			var e_code   = str.substr(-1) === '`';
-			var b_bold   = str.substr(0, 2) === '**' ;
-			var e_bold   = str.substr(-2) === '**';
-			var b_italic = str.substr(0, 1) === '*';
-			var e_italic = str.substr(-1) === '*';
+			let b_code   = str.substr(0, 1) === '`';
+			let e_code   = str.substr(-1) === '`';
+			let b_bold   = str.substr(0, 2) === '**' ;
+			let e_bold   = str.substr(-2) === '**';
+			let b_italic = str.substr(0, 1) === '*';
+			let e_italic = str.substr(-1) === '*';
 
-			var i0, i1, i2, i3;
+			let i0, i1, i2, i3;
 
 
 			if (b_code || e_code) {
@@ -353,14 +353,14 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 	};
 
-	var _decode = function(stream) {
+	const _decode = function(stream) {
 
-		var value  = undefined;
-		var seek   = '';
-		var size   = 0;
-		var tmp    = 0;
-		var errors = 0;
-		var check  = null;
+		let value  = undefined;
+		let seek   = '';
+		let size   = 0;
+		let tmp    = 0;
+		let errors = 0;
+		let check  = null;
 
 
 		if (stream.pointer() === 0) {
@@ -531,7 +531,7 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		// deserialize: function(blob) {},
 
@@ -551,7 +551,7 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 			if (data !== null) {
 
-				var stream = new _Stream('', _Stream.MODE.write);
+				let stream = new _Stream('', _Stream.MODE.write);
 
 				_encode(stream, data);
 
@@ -571,8 +571,8 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 			if (data !== null) {
 
-				var stream = new _Stream(data, _Stream.MODE.read);
-				var object = _decode(stream);
+				let stream = new _Stream(data, _Stream.MODE.read);
+				let object = _decode(stream);
 				if (object !== undefined) {
 					return object;
 				}
@@ -588,7 +588,6 @@ lychee.define('lychee.data.MD').exports(function(lychee, global, attachments) {
 
 
 	return Module;
-
 
 });
 

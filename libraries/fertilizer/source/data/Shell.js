@@ -3,12 +3,12 @@ lychee.define('fertilizer.data.Shell').tags({
 	platform: 'node'
 }).supports(function(lychee, global) {
 
-	if (typeof process !== 'undefined') {
+	if (typeof global.require === 'function') {
 
 		try {
 
-			require('child_process');
-			require('path');
+			let child_process = global.require('child_process');
+			let path          = global.require('path');
 
 			return true;
 
@@ -17,13 +17,13 @@ lychee.define('fertilizer.data.Shell').tags({
 
 	}
 
+
 	return false;
 
 }).exports(function(lychee, global, attachments) {
 
-	var _ROOT          = lychee.ROOT.lychee;
-	var _child_process = require('child_process');
-	var _path          = require('path');
+	const _child_process = require('child_process');
+	const _ROOT          = lychee.ROOT.lychee;
 
 
 
@@ -31,26 +31,45 @@ lychee.define('fertilizer.data.Shell').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function() {
+	let Composite = function() {
 
 		this.__stack = [];
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
+		deserialize: function(blob) {
+
+			if (blob.stack instanceof Array) {
+
+				for (let s = 0, sl = blob.stack.length; s < sl; s++) {
+					this.__stack.push(blob.stack[s]);
+				}
+
+			}
+
+		},
 
 		serialize: function() {
 
+			let blob = {};
+
+
+			if (this.__stack.length > 0) {
+				blob.stack = this.__stack.map(lychee.serialize);
+			}
+
+
 			return {
 				'constructor': 'fertilizer.data.Shell',
-				'arguments':   []
+				'arguments':   [],
+				'blob':        Object.keys(blob).length > 0 ? blob : null
 			};
 
 		},
@@ -67,12 +86,12 @@ lychee.define('fertilizer.data.Shell').tags({
 			scope    = scope !== undefined          ? scope    : this;
 
 
-			var that = this;
-			var args = command.split(' ').slice(1);
-			var cmd  = command.split(' ')[0];
-			var file = _ROOT + (cmd.charAt(0) !== '/' ? '/' : '') + cmd;
-			var ext  = file.split('.').pop();
-			var path = file.split('/').slice(0, -1).join('/');
+			let that = this;
+			let args = command.split(' ').slice(1);
+			let cmd  = command.split(' ')[0];
+			let file = _ROOT + (cmd.charAt(0) !== '/' ? '/' : '') + cmd;
+			let ext  = file.split('.').pop();
+			let path = file.split('/').slice(0, -1).join('/');
 			if (path.split('/').pop() === 'bin') {
 				path = path.split('/').slice(0, -1).join('/');
 			}
@@ -92,26 +111,34 @@ lychee.define('fertilizer.data.Shell').tags({
 
 			if (callback !== null) {
 
-				_child_process.execFile(file, args, {
-					cwd: path
-				}, function(error, stdout, stderr) {
+				try {
 
-					that.__stack.push({
-						args:   args,
-						file:   file,
-						path:   path,
-						stdout: stdout.toString(),
-						stderr: stderr.toString()
+					_child_process.execFile(file, args, {
+						cwd: path
+					}, function(error, stdout, stderr) {
+
+						that.__stack.push({
+							args:   args,
+							file:   file,
+							path:   path,
+							stdout: stdout.toString(),
+							stderr: stderr.toString()
+						});
+
+
+						if (error) {
+							callback.call(scope, false);
+						} else {
+							callback.call(scope, true);
+						}
+
 					});
 
+				} catch(err) {
 
-					if (error) {
-						callback.call(scope, false);
-					} else {
-						callback.call(scope, true);
-					}
+					callback.call(scope, false);
 
-				});
+				}
 
 			}
 
@@ -122,7 +149,7 @@ lychee.define('fertilizer.data.Shell').tags({
 			limit = typeof limit === 'number' ? (limit | 0) : null;
 
 
-			var stack = this.__stack;
+			let stack = this.__stack;
 			if (limit !== null) {
 				stack = stack.slice(stack.length - limit, limit);
 			}
@@ -130,10 +157,10 @@ lychee.define('fertilizer.data.Shell').tags({
 
 			stack.forEach(function(context) {
 
-				var dir = context.path;
-				var cmd = context.file;
-				var out = context.stdout.trim();
-				var err = context.stderr.trim();
+				let dir = context.path;
+				let cmd = context.file;
+				let out = context.stdout.trim();
+				let err = context.stderr.trim();
 
 				if (cmd.substr(0, dir.length) === dir) {
 					cmd = '.' + cmd.substr(dir.length);
@@ -166,7 +193,7 @@ lychee.define('fertilizer.data.Shell').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

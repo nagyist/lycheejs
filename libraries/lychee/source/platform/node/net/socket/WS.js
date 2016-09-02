@@ -8,15 +8,20 @@ lychee.define('lychee.net.socket.WS').tags({
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	try {
+	if (
+		typeof global.require === 'function'
+		&& typeof global.setInterval === 'function'
+	) {
 
-		require('net');
+		try {
 
-		if (typeof global.setInterval === 'function') {
+			global.require('net');
+
 			return true;
+
+		} catch(err) {
 		}
 
-	} catch(err) {
 	}
 
 
@@ -24,10 +29,11 @@ lychee.define('lychee.net.socket.WS').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _Protocol    = lychee.import('lychee.net.protocol.WS');
-	var _SHA1        = lychee.import('lychee.crypto.SHA1');
-	var _net         = require('net');
-	var _setInterval = global.setInterval;
+	const _net         = global.require('net');
+	const _setInterval = global.setInterval;
+	const _Emitter     = lychee.import('lychee.event.Emitter');
+	const _Protocol    = lychee.import('lychee.net.protocol.WS');
+	const _SHA1        = lychee.import('lychee.crypto.SHA1');
 
 
 
@@ -35,19 +41,19 @@ lychee.define('lychee.net.socket.WS').tags({
 	 * HELPERS
 	 */
 
-	var _connect_socket = function(socket, protocol) {
+	const _connect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection !== socket) {
 
 			socket.on('data', function(blob) {
 
-				var chunks = protocol.receive(blob);
+				let chunks = protocol.receive(blob);
 				if (chunks.length > 0) {
 
-					for (var c = 0, cl = chunks.length; c < cl; c++) {
+					for (let c = 0, cl = chunks.length; c < cl; c++) {
 
-						var chunk = chunks[c];
+						let chunk = chunks[c];
 						if (chunk.payload[0] === 136) {
 
 							that.send(chunk.payload, chunk.headers, true);
@@ -95,9 +101,9 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _disconnect_socket = function(socket, protocol) {
+	const _disconnect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection === socket) {
 
 			socket.removeAllListeners('data');
@@ -119,18 +125,18 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _verify_client = function(headers, nonce) {
+	const _verify_client = function(headers, nonce) {
 
-		var connection = (headers['connection'] || '').toLowerCase();
-		var upgrade    = (headers['upgrade']    || '').toLowerCase();
-		var protocol   = (headers['sec-websocket-protocol'] || '').toLowerCase();
+		let connection = (headers['connection'] || '').toLowerCase();
+		let upgrade    = (headers['upgrade']    || '').toLowerCase();
+		let protocol   = (headers['sec-websocket-protocol'] || '').toLowerCase();
 
 		if (connection === 'upgrade' && upgrade === 'websocket' && protocol === 'lycheejs') {
 
-			var accept = (headers['sec-websocket-accept'] || '');
-			var expect = (function(nonce) {
+			let accept = (headers['sec-websocket-accept'] || '');
+			let expect = (function(nonce) {
 
-				var sha1 = new _SHA1();
+				let sha1 = new _SHA1();
 				sha1.update(nonce + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
 				return sha1.digest().toString('base64');
 
@@ -148,24 +154,24 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _verify_remote = function(headers) {
+	const _verify_remote = function(headers) {
 
-		var connection = (headers['connection'] || '').toLowerCase();
-		var upgrade    = (headers['upgrade']    || '').toLowerCase();
-		var protocol   = (headers['sec-websocket-protocol'] || '').toLowerCase();
+		let connection = (headers['connection'] || '').toLowerCase();
+		let upgrade    = (headers['upgrade']    || '').toLowerCase();
+		let protocol   = (headers['sec-websocket-protocol'] || '').toLowerCase();
 
 		if (connection === 'upgrade' && upgrade === 'websocket' && protocol === 'lycheejs') {
 
-			var host   = headers['host']   || null;
-			var nonce  = headers['sec-websocket-key'] || null;
-			var origin = headers['origin'] || null;
+			let host   = headers['host']   || null;
+			let nonce  = headers['sec-websocket-key'] || null;
+			let origin = headers['origin'] || null;
 
 			if (host !== null && nonce !== null && origin !== null) {
 
-				var handshake = '';
-				var accept    = (function(nonce) {
+				let handshake = '';
+				let accept    = (function(nonce) {
 
-					var sha1 = new _SHA1();
+					let sha1 = new _SHA1();
 					sha1.update(nonce + '258EAFA5-E914-47DA-95CA-C5AB0DC85B11');
 					return sha1.digest().toString('base64');
 
@@ -199,18 +205,18 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _upgrade_client = function(host, port, nonce) {
+	const _upgrade_client = function(host, port, nonce) {
 
-		var that       = this;
-		var handshake  = '';
-		var identifier = lychee.ROOT.project;
+		let that       = this;
+		let handshake  = '';
+		let identifier = lychee.ROOT.project;
 
 
 		if (identifier.substr(0, lychee.ROOT.lychee.length) === lychee.ROOT.lychee) {
 			identifier = lychee.ROOT.project.substr(lychee.ROOT.lychee.length + 1);
 		}
 
-		for (var n = 0; n < 16; n++) {
+		for (let n = 0; n < 16; n++) {
 			nonce[n] = Math.round(Math.random() * 0xff);
 		}
 
@@ -234,18 +240,18 @@ lychee.define('lychee.net.socket.WS').tags({
 
 		this.once('data', function(data) {
 
-			var headers = {};
-			var lines   = data.toString('utf8').split('\r\n');
+			let headers = {};
+			let lines   = data.toString('utf8').split('\r\n');
 
 
 			lines.forEach(function(line) {
 
-				var index = line.indexOf(':');
+				let index = line.indexOf(':');
 				if (index !== -1) {
 
-					var key = line.substr(0, index).trim().toLowerCase();
-					var val = line.substr(index + 1, line.length - index - 1).trim();
-					if (key.match(/connection|upgrade|sec-websocket-version|sec-websocket-origin|sec-websocket-protocol/g) !== null) {
+					let key = line.substr(0, index).trim().toLowerCase();
+					let val = line.substr(index + 1, line.length - index - 1).trim();
+					if (/connection|upgrade|sec-websocket-version|sec-websocket-origin|sec-websocket-protocol/g.test(key)) {
 						headers[key] = val.toLowerCase();
 					} else if (key === 'sec-websocket-accept') {
 						headers[key] = val;
@@ -265,7 +271,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 			} else {
 
-				var err = new Error('connect ECONNREFUSED');
+				let err = new Error('connect ECONNREFUSED');
 				err.code = 'ECONNREFUSED';
 
 				this.emit('error', err);
@@ -279,20 +285,20 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _upgrade_remote = function(data) {
+	const _upgrade_remote = function(data) {
 
-		var lines   = data.toString('utf8').split('\r\n');
-		var headers = {};
+		let lines   = data.toString('utf8').split('\r\n');
+		let headers = {};
 
 
 		lines.forEach(function(line) {
 
-			var index = line.indexOf(':');
+			let index = line.indexOf(':');
 			if (index !== -1) {
 
-				var key = line.substr(0, index).trim().toLowerCase();
-				var val = line.substr(index + 1, line.length - index - 1).trim();
-				if (key.match(/host|connection|upgrade|origin|sec-websocket-protocol/g) !== null) {
+				let key = line.substr(0, index).trim().toLowerCase();
+				let val = line.substr(index + 1, line.length - index - 1).trim();
+				if (/host|connection|upgrade|origin|sec-websocket-protocol/g.test(key)) {
 					headers[key] = val.toLowerCase();
 				} else if (key === 'sec-websocket-key') {
 					headers[key] = val;
@@ -324,18 +330,18 @@ lychee.define('lychee.net.socket.WS').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function() {
+	let Composite = function() {
 
 		this.__connection = null;
 		this.__protocol   = null;
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -345,7 +351,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.net.socket.WS';
 
 
@@ -366,8 +372,8 @@ lychee.define('lychee.net.socket.WS').tags({
 			connection = typeof connection === 'object' ? connection : null;
 
 
-			var that = this;
-			var url  = host.match(/:/g) !== null ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
+			let that = this;
+			let url  = /:/g.test(host) ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
 
 
 			if (host !== null && port !== null) {
@@ -381,8 +387,8 @@ lychee.define('lychee.net.socket.WS').tags({
 
 						if (lychee.debug === true) {
 
-							var code = err.code || '';
-							if (code.match(/ECONNABORTED|ECONNREFUSED|ECONNRESET/) !== null) {
+							let code = err.code || '';
+							if (/ECONNABORTED|ECONNREFUSED|ECONNRESET/.test(code)) {
 								console.warn('lychee.net.socket.WS: BAD CONNECTION to ' + host + ':' + port);
 							}
 
@@ -395,13 +401,13 @@ lychee.define('lychee.net.socket.WS').tags({
 
 					connection.on('upgrade', function(event) {
 
-						var protocol = new _Protocol(_Protocol.TYPE.remote);
-						var socket   = event.socket || null;
+						let protocol = new _Protocol(_Protocol.TYPE.remote);
+						let socket   = event.socket || null;
 
 
 						if (socket !== null) {
 
-							var verification = _verify_remote.call(socket, event.headers);
+							let verification = _verify_remote.call(socket, event.headers);
 							if (verification !== null) {
 
 								socket.allowHalfOpen = true;
@@ -436,8 +442,8 @@ lychee.define('lychee.net.socket.WS').tags({
 
 				} else {
 
-					var nonce     = new Buffer(16);
-					var connector = new _net.Socket({
+					let nonce     = new Buffer(16);
+					let connector = new _net.Socket({
 						fd:       null,
 						readable: true,
 						writable: true
@@ -448,13 +454,13 @@ lychee.define('lychee.net.socket.WS').tags({
 
 					connector.on('upgrade', function(event) {
 
-						var protocol = new _Protocol(_Protocol.TYPE.client);
-						var socket   = event.socket || null;
+						let protocol = new _Protocol(_Protocol.TYPE.client);
+						let socket   = event.socket || null;
 
 
 						if (socket !== null) {
 
-							var verification = _verify_client(event.headers, nonce);
+							let verification = _verify_client(event.headers, nonce);
 							if (verification !== null) {
 
 								socket.setTimeout(0);
@@ -465,7 +471,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 								_setInterval(function() {
 
-									var chunk = protocol.ping();
+									let chunk = protocol.ping();
 									if (chunk !== null) {
 										socket.write(chunk);
 									}
@@ -498,8 +504,8 @@ lychee.define('lychee.net.socket.WS').tags({
 
 						if (lychee.debug === true) {
 
-							var code = err.code || '';
-							if (code.match(/ECONNABORTED|ECONNREFUSED|ECONNRESET/) !== null) {
+							let code = err.code || '';
+							if (/ECONNABORTED|ECONNREFUSED|ECONNRESET/.test(code)) {
 								console.warn('lychee.net.socket.WS: BAD CONNECTION to ' + host + ':' + port);
 							}
 
@@ -533,13 +539,13 @@ lychee.define('lychee.net.socket.WS').tags({
 
 			if (payload !== null) {
 
-				var connection = this.__connection;
-				var protocol   = this.__protocol;
+				let connection = this.__connection;
+				let protocol   = this.__protocol;
 
 				if (connection !== null && protocol !== null) {
 
-					var chunk = protocol.send(payload, headers, binary);
-					var enc   = binary === true ? 'binary' : 'utf8';
+					let chunk = protocol.send(payload, headers, binary);
+					let enc   = binary === true ? 'binary' : 'utf8';
 
 					if (chunk !== null) {
 						connection.write(chunk, enc);
@@ -553,8 +559,8 @@ lychee.define('lychee.net.socket.WS').tags({
 
 		disconnect: function() {
 
-			var connection = this.__connection;
-			var protocol   = this.__protocol;
+			let connection = this.__connection;
+			let protocol   = this.__protocol;
 
 			if (connection !== null && protocol !== null) {
 
@@ -573,7 +579,7 @@ lychee.define('lychee.net.socket.WS').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

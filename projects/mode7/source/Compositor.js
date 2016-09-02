@@ -5,7 +5,7 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		this.renderer = main.renderer || null;
 
@@ -14,7 +14,7 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 		this.__points = [];
 
 
-		for (var i = 0; i < 10; i++) {
+		for (let i = 0; i < 10; i++) {
 
 			this.__points.push({
 				x: 0, y: 0, z: 0, w: 0
@@ -25,7 +25,7 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -48,7 +48,7 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 
 		reshape: function() {
 
-			var renderer = this.renderer;
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
 				this.__width  = renderer.width;
@@ -64,29 +64,29 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 
 		project: function(target, point, x, y, z, depth) {
 
-			var cameraX = (point.x || 0) - x;
-			var cameraY = (point.y || 0) - y;
-			var cameraZ = (point.z || 0) - z;
+			let cameraX = (point.x || 0) - x;
+			let cameraY = (point.y || 0) - y;
+			let cameraZ = (point.z || 0) - z;
 
-			var hwidth  = this.__width  / 2;
-			var hheight = this.__height / 2;
-			var scale = depth / cameraZ;
+			let hwidth  = this.__width  / 2;
+			let hheight = this.__height / 2;
+			let scale = depth / cameraZ;
 
 
 			// x, y, depth, road width
  			target.x = Math.round(  hwidth + scale * cameraX *  hwidth );
 			target.y = Math.round( hheight - scale * cameraY * hheight );
 			target.z = cameraZ;
-			//                                       road width (!)
-			//                                       \/\/\/\/\/\/
-			target.w = Math.round(           scale * 1.5 * hwidth * hwidth );
+			//                           road width (!)
+			//                            \/\/\/\/\/\/
+			target.w = Math.round(scale * 1.5 * hwidth * hwidth );
 
 		}
 
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

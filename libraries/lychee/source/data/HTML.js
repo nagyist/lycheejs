@@ -5,7 +5,7 @@ lychee.define('lychee.data.HTML').exports(function(lychee, global, attachments) 
 	 * HELPERS
 	 */
 
-	var _Stream = function(buffer, mode) {
+	const _Stream = function(buffer, mode) {
 
 		this.__buffer = typeof buffer === 'string'        ? buffer : '';
 		this.__mode   = lychee.enumof(_Stream.MODE, mode) ? mode   : 0;
@@ -87,7 +87,7 @@ lychee.define('lychee.data.HTML').exports(function(lychee, global, attachments) 
 	 * ENCODER and DECODER
 	 */
 
-	var _encode_inline = function(entities) {
+	const _encode_inline = function(entities) {
 
 		var text = '';
 
@@ -133,7 +133,7 @@ lychee.define('lychee.data.HTML').exports(function(lychee, global, attachments) 
 
 	};
 
-	var _encode = function(stream, data) {
+	const _encode = function(stream, data) {
 
 		var open = false;
 
@@ -200,7 +200,7 @@ lychee.define('lychee.data.HTML').exports(function(lychee, global, attachments) 
 
 	};
 
-	var _decode_inline = function(text) {
+	const _decode_inline = function(text) {
 
 console.info(text);
 
@@ -208,9 +208,9 @@ console.info(text);
 
 	};
 
-	var _decode = function(stream) {
+	const _decode = function(stream) {
 
-		var value  = [];
+		var value  = undefined;
 		var seek   = '';
 		var size   = 0;
 		var tmp    = 0;
@@ -256,7 +256,7 @@ _COUNT = 0;
 					if (seek === 'article') {
 
 						entity.token = 'Article';
-						entity.type  = tmp.split('id=')[1].replace(/"/g, '');
+						entity.value = tmp.split('id=')[1].replace(/"/g, '');
 
 // console.log(entity);
 
@@ -300,7 +300,7 @@ if (_COUNT > 200) break;
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		// deserialize: function(blob) {},
 
@@ -320,7 +320,7 @@ if (_COUNT > 200) break;
 
 			if (data !== null) {
 
-				var stream = new _Stream('', _Stream.MODE.write);
+				let stream = new _Stream('', _Stream.MODE.write);
 
 				_encode(stream, data);
 
@@ -338,13 +338,10 @@ if (_COUNT > 200) break;
 			data = typeof data === 'string' ? data : null;
 
 
-console.log(data);
-
-
 			if (data !== null) {
 
-				var stream = new _Stream(data, _Stream.MODE.read);
-				var object = _decode(stream);
+				let stream = new _Stream(data, _Stream.MODE.read);
+				let object = _decode(stream);
 				if (object !== undefined) {
 					return object;
 				}
@@ -360,7 +357,6 @@ console.log(data);
 
 
 	return Module;
-
 
 });
 

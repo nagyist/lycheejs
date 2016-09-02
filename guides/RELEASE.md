@@ -1,45 +1,41 @@
 
 # Release Guide for lychee.js
 
-1. [Update lychee.js](#update-lycheejs)
-  - [Fix Info.plist files](#todo-for-automation-fix-infoplist-files)
+1. [Configure Token](#configure-token)
+2. [Update lychee.js](#update-lycheejs)
 3. [Release lychee.js](#release-lycheejs)
 
 
-## Update lychee.js
+## Configure Token
 
-First, the `development` branch is the branch that is
-the newest HEAD and gets merged back to `master` with
-a single squashed release commit.
-
-To make sure everything is up-to-date, execute the update tool:
+The Maintenance scripts require a configured GitHub Access
+Token. You must be member of the [Artificial-Engineering](https://github.com/Artificial-Engineering)
+organization and the [Personal Access Token](https://github.com/settings/tokens)
+with `repo` rights must be available in the `.github/TOKEN`
+file:
 
 ```bash
 cd /opt/lycheejs;
 
-# You should have been on development already
-git checkout development;
-
-./bin/maintenance/do-update.sh;
+echo "MY-PERSONAL-ACCESS-TOKEN" > .github/TOKEN;
 ```
 
 
-### (TODO for automation) Fix Info.plist files
+## Update lychee.js
 
-All OSX Info.plist files contain a `<string>...</string>` tag.
-This tag currently is not fixed by the `update.sh` script,
-so you have to make sure that every occurance of the name value
-is replaced with `__NAME__`.
+The `development` branch is the branch that is the newest HEAD
+and gets merged back to `master` with a single squashed release
+commit.
 
-The two different occurances in the `./bin/runtime/html-nwjs/osx/x86_64/nwjs.app/Contents/Info.plist`
-are listed below:
+Before a release is created the update tool has to be executed:
 
-```html
-<key>CFBundleDisplayName</key>
-<string>__NAME__</string>
+```bash
+cd /opt/lycheejs;
 
-<key>CFBundleName</key>
-<string>__NAME__</string>
+# Branch should have been on development already
+git checkout development;
+
+./bin/maintenance/do-update.sh;
 ```
 
 
@@ -51,7 +47,8 @@ and creates the quaterly releases for everything including:
 - lycheejs (Engine repository)
 - lycheejs-runtime (update and publish on github)
 - lycheejs-library (publish on NPM and Bower)
-- lycheejs-website (rebuild with new lycheejs library)
+- lycheejs-harvester (build and publish on github)
+- lycheejs-website (build and publish on github)
 
 ```bash
 cd /opt/lycheejs;

@@ -72,19 +72,19 @@ lychee.define('harvester.data.Package').includes([
 
 			node.forEach(function(ext) {
 
-				if (ext.match(/msc|snd/)) {
+				if (/msc|snd/.test(ext)) {
 
 					if (files.indexOf(path + '.' + ext) === -1) {
 						files.push(path + '.' + ext);
 					}
 
-				} else if (ext.match(/js|json|fnt|png/)) {
+				} else if (/js|json|fnt|png/.test(ext)) {
 
 					if (files.indexOf(path + '.' + ext) === -1) {
 						files.push(path + '.' + ext);
 					}
 
-				} else if (ext.match(/md/)) {
+				} else if (/md/.test(ext)) {
 
 					if (files.indexOf(path + '.' + ext) === -1) {
 						files.push(path + '.' + ext);
@@ -110,7 +110,7 @@ lychee.define('harvester.data.Package').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(buffer) {
+	var Composite = function(buffer) {
 
 		this.buffer = null;
 
@@ -128,7 +128,7 @@ lychee.define('harvester.data.Package').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -193,7 +193,7 @@ lychee.define('harvester.data.Package').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

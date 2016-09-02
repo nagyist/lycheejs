@@ -8,8 +8,8 @@ lychee.define('app.state.Welcome').includes([
 	'lychee.ui.entity.Text'
 ]).exports(function(lychee, global, attachments) {
 
-	var _State = lychee.import('lychee.ui.State');
-	var _BLOB  = attachments["json"].buffer;
+	const _State = lychee.import('lychee.ui.State');
+	const _BLOB  = attachments["json"].buffer;
 
 
 
@@ -17,7 +17,7 @@ lychee.define('app.state.Welcome').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -27,7 +27,7 @@ lychee.define('app.state.Welcome').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -35,7 +35,7 @@ lychee.define('app.state.Welcome').includes([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'app.state.Welcome';
 
 
@@ -55,7 +55,7 @@ lychee.define('app.state.Welcome').includes([
 
 			this.queryLayer('ui', 'welcome > dialog').bind('change', function(value) {
 
-				var menu = this.queryLayer('ui', 'menu');
+				let menu = this.queryLayer('ui', 'menu');
 				if (menu !== null) {
 
 					menu.setValue(value);
@@ -70,6 +70,6 @@ lychee.define('app.state.Welcome').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

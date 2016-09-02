@@ -17,9 +17,10 @@ lychee.define('lychee.net.socket.WS').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	var _JSON      = lychee.import('lychee.codec.JSON');
-	var _Protocol  = lychee.import('lychee.net.protocol.WS');
-	var _WebSocket = global.WebSocket;
+	const _Emitter   = lychee.import('lychee.event.Emitter');
+	const _JSON      = lychee.import('lychee.codec.JSON');
+	const _Protocol  = lychee.import('lychee.net.protocol.WS');
+	const _WebSocket = global.WebSocket;
 
 
 
@@ -27,15 +28,15 @@ lychee.define('lychee.net.socket.WS').tags({
 	 * HELPERS
 	 */
 
-	var _connect_socket = function(socket, protocol) {
+	const _connect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection !== socket) {
 
 			socket.onmessage = function(event) {
 
-				var blob = null;
-				var view = null;
+				let blob = null;
+				let view = null;
 
 				if (typeof event.data === 'string') {
 
@@ -46,27 +47,27 @@ lychee.define('lychee.net.socket.WS').tags({
 					blob = new Buffer(event.data.byteLength);
 					view = new Uint8Array(event.data);
 
-					for (var v = 0, vl = blob.length; v < vl; v++) {
+					for (let v = 0, vl = blob.length; v < vl; v++) {
 						blob[v] = view[v];
 					}
 
 				}
 
 
-				var temp = _JSON.decode(blob);
+				let temp = _JSON.decode(blob);
 				if (temp === null) {
 					return;
 				}
 
 
 				// XXX: HTML WebSocket doesn't support Buffer data
-				// var chunks = protocol.receive(blob);
-				var chunks = [ temp ];
+				// let chunks = protocol.receive(blob);
+				let chunks = [ temp ];
 				if (chunks.length > 0) {
 
-					for (var c = 0, cl = chunks.length; c < cl; c++) {
+					for (let c = 0, cl = chunks.length; c < cl; c++) {
 
-						var chunk = chunks[c];
+						let chunk = chunks[c];
 						if (chunk.payload[0] === 136) {
 
 							that.send(chunk.payload, chunk.headers, true);
@@ -113,9 +114,9 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	};
 
-	var _disconnect_socket = function(socket, protocol) {
+	const _disconnect_socket = function(socket, protocol) {
 
-		var that = this;
+		let that = this;
 		if (that.__connection === socket) {
 
 			socket.onmessage = function() {};
@@ -142,18 +143,18 @@ lychee.define('lychee.net.socket.WS').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function() {
+	let Composite = function() {
 
 		this.__connection = null;
 		this.__protocol   = null;
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -163,7 +164,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.net.socket.WS';
 
 
@@ -184,9 +185,9 @@ lychee.define('lychee.net.socket.WS').tags({
 			connection = typeof connection === 'object' ? connection : null;
 
 
-			var that     = this;
-			var url      = host.match(/:/g) !== null ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
-			var protocol = null;
+			let that     = this;
+			let url      = /:/g.test(host) ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
+			let protocol = null;
 
 
 			if (host !== null && port !== null) {
@@ -224,17 +225,17 @@ lychee.define('lychee.net.socket.WS').tags({
 
 			if (payload !== null) {
 
-				var connection = this.__connection;
-				var protocol   = this.__protocol;
+				let connection = this.__connection;
+				let protocol   = this.__protocol;
 
 				if (connection !== null && protocol !== null) {
 
 					// XXX: HTML WebSocket does not support Buffer data
-					// var chunk = protocol.send(payload, headers, binary);
-					// var enc   = binary === true ? 'binary' : 'utf8';
+					// let chunk = protocol.send(payload, headers, binary);
+					// let enc   = binary === true ? 'binary' : 'utf8';
 
 
-					var chunk = _JSON.encode({
+					let chunk = _JSON.encode({
 						headers: headers,
 						payload: payload
 					});
@@ -243,10 +244,10 @@ lychee.define('lychee.net.socket.WS').tags({
 
 						if (binary === true) {
 
-							var blob = new ArrayBuffer(chunk.length);
-							var view = new Uint8Array(blob);
+							let blob = new ArrayBuffer(chunk.length);
+							let view = new Uint8Array(blob);
 
-							for (var c = 0, cl = chunk.length; c < cl; c++) {
+							for (let c = 0, cl = chunk.length; c < cl; c++) {
 								view[c] = chunk[c];
 							}
 
@@ -268,8 +269,8 @@ lychee.define('lychee.net.socket.WS').tags({
 
 		disconnect: function() {
 
-			var connection = this.__connection;
-			var protocol   = this.__protocol;
+			let connection = this.__connection;
+			let protocol   = this.__protocol;
 
 			if (connection !== null && protocol !== null) {
 
@@ -288,7 +289,7 @@ lychee.define('lychee.net.socket.WS').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

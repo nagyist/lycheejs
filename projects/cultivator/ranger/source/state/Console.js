@@ -7,8 +7,8 @@ lychee.define('app.state.Console').requires([
 	'lychee.ui.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _State  = lychee.import('lychee.ui.State');
-	var _BLOB   = attachments["json"].buffer;
+	const _State  = lychee.import('lychee.ui.State');
+	const _BLOB   = attachments["json"].buffer;
 
 
 
@@ -16,10 +16,10 @@ lychee.define('app.state.Console').requires([
 	 * HELPERS
 	 */
 
-	var _on_sync = function(data) {
+	const _on_sync = function(data) {
 
-		var blob  = data.blob || {};
-		var value = [{
+		let blob  = data.blob || {};
+		let value = [{
 			stdout: blob.stdout || '',
 			stderr: blob.stderr || ''
 		}];
@@ -27,13 +27,13 @@ lychee.define('app.state.Console').requires([
 
 		if (value.length > 0) {
 
-			var table = this.queryLayer('ui', 'console > status > 0');
+			let table = this.queryLayer('ui', 'console > status > 0');
 			if (table !== null) {
 				table.setValue(value);
 			}
 
 
-			var blueprint = this.queryLayer('ui', 'console');
+			let blueprint = this.queryLayer('ui', 'console');
 			if (blueprint !== null) {
 				blueprint.trigger('relayout');
 			}
@@ -48,7 +48,7 @@ lychee.define('app.state.Console').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -58,7 +58,7 @@ lychee.define('app.state.Console').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -69,7 +69,7 @@ lychee.define('app.state.Console').requires([
 			_State.prototype.deserialize.call(this, blob);
 
 
-			var viewport = this.viewport;
+			let viewport = this.viewport;
 			if (viewport !== null) {
 
 				viewport.relay('reshape', this.queryLayer('ui', 'console > status'));
@@ -78,20 +78,20 @@ lychee.define('app.state.Console').requires([
 				entity = this.queryLayer('ui', 'console');
 				entity.bind('#relayout', function(blueprint) {
 
-					var element = this.queryLayer('ui', 'console > status');
+					let element = this.queryLayer('ui', 'console > status');
 					if (element !== null) {
 
 						element.width  = blueprint.width - 64;
 						element.height = blueprint.height;
 
-						var entity = element.getEntity('0');
+						let entity = element.getEntity('0');
 						if (entity !== null) {
 
 							entity.width  = element.width  - 32;
 							entity.height = element.height - 96;
 
-							var left  = entity.getEntity('0');
-							var right = entity.getEntity('1');
+							let left  = entity.getEntity('0');
+							let right = entity.getEntity('1');
 							if (left !== null && right !== null) {
 
 								left.width   = entity.width / 2 - 4;
@@ -120,7 +120,7 @@ lychee.define('app.state.Console').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'app.state.Console';
 
 
@@ -133,10 +133,10 @@ lychee.define('app.state.Console').requires([
 			this.queryLayer('ui', 'console > status').setVisible(true);
 
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('console');
+				let service = client.getService('console');
 				if (service !== null) {
 					service.bind('sync', _on_sync, this);
 					service.sync();
@@ -151,10 +151,10 @@ lychee.define('app.state.Console').requires([
 
 		leave: function(oncomplete) {
 
-			var client = this.client;
+			let client = this.client;
 			if (client !== null) {
 
-				var service = client.getService('console');
+				let service = client.getService('console');
 				if (service !== null) {
 					service.unbind('sync', _on_sync, this);
 				}
@@ -169,6 +169,6 @@ lychee.define('app.state.Console').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

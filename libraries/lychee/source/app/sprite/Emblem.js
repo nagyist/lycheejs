@@ -3,16 +3,22 @@ lychee.define('lychee.app.sprite.Emblem').includes([
 	'lychee.app.Sprite'
 ]).exports(function(lychee, global, attachments) {
 
-	var _TEXTURE = attachments["png"];
-	var _CONFIG  = {
+	const _Sprite  = lychee.import('lychee.app.Sprite');
+	const _TEXTURE = attachments["png"];
+	const _CONFIG  = {
 		width:  256,
 		height: 64
 	};
 
 
-	var Class = function(data) {
 
-		var settings = Object.assign({}, data);
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Composite = function(data) {
+
+		let settings = Object.assign({}, data);
 
 
 		settings.texture = _TEXTURE;
@@ -20,18 +26,24 @@ lychee.define('lychee.app.sprite.Emblem').includes([
 		settings.height  = _CONFIG.height;
 
 
-		lychee.app.Sprite.call(this, settings);
+		_Sprite.call(this, settings);
 
 		settings = null;
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
 
 		serialize: function() {
 
-			var data = lychee.app.Sprite.prototype.serialize.call(this);
+			let data = _Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.app.sprite.Emblem';
 
 
@@ -42,7 +54,7 @@ lychee.define('lychee.app.sprite.Emblem').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

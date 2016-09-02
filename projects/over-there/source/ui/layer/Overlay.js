@@ -1,14 +1,17 @@
 
 lychee.define('app.ui.layer.Overlay').requires([
+	'lychee.app.Entity',
 	'lychee.effect.Alpha',
 	'app.ui.entity.Bubble'
 ]).includes([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Alpha  = lychee.import('lychee.effect.Alpha');
-	var _Bubble = lychee.import('app.ui.entity.Bubble');
-	var _Layer  = lychee.import('lychee.ui.Layer');
+	const _Alpha  = lychee.import('lychee.effect.Alpha');
+	const _Entity = lychee.import('lychee.app.Entity');
+	const _Bubble = lychee.import('app.ui.entity.Bubble');
+	const _Layer  = lychee.import('lychee.ui.Layer');
+	const _SOUND  = attachments["snd"];
 
 
 
@@ -16,9 +19,9 @@ lychee.define('app.ui.layer.Overlay').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.__entity = null;
@@ -32,7 +35,7 @@ lychee.define('app.ui.layer.Overlay').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -40,7 +43,7 @@ lychee.define('app.ui.layer.Overlay').requires([
 
 		serialize: function() {
 
-			var data = _Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'app.ui.layer.Overlay';
 
 
@@ -54,20 +57,20 @@ lychee.define('app.ui.layer.Overlay').requires([
 
 
 
-			var entity = this.__entity;
+			let entity = this.__entity;
 			if (entity !== null) {
 
 				this.position.x = entity.position.x;
 				this.position.y = entity.position.y;
 
-				var entities = this.entities;
-				var pi2  = 2 * Math.PI / entities.length;
-				var sec  = clock / 4000;
-				var dist = this.__orbit + 64;
+				let entities = this.entities;
+				let pi2  = 2 * Math.PI / entities.length;
+				let sec  = clock / 1300;
+				let dist = this.__orbit + 64;
 
-				for (var e = 0, el = entities.length; e < el; e++) {
+				for (let e = 0, el = entities.length; e < el; e++) {
 
-					var other = entities[e];
+					let other = entities[e];
 
 					other.setPosition({
 						x: Math.sin(sec + e * pi2) * dist,
@@ -82,10 +85,10 @@ lychee.define('app.ui.layer.Overlay').requires([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var orbit = this.__orbit;
+			let orbit = this.__orbit;
 			if (orbit !== null) {
 
-				var position = this.position;
+				let position = this.position;
 
 				renderer.setAlpha(0.6);
 
@@ -115,19 +118,19 @@ lychee.define('app.ui.layer.Overlay').requires([
 
 		setEntity: function(entity) {
 
-			entity = lychee.interfaceof(entity, lychee.app.Entity) ? entity : null;
+			entity = lychee.interfaceof(entity, _Entity) ? entity : null;
 
 
 			if (entity !== null) {
 
-				var properties = entity.properties || null;
+				let properties = entity.properties || null;
 				if (properties !== null) {
 
-					var entities = [];
+					let entities = [];
 
-					for (var key in properties) {
+					for (let key in properties) {
 
-						var bubble = new _Bubble({
+						let bubble = new _Bubble({
 							key:   key,
 							value: properties[key]
 						});
@@ -153,12 +156,14 @@ lychee.define('app.ui.layer.Overlay').requires([
 				}
 
 
+				_SOUND.play();
 				this.__entity = entity;
 				this.__orbit  = 64;
 
 			} else {
 
-				this.__orbit = null;
+				this.__entity = null;
+				this.__orbit  = null;
 
 			}
 
@@ -167,7 +172,7 @@ lychee.define('app.ui.layer.Overlay').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

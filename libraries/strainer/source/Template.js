@@ -7,11 +7,11 @@ lychee.define('strainer.Template').requires([
 	'lychee.event.Flow'
 ]).exports(function(lychee, global, attachments) {
 
-	var _API   = lychee.import('strainer.data.API');
-	var _FIX   = lychee.import('strainer.data.FIX');
-	var _Flow  = lychee.import('lychee.event.Flow');
-	var _Stash = lychee.import('lychee.Stash');
-	var _STASH = new _Stash({
+	const _API   = lychee.import('strainer.data.API');
+	const _FIX   = lychee.import('strainer.data.FIX');
+	const _Flow  = lychee.import('lychee.event.Flow');
+	const _Stash = lychee.import('lychee.Stash');
+	const _STASH = new _Stash({
 		type: _Stash.TYPE.persistent
 	});
 
@@ -21,7 +21,7 @@ lychee.define('strainer.Template').requires([
 	 * HELPERS
 	 */
 
-	var _walk_directory = function(files, node, path, attachments) {
+	const _walk_directory = function(files, node, path, attachments) {
 
 		if (node instanceof Array) {
 
@@ -31,13 +31,11 @@ lychee.define('strainer.Template').requires([
 
 			if (attachments === true) {
 
-				if (node.indexOf('json') !== -1)  files.push(path + '.json');
-				if (node.indexOf('fnt') !== -1)   files.push(path + '.fnt');
-				if (node.indexOf('msc') !== -1)   files.push(path + '.msc');
-				if (node.indexOf('pkg') !== -1)   files.push(path + '.pkg');
-				if (node.indexOf('png') !== -1)   files.push(path + '.png');
-				if (node.indexOf('snd') !== -1)   files.push(path + '.snd');
-				if (node.indexOf('store') !== -1) files.push(path + '.store');
+				node.filter(function(ext) {
+					return ext !== 'js';
+				}).forEach(function(ext) {
+					files.push(path + '.' + ext);
+				});
 
 			}
 
@@ -51,14 +49,14 @@ lychee.define('strainer.Template').requires([
 
 	};
 
-	var _package_files = function(json) {
+	const _package_files = function(json) {
 
-		var files = [];
+		let files = [];
 
 
 		if (json !== null) {
 
-			var root = json.source.files || null;
+			let root = json.source.files || null;
 			if (root !== null) {
 				_walk_directory(files, root, '', false);
 			}
@@ -81,14 +79,13 @@ lychee.define('strainer.Template').requires([
 
 
 
-
 	/*
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.codes    = [];
@@ -116,24 +113,24 @@ lychee.define('strainer.Template').requires([
 
 		this.bind('read', function(oncomplete) {
 
-			var project = this.settings.project;
-			var sandbox = this.sandbox;
-			var stash   = this.stash;
+			let project = this.settings.project;
+			let sandbox = this.sandbox;
+			let stash   = this.stash;
 
 			if (sandbox !== '' && stash !== null) {
 
 				console.log('strainer: READ ' + project);
 
 
-				var that = this;
-				var pkg  = new Config(sandbox + '/lychee.pkg');
+				let that = this;
+				let pkg  = new Config(sandbox + '/lychee.pkg');
 
 
 				pkg.onload = function(result) {
 
 					if (result === true) {
 
-						var files = _package_files(this.buffer);
+						let files = _package_files(this.buffer);
 						if (files.length > 0) {
 
 							stash.bind('batch', function(type, assets) {
@@ -181,18 +178,20 @@ lychee.define('strainer.Template').requires([
 
 		this.bind('read-api', function(oncomplete) {
 
-			var codes = this.codes;
+			let codes = this.codes;
 			if (codes.length > 0) {
 
-				var configs = [];
+				let configs = [];
 
-				for (var c = 0, cl = codes.length; c < cl; c++) {
+				for (let c = 0, cl = codes.length; c < cl; c++) {
 
-					var code = codes[c];
+					let code = codes[c];
+					let url  = code.url.replace(/source/, 'api').replace(/\.js$/, '.json');
+
 					if (code.buffer !== null) {
 
-						var data   = _API.decode(code.buffer);
-						var config = new lychee.Asset(code.url.replace(/source/, 'api').replace(/\.js$/, '.json'), 'json', true);
+						let data   = _API.decode(code.buffer);
+						let config = new lychee.Asset(code.url.replace(/source/, 'api').replace(/\.js$/, '.json'), 'json', true);
 						if (config !== null) {
 
 							config.buffer = data;
@@ -226,8 +225,8 @@ lychee.define('strainer.Template').requires([
 
 		this.bind('write', function(oncomplete) {
 
-			var project = this.settings.project;
-			var stash   = this.stash;
+			let project = this.settings.project;
+			let stash   = this.stash;
 
 
 			if (project !== null && stash !== null) {
@@ -235,12 +234,12 @@ lychee.define('strainer.Template').requires([
 				console.log('strainer: WRITE ' + project);
 
 
-				var sandbox = this.sandbox;
-				var codes   = this.codes;
-				var configs = this.configs;
+				let sandbox = this.sandbox;
+				let codes   = this.codes;
+				let configs = this.configs;
 
 
-				stash.bind('write', function(type, assets) {
+				stash.bind('batch', function(type, assets) {
 
 					if (assets.length === configs.length) {
 						oncomplete(true);
@@ -266,7 +265,7 @@ lychee.define('strainer.Template').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -276,9 +275,9 @@ lychee.define('strainer.Template').requires([
 
 			if (blob.codes instanceof Array) {
 
-				var codes = [];
+				let codes = [];
 
-				for (var bc1 = 0, bc1l = blob.codes.length; bc1 < bc1l; bc1++) {
+				for (let bc1 = 0, bc1l = blob.codes.length; bc1 < bc1l; bc1++) {
 					codes.push(lychee.deserialize(blob.codes[bc1]));
 				}
 
@@ -291,9 +290,9 @@ lychee.define('strainer.Template').requires([
 
 			if (blob.configs instanceof Array) {
 
-				var configs = [];
+				let configs = [];
 
-				for (var bc2 = 0, bc2l = blob.configs.length; bc2 < bc2l; bc2++) {
+				for (let bc2 = 0, bc2l = blob.configs.length; bc2 < bc2l; bc2++) {
 					configs.push(lychee.deserialize(blob.codes[bc2]));
 				}
 
@@ -304,7 +303,7 @@ lychee.define('strainer.Template').requires([
 			}
 
 
-			var stash = lychee.deserialize(blob.stash);
+			let stash = lychee.deserialize(blob.stash);
 			if (stash !== null) {
 				this.stash = stash;
 			}
@@ -313,12 +312,12 @@ lychee.define('strainer.Template').requires([
 
 		serialize: function() {
 
-			var data = _Flow.prototype.serialize.call(this);
+			let data = _Flow.prototype.serialize.call(this);
 			data['constructor'] = 'strainer.Template';
 
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.sandbox !== '')                   settings.sandbox  = this.sandbox;
@@ -438,7 +437,7 @@ lychee.define('strainer.Template').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

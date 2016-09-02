@@ -166,6 +166,81 @@
 					"index": [
 						"js"
 					]
+				},
+				"main": {
+					"core": [
+						"js"
+					],
+					"index": [
+						"js"
+					]
+				},
+				"main-linux": {
+					"arm": {
+						"core": [
+							"js"
+						],
+						"index": [
+							"js"
+						]
+					},
+					"x86": {
+						"core": [
+							"js"
+						],
+						"index": [
+							"js"
+						]
+					},
+					"x86_64": {
+						"core": [
+							"js"
+						],
+						"index": [
+							"js"
+						]
+					}
+				},
+				"main-osx": {
+					"x86_64": {
+						"core": [
+							"js"
+						],
+						"index": [
+							"js"
+						]
+					}
+				},
+				"main-windows": {
+					"x86": {
+						"core": [
+							"js"
+						],
+						"harvester": [
+							"cmd"
+						],
+						"index": [
+							"js"
+						]
+					},
+					"x86_64": {
+						"core": [
+							"js"
+						],
+						"harvester": [
+							"cmd"
+						],
+						"index": [
+							"js"
+						]
+					}
+				}
+			},
+			"node-sdl": {
+				"dist": {
+					"index": [
+						"js"
+					]
 				}
 			}
 		}

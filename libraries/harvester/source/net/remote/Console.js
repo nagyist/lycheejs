@@ -3,8 +3,8 @@ lychee.define('harvester.net.remote.Console').includes([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Service = lychee.import('lychee.net.Service');
-	var _console = global.console;
+	const _console = global.console;
+	const _Service = lychee.import('lychee.net.Service');
 
 
 
@@ -12,14 +12,14 @@ lychee.define('harvester.net.remote.Console').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
 		_Service.call(this, 'console', remote, _Service.TYPE.remote);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -27,7 +27,7 @@ lychee.define('harvester.net.remote.Console').includes([
 
 		serialize: function() {
 
-			var data = _Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.remote.Console';
 
 
@@ -43,7 +43,7 @@ lychee.define('harvester.net.remote.Console').includes([
 
 		index: function() {
 
-			var tunnel = this.tunnel;
+			let tunnel = this.tunnel;
 			if (tunnel !== null) {
 
 				tunnel.send(lychee.serialize(_console), {
@@ -62,7 +62,7 @@ lychee.define('harvester.net.remote.Console').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

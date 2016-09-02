@@ -4,10 +4,10 @@ lychee.define('app.net.Client').requires([
 	'lychee.net.Client'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Client  = lychee.import('lychee.net.Client');
-	var _CONFIG  = attachments["json"].buffer;
-	var _ROOMS   = ['node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem'];
-	var _SENSORS = {
+	const _Client  = lychee.import('lychee.net.Client');
+	const _CONFIG  = attachments["json"].buffer;
+	const _ROOMS   = ['node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem'];
+	const _SENSORS = {
 		destiny: {
 			pressure:    'USLAB000058',
 			temperature: 'USLAB000059',
@@ -31,16 +31,16 @@ lychee.define('app.net.Client').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			reconnect: 10000
 		}, data);
 
-		var _timelineManager = null;
-		var _pushPage        = null;
 
 		_Client.call(this, settings);
+
+		settings = null;
 
 
 
@@ -69,7 +69,7 @@ lychee.define('app.net.Client').requires([
 
 
 
-		var that = this;
+		let that = this;
 
 		setInterval(function() {
 
@@ -77,7 +77,7 @@ lychee.define('app.net.Client').requires([
 
 				Object.keys(_SENSORS[room]).forEach(function(sensor) {
 
-					var value = '' + (Math.random() * 100).toFixed(2);
+					let value = '' + (Math.random() * 100).toFixed(2);
 					that.trigger('sensor', [ room, sensor, value ]);
 
 				});
@@ -89,8 +89,8 @@ lychee.define('app.net.Client').requires([
 
 		setTimeout(function() {
 
-			var _id = 0;
-			var _ACTIVITIES = ['sleep', 'sleep', 'science', 'sleep', 'sleep', 'science'];
+			let _id = 0;
+			let _ACTIVITIES = ['sleep', 'sleep', 'science', 'sleep', 'sleep', 'science'];
 
 			_CONFIG.forEach(function(data) {
 
@@ -112,7 +112,7 @@ lychee.define('app.net.Client').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -120,7 +120,7 @@ lychee.define('app.net.Client').requires([
 
 		serialize: function() {
 
-			var data = _Client.prototype.serialize.call(this);
+			let data = _Client.prototype.serialize.call(this);
 			data['constructor'] = 'app.net.Client';
 
 
@@ -131,7 +131,7 @@ lychee.define('app.net.Client').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

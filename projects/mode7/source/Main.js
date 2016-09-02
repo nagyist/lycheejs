@@ -9,11 +9,10 @@ lychee.define('game.Main').requires([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee    = lychee.import('lychee');
-	var _game      = lychee.import('game');
-	var _Main      = lychee.import('lychee.app.Main');
-	var _Viewport  = lychee.import('lychee.Viewport');
-	var _instances = [];
+	const _game      = lychee.import('game');
+	const _Main      = lychee.import('lychee.app.Main');
+	const _Viewport  = lychee.import('lychee.Viewport');
+	const _INSTANCES = [];
 
 
 
@@ -25,15 +24,15 @@ lychee.define('game.Main').requires([
 
 		viewport.bind('reshape', function(orientation, rotation, width, height) {
 
-			if (_instances.length > 1) {
+			if (_INSTANCES.length > 1) {
 
-				var vp_width  = width / _instances.length;
-				var vp_height = height;
+				let vp_width  = width / _INSTANCES.length;
+				let vp_height = height;
 
 
-				for (var i = 0, il = _instances.length; i < il; i++) {
+				for (let i = 0, il = _INSTANCES.length; i < il; i++) {
 
-					var main = _instances[i];
+					let main = _INSTANCES[i];
 					if (main.viewport !== null) {
 
 						main.renderer.setWidth(vp_width);
@@ -55,9 +54,9 @@ lychee.define('game.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 
 			client: null,
 			server: null,
@@ -76,7 +75,7 @@ lychee.define('game.Main').requires([
 			},
 
 			renderer: {
-				id:         'mode7-' + _instances.length,
+				id:         'mode7-' + _INSTANCES.length,
 				background: '#436026',
 				width:      null,
 				height:     null
@@ -91,7 +90,9 @@ lychee.define('game.Main').requires([
 
 		_Main.call(this, settings);
 
-		_instances.push(this);
+		_INSTANCES.push(this);
+
+		settings = null;
 
 
 
@@ -110,7 +111,7 @@ lychee.define('game.Main').requires([
 
 		this.bind('init', function() {
 
-			var gamerenderer = this.settings.gamerenderer || null;
+			let gamerenderer = this.settings.gamerenderer || null;
 			if (gamerenderer !== null) {
 				this.renderer = new _game.Renderer(gamerenderer);
 			}
@@ -140,7 +141,7 @@ lychee.define('game.Main').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -148,7 +149,7 @@ lychee.define('game.Main').requires([
 
 		serialize: function() {
 
-			var data = _Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'game.Main';
 
 
@@ -159,6 +160,6 @@ lychee.define('game.Main').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });

@@ -6,11 +6,11 @@ lychee.define('harvester.net.remote.Profile').requires([
 	'lychee.net.Service'
 ]).exports(function(lychee, global, attachments) {
 
-	var _CACHE      = {};
-	var _JSON       = lychee.import('lychee.codec.JSON');
-	var _Filesystem = lychee.import('harvester.data.Filesystem');
-	var _Service    = lychee.import('lychee.net.Service');
-	var _filesystem = new _Filesystem('/bin/harvester');
+	const _Filesystem = lychee.import('harvester.data.Filesystem');
+	const _Service    = lychee.import('lychee.net.Service');
+	const _CACHE      = {};
+	const _FILESYSTEM = new _Filesystem('/bin/harvester');
+	const _JSON       = lychee.import('lychee.codec.JSON');
 
 
 
@@ -20,7 +20,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 	(function(cache, filesystem) {
 
-		var identifiers = filesystem.dir('/').map(function(value) {
+		let identifiers = filesystem.dir('/').map(function(value) {
 			return value.split('.').slice(0, -1).join('.');
 		});
 
@@ -28,7 +28,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 			identifiers.forEach(function(identifier) {
 
-				var profile = filesystem.read('/' + identifier + '.json');
+				let profile = filesystem.read('/' + identifier + '.json');
 				if (profile !== null) {
 					cache[identifier] = _JSON.decode(profile);
 					cache[identifier].identifier = identifier;
@@ -38,7 +38,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 		}
 
-	})(_CACHE, _filesystem);
+	})(_CACHE, _FILESYSTEM);
 
 
 
@@ -46,14 +46,14 @@ lychee.define('harvester.net.remote.Profile').requires([
 	 * HELPERS
 	 */
 
-	var _save_profile = function(profile) {
+	const _save_profile = function(profile) {
 
-		var path = '/' + profile.identifier + '.json';
-		var data = _JSON.encode(profile);
+		let path = '/' + profile.identifier + '.json';
+		let data = _JSON.encode(profile);
 
 		if (data !== null) {
 
-			_filesystem.write(path, data);
+			_FILESYSTEM.write(path, data);
 
 			return true;
 
@@ -64,7 +64,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 	};
 
-	var _serialize = function(profile) {
+	const _serialize = function(profile) {
 
 		return {
 			identifier: profile.identifier || '',
@@ -76,12 +76,12 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 	};
 
-	var _on_save = function(data) {
+	const _on_save = function(data) {
 
-		var identifier = data.identifier || null;
+		let identifier = data.identifier || null;
 		if (identifier !== null) {
 
-			var profile = _CACHE[identifier] || null;
+			let profile = _CACHE[identifier] || null;
 			if (profile !== null) {
 
 				profile.identifier = identifier;
@@ -116,7 +116,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(remote) {
+	let Composite = function(remote) {
 
 		_Service.call(this, 'profile', remote, _Service.TYPE.remote);
 
@@ -126,7 +126,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -134,7 +134,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 		serialize: function() {
 
-			var data = _Service.prototype.serialize.call(this);
+			let data = _Service.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.net.remote.Profile';
 
 
@@ -150,10 +150,10 @@ lychee.define('harvester.net.remote.Profile').requires([
 
 		index: function(data) {
 
-			var tunnel = this.tunnel;
+			let tunnel = this.tunnel;
 			if (tunnel !== null) {
 
-				var profiles = Object.values(_CACHE).filter(function(profile) {
+				let profiles = Object.values(_CACHE).filter(function(profile) {
 					return /cultivator/g.test(profile.identifier) === false;
 				}).map(_serialize);
 
@@ -174,7 +174,7 @@ lychee.define('harvester.net.remote.Profile').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

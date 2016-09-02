@@ -1,7 +1,11 @@
 
 lychee.define('harvester.net.server.Redirect').exports(function(lychee, global, attachments) {
 
-	var Module = {
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Module = {
 
 		/*
 		 * MODULE API
@@ -24,21 +28,21 @@ lychee.define('harvester.net.server.Redirect').exports(function(lychee, global, 
 
 		receive: function(payload, headers) {
 
-			var tunnel = this.tunnel;
-			var url    = headers['url'];
+			let tunnel = this.tunnel;
+			let url    = headers['url'];
 
 
 			// Single-project mode
 			if (lychee.ROOT.lychee !== lychee.ROOT.project) {
 
-				var identifier = lychee.ROOT.project;
-				var project    = lychee.import('MAIN')._projects[identifier] || null;
+				let identifier = lychee.ROOT.project;
+				let project    = lychee.import('MAIN')._projects[identifier] || null;
 				if (project !== null) {
 
-					var path = url;
+					let path = url;
 					if (path === '' || path === '/') {
 
-						var info = project.filesystem.info('/index.html');
+						let info = project.filesystem.info('/index.html');
 						if (info !== null) {
 
 							tunnel.send('', {
@@ -69,14 +73,14 @@ lychee.define('harvester.net.server.Redirect').exports(function(lychee, global, 
 			// Multi-project mode /projects/*
 			} else if (url.substr(0, 9) === '/projects') {
 
-				var identifier = url.split('/').slice(0, 3).join('/');
-				var project    = lychee.import('MAIN')._projects[identifier] || null;
+				let identifier = url.split('/').slice(0, 3).join('/');
+				let project    = lychee.import('MAIN')._projects[identifier] || null;
 				if (project !== null) {
 
-					var path = '/' + url.split('/').slice(3).join('/');
+					let path = '/' + url.split('/').slice(3).join('/');
 					if (path === identifier || path === identifier + '/' || path === '/') {
 
-						var info = project.filesystem.info('/index.html');
+						let info = project.filesystem.info('/index.html');
 						if (info !== null) {
 
 							tunnel.send('', {

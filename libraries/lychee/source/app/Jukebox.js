@@ -5,9 +5,9 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.channels = 8;
@@ -35,7 +35,7 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -45,7 +45,7 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.channels !== 8) settings.channels = this.channels;
@@ -70,12 +70,12 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 
 		play: function(track) {
 
-			var volume = this.volume;
+			let volume = this.volume;
 
 
 			if (track instanceof Music && this.music === true) {
 
-				var music = this.__music;
+				let music = this.__music;
 				if (music !== null) {
 					music.stop();
 				}
@@ -90,10 +90,10 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 
 			} else if (track instanceof Sound && this.sound === true) {
 
-				var sounds = this.__sounds;
-				for (var s = 0, sl = sounds.length; s < sl; s++) {
+				let sounds = this.__sounds;
+				for (let s = 0, sl = sounds.length; s < sl; s++) {
 
-					var sound = sounds[s];
+					let sound = sounds[s];
 					if (sound === null) {
 
 						sounds[s] = track.clone();
@@ -135,12 +135,12 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 			track = (track instanceof Music || track instanceof Sound) ? track : null;
 
 
-			var found  = false;
-			var music  = this.__music;
-			var sounds = this.__sounds;
+			let found  = false;
+			let music  = this.__music;
+			let sounds = this.__sounds;
 
 
-			var s, sl, sound = null;
+			let s, sl, sound = null;
 
 			if (track instanceof Music) {
 
@@ -258,16 +258,16 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 				this.volume = Math.min(Math.max(0, volume), 1);
 
 
-				var music = this.__music;
+				let music = this.__music;
 				if (music !== null) {
 					music.setVolume(this.volume);
 				}
 
 
-				var sounds = this.__sounds;
-				for (var s = 0, sl = sounds.length; s < sl; s++) {
+				let sounds = this.__sounds;
+				for (let s = 0, sl = sounds.length; s < sl; s++) {
 
-					var sound = sounds[s];
+					let sound = sounds[s];
 					if (sound !== null) {
 						sound.setVolume(this.volume);
 					}
@@ -287,7 +287,7 @@ lychee.define('lychee.app.Jukebox').exports(function(lychee, global, attachments
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

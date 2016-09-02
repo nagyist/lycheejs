@@ -5,12 +5,19 @@ lychee.define('breeder.Template').requires([
 	'lychee.event.Flow'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Flow  = lychee.import('lychee.event.Flow');
-	var _Stash = lychee.import('lychee.Stash');
-	var _ASSET = '/libraries/breeder/asset';
-	var _STASH = new _Stash({
+	const _Flow   = lychee.import('lychee.event.Flow');
+	const _Stash  = lychee.import('lychee.Stash');
+	const _ASSET  = '/libraries/breeder/asset';
+	const _CONFIG = attachments["json"];
+	const _STASH  = new _Stash({
 		type: _Stash.TYPE.persistent
 	});
+	const _TEMPLATE = {
+		dist:      attachments["dist.tpl"],
+		harvester: attachments["harvester.tpl"],
+		index:     attachments["index.tpl"],
+		main:      attachments["main.tpl"]
+	};
 
 
 
@@ -18,21 +25,21 @@ lychee.define('breeder.Template').requires([
 	 * HELPERS
 	 */
 
-	var _inject = function(buffer, injections) {
+	const _inject = function(buffer, injections) {
 
-		var chunk    = '';
-		var code     = buffer.split('\n');
-		var c        = 0;
-		var cl       = code.length;
-		var found    = { include: false, inject: false };
-		var index    = { include: -1,    inject: -1    };
-		var tmp      = '';
-		var tmp_s    = '';
-		var tmp_c    = '';
-		var tmp_i    = '';
-		var tpl_s    = '';
-		var tpl_c    = '';
-		var tpl_i    = '';
+		let chunk = '';
+		let code  = buffer.split('\n');
+		let c     = 0;
+		let cl    = code.length;
+		let found = { include: false, inject: false };
+		let index = { include: -1,    inject: -1    };
+		let tmp   = '';
+		let tmp_s = '';
+		let tmp_c = '';
+		let tmp_i = '';
+		let tpl_s = '';
+		let tpl_c = '';
+		let tpl_i = '';
 
 
 		for (c = 0; c < cl; c++) {
@@ -53,8 +60,8 @@ lychee.define('breeder.Template').requires([
 
 			} else if (chunk.substr(0, 8) === 'require(') {
 
-				tpl_s = 'require(_root + \'/libraries/';
-				tpl_c = 'require(_root + \'${injection}\');';
+				tpl_s = 'require(\'/opt/lycheejs/libraries/';
+				tpl_c = 'require(\'/opt/lycheejs/${injection}\');';
 				tpl_i = '\tlychee.inject(lychee.ENVIRONMENTS[\'${identifier}\']);';
 
 				injections = injections.filter(function(injection) {
@@ -68,10 +75,10 @@ lychee.define('breeder.Template').requires([
 		}
 
 
-		for (var i = 0, il = injections.length; i < il; i++) {
+		for (let i = 0, il = injections.length; i < il; i++) {
 
-			var injection  = injections[i];
-			var identifier = injection.split('/').slice(0, 3).join('/') + '/' + injection.split('/')[5];
+			let injection  = injections[i];
+			let identifier = injection.split('/').slice(0, 3).join('/') + '/' + injection.split('/')[5];
 
 
 			tmp_c = tpl_c.replaceObject({
@@ -145,9 +152,9 @@ lychee.define('breeder.Template').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.sandbox  = '';
@@ -157,8 +164,9 @@ lychee.define('breeder.Template').requires([
 		});
 
 
-		this.__injections = [];
-		this.__main       = [];
+		this.__identifiers = [];
+		this.__injections  = [];
+		this.__main        = [];
 
 
 		this.setSandbox(settings.sandbox);
@@ -177,8 +185,8 @@ lychee.define('breeder.Template').requires([
 
 		this.bind('init', function(oncomplete) {
 
-			var sandbox = this.sandbox;
-			var stash   = this.stash;
+			let sandbox = this.sandbox;
+			let stash   = this.stash;
 
 			if (sandbox !== '' && stash !== null) {
 
@@ -187,17 +195,17 @@ lychee.define('breeder.Template').requires([
 
 				_STASH.bind('batch', function(type, assets) {
 
-					var pkg  = assets.find(function(asset) {
+					let pkg  = assets.find(function(asset) {
 						return asset.url === _ASSET + '/lychee.pkg';
 					}) || null;
-					var urls = assets.map(function(asset) {
+					let urls = assets.map(function(asset) {
 						return sandbox + asset.url.substr(_ASSET.length);
 					});
 
 
 					if (pkg !== null) {
 
-						var tmp = JSON.stringify(pkg.buffer, null, '\t');
+						let tmp = JSON.stringify(pkg.buffer, null, '\t');
 
 						tmp = tmp.replaceObject({
 							id: sandbox
@@ -245,11 +253,136 @@ lychee.define('breeder.Template').requires([
 
 		}, this);
 
+		this.bind('fork', function(oncomplete) {
+
+			let library   = this.settings.library;
+			let project   = this.settings.project;
+			let sandbox   = this.sandbox;
+			let stash     = this.stash;
+			let urls      = [];
+			let assets    = [];
+			let pkg       = new Config(library + '/lychee.pkg');
+			let folder    = project.split('/')[1];
+			let namespace = library.split('/')[2];
+
+
+			console.log('breeder: FORK');
+
+
+			pkg.onload = function() {
+
+				if (this.buffer instanceof Object && this.buffer.build instanceof Object) {
+
+					let environments = this.buffer.build.environments || {};
+
+					if (folder === 'projects') {
+
+						Object.keys(environments).forEach(function(identifier) {
+
+							if (/main$/g.test(identifier) === false) {
+								delete environments[identifier];
+							} else {
+
+								let tmp = environments[identifier];
+								if (tmp.profile instanceof Object) {
+
+									if (typeof tmp.profile.client === 'string') {
+										tmp.profile.client = tmp.profile.client.replace(library, project);
+									}
+
+									if (typeof tmp.profile.server === 'string') {
+										tmp.profile.server = tmp.profile.server.replace(library, project);
+									}
+
+								}
+
+								tmp.variant  = 'application';
+								tmp.packages = [
+									[ 'fork', './lychee.pkg' ],
+									[ 'app',  library + '/lychee.pkg' ]
+								];
+
+							}
+
+						});
+
+						_CONFIG.buffer.build.environments = environments;
+
+
+						if (typeof environments['node/main'] !== 'undefined') {
+							urls.push(project + '/harvester.js');
+							assets.push(_TEMPLATE.harvester);
+						}
+
+
+						urls.push(sandbox + '/lychee.pkg');
+						urls.push(sandbox + '/index.html');
+						urls.push(sandbox + '/source/Main.js');
+
+						assets.push(_CONFIG);
+						assets.push(_TEMPLATE.index);
+						assets.push(_TEMPLATE.main);
+
+					} else if (folder === 'libraries') {
+
+						Object.keys(environments).forEach(function(identifier) {
+
+							if (/dist$/g.test(identifier) === false) {
+								delete environments[identifier];
+							} else {
+
+								let tmp = environments[identifier];
+
+								tmp.variant  = 'library';
+								tmp.packages = [
+									[ 'fork', './lychee.pkg' ],
+									[ 'app',  library + '/lychee.pkg' ]
+								];
+
+							}
+
+						});
+
+						_CONFIG.buffer.build.environments = environments;
+
+
+						urls.push(sandbox + '/lychee.pkg');
+						urls.push(sandbox + '/source/DIST.js');
+						urls.push(sandbox + '/source/Main.js');
+
+						assets.push(_CONFIG);
+						assets.push(_TEMPLATE.dist);
+						assets.push(_TEMPLATE.main);
+
+					}
+
+
+					stash.bind('batch', function(action, map) {
+
+						if (action === 'write') {
+							oncomplete(true);
+						}
+
+					}, this, true);
+
+					stash.batch('write', urls, assets);
+
+				} else {
+
+					oncomplete(false);
+
+				}
+
+			};
+
+			pkg.load();
+
+		}, this);
 
 		this.bind('pull', function(oncomplete) {
 
-			var library = this.settings.library;
-			var stash   = this.stash;
+			let library = this.settings.library;
+			let stash   = this.stash;
 
 
 			if (library !== null && stash !== null) {
@@ -257,26 +390,26 @@ lychee.define('breeder.Template').requires([
 				console.log('breeder: PULL ' + library);
 
 
-				var sandbox = this.sandbox;
+				let sandbox = this.sandbox;
 
 
 				_STASH.bind('batch', function(type, assets) {
 
-					var main = assets.filter(function(asset) {
-						return asset.url.match(/index\.html|harvester\.js/g) !== null;
+					let main = assets.filter(function(asset) {
+						return /index\.html|harvester\.js/g.test(asset.url);
 					});
-					var pkg  = assets.find(function(asset) {
-						return asset.url.match(/lychee\.pkg/g) !== null;
+					let pkg  = assets.find(function(asset) {
+						return /lychee\.pkg/g.test(asset.url);
 					}) || null;
 
 
 					if (main.length > 0 && pkg !== null) {
 
-						var platforms = [];
+						let platforms = [];
 
 						Object.values(pkg.buffer.build.environments).forEach(function(environment) {
 
-							var tags = environment.tags || null;
+							let tags = environment.tags || null;
 							if (tags instanceof Object) {
 
 								if (tags.platform instanceof Array) {
@@ -298,19 +431,19 @@ lychee.define('breeder.Template').requires([
 
 						if (platforms.length > 0) {
 
-							var injections = platforms.sort().map(function(platform) {
+							let injections = platforms.sort().map(function(platform) {
 								return library + '/build/' + platform + '/dist/index.js';
 							});
-							var tmp_stash  = new _Stash({
+							let tmp_stash  = new _Stash({
 								type: _Stash.TYPE.temporary
 							});
 
 
 							tmp_stash.bind('batch', function(type, assets) {
 
-								for (var a = 0, al = assets.length; a < al; a++) {
+								for (let a = 0, al = assets.length; a < al; a++) {
 
-									var asset = assets[a];
+									let asset = assets[a];
 									if (asset.buffer !== null && asset.buffer !== '') {
 										stash.write('.' + asset.url, asset);
 									}
@@ -361,16 +494,16 @@ lychee.define('breeder.Template').requires([
 
 		this.bind('pull-inject', function(oncomplete) {
 
-			var injections = this.__injections;
-			var main       = this.__main;
-			var stash      = this.stash;
+			let injections = this.__injections;
+			let main       = this.__main;
+			let stash      = this.stash;
 
 
 			if (injections.length > 0 && main.length > 0 && stash !== null) {
 
-				for (var m = 0, ml = main.length; m < ml; m++) {
+				for (let m = 0, ml = main.length; m < ml; m++) {
 
-					var tmp = main[m];
+					let tmp = main[m];
 					if (tmp.buffer !== null) {
 
 						console.log('breeder: PULL-INJECT ' + tmp.url);
@@ -400,7 +533,7 @@ lychee.define('breeder.Template').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -408,7 +541,7 @@ lychee.define('breeder.Template').requires([
 
 		deserialize: function(blob) {
 
-			var stash = lychee.deserialize(blob.stash);
+			let stash = lychee.deserialize(blob.stash);
 			if (stash !== null) {
 				this.stash = stash;
 			}
@@ -417,12 +550,12 @@ lychee.define('breeder.Template').requires([
 
 		serialize: function() {
 
-			var data = _Flow.prototype.serialize.call(this);
+			let data = _Flow.prototype.serialize.call(this);
 			data['constructor'] = 'breeder.Template';
 
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.sandbox !== '') settings.sandbox = this.sandbox;
@@ -485,7 +618,7 @@ lychee.define('breeder.Template').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

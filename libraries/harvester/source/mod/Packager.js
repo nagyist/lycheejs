@@ -3,7 +3,7 @@ lychee.define('harvester.mod.Packager').requires([
 	'harvester.data.Package'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Package = lychee.import('harvester.data.Package');
+	const _Package = lychee.import('harvester.data.Package');
 
 
 
@@ -11,11 +11,22 @@ lychee.define('harvester.mod.Packager').requires([
 	 * HELPERS
 	 */
 
-	var _serialize = function(project) {
+	const _serialize = function(project) {
 
-		var json = JSON.parse(JSON.stringify(project.package.json));
-		var tmp  = {};
+		let json = {};
+		let tmp  = {};
 
+
+		try {
+			json = JSON.parse(project.filesystem.read('/lychee.pkg'));
+		} catch(err) {
+			json = JSON.parse(JSON.stringify(project.package.json));
+		}
+
+
+		if (typeof json.api    === 'undefined') json.api    = {};
+		if (typeof json.build  === 'undefined') json.build  = {};
+		if (typeof json.source === 'undefined') json.source = {};
 
 		json.api.files    = {};
 		json.build.files  = {};
@@ -42,7 +53,7 @@ lychee.define('harvester.mod.Packager').requires([
 
 	};
 
-	var _sort_recursive = function(obj) {
+	const _sort_recursive = function(obj) {
 
 		if (obj instanceof Array) {
 
@@ -50,7 +61,7 @@ lychee.define('harvester.mod.Packager').requires([
 
 		} else if (obj instanceof Object) {
 
-			for (var prop in obj) {
+			for (let prop in obj) {
 				obj[prop] = _sort_recursive(obj[prop]);
 			}
 
@@ -64,28 +75,28 @@ lychee.define('harvester.mod.Packager').requires([
 
 	};
 
-	var _walk_directory = function(pointer, path) {
+	const _walk_directory = function(pointer, path) {
 
-		var that = this;
-		var name = path.split('/').pop();
+		let that = this;
+		let name = path.split('/').pop();
 
-		var info = this.info(path);
+		let info = this.info(path);
 		if (info !== null) {
 
 			if (info.type === 'file') {
 
-				var identifier = path.split('/').pop().split('.')[0];
-				var attachment = path.split('/').pop().split('.').slice(1).join('.');
+				let identifier = path.split('/').pop().split('.')[0];
+				let attachment = path.split('/').pop().split('.').slice(1).join('.');
 
 				// Music and Sound asset have a trailing mp3 or ogg
 				// extension which is dynamically chosen at runtime
-				var ext = attachment.split('.').pop();
-				if (ext.match(/mp3|ogg/)) {
+				let ext = attachment.split('.').pop();
+				if (/mp3|ogg/.test(ext)) {
 					attachment = attachment.split('.').slice(0, -1).join('.');
 					ext        = attachment.split('.').pop();
 				}
 
-				if (ext.match(/msc|snd|js|json|fnt|png|md|tpl/)) {
+				if (/msc|snd|js|json|fnt|png|md|tpl/.test(ext) || path.substr(0, 7) === '/source') {
 
 					if (pointer[identifier] instanceof Array) {
 
@@ -119,7 +130,7 @@ lychee.define('harvester.mod.Packager').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * ENTITY API
@@ -146,8 +157,8 @@ lychee.define('harvester.mod.Packager').requires([
 
 			if (project.identifier.indexOf('__') === -1 && project.package !== null && project.filesystem !== null) {
 
-				var diff_a = JSON.stringify(project.package.json);
-				var diff_b = JSON.stringify(_serialize(project));
+				let diff_a = JSON.stringify(project.package.json);
+				let diff_b = JSON.stringify(_serialize(project));
 				if (diff_a !== diff_b) {
 					return true;
 				}
@@ -163,8 +174,8 @@ lychee.define('harvester.mod.Packager').requires([
 
 			if (project.package !== null) {
 
-				var data = _serialize(project);
-				var blob = JSON.stringify(data, null, '\t');
+				let data = _serialize(project);
+				let blob = JSON.stringify(data, null, '\t');
 				if (blob !== null) {
 					project.filesystem.write('/lychee.pkg', blob);
 					project.package = new _Package(new Buffer(blob, 'utf8'));

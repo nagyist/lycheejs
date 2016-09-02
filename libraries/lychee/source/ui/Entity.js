@@ -3,13 +3,17 @@ lychee.define('lychee.ui.Entity').includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Emitter = lychee.import('lychee.event.Emitter');
+
+
+
 	/*
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.width  = typeof settings.width  === 'number' ? settings.width  : 0;
@@ -18,9 +22,9 @@ lychee.define('lychee.ui.Entity').includes([
 		this.radius = typeof settings.radius === 'number' ? settings.radius : 0;
 
 		this.alpha     = 1;
-		this.collision = 1; // Used for event flow, NOT modifiable
+		this.collision = Composite.COLLISION.none;
 		this.effects   = [];
-		this.shape     = Class.SHAPE.rectangle;
+		this.shape     = Composite.SHAPE.rectangle;
 		this.state     = 'default';
 		this.position  = { x: 0, y: 0, z: 0 };
 		this.visible   = true;
@@ -32,7 +36,7 @@ lychee.define('lychee.ui.Entity').includes([
 
 			this.__states = { 'default': null, 'active': null };
 
-			for (var id in settings.states) {
+			for (let id in settings.states) {
 
 				if (settings.states.hasOwnProperty(id)) {
 					this.__states[id] = settings.states[id];
@@ -50,7 +54,7 @@ lychee.define('lychee.ui.Entity').includes([
 		this.setVisible(settings.visible);
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 		settings = null;
 
@@ -58,7 +62,17 @@ lychee.define('lychee.ui.Entity').includes([
 
 
 	// Same ENUM values as lychee.app.Entity
-	Class.SHAPE = {
+	Composite.COLLISION = {
+		none: 0,
+		A:    1,
+		B:    2,
+		C:    3,
+		D:    4
+	};
+
+
+	// Same ENUM values as lychee.app.Entity
+	Composite.SHAPE = {
 		circle:    0,
 		rectangle: 1,
 		sphere:    2,
@@ -66,7 +80,7 @@ lychee.define('lychee.ui.Entity').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -76,11 +90,11 @@ lychee.define('lychee.ui.Entity').includes([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.Entity';
 
-			var settings = {};
-			var blob     = (data['blob'] || {});
+			let settings = {};
+			let blob     = (data['blob'] || {});
 
 
 			if (this.width  !== 0) settings.width  = this.width;
@@ -89,7 +103,7 @@ lychee.define('lychee.ui.Entity').includes([
 			if (this.radius !== 0) settings.radius = this.radius;
 
 			if (this.alpha !== 1)                      settings.alpha   = this.alpha;
-			if (this.shape !== Class.SHAPE.rectangle)  settings.shape   = this.shape;
+			if (this.shape !== Composite.SHAPE.rectangle)  settings.shape   = this.shape;
 			if (this.state !== 'default')              settings.state   = this.state;
 			if (Object.keys(this.__states).length > 0) settings.states  = this.__states;
 			if (this.visible !== true)                 settings.visible = this.visible;
@@ -115,8 +129,8 @@ lychee.define('lychee.ui.Entity').includes([
 
 		render: function(renderer, offsetX, offsetY) {
 
-			var effects = this.effects;
-			for (var e = 0, el = effects.length; e < el; e++) {
+			let effects = this.effects;
+			for (let e = 0, el = effects.length; e < el; e++) {
 				effects[e].render(renderer, offsetX, offsetY);
 			}
 
@@ -124,10 +138,10 @@ lychee.define('lychee.ui.Entity').includes([
 
 		update: function(clock, delta) {
 
-			var effects = this.effects;
-			for (var e = 0, el = this.effects.length; e < el; e++) {
+			let effects = this.effects;
+			for (let e = 0, el = this.effects.length; e < el; e++) {
 
-				var effect = this.effects[e];
+				let effect = this.effects[e];
 				if (effect.update(this, clock, delta) === false) {
 					this.removeEffect(effect);
 					el--;
@@ -150,26 +164,26 @@ lychee.define('lychee.ui.Entity').includes([
 
 				if (typeof position.x === 'number' && typeof position.y === 'number') {
 
-					var ax = position.x;
-					var ay = position.y;
-					var bx = this.position.x;
-					var by = this.position.y;
+					let ax = position.x;
+					let ay = position.y;
+					let bx = this.position.x;
+					let by = this.position.y;
 
 
-					var shape = this.shape;
-					if (shape === Class.SHAPE.circle) {
+					let shape = this.shape;
+					if (shape === Composite.SHAPE.circle) {
 
-						var dist = Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay - by, 2));
+						let dist = Math.sqrt(Math.pow(ax - bx, 2) + Math.pow(ay - by, 2));
 						if (dist < this.radius) {
 							return true;
 						}
 
-					} else if (shape === Class.SHAPE.rectangle) {
+					} else if (shape === Composite.SHAPE.rectangle) {
 
-						var hwidth  = this.width  / 2;
-						var hheight = this.height / 2;
-						var colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
-						var colY    = (ay >= by - hheight) && (ay <= by + hheight);
+						let hwidth  = this.width  / 2;
+						let hheight = this.height / 2;
+						let colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
+						let colY    = (ay >= by - hheight) && (ay <= by + hheight);
 
 
 						return colX && colY;
@@ -180,6 +194,12 @@ lychee.define('lychee.ui.Entity').includes([
 
 			}
 
+
+			return false;
+
+		},
+
+		collidesWith: function(entity) {
 
 			return false;
 
@@ -210,7 +230,7 @@ lychee.define('lychee.ui.Entity').includes([
 
 			if (effect !== null) {
 
-				var index = this.effects.indexOf(effect);
+				let index = this.effects.indexOf(effect);
 				if (index === -1) {
 
 					this.effects.push(effect);
@@ -233,7 +253,7 @@ lychee.define('lychee.ui.Entity').includes([
 
 			if (effect !== null) {
 
-				var index = this.effects.indexOf(effect);
+				let index = this.effects.indexOf(effect);
 				if (index !== -1) {
 
 					this.effects.splice(index, 1);
@@ -251,9 +271,9 @@ lychee.define('lychee.ui.Entity').includes([
 
 		removeEffects: function() {
 
-			var effects = this.effects;
+			let effects = this.effects;
 
-			for (var e = 0, el = effects.length; e < el; e++) {
+			for (let e = 0, el = effects.length; e < el; e++) {
 
 				effects[e].update(this, Infinity, 0);
 				this.removeEffect(effects[e]);
@@ -286,7 +306,7 @@ lychee.define('lychee.ui.Entity').includes([
 
 		setShape: function(shape) {
 
-			shape = lychee.enumof(Class.SHAPE, shape) ? shape : null;
+			shape = lychee.enumof(Composite.SHAPE, shape) ? shape : null;
 
 
 			if (shape !== null) {
@@ -342,7 +362,7 @@ lychee.define('lychee.ui.Entity').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

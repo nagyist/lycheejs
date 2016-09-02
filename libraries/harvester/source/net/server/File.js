@@ -3,10 +3,9 @@ lychee.define('harvester.net.server.File').requires([
 	'harvester.data.Filesystem'
 ]).exports(function(lychee, global, attachments) {
 
-	var _MIME = {
-
+	const _Filesystem = lychee.import('harvester.data.Filesystem');
+	const _MIME       = {
 		'default': { binary: true,  type: 'application/octet-stream'      },
-
 		'css':     { binary: false, type: 'text/css'                      },
 		'env':     { binary: false, type: 'application/json'              },
 		'eot':     { binary: false, type: 'application/vnd.ms-fontobject' },
@@ -35,12 +34,12 @@ lychee.define('harvester.net.server.File').requires([
 
 	};
 
-	var _Filesystem        = lychee.import('harvester.data.Filesystem');
-	var _PUBLIC_CULTIVATOR = {
+	const _PUBLIC_CULTIVATOR = {
 		identifier: '/projects/cultivator',
 		filesystem: new _Filesystem('/projects/cultivator')
 	};
-	var _PUBLIC_PROJECT    = {
+
+	const _PUBLIC_PROJECT = {
 		identifier: '/libraries/harvester/public',
 		filesystem: new _Filesystem('/libraries/harvester/public')
 	};
@@ -51,9 +50,9 @@ lychee.define('harvester.net.server.File').requires([
 	 * HELPERS
 	 */
 
-	var _get_headers = function(info, mime) {
+	const _get_headers = function(info, mime) {
 
-		var headers = {
+		let headers = {
 			'status':          '200 OK',
 			'e-tag':           '"' + info.length + '-' + Date.parse(info.mtime) + '"',
 			'last-modified':   new Date(info.mtime).toUTCString(),
@@ -80,7 +79,7 @@ lychee.define('harvester.net.server.File').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {
+	let Module = {
 
 		/*
 		 * MODULE API
@@ -103,12 +102,12 @@ lychee.define('harvester.net.server.File').requires([
 
 		receive: function(payload, headers) {
 
-			var info    = null;
-			var path    = null;
-			var project = null;
-			var tunnel  = this.tunnel;
-			var url     = headers['url'];
-			var mime    = _MIME[url.split('.').pop()] || _MIME['default'];
+			let info    = null;
+			let path    = null;
+			let project = null;
+			let tunnel  = this.tunnel;
+			let url     = headers['url'];
+			let mime    = _MIME[url.split('.').pop()] || _MIME['default'];
 
 
 			// Single-project mode
@@ -168,10 +167,10 @@ lychee.define('harvester.net.server.File').requires([
 
 			if (project !== null && info !== null && info.type === 'file') {
 
-				var timestamp = headers['if-modified-since'] || null;
+				let timestamp = headers['if-modified-since'] || null;
 				if (timestamp !== null) {
 
-					var diff = info.mtime > new Date(timestamp);
+					let diff = info.mtime > new Date(timestamp);
 					if (diff === false) {
 
 						tunnel.send('', {

@@ -36,6 +36,14 @@ elif [ "$OS" == "linux" ]; then
 	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
 	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
 
+elif [ "$OS" == "freebsd" ] || [ "$OS" == "netbsd" ]; then
+
+	# XXX: BSD requires Linux binary compatibility
+
+	OS="bsd";
+	LYCHEEJS_ROOT=$(cd "$(dirname "$(readlink -f "$0")")/../"; pwd);
+	LYCHEEJS_NODE="$LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node";
+
 fi;
 
 if [ ! -f $LYCHEEJS_NODE ]; then
@@ -84,7 +92,7 @@ fi;
 
 if [ -d "./bin/ranger" ]; then
 
-	if [ "$OS" == "linux" ]; then
+	if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 
 		./bin/ranger/$ARCH/ranger.bin;
 		exit 0;

@@ -3,8 +3,8 @@ lychee.define('game.ui.Label').includes([
 	'lychee.ui.entity.Label'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Label = lychee.import('lychee.ui.entity.Label');
-	var _FONT  = attachments["fnt"];
+	const _Label = lychee.import('lychee.ui.entity.Label');
+	const _FONT  = attachments["fnt"];
 
 
 
@@ -12,12 +12,11 @@ lychee.define('game.ui.Label').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
-
-
-		settings.font = _FONT;
+		let settings = Object.assign({
+			font: _FONT
+		}, data);
 
 
 		_Label.call(this, settings);
@@ -27,7 +26,7 @@ lychee.define('game.ui.Label').includes([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -35,7 +34,7 @@ lychee.define('game.ui.Label').includes([
 
 		serialize: function() {
 
-			var data = _Label.prototype.serialize.call(this);
+			let data = _Label.prototype.serialize.call(this);
 			data['constructor'] = 'game.ui.Label';
 
 
@@ -46,7 +45,7 @@ lychee.define('game.ui.Label').includes([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

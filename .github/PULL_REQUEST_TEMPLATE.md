@@ -1,7 +1,4 @@
 
-# New lychee.js Pull Request
-
-
 ## Description of Changes
 
 Please let us know here what you've worked on.
@@ -29,9 +26,10 @@ script needs to run in order to rebuild the core.
 Check these checkboxes 
 Make sure your code runs through with these commands:
 
-- [ ] The `sudo ./bin/configure.sh --sandbox` script runs with no errors
-- [ ] The `lycheejs-harvester start development` profile runs with no errors
-- [ ] The code style follows the [CODESTYLE guide](./guides/CODESTYLE.md)
-- [ ] The commit messages follow the [CONTRIBUTION guide](./guides/CONTRIBUTION.md#git-commit-messages)
-- [ ] The pull-request branch is not named `development` or `2XXX-QX`
+- [ ] The `./bin/configure.sh` script runs with no errors
+- [ ] The `lycheejs-harvester start development` command runs with no errors
+- [ ] _If project or library:_ The `lycheejs-strainer auto` command runs with no errors
+- [ ] The code style follows the [CODESTYLE guide](https://github.com/Artificial-Engineering/lycheejs/blob/development/guides/CODESTYLE.md)
+- [ ] The commit messages follow the [CONTRIBUTION guide](https://github.com/Artificial-Engineering/lycheejs/blob/development/guides/CONTRIBUTION.md)
+- [ ] The pull-request branch is not named `development`, `2XXX-QX` or `humansneednotapply`
 

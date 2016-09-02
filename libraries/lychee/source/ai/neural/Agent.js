@@ -1,9 +1,13 @@
 
 lychee.define('lychee.ai.neural.Agent').requires([
 	'lychee.ai.neural.Evolution',
+	'lychee.ai.neural.Genome',
 	'lychee.ai.neural.Network'
 ]).exports(function(lychee, global, attachments) {
 
+	var _Evolution  = lychee.import('lychee.ai.neural.Evolution');
+	var _Genome     = lychee.import('lychee.ai.neural.Genome');
+	var _Network    = lychee.import('lychee.ai.neural.Network');
 	var _instances  = {};
 	var _evolutions = {};
 
@@ -43,7 +47,7 @@ lychee.define('lychee.ai.neural.Agent').requires([
 			}
 
 
-			evolution = _evolutions[id] = new lychee.ai.neural.Evolution({
+			evolution = _evolutions[id] = new _Evolution({
 				population: instances.length,
 				weights:    weights
 			});
@@ -91,7 +95,7 @@ lychee.define('lychee.ai.neural.Agent').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	var Composite = function(data) {
 
 		var settings = Object.assign({}, data);
 
@@ -99,14 +103,14 @@ lychee.define('lychee.ai.neural.Agent').requires([
 		this.id = 'lychee-ai-neural-Agent-' + _id++;
 
 		this.__evolution = null;
-		this.__network   = new lychee.ai.neural.Network({
+		this.__genome    = new _Genome({
+			weights: this.__network.countWeights()
+		});
+		this.__network   = new _Network({
 			inputs:  4,
 			outputs: 2,
 			layers:  2,
 			neurons: 6
-		});
-		this.__genome    = new lychee.ai.neural.Genome({
-			weights: this.__network.countWeights()
 		});
 
 
@@ -116,13 +120,22 @@ lychee.define('lychee.ai.neural.Agent').requires([
 		_connect.call(this);
 
 /*
+ * TODO: This might be some crap shit, so evaluate this
  * this.network.putWeights(this.__evolution.population[_instances[this.id].indexOf(this)].weights);
  */
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		reward: function() {
+			// TODO: Reward method
+		},
+
+		punish: function() {
+			// TODO: Punish method
+		},
 
 		setId: function(id) {
 
@@ -147,7 +160,7 @@ lychee.define('lychee.ai.neural.Agent').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

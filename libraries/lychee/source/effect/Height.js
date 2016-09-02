@@ -1,9 +1,15 @@
 
 lychee.define('lychee.effect.Height').exports(function(lychee, global, attachments) {
 
-	var Class = function(settings) {
 
-		this.type     = Class.TYPE.easeout;
+
+	/*
+	 * IMPLEMENTATION
+	 */
+
+	let Composite = function(settings) {
+
+		this.type     = Composite.TYPE.easeout;
 		this.delay    = 0;
 		this.duration = 250;
 		this.height   = 0;
@@ -14,10 +20,10 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 
 		// No data validation garbage allowed for effects
 
-		var type     = lychee.enumof(Class.TYPE, settings.type) ? settings.type           : null;
-		var delay    = typeof settings.delay === 'number'       ? (settings.delay | 0)    : null;
-		var duration = typeof settings.duration === 'number'    ? (settings.duration | 0) : null;
-		var height   = typeof settings.height === 'number'      ? (settings.height | 0)   : null;
+		let type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : null;
+		let delay    = typeof settings.delay === 'number'           ? (settings.delay | 0)    : null;
+		let duration = typeof settings.duration === 'number'        ? (settings.duration | 0) : null;
+		let height   = typeof settings.height === 'number'          ? (settings.height | 0)   : null;
 
 		if (type !== null) {
 			this.type = type;
@@ -38,7 +44,7 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 	};
 
 
-	Class.TYPE = {
+	Composite.TYPE = {
 		linear:        0,
 		easein:        1,
 		easeout:       2,
@@ -47,7 +53,7 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -57,13 +63,13 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
-			if (this.type !== Class.TYPE.easeout) settings.type     = this.type;
-			if (this.delay !== 0)                 settings.delay    = this.delay;
-			if (this.duration !== 250)            settings.duration = this.duration;
-			if (this.height !== 0)                settings.height   = this.height;
+			if (this.type !== Composite.TYPE.easeout) settings.type     = this.type;
+			if (this.delay !== 0)                     settings.delay    = this.delay;
+			if (this.duration !== 250)                settings.duration = this.duration;
+			if (this.height !== 0)                    settings.height   = this.height;
 
 
 			return {
@@ -85,43 +91,43 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 			}
 
 
-			var t = (clock - this.__start) / this.duration;
+			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 				return true;
 			}
 
 
-			var origin = this.__origin;
-			var height = this.height;
+			let origin = this.__origin;
+			let height = this.height;
 
-			var h      = origin;
+			let h      = origin;
 
 			if (t <= 1) {
 
-				var f  = 0;
-				var dh = height - origin;
+				let f  = 0;
+				let dh = height - origin;
 
 
-				var type = this.type;
-				if (type === Class.TYPE.linear) {
+				let type = this.type;
+				if (type === Composite.TYPE.linear) {
 
 					h += t * dh;
 
-				} else if (type === Class.TYPE.easein) {
+				} else if (type === Composite.TYPE.easein) {
 
 					f = 1 * Math.pow(t, 3);
 
 					h += f * dh;
 
-				} else if (type === Class.TYPE.easeout) {
+				} else if (type === Composite.TYPE.easeout) {
 
 					f = Math.pow(t - 1, 3) + 1;
 
 					h += f * dh;
 
-				} else if (type === Class.TYPE.bounceeasein) {
+				} else if (type === Composite.TYPE.bounceeasein) {
 
-					var k = 1 - t;
+					let k = 1 - t;
 
 					if ((k /= 1) < ( 1 / 2.75 )) {
 						f = 1 * ( 7.5625 * Math.pow(k, 2) );
@@ -135,7 +141,7 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 
 					h += (1 - f) * dh;
 
-				} else if (type === Class.TYPE.bounceeaseout) {
+				} else if (type === Composite.TYPE.bounceeaseout) {
 
 					if ((t /= 1) < ( 1 / 2.75 )) {
 						f = 1 * ( 7.5625 * Math.pow(t, 2) );
@@ -171,7 +177,7 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

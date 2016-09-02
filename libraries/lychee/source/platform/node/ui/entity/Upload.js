@@ -6,11 +6,12 @@ lychee.define('lychee.ui.entity.Upload').tags({
 ]).supports(function(lychee, global) {
 
 	// XXX: This is a stub API
-	// no possibility to Upload in node runtime
 
 	return true;
 
 }).exports(function(lychee, global, attachments) {
+
+	const _Button = lychee.import('lychee.ui.entity.Button');
 
 
 
@@ -18,14 +19,14 @@ lychee.define('lychee.ui.entity.Upload').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 			label: 'UPLOAD'
 		}, data);
 
 
-		this.type  = Class.TYPE.asset;
+		this.type  = Composite.TYPE.asset;
 		this.value = [];
 
 
@@ -36,7 +37,7 @@ lychee.define('lychee.ui.entity.Upload').tags({
 		delete settings.value;
 
 
-		lychee.ui.entity.Button.call(this, settings);
+		_Button.call(this, settings);
 
 		settings = null;
 
@@ -56,22 +57,44 @@ lychee.define('lychee.ui.entity.Upload').tags({
 	};
 
 
-	Class.TYPE = {
-		all:     0,
-		config:  1,
-		font:    2,
-		music:   3,
-		sound:   4,
-		texture: 5,
-		stuff:   6
+	Composite.TYPE = {
+		'all':     0,
+		'config':  1,
+		'font':    2,
+		'music':   3,
+		'sound':   4,
+		'texture': 5,
+		'stuff':   6
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
+
+		/*
+		 * ENTITY API
+		 */
+
+		// deserialize: function(blob) {},
+
+		serialize: function() {
+
+			let data = _Button.prototype.serialize.call(this);
+			data['constructor'] = 'lychee.ui.entity.Upload';
+
+
+			return data;
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
 
 		setType: function(type) {
 
-			type = lychee.enumof(Class.TYPE, type) ? type : null;
+			type = lychee.enumof(Composite.TYPE, type) ? type : null;
 
 
 			if (type !== null) {
@@ -121,7 +144,7 @@ lychee.define('lychee.ui.entity.Upload').tags({
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

@@ -5,8 +5,8 @@ lychee.define('app.net.Server').requires([
 	'lychee.net.Server'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Chat   = lychee.import('lychee.net.remote.Chat');
-	var _Server = lychee.import('lychee.net.Server');
+	const _Chat   = lychee.import('lychee.net.remote.Chat');
+	const _Server = lychee.import('lychee.net.Server');
 
 
 
@@ -14,9 +14,9 @@ lychee.define('app.net.Server').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 		}, data);
 
 
@@ -50,17 +50,15 @@ lychee.define('app.net.Server').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
-
 		serialize: function() {
 
-			var data = _Server.prototype.serialize.call(this);
+			let data = _Server.prototype.serialize.call(this);
 			data['constructor'] = 'app.net.Server';
 
 
@@ -71,7 +69,7 @@ lychee.define('app.net.Server').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
 

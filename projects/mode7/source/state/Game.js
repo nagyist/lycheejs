@@ -7,10 +7,10 @@ lychee.define('game.state.Game').requires([
 	'lychee.app.State'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Background = lychee.import('game.entity.Background');
-	var _Emblem     = lychee.import('lychee.app.sprite.Emblem');
-	var _State      = lychee.import('lychee.app.State');
-	var _Track      = lychee.import('game.entity.Track');
+	const _Background = lychee.import('game.entity.Background');
+	const _Emblem     = lychee.import('lychee.app.sprite.Emblem');
+	const _State      = lychee.import('lychee.app.State');
+	const _Track      = lychee.import('game.entity.Track');
 
 
 
@@ -18,7 +18,7 @@ lychee.define('game.state.Game').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(main) {
+	let Composite = function(main) {
 
 		_State.call(this, main);
 
@@ -40,7 +40,7 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * STATE API
@@ -48,7 +48,7 @@ lychee.define('game.state.Game').requires([
 
 		serialize: function() {
 
-			var data = _State.prototype.serialize.call(this);
+			let data = _State.prototype.serialize.call(this);
 			data['constructor'] = 'game.state.Game';
 
 
@@ -58,7 +58,7 @@ lychee.define('game.state.Game').requires([
 
 		deserialize: function() {
 
-			var renderer = this.renderer;
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
 				this.__background = new _Background({
@@ -77,14 +77,14 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var viewport = this.viewport;
+			let viewport = this.viewport;
 			if (viewport !== null) {
 
 				viewport.unbind('reshape', null, this);
 				viewport.bind('reshape', function(orientation, rotation, width, height) {
 
-					var entity   = null;
-					var renderer = this.renderer;
+					let entity   = null;
+					let renderer = this.renderer;
 					if (renderer !== null) {
 
 						this.__origin.bgx = 1/2 * renderer.width;
@@ -124,27 +124,27 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var wait   = 3; // in seconds
-			var renderer = this.renderer;
+			let wait   = 3; // in seconds
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
-				var camera = this.camera;
-				var width  = renderer.width;
-				var height = renderer.height;
+				let camera = this.camera;
+				let width  = renderer.width;
+				let height = renderer.height;
 
 
 				camera.position.y = camera.offset + wait * 10 * height;
 
 
-				var start = null;
+				let start = null;
 
-				var handle = this.loop.setInterval(1000 / 60, function(clock, delta, step) {
+				let handle = this.loop.setInterval(1000 / 60, function(clock, delta, step) {
 
 					if (start === null) start = clock;
 
 
-					var t = (clock - start) / (wait * 1000);
-					var y = camera.offset + (1 - (Math.pow(t - 1, 3) + 1)) * wait * 10 * height;
+					let t = (clock - start) / (wait * 1000);
+					let y = camera.offset + (1 - (Math.pow(t - 1, 3) + 1)) * wait * 10 * height;
 					if (y < camera.offset) {
 
 						camera.position.y = camera.offset;
@@ -177,17 +177,17 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			var camera = this.camera;
-			var position = camera.position;
+			let camera = this.camera;
+			let position = camera.position;
 
-			var background = this.__background;
-			var origin     = this.__origin;
-			var track      = this.__track;
+			let background = this.__background;
+			let origin     = this.__origin;
+			let track      = this.__track;
 
-			var autopilot  = this.__autopilot === true;
+			let autopilot  = this.__autopilot === true;
 			if (autopilot) {
 
-				var length = track.length;
+				let length = track.length;
 				if (position.z + 200 > length * 200) {
 					position.z = 0;
 				} else {
@@ -197,17 +197,17 @@ lychee.define('game.state.Game').requires([
 			}
 
 
-			var segment = track.getSegment(position.z);
+			let segment = track.getSegment(position.z);
 			if (autopilot) {
 				position.y = segment.from.y + this.__offset;
 			}
 
 
-			var bgw = background.width;
-			var bgh = background.height;
+			let bgw = background.width;
+			let bgh = background.height;
 
-			var orx = (bgw / 2 - (segment.rotation / 180) * 1024) | 0;
-			var ory = (bgh + (segment.from.y - bgh * 2) / 160000 * bgh) | 0;
+			let orx = (bgw / 2 - (segment.rotation / 180) * 1024) | 0;
+			let ory = (bgh + (segment.from.y - bgh * 2) / 160000 * bgh) | 0;
 
 			origin.fgx = orx;
 			origin.fgy = ory;
@@ -222,13 +222,13 @@ lychee.define('game.state.Game').requires([
 
 		render: function(clock, delta) {
 
-			var renderer = this.renderer;
+			let renderer = this.renderer;
 			if (renderer !== null) {
 
 				renderer.clear();
 
-				var bgx = renderer.width / 2;
-				var bgy = this.__background.height / 2;
+				let bgx = renderer.width / 2;
+				let bgy = this.__background.height / 2;
 				renderer.renderEntity(this.__background, bgx, bgy);
 
 				renderer.renderEntity(this.__track,      0, 0);
@@ -244,6 +244,6 @@ lychee.define('game.state.Game').requires([
 	};
 
 
-	return Class;
+	return Composite;
 
 });
