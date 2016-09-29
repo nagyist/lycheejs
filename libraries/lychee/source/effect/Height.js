@@ -14,7 +14,7 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 		this.duration = 250;
 		this.height   = 0;
 
-		this.__origin = 0;
+		this.__origin = null;
 		this.__start  = null;
 
 
@@ -86,14 +86,15 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-				this.__start  = clock + this.delay;
-				this.__origin = entity.height || 0;
+				this.__start = clock + this.delay;
 			}
 
 
 			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 				return true;
+			} else if (this.__origin === null) {
+				this.__origin = entity.height || 0;
 			}
 
 

@@ -1,11 +1,12 @@
 
-lychee.define('tool.data.SPRITE').requires([
-	'lychee.data.JSON'
-]).tags({
+lychee.define('tool.data.SPRITE').tags({
 	platform: 'html'
-}).exports(function(lychee, tool, global, attachments) {
+}).exports(function(lychee, global, attachments) {
 
-	var _JSON = lychee.data.JSON;
+	const _JSON = {
+		encode: JSON.stringify,
+		decode: JSON.parse
+	};
 
 
 
@@ -504,7 +505,7 @@ lychee.define('tool.data.SPRITE').requires([
 
 	Module.encode = function(data) {
 
-		var buffer = new _Buffer('', _Buffer.MODE.write);
+		var buffer = new _Buffer(null, _Buffer.MODE.write);
 
 		_encode(buffer, data);
 

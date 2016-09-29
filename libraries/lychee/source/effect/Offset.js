@@ -96,17 +96,16 @@ lychee.define('lychee.effect.Offset').exports(function(lychee, global, attachmen
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-
-				this.__start    = clock + this.delay;
-				this.__origin.x = entity.offset.x;
-				this.__origin.y = entity.offset.y;
-
+				this.__start = clock + this.delay;
 			}
 
 
 			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 				return true;
+			} else if (this.__origin.x === null) {
+				this.__origin.x = entity.offset.x || 0;
+				this.__origin.y = entity.offset.y || 0;
 			}
 
 

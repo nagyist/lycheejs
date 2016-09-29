@@ -241,6 +241,12 @@ const _SETTINGS = (function() {
 
 			}
 
+		} else {
+
+			settings.auto       = false;
+			settings.project    = project;
+			settings.identifier = 'auto';
+
 		}
 
 	} else if (identifier !== undefined && project !== undefined && _fs.existsSync(_ROOT + project) === true) {

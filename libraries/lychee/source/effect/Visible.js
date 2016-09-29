@@ -63,14 +63,15 @@ lychee.define('lychee.effect.Visible').exports(function(lychee, global, attachme
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-				this.__start  = clock;
-				this.__origin = entity.visible || false;
+				this.__start = clock;
 			}
 
 
 			let t = (clock - this.__start) / this.delay;
 			if (t < 0) {
 				return true;
+			} else if (this.__origin === null) {
+				this.__origin = entity.visible || false;
 			}
 
 

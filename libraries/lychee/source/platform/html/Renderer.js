@@ -7,7 +7,6 @@ lychee.define('Renderer').tags({
 	 * XXX: typeof CanvasRenderingContext2D is:
 	 * > function in Chrome, Firefox, IE10
 	 * > object in Safari, Safari Mobile
-	 *
 	 */
 
 

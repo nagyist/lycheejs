@@ -62,7 +62,7 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-				this.__start  = clock;
+				this.__start = clock;
 			}
 
 

@@ -101,16 +101,15 @@ lychee.define('lychee.effect.Alpha').exports(function(lychee, global, attachment
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-
-				this.__start  = clock + this.delay;
-				this.__origin = typeof entity.alpha === 'number' ? entity.alpha : 1;
-
+				this.__start = clock + this.delay;
 			}
 
 
 			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 				return true;
+			} else if (this.__origin === null) {
+				this.__origin = typeof entity.alpha === 'number' ? entity.alpha : 1;
 			}
 
 

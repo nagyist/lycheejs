@@ -465,8 +465,8 @@ lychee.define('lychee.ui.Element').requires([
 
 			if (options !== null) {
 
-				this.options = options.map(function(val) {
-					return '' + val;
+				this.options = options.map(function(option) {
+					return '' + option;
 				});
 
 

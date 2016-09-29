@@ -47,6 +47,7 @@ lychee.define('lychee.ui.Blueprint').requires([
 		if (visible === true) {
 
 			let entity = null;
+			let other  = null;
 			let type   = this.type;
 			let x1     = -1/2 * this.width;
 			let x2     =  1/2 * this.width;
@@ -254,10 +255,198 @@ lychee.define('lychee.ui.Blueprint').requires([
 
 				for (let e = 0, el = this.entities.length; e < el; e++) {
 
-					let entity = this.entities[e];
+					entity = this.entities[e];
 
 					entity.position.x = 0;
 					entity.position.y = 0;
+
+				}
+
+			} else if (type === Composite.TYPE.auto) {
+
+				if (this.entities.length === 2) {
+
+					entity = this.entities[0];
+
+					pos_x = x1 + 32 + entity.width / 2;
+					pos_y = 0;
+
+					entity.trigger('relayout');
+					entity.setOrder(1);
+
+
+					if (fade === true) {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y - 3/2 * this.height
+						});
+
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
+							delay:    100,
+							duration: 300,
+							position: {
+								x: pos_x,
+								y: pos_y
+							}
+						}));
+
+					} else {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y
+						});
+
+					}
+
+
+					entity = this.entities[1];
+					other  = this.entities[0];
+
+					pos_x = other.position.x + other.width / 2 + 32 + entity.width / 2;
+					pos_y = 0;
+
+					entity.trigger('relayout');
+					entity.setOrder(2);
+
+
+					if (fade === true) {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y - 3/2 * this.height
+						});
+
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
+							delay:    100,
+							duration: 300,
+							position: {
+								x: pos_x,
+								y: pos_y
+							}
+						}));
+
+					} else {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y
+						});
+
+					}
+
+				} else if (this.entities.length === 3) {
+
+					entity = this.entities[0];
+
+					pos_x = x1 + 32 + entity.width / 2;
+					pos_y = 0;
+
+					entity.trigger('relayout');
+					entity.setOrder(1);
+
+
+					if (fade === true) {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y - 3/2 * this.height
+						});
+
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
+							delay:    100,
+							duration: 300,
+							position: {
+								x: pos_x,
+								y: pos_y
+							}
+						}));
+
+					} else {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y
+						});
+
+					}
+
+
+					entity = this.entities[1];
+					other  = this.entities[0];
+
+					pos_x = 0;
+					pos_y = 0;
+
+					entity.trigger('relayout');
+					entity.setOrder(2);
+
+
+					if (fade === true) {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y - 3/2 * this.height
+						});
+
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
+							delay:    100,
+							duration: 300,
+							position: {
+								x: pos_x,
+								y: pos_y
+							}
+						}));
+
+					} else {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y
+						});
+
+					}
+
+
+					entity = this.entities[2];
+
+					pos_x = x2 - 32 - entity.width / 2;
+					pos_y = 0;
+
+					entity.trigger('relayout');
+					entity.setOrder(3);
+
+
+					if (fade === true) {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y - 3/2 * this.height
+						});
+
+						entity.addEffect(new _Position({
+							type:     _Position.TYPE.easeout,
+							delay:    100,
+							duration: 300,
+							position: {
+								x: pos_x,
+								y: pos_y
+							}
+						}));
+
+					} else {
+
+						entity.setPosition({
+							x: pos_x,
+							y: pos_y
+						});
+
+					}
 
 				}
 
@@ -658,7 +847,8 @@ lychee.define('lychee.ui.Blueprint').requires([
 	Composite.TYPE = {
 		grid: 0,
 		view: 1,
-		full: 2
+		full: 2,
+		auto: 3
 	};
 
 

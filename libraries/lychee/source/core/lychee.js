@@ -543,7 +543,7 @@ lychee = typeof lychee !== 'undefined' ? lychee : (function(global) {
 			lychee:  '/opt/lycheejs',
 			project: null
 		},
-		VERSION:      "2016-Q2",
+		VERSION:      "2016-Q3",
 
 
 

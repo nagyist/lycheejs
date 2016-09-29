@@ -592,11 +592,22 @@
 		}
 
 
-		this.baseline   = typeof data.baseline === 'number'    ? data.baseline   : this.baseline;
-		this.charset    = typeof data.charset === 'string'     ? data.charset    : this.charset;
-		this.spacing    = typeof data.spacing === 'number'     ? data.spacing    : this.spacing;
-		this.kerning    = typeof data.kerning === 'number'     ? data.kerning    : this.kerning;
-		this.lineheight = typeof data.lineheight === 'number'  ? data.lineheight : this.lineheight;
+		this.baseline   = typeof data.baseline === 'number'   ? data.baseline   : this.baseline;
+		this.charset    = typeof data.charset === 'string'    ? data.charset    : this.charset;
+		this.lineheight = typeof data.lineheight === 'number' ? data.lineheight : this.lineheight;
+		this.kerning    = typeof data.kerning === 'number'    ? data.kerning    : this.kerning;
+		this.spacing    = typeof data.spacing === 'number'    ? data.spacing    : this.spacing;
+
+
+		if (data.font instanceof Object) {
+
+			this.__font.color   = data.font.color   || '#ffffff';
+			this.__font.family  = data.font.family  || 'Ubuntu Mono';
+			this.__font.outline = data.font.outline || 0;
+			this.__font.size    = data.font.size    || 16;
+			this.__font.style   = data.font.style   || 'normal';
+
+		}
 
 
 		if (data.map instanceof Array) {
@@ -664,6 +675,13 @@
 		this.lineheight = 1;
 
 		this.__buffer   = null;
+		this.__font     = {
+			color:   '#ffffff',
+			family:  'Ubuntu Mono',
+			outline: 0,
+			size:    16,
+			style:   'normal'
+		};
 		this.__load     = true;
 
 

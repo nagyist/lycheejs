@@ -98,34 +98,33 @@ lychee.define('lychee.effect.Shake').exports(function(lychee, global, attachment
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
-
-				this.__start    = clock + this.delay;
-				this.__origin.x = entity.position.x;
-				this.__origin.y = entity.position.y;
-				this.__origin.z = entity.position.z;
-
+				this.__start = clock + this.delay;
 			}
 
 
 			let t = (clock - this.__start) / this.duration;
 			if (t < 0) {
 				return true;
+			} else if (this.__origin.x === null) {
+				this.__origin.x = entity.position.x || 0;
+				this.__origin.y = entity.position.y || 0;
+				this.__origin.z = entity.position.z || 0;
 			}
 
 
-			let origin   = this.__origin;
-			let originx  = origin.x;
-			let originy  = origin.y;
-			let originz  = origin.z;
+			let origin  = this.__origin;
+			let originx = origin.x;
+			let originy = origin.y;
+			let originz = origin.z;
 
-			let shake    = this.shake;
-			let shakex   = shake.x;
-			let shakey   = shake.y;
-			let shakez   = shake.z;
+			let shake   = this.shake;
+			let shakex  = shake.x;
+			let shakey  = shake.y;
+			let shakez  = shake.z;
 
-			let x        = originx;
-			let y        = originy;
-			let z        = originz;
+			let x       = originx;
+			let y       = originy;
+			let z       = originz;
 
 			if (t <= 1) {
 

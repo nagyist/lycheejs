@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>lycheeJS Sprite Tool</title>
+	<title>lychee.js Sprite Tool</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -9,164 +9,110 @@
 	<meta name="robots" content="noindex">
 
 	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
-	<script src="/projects/cultivator/design/index.js"></script>
+	<link rel="stylesheet" href="/projects/cultivator/design/__legacy.css">
+	<script src="/projects/cultivator/design/__legacy.js"></script>
 
 	<!-- BOOTSTRAP -->
 	<script src="/libraries/lychee/build/html/core.js"></script>
 
 	<style>
-	.ico-download:before { content: "\e083"; }
-	.ico-refresh:before  { content: "\e098"; }
-	.ico-upload:before   { content: "\e084"; }
-	.ico-quit:before     { content: "\e07a"; }
-	#tool > article:nth-child(1) {
-		min-width: 320px;
-		max-width: 320px;
-	}
-	#tool > article:nth-child(2) figure {
+	main > article:nth-child(2) figure {
 		display: block;
 		position: relative;
 		margin: 0px;
 		padding: 0px;
+		min-width: 256px;
 		min-height: 256px;
-		overflow: auto;
 	}
-	#tool > article:nth-child(2) figure img {
+	main > article:nth-child(2) figure img {
 		position: absolute;
 		top: 0px;
 		left: 0px;
+		margin: 0px;
 		min-width: 128px;
 		min-height: 128px;
+		width: auto;
+		height: auto;
 		outline: none;
 		background: url('./grid.png') repeat repeat;
+	}
+
+	main > article:nth-child(2) figure img:after {
+		content: "No Preview";
+		background-image: url('./grid.png');
+		background-repeat: repeat;
+		background-color: transparent;
 	}
 	</style>
 </head>
 <body>
-<menu>
-	<b onclick="ui.toggle('menu');"><span></span></b>
-	<li class="active" onclick="ui.changeState('tool');">Tool</li>
-	<li onclick="ui.changeState('help');">Help</li>
-	<aside>
-		<button class="ico-refresh ico-only" title="Refresh" onclick="window.location.href='./index.html'"></button>
-		<button class="ico-quit ico-only" title="Quit" onclick="location.href='../index.html';"></button>
-	</aside>
-</menu>
-
 <main>
+	<article>
+		<h3><b>1</b>Modify</h3>
+		<form id="settings" enctype="application/json" action="MAIN" method="javascript">
+			<table class="vertical">
+				<tr>
+					<th>Files</th>
+					<td><label class="file"><input type="file" name="files" accept=".png" multiple>Select</label></td>
+				</tr>
+				<tr>
+					<th>Texture Size</th>
+					<td><input type="range" name="size" min="1" max="8" value="4"></td>
+				</tr>
+				<tr>
+					<th>Frame Size</th>
+					<td>
+						<ul class="select">
+							<li><input type="radio" name="frame" value="original"><span>original</span></li>
+							<li><input type="radio" name="frame" value="power-of-two" checked><span><abbr title="power of two">2<sup>^n</sup></abbr></span></li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<th>Bounding Box</th>
+					<td>
+						<ul class="select">
+							<li><input type="radio" name="boundingbox" value="none"><span>none</span></li>
+							<li><input type="radio" name="boundingbox" value="auto" checked><span>auto</span></li>
+						</ul>
+					</td>
+				</tr>
+				<tr>
+					<th>Entity Dimensions</th>
+					<td>
+						<fieldset>
+							<input type="number" name="width" value="" min="0" placeholder="width">
+							<input type="number" name="height" value="" min="0" placeholder="height">
+							<input type="number" name="depth" value="" min="0" placeholder="depth">
+							<input type="number" name="radius" value="" min="0" placeholder="radius">
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<th>Entity States</th>
+					<td>
+						<ul class="select">
+							<li><input type="radio" name="states" value="none"><span>none</span></li>
+							<li><input type="radio" name="states" value="auto" checked><span>auto</span></li>
+						</ul>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<p class="center">
+			<button id="preview-download">Download</button>
+		</p>
+	</article>
 
-	<section id="tool" class="active">
-
-		<article>
-			<h3><b>1</b>Modify</h3>
-			<form id="settings" enctype="application/json" action="MAIN" method="javascript">
-				<table class="vertical">
-					<tr>
-						<th>Files</th>
-						<td><label class="file ico-upload"><input type="file" name="files" accept=".png" multiple>Select</label></td>
-					</tr>
-					<tr>
-						<th>Texture Size</th>
-						<td><input type="range" name="size" min="1" max="8" value="4"></td>
-					</tr>
-					<tr>
-						<th>Frame Size</th>
-						<td>
-							<ul class="select">
-								<li><input type="radio" name="frame" value="original"><span>original</span></li>
-								<li><input type="radio" name="frame" value="power-of-two" checked><span><abbr title="power of two">2<sup>^n</sup></abbr></span></li>
-							</ul>
-						</td>
-					</tr>
-					<tr>
-						<th>Bounding Box</th>
-						<td>
-							<ul class="select">
-								<li><input type="radio" name="boundingbox" value="none"><span>none</span></li>
-								<li><input type="radio" name="boundingbox" value="auto" checked><span>auto</span></li>
-							</ul>
-						</td>
-					</tr>
-					<tr>
-						<th>Entity Dimensions</th>
-						<td>
-							<fieldset>
-								<input type="number" name="width" value="" min="0" placeholder="width">
-								<input type="number" name="height" value="" min="0" placeholder="height">
-								<input type="number" name="depth" value="" min="0" placeholder="depth">
-								<input type="number" name="radius" value="" min="0" placeholder="radius">
-							</fieldset>
-						</td>
-					</tr>
-					<tr>
-						<th>Entity States</th>
-						<td>
-							<ul class="select">
-								<li><input type="radio" name="states" value="none"><span>none</span></li>
-								<li><input type="radio" name="states" value="auto" checked><span>auto</span></li>
-							</ul>
-						</td>
-					</tr>
-				</table>
-			</form>
-			<p class="center">
-				<button id="preview-download" class="ico-download">Download Entity</button>
-			</p>
-		</article>
-
-		<article>
-			<h3><b>2</b>Preview</h3>
-			<div>
-				<figure class="center">
-					<img id="preview-texture" src="data:image/png;base64,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"/>
-				</figure>
-			</div>
-		</article>
-
-	</section>
-
-	<section id="help">
-
-		<article class="wide">
-			<h3><b>1</b>Tool Usage</h3>
-			<p>
-				Select all frame images in PNG format.
-				Modify the settings to tweak the Sprite, the rest is done automatically.
-			</p>
-			<p>
-				Animations are triggered if the frame image file names contain an underscore.
-			</p>
-			<ul>
-				<li><q>default.png</q></li>
-				<li><q>not-animated.png</q></li>
-				<li><q>animated_01.png</q></li>
-				<li><q>animated_02.png</q></li>
-			</ul>
-		</article>
-
-		<article class="wide">
-			<h3><b>2</b>Engine Usage</h3>
-			<p>
-				The exported files include the Definition (.js), the Texture (.png)
-				and the Config (.json) for the Entity.
-			</p>
-			<p>
-				If you want to use the Entity inside your Project, you have to rename
-				the files accordingly after copying them into the <q>source/entity/</q> folder.
-			</p>
-			<p>
-				Don't forget to modify the <q>lychee.define('app.entity.Entity')</q> line in the .js
-				file accordingly!
-			</p>
-		</article>
-
-	</section>
-
+	<article>
+		<h3><b>2</b>Preview</h3>
+		<div>
+			<figure class="center">
+				<img id="preview-texture" src="data:image/png,;" />
+			</figure>
+		</div>
+	</article>
 </main>
-
-<footer>
-	lycheeJS is (c) 2012-2016 by Artificial-Engineering and released under MIT license.
-</footer>
 
 <script>
 (function(lychee, global) {

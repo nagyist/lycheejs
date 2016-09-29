@@ -114,38 +114,64 @@
 			"Main": [
 				"js"
 			],
+			"data": {
+				"Project": [
+					"js"
+				]
+			},
 			"net": {
 				"Client": [
 					"js"
 				],
 				"Server": [
 					"js"
-				],
-				"client": {
-					"Ping": [
-						"js"
-					]
+				]
+			},
+			"platform": {
+				"html": {
+					"codec": {
+						"FONT": [
+							"js"
+						]
+					}
 				},
-				"remote": {
-					"Ping": [
-						"js"
-					]
+				"node": {
+					"codec": {
+						"FONT": [
+							"js"
+						]
+					}
 				}
 			},
 			"state": {
-				"Welcome": [
+				"Asset": [
+					"js",
+					"json"
+				],
+				"Project": [
 					"js",
 					"json"
 				]
 			},
 			"ui": {
 				"element": {
+					"Breeder": [
+						"js"
+					],
+					"Font": [
+						"js"
+					],
 					"Project": [
 						"js"
 					]
 				}
 			}
 		},
-		"tags": {}
+		"tags": {
+			"platform": {
+				"html": "platform/html",
+				"node": "platform/node"
+			}
+		}
 	}
 }

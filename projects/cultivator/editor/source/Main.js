@@ -1,17 +1,21 @@
 
 lychee.define('app.Main').requires([
+	'app.codec.FONT',
+	'app.data.Project',
 	'app.net.Client',
 	'app.net.Server',
-	'app.state.Welcome',
+//	'app.state.Asset',
+	'app.state.Project',
 	'harvester.net.Client'
 ]).includes([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
-	var _lychee = lychee.import('lychee');
-	var _app    = lychee.import('app');
-	var _Client = lychee.import('harvester.net.Client');
-	var _Main   = lychee.import('lychee.app.Main');
+	const _app     = lychee.import('app');
+	const _lychee  = lychee.import('lychee');
+	const _Client  = lychee.import('harvester.net.Client');
+	const _Main    = lychee.import('lychee.app.Main');
+	const _Project = lychee.import('app.data.Project');
 
 
 
@@ -19,9 +23,9 @@ lychee.define('app.Main').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Class = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({
+		let settings = Object.assign({
 
 			input: {
 				delay:       0,
@@ -49,6 +53,9 @@ lychee.define('app.Main').requires([
 		}, data);
 
 
+		this.project = null;
+
+
 		_Main.call(this, settings);
 
 
@@ -71,29 +78,30 @@ lychee.define('app.Main').requires([
 
 		this.bind('init', function() {
 
-			var appclient = this.settings.appclient || null;
+			let appclient = this.settings.appclient || null;
 			if (appclient !== null) {
 				this.client = new _app.net.Client(appclient, this);
 				this.api    = new _Client({}, this);
 			}
 
-			var appserver = this.settings.appserver || null;
+			let appserver = this.settings.appserver || null;
 			if (appserver !== null) {
 				this.server = new _app.net.Server(appserver, this);
 			}
 
 
-			this.setState('welcome', new _app.state.Welcome(this));
+			this.setState('project', new _app.state.Project(this));
+//			this.setState('asset',   new _app.state.Asset(this));
 
 
-			this.changeState('welcome');
+			this.changeState('project');
 
 		}, this, true);
 
 	};
 
 
-	Class.prototype = {
+	Composite.prototype = {
 
 		/*
 		 * ENTITY API
@@ -103,12 +111,12 @@ lychee.define('app.Main').requires([
 
 		serialize: function() {
 
-			var data = _Main.prototype.serialize.call(this);
+			let data = _Main.prototype.serialize.call(this);
 			data['constructor'] = 'app.Main';
 
 
-			var settings = data['arguments'][0] || {};
-			var blob     = data['blob'] || {};
+			let settings = data['arguments'][0] || {};
+			let blob     = data['blob'] || {};
 
 
 			if (this.settings.appclient !== null) settings.client = this.defaults.client;
@@ -121,11 +129,35 @@ lychee.define('app.Main').requires([
 
 			return data;
 
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
+		setProject: function(project) {
+
+			project = project instanceof _Project ? project : null;
+
+
+			if (project !== null) {
+
+				this.project = project;
+
+				return true;
+
+			}
+
+
+			return false;
+
 		}
 
 	};
 
 
-	return Class;
+	return Composite;
 
 });

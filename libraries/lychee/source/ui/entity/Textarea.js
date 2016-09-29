@@ -133,6 +133,8 @@ lychee.define('lychee.ui.entity.Textarea').includes([
 
 		_Entity.call(this, settings);
 
+		settings = null;
+
 
 
 		/*
@@ -208,9 +210,6 @@ lychee.define('lychee.ui.entity.Textarea').includes([
 			this.setState('default');
 
 		}, this);
-
-
-		settings = null;
 
 	};
 

@@ -1,45 +1,63 @@
 
-# Auto-built applications
+# Runtime Caches
+
 /lychee.store
 /bin/editor
 /bin/ranger
 /bin/runtime
 /bin/harvester.pid
 
-/libraries/lychee/source/DIST.js
-/libraries/*/build
-/projects/*/build
+# GitHub Integration
 
+/.github/TOKEN
+/.github/ISSUES
+
+# Fuck these guys
+
+/__TODO__
+/.idea
+.DS_Store
+
+
+
+# Libraries
+
+/libraries/*
+/libraries/*/build
+/libraries/*/lychee.store
+/libraries/lychee/source/DIST.js
+!/libraries/README.md
+
+!/libraries/breeder
+!/libraries/fertilizer
+!/libraries/harvester
+!/libraries/lychee
+!/libraries/strainer
+
+
+
+# Projects
 
 /projects/*
+/projects/*/build
 /projects/*/lychee.store
-/projects/cultivator/*/lychee.store
 !/projects/README.md
 
-
-# Whitelisted git-tracked projects
-!/projects/emoji-chat
-!/projects/text-chat
 !/projects/boilerplate
 !/projects/cultivator
+!/projects/lethalmaze
 !/projects/mode7
 !/projects/over-there
 !/projects/pong
+!/projects/text-chat
 !/projects/tictactoe
-!/projects/lethalmaze
 
 
-# Cultivator
-/projects/*/build
+
+# Cultivator Projects
+
 /projects/cultivator/editor/build
+/projects/cultivator/editor/lychee.store
 /projects/cultivator/ranger/build
-
-
-# GitHub Integration
-.github/TOKEN
-.github/ISSUES
-
-# Well, yeah. Fuck these guys
-/__TODO__
-.DS_Store
+/projects/cultivator/ranger/lychee.store
 

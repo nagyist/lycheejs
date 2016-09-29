@@ -12,7 +12,16 @@ lychee.define('lychee.ui.Menu').requires([
 	'lychee.ui.Layer'
 ]).exports(function(lychee, global, attachments) {
 
-	const _FONT = attachments["fnt"];
+	const _Alpha    = lychee.import('lychee.effect.Alpha');
+	const _Event    = lychee.import('lychee.effect.Event');
+	const _Helper   = lychee.import('lychee.ui.entity.Helper');
+	const _Label    = lychee.import('lychee.ui.entity.Label');
+	const _Layer    = lychee.import('lychee.ui.Layer');
+	const _Position = lychee.import('lychee.effect.Position');
+	const _Select   = lychee.import('lychee.ui.entity.Select');
+	const _Visible  = lychee.import('lychee.effect.Visible');
+	const _Width    = lychee.import('lychee.effect.Width');
+	const _FONT     = attachments["fnt"];
 
 
 
@@ -51,7 +60,7 @@ lychee.define('lychee.ui.Menu').requires([
 		settings.relayout = false;
 
 
-		lychee.ui.Layer.call(this, settings);
+		_Layer.call(this, settings);
 
 
 
@@ -72,7 +81,8 @@ lychee.define('lychee.ui.Menu').requires([
 
 			} else {
 
-				let args = [ id, {
+				let found = null;
+				let args  = [ id, {
 					x: 0,
 					y: 0
 				}, delta ];
@@ -89,10 +99,16 @@ lychee.define('lychee.ui.Menu').requires([
 						args[1].y = position.y - helper.position.y;
 
 						helper.trigger('touch', args);
+						found = helper;
+
+						break;
 
 					}
 
 				}
+
+
+				return found;
 
 			}
 
@@ -218,12 +234,12 @@ lychee.define('lychee.ui.Menu').requires([
 		}, this);
 
 
-		this.setEntity('@label', new lychee.ui.entity.Label({
+		this.setEntity('@label', new _Label({
 			font:  this.font,
 			value: this.label
 		}));
 
-		this.setEntity('@select', new lychee.ui.entity.Select({
+		this.setEntity('@select', new _Select({
 			options: this.options,
 			value:   this.value
 		}));
@@ -270,7 +286,7 @@ lychee.define('lychee.ui.Menu').requires([
 
 		serialize: function() {
 
-			let data = lychee.ui.Layer.prototype.serialize.call(this);
+			let data = _Layer.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.Menu';
 
 			let settings = data['arguments'][0];
@@ -303,7 +319,7 @@ lychee.define('lychee.ui.Menu').requires([
 			}
 
 
-			lychee.ui.Layer.prototype.update.call(this, clock, delta);
+			_Layer.prototype.update.call(this, clock, delta);
 
 		},
 
@@ -379,7 +395,7 @@ lychee.define('lychee.ui.Menu').requires([
 
 
 			if (alpha !== 0) {
-				lychee.ui.Layer.prototype.render.call(this, renderer, offsetX, offsetY);
+				_Layer.prototype.render.call(this, renderer, offsetX, offsetY);
 			}
 
 
@@ -431,7 +447,7 @@ lychee.define('lychee.ui.Menu').requires([
 
 				for (let h = 0, hl = this.helpers.length; h < hl; h++) {
 
-					this.__helpers.push(new lychee.ui.entity.Helper({
+					this.__helpers.push(new _Helper({
 						width:  32,
 						height: 32,
 						label:  null,
@@ -508,33 +524,33 @@ lychee.define('lychee.ui.Menu').requires([
 
 					this.removeEffects();
 
-					this.addEffect(new lychee.effect.Alpha({
-						type:     lychee.effect.Alpha.TYPE.easeout,
+					this.addEffect(new _Alpha({
+						type:     _Alpha.TYPE.easeout,
 						delay:    300,
 						duration: 300,
 						alpha:    1.0
 					}));
 
-					this.addEffect(new lychee.effect.Position({
-						type:     lychee.effect.Position.TYPE.easeout,
+					this.addEffect(new _Position({
+						type:     _Position.TYPE.easeout,
 						duration: 300,
 						position: {
 							x: this.__boundary + 70
 						}
 					}));
 
-					this.addEffect(new lychee.effect.Width({
-						type:     lychee.effect.Width.TYPE.easeout,
+					this.addEffect(new _Width({
+						type:     _Width.TYPE.easeout,
 						duration: 300,
 						width:    144
 					}));
 
-					this.getEntity('@label').addEffect(new lychee.effect.Visible({
+					this.getEntity('@label').addEffect(new _Visible({
 						delay:   300,
 						visible: true
 					}));
 
-					this.getEntity('@select').addEffect(new lychee.effect.Visible({
+					this.getEntity('@select').addEffect(new _Visible({
 						delay:   300,
 						visible: true
 					}));
@@ -543,14 +559,14 @@ lychee.define('lychee.ui.Menu').requires([
 
 					this.removeEffects();
 
-					this.addEffect(new lychee.effect.Alpha({
-						type:     lychee.effect.Alpha.TYPE.easeout,
+					this.addEffect(new _Alpha({
+						type:     _Alpha.TYPE.easeout,
 						duration: 300,
 						alpha:    0.0
 					}));
 
-					this.addEffect(new lychee.effect.Position({
-						type:     lychee.effect.Position.TYPE.easeout,
+					this.addEffect(new _Position({
+						type:     _Position.TYPE.easeout,
 						delay:    300,
 						duration: 300,
 						position: {
@@ -558,19 +574,19 @@ lychee.define('lychee.ui.Menu').requires([
 						}
 					}));
 
-					this.addEffect(new lychee.effect.Width({
-						type:     lychee.effect.Width.TYPE.easeout,
+					this.addEffect(new _Width({
+						type:     _Width.TYPE.easeout,
 						delay:    300,
 						duration: 300,
 						width:     64
 					}));
 
-					this.getEntity('@label').addEffect(new lychee.effect.Visible({
+					this.getEntity('@label').addEffect(new _Visible({
 						delay:   300,
 						visible: false
 					}));
 
-					this.getEntity('@select').addEffect(new lychee.effect.Visible({
+					this.getEntity('@select').addEffect(new _Visible({
 						delay:   300,
 						visible: false
 					}));
@@ -578,7 +594,7 @@ lychee.define('lychee.ui.Menu').requires([
 				}
 
 
-				this.addEffect(new lychee.effect.Event({
+				this.addEffect(new _Event({
 					delay: 600,
 					event: 'relayout'
 				}));

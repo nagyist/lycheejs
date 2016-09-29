@@ -100,10 +100,15 @@ lychee.define('lychee.effect.Color').exports(function(lychee, global, attachment
 		update: function(entity, clock, delta) {
 
 			if (this.__start === null) {
+				this.__start = clock + this.delay;
+			}
 
-				this.__start  = clock + this.delay;
+
+			let t = (clock - this.__start) / this.duration;
+			if (t < 0) {
+				return true;
+			} else if (this.__origin === null) {
 				this.__origin = entity.color || '#000000';
-
 			}
 
 
@@ -122,11 +127,6 @@ lychee.define('lychee.effect.Color').exports(function(lychee, global, attachment
 			let g       = origing;
 			let b       = originb;
 
-
-			let t = (clock - this.__start) / this.duration;
-			if (t < 0) {
-				return true;
-			}
 
 			if (t <= 1) {
 

@@ -342,6 +342,9 @@
 				"Sound": [
 					"js"
 				],
+				"State": [
+					"js"
+				],
 				"Velocity": [
 					"js"
 				],
@@ -586,6 +589,10 @@
 					"fnt",
 					"js"
 				],
+				"Notice": [
+					"fnt",
+					"js"
+				],
 				"Sprite": [
 					"js"
 				],
@@ -629,6 +636,10 @@
 						"js"
 					],
 					"Label": [
+						"fnt",
+						"js"
+					],
+					"List": [
 						"fnt",
 						"js"
 					],

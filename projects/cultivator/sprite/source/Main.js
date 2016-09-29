@@ -1,16 +1,14 @@
 
 lychee.define('tool.Main').requires([
-	'lychee.data.JSON',
 	'tool.data.SPRITE'
 ]).includes([
 	'lychee.app.Main'
 ]).tags({
 	platform: 'html'
-}).exports(function(lychee, tool, global, attachments) {
+}).exports(function(lychee, global, attachments) {
 
 	var _definition = attachments["Entity.tpl"];
-	var _SPRITE     = tool.data.SPRITE;
-	var _JSON       = lychee.data.JSON;
+	var _SPRITE     = lychee.import('tool.data.SPRITE');
 
 
 
@@ -20,7 +18,7 @@ lychee.define('tool.Main').requires([
 
 	var _update_preview = function(blob) {
 
-		var data = _JSON.decode(blob);
+		var data = JSON.parse(blob);
 		if (data instanceof Object) {
 
 			if (data.texture !== null) {
@@ -105,26 +103,16 @@ lychee.define('tool.Main').requires([
 
 					this.locked = true;
 
-					this.loop.setTimeout(100, function() {
+					this.loop.setTimeout(500, function() {
 
 						settings.texture = _SIZES[settings.size];
 
-
-						try {
-
-							var sprite = _SPRITE.encode(settings);
-							if (sprite !== null) {
-								_update_preview(sprite);
-							}
-
-						} catch(e) {
-
-
-						} finally {
-
-							this.locked = false;
-
+						var sprite = _SPRITE.encode(settings);
+						if (sprite !== null) {
+							_update_preview(sprite);
 						}
+
+						this.locked = false;
 
 					}, this);
 

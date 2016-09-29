@@ -28,7 +28,8 @@ Make sure your code runs through with these commands:
 
 - [ ] The `./bin/configure.sh` script runs with no errors
 - [ ] The `lycheejs-harvester start development` command runs with no errors
-- [ ] _If project or library:_ The `lycheejs-strainer auto` command runs with no errors
+- [ ] _If project or library:_ The `lycheejs-strainer auto <identifier>` command runs with no errors
+- [ ] _If project or library:_ The `lycheejs-fertilizer auto <identifier>` command runs with no errors
 - [ ] The code style follows the [CODESTYLE guide](https://github.com/Artificial-Engineering/lycheejs/blob/development/guides/CODESTYLE.md)
 - [ ] The commit messages follow the [CONTRIBUTION guide](https://github.com/Artificial-Engineering/lycheejs/blob/development/guides/CONTRIBUTION.md)
 - [ ] The pull-request branch is not named `development`, `2XXX-QX` or `humansneednotapply`

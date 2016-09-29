@@ -48,10 +48,12 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 		settings.width  = typeof settings.width === 'number'  ? settings.width  : 128;
 		settings.height = typeof settings.height === 'number' ? settings.height :  32;
-		settings.shape  = lychee.ui.Entity.SHAPE.rectangle;
+		settings.shape  = _Entity.SHAPE.rectangle;
 
 
-		lychee.ui.Entity.call(this, settings);
+		_Entity.call(this, settings);
+
+		settings = null;
 
 
 		if (this.options.length > 1) {
@@ -79,10 +81,10 @@ lychee.define('lychee.ui.entity.Select').includes([
 			let q = (pos / lh) | 0;
 			if (q >= 0) {
 
-				let val    = this.options[q] || null;
-				let result = this.setValue(val);
+				let option = this.options[q] || null;
+				let result = this.setValue(option);
 				if (result === true) {
-					this.trigger('change', [ val ]);
+					this.trigger('change', [ option ]);
 				}
 
 			}
@@ -96,20 +98,20 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 			if (this.state === 'active') {
 
-				let val = null;
-				let q   = this.options.indexOf(this.value);
+				let option = null;
+				let q      = this.options.indexOf(this.value);
 
-				if (key === 'w' || key === 'arrow-up')   val = this.options[q - 1] || null;
-				if (key === 's' || key === 'arrow-down') val = this.options[q + 1] || null;
-
-
-				if (key === 'space') val = this.options[0];
-				if (key === 'enter') val = this.options[this.options.length - 1];
+				if (key === 'w' || key === 'arrow-up')   option = this.options[--q] || this.options[0];
+				if (key === 's' || key === 'arrow-down') option = this.options[++q] || this.options[this.options.length - 1];
 
 
-				let result = this.setValue(val);
+				if (key === 'space') option = this.options[0];
+				if (key === 'enter') option = this.options[this.options.length - 1];
+
+
+				let result = this.setValue(option);
 				if (result === true) {
-					this.trigger('change', [ val ]);
+					this.trigger('change', [ option ]);
 				}
 
 			}
@@ -147,7 +149,7 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 		serialize: function() {
 
-			let data = lychee.ui.Entity.prototype.serialize.call(this);
+			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.ui.entity.Select';
 
 			let settings = data['arguments'][0];
@@ -208,7 +210,7 @@ lychee.define('lychee.ui.entity.Select').includes([
 			}
 
 
-			lychee.ui.Entity.prototype.update.call(this, clock, delta);
+			_Entity.prototype.update.call(this, clock, delta);
 
 		},
 
@@ -416,7 +418,12 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 
 				if (this.options.indexOf(this.value) === -1) {
-					this.setValue(this.options[0] || null);
+
+					let result = this.setValue(this.options[0] || null);
+					if (result === true) {
+						this.trigger('change', [ this.value ]);
+					}
+
 				}
 
 
@@ -431,7 +438,7 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 		setState: function(id) {
 
-			let result = lychee.ui.Entity.prototype.setState.call(this, id);
+			let result = _Entity.prototype.setState.call(this, id);
 			if (result === true) {
 
 				let cursor = this.__cursor;

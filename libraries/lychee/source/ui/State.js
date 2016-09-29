@@ -6,6 +6,7 @@ lychee.define('lychee.ui.State').requires([
 	'lychee.ui.Element',
 	'lychee.ui.Layer',
 	'lychee.ui.Menu',
+	'lychee.ui.Notice',
 	'lychee.ui.element.Input',
 	'lychee.ui.element.Jukebox',
 	'lychee.ui.element.Network',
@@ -20,13 +21,13 @@ lychee.define('lychee.ui.State').requires([
 
 	const _Blueprint = lychee.import('lychee.ui.Blueprint');
 	const _Layer     = lychee.import('lychee.ui.Layer');
-	const _Menu      = lychee.import('lychee.ui.Menu');
 	const _Position  = lychee.import('lychee.effect.Position');
 	const _State     = lychee.import('lychee.app.State');
 	const _Visible   = lychee.import('lychee.effect.Visible');
 	const _BLOB      = attachments["json"].buffer;
 	const _INSTANCES = [];
 	let   _MENU      = null;
+	let   _NOTICE    = null;
 
 
 
@@ -68,7 +69,7 @@ lychee.define('lychee.ui.State').requires([
 		let fade_offset = -3/2 * this.getLayer('ui').height;
 		let entity      = this.queryLayer('ui', id);
 		let layers      = this.getLayer('ui').entities.filter(function(layer) {
-			return lychee.interfaceof(_Menu, layer) === false;
+			return layer !== _MENU && layer !== _NOTICE;
 		});
 
 
@@ -149,8 +150,12 @@ lychee.define('lychee.ui.State').requires([
 			let entity = null;
 			let width  = viewport.width;
 			let height = viewport.height;
+
+
 			let menu   = this.queryLayer('ui', 'menu');
-			if (menu !== null) {
+			let notice = this.queryLayer('ui', 'notice');
+
+			if (menu !== null && notice !== null) {
 
 				entity = this.getLayer('ui');
 				entity.width  = width;
@@ -160,7 +165,7 @@ lychee.define('lychee.ui.State').requires([
 				for (let e = 0, el = entity.entities.length; e < el; e++) {
 
 					let blueprint = entity.entities[e];
-					if (blueprint !== menu) {
+					if (blueprint !== menu && blueprint !== notice) {
 
 						blueprint.width      = width - menu.width;
 						blueprint.height     = height;
@@ -170,6 +175,9 @@ lychee.define('lychee.ui.State').requires([
 					}
 
 				}
+
+
+				notice.position.x = menu.width / 2;
 
 			}
 
@@ -221,8 +229,11 @@ lychee.define('lychee.ui.State').requires([
 				_State.prototype.deserialize.call(this, blob);
 
 
-				let menu = this.queryLayer('ui', 'menu');
-				let main = this.main;
+				let main   = this.main;
+				let menu   = this.queryLayer('ui', 'menu');
+				let notice = this.queryLayer('ui', 'notice');
+
+
 				if (main !== null && menu !== null) {
 
 					_MENU = menu;
@@ -257,6 +268,7 @@ lychee.define('lychee.ui.State').requires([
 						viewport.relay('reshape', this.queryLayer('bg', 'background'));
 						viewport.relay('reshape', this.queryLayer('bg', 'emblem'));
 						viewport.relay('reshape', this.queryLayer('ui', 'menu'));
+						viewport.relay('reshape', this.queryLayer('ui', 'notice'));
 
 						viewport.relay('reshape', this.queryLayer('ui', 'welcome'));
 						viewport.relay('reshape', this.queryLayer('ui', 'settings'));
@@ -265,16 +277,28 @@ lychee.define('lychee.ui.State').requires([
 
 				}
 
+
+				if (main !== null && notice !== null) {
+
+					_NOTICE = notice;
+
+				}
+
 			} else {
 
 				_State.prototype.deserialize.call(this, blob);
 
 
-				let menu = this.queryLayer('ui', 'menu');
+				let main   = this.main;
+				let menu   = this.queryLayer('ui', 'menu');
+				let notice = this.queryLayer('ui', 'notice');
+
+
 				if (menu !== null && menu !== _MENU) {
 
 					this.getLayer('ui').removeEntity(menu);
 					this.getLayer('ui').setEntity('menu', _MENU);
+					menu = _MENU;
 
 				} else if (menu === null) {
 
@@ -284,7 +308,20 @@ lychee.define('lychee.ui.State').requires([
 				}
 
 
-				let main = this.main;
+				if (notice !== null && notice !== _NOTICE) {
+
+					this.getLayer('ui').removeEntity(notice);
+					this.getLayer('ui').setEntity('notice', _NOTICE);
+					notice = _NOTICE;
+
+				} else if (notice === null) {
+
+					this.getLayer('ui').setEntity('notice', _NOTICE);
+					notice = _NOTICE;
+
+				}
+
+
 				if (main !== null && menu !== null) {
 
 					let options = [];

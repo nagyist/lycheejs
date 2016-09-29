@@ -14,7 +14,7 @@ lychee.define('lychee.effect.Radius').exports(function(lychee, global, attachmen
 		this.duration = 250;
 		this.radius   = 0;
 
-		this.__origin = 0;
+		this.__origin = null;
 		this.__start  = null;
 
 

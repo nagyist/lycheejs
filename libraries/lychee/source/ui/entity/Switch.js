@@ -52,6 +52,8 @@ lychee.define('lychee.ui.entity.Switch').includes([
 
 		_Entity.call(this, settings);
 
+		settings = null;
+
 
 
 		/*
@@ -110,9 +112,6 @@ lychee.define('lychee.ui.entity.Switch').includes([
 		if (this.value === '') {
 			this.setValue(this.options[0] || null);
 		}
-
-
-		settings = null;
 
 	};
 

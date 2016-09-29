@@ -58,16 +58,24 @@
 					"constructor": "lychee.ui.Menu",
 					"arguments": [{
 						"options": [
-							"Welcome",
+							"Project",
+							"Asset",
+							"Entity",
 							"Settings"
 						],
-						"value": "Welcome"
+						"value": "Project"
+					}]
+				}, {
+					"constructor": "lychee.ui.Notice",
+					"arguments": [{
+						"label": ""
 					}]
 				}],
 				"map": {
 					"welcome":  0,
 					"settings": 1,
-					"menu":     2
+					"menu":     2,
+					"notice":   3
 				}
 			}
 		}

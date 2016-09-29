@@ -34,10 +34,12 @@ lychee.define('lychee.ui.element.Search').requires([
 
 
 		settings.label   = 'Search';
-		settings.options = [ 'Open', 'Clear' ];
+		settings.options = [];
 
 
 		_Element.call(this, settings);
+
+		settings = null;
 
 
 
@@ -56,14 +58,19 @@ lychee.define('lychee.ui.element.Search').requires([
 				return other.indexOf(value) !== -1;
 			});
 
-
 			if (filtered.length === 0) {
-				filtered.push('- No matches -');
+
+				this.__select.setOptions([ '- No matches -' ]);
+				this.trigger('relayout');
+
+				this.trigger('change', [ value ]);
+
+			} else {
+
+				this.__select.setOptions(filtered);
+				this.trigger('relayout');
+
 			}
-
-
-			this.__select.setOptions(filtered);
-			this.trigger('relayout');
 
 		}, this);
 
@@ -73,22 +80,16 @@ lychee.define('lychee.ui.element.Search').requires([
 		});
 
 		this.__select.bind('change', function(value) {
-			this.value = value;
-			this.trigger('change', [ value ]);
+
+			if (value !== '- No matches -') {
+				this.value = value;
+				this.trigger('change', [ value ]);
+			}
+
 		}, this);
 
 		this.addEntity(this.__search);
 		this.addEntity(this.__select);
-
-
-		this.bind('change', function(action) {
-
-			if (action === 'clear') {
-				this.__search.setValue('');
-				this.__search.trigger('change', [ '' ]);
-			}
-
-		}, this);
 
 	};
 

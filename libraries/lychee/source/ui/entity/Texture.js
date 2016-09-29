@@ -1,8 +1,9 @@
 
 lychee.define('lychee.ui.entity.Texture').requires([
-	'lychee.ui.Entity',
 	'lychee.ui.entity.Upload',
 	'lychee.ui.Sprite'
+]).includes([
+	'lychee.ui.Entity',
 ]).exports(function(lychee, global, attachments) {
 
 	const _Entity = lychee.import('lychee.ui.Entity');
@@ -15,15 +16,14 @@ lychee.define('lychee.ui.entity.Texture').requires([
 	 * IMPLEMENTATION
 	 */
 
-	let Composite = function() {
+	let Composite = function(data) {
 
 		let settings = Object.assign({}, data);
 
 
-		this.font    = null;
-		this.label   = 'UPLOAD';
-		this.texture = null;
-		this.value   = null;
+		this.font  = null;
+		this.label = 'UPLOAD';
+		this.value = null;
 
 		this.__sprite = new _Sprite({});
 		this.__upload = new _Upload({
@@ -33,12 +33,10 @@ lychee.define('lychee.ui.entity.Texture').requires([
 
 		this.setFont(settings.font);
 		this.setLabel(settings.label);
-		this.setTexture(settings.texture);
 		this.setValue(settings.value);
 
 		delete settings.font;
 		delete settings.label;
-		delete settings.texture;
 		delete settings.value;
 
 
@@ -52,6 +50,24 @@ lychee.define('lychee.ui.entity.Texture').requires([
 		 * INITIALIZATION
 		 */
 
+		this.__upload.bind('change', function(assets) {
+
+			if (assets.length === 1) {
+
+				let texture = assets[0];
+				if (texture.width <= this.width && texture.height <= this.height) {
+
+					let result = this.setValue(texture);
+					if (result === true) {
+						this.trigger('change', [ texture ]);
+					}
+
+				}
+
+			}
+
+		}, this);
+
 		this.bind('touch', function(id, position, delta) {
 			return this.__upload.trigger('touch', [ id, position, delta ]);
 		}, this);
@@ -62,16 +78,18 @@ lychee.define('lychee.ui.entity.Texture').requires([
 
 		this.bind('relayout', function() {
 
-			let sprite  = this.__sprite;
-			let upload  = this.__upload;
-			let dim     = (Math.min(this.width, this.height) / 32 | 0) * 32;
+			let sprite = this.__sprite;
+			let upload = this.__upload;
+			let value  = this.value;
 
+			if (value !== null) {
+				sprite.width  = value.width;
+				sprite.height = value.height;
+			}
 
 			upload.position.x =  0;
 			upload.position.y =  1/2 * this.height - 1/2 * upload.height;
 
-			sprite.width      = dim;
-			sprite.height     = dim;
 			sprite.position.x =  0;
 			sprite.position.y = -1/2 * this.height + 1/2 * sprite.height;
 			sprite.trigger('relayout');
@@ -94,9 +112,9 @@ lychee.define('lychee.ui.entity.Texture').requires([
 				this.setFont(font);
 			}
 
-			let texture = lychee.deserialize(blob.texture);
-			if (texture !== null) {
-				this.setTexture(texture);
+			let value = lychee.deserialize(blob.value);
+			if (value !== null) {
+				this.setValue(value);
 			}
 
 		},
@@ -111,11 +129,10 @@ lychee.define('lychee.ui.entity.Texture').requires([
 
 
 			if (this.label !== null) settings.label = this.label;
-			if (this.value !== null) settings.value = this.value;
 
 
-			if (this.font !== null)    blob.font    = lychee.serialize(this.font);
-			if (this.texture !== null) blob.texture = lychee.serialize(this.texture);
+			if (this.font !== null)  blob.font  = lychee.serialize(this.font);
+			if (this.value !== null) blob.value = lychee.serialize(this.value);
 
 
 			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
@@ -196,33 +213,14 @@ lychee.define('lychee.ui.entity.Texture').requires([
 
 		},
 
-		setTexture: function(texture) {
-
-			texture = texture instanceof Texture ? texture : null;
-
-
-			if (texture !== null) {
-
-				this.__sprite.setTexture(texture);
-				this.texture = texture;
-
-				return true;
-
-			}
-
-
-			return false;
-
-		},
-
 		setValue: function(value) {
 
-			value = typeof value === 'string' ? value : null;
+			value = value instanceof Texture ? value : null;
 
 
 			if (value !== null) {
 
-				this.__upload.setValue(value);
+				this.__sprite.setTexture(value);
 				this.value = value;
 
 				return true;

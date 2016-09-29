@@ -216,10 +216,19 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 
 			} else if (tmp.indexOf(':') !== -1) {
 
-				let key = (tmp.split(':')[0] || '').trim().toLowerCase();
-				let val = (tmp.split(':')[1] || '').trim();
+				let i_tmp = tmp.indexOf(':');
+				let key   = tmp.substr(0, i_tmp).trim().toLowerCase();
+				let val   = tmp.substr(i_tmp + 1).trim().toLowerCase();
 
-				if (/host|origin|connection|upgrade|content-type|content-length|accept-encoding|accept-language|e-tag/g.test(key) === true) {
+				if (key === 'host') {
+
+					if (/^\[([a-f0-9\:]+)\](.*)$/g.test(val) === true) {
+						chunk.headers[key] = val.split(/^\[([a-f0-9\:]+)\](.*)$/g)[1];
+					} else {
+						chunk.headers[key] = val;
+					}
+
+				} else if (/origin|connection|upgrade|content-type|content-length|accept-encoding|accept-language|e-tag/g.test(key) === true) {
 
 					chunk.headers[key] = val;
 

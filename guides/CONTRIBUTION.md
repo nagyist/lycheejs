@@ -5,17 +5,13 @@ Upstream/Downstream Management
 
 - [Reserved Branches](#reserved-branches)
 
-Workflow:
+Contributor Workflow:
 
 1. [Find an Issue](#find-an-issue)
 2. [Assign an Issue](#assign-an-issue)
 3. [Work on an Issue](#work-on-an-issue)
 4. [Contribute a Feature](#contribute-a-feature)
-
-Styles and Help:
-
-- [Git Emojis](#git-emojis)
-- [Get in Touch](#get-in-touch)
+5. [Git Emojis](#git-emojis)
 
 
 # Upstream/Downstream Management
@@ -27,7 +23,7 @@ conflict with any script, these branches are reserved and therefore
 not accepted as branches of pull requests.
 
 - the `development` branch is reserved for the master repository.
-- the `humansneednotapply` branch is reserved for our GitHub Bot [@humansneednotapply](https://github.com/humansneednotapply).
+- the `humansneednotapply` branch is reserved for our Artificial Intelligence [@humansneednotapply](https://github.com/humansneednotapply).
 - the `2XXX-QX` branch scheme is reserved for the master repository.
 
 
@@ -61,14 +57,14 @@ this repository.
 ![How to find Issues](./asset/contribution-issues.png)
 
 
-
 ## Assign an Issue
 
 When you've found something you like to work on, you can assign an issue
-to yourself so that the other lychee.js team members know what you're
+to yourself so that the other lychee.js Team Members know what you're
 working on. This helps them to help you and they love to help you :)
 
-![How to assign an Issue](./asset/contribution-assignissue.png)
+If you have questions and want to discuss problems, feel free to join
+our public IRC channel #artificial-engineering at freenode.
 
 
 ## Work on an Issue
@@ -153,8 +149,6 @@ After that we can now automatically merge in your implemented features.
 If the merge was successful, the Issue is `Closed`.
 
 
-# Styles and Help
-
 ## Git Emojis
 
 Here are the rules for our commits, start each commit message with an emoji.
@@ -174,16 +168,4 @@ Project-wide Emojis:
 * :gun: `:gun:` Test Fixes
 * :lipstick: `:lipstick:` User Interface
 * :hammer: `:hammer:` Security
-
-
-## Get in Touch
-
-Need help or just want to think out loud?
-We look forward to hearing from you!
-
-* Twitter: https://twitter.com/lycheejs
-* Reddit:  https://reddit.com/r/lycheejs
-* YouTube: https://www.youtube.com/user/lycheejs
-* Email:   robot [insert an at here] artificial.engineering
-* IRC:     #artificial-engineering at freenode
 

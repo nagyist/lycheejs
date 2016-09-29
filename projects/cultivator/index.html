@@ -13,183 +13,52 @@
 	<!-- BOOTSTRAP -->
 	<script src="/libraries/lychee/build/html/core.js"></script>
 
-	<script src="./fyto/index.js"></script>
-	<link rel="stylesheet" href="./fyto/index.css">
-	<link rel="import" href="./fyto/app/Main.html">
-	<link rel="import" href="./fyto/ui/Menu.html">
-	<link rel="import" href="./fyto/ui/State.html">
-	<link rel="import" href="./fyto/ui/Element.html">
-	<link rel="import" href="./fyto/ui/element/Project.html">
-
-	<style>
-		body {
-			color: #ffffff;
-			background: #405050;
-			font-family: 'museo-sans-300';
-			font-size: 16px;
-			margin: 0px;
-			padding: 0px;
-		}
-
-		body fyto-ui-Menu[state="active"] {
-			width: 160px;
-		}
-		body fyto-ui-Menu[state="active"] ~ fyto-app-Main {
-			left: 192px;
-		}
-
-		#welcome fyto-ui-Element {
-			width: 60%;
-			max-width: initial;
-			height: auto;
-			margin: 32px auto;
-			padding: 0px 0px 1px 0px;
-		}
-
-		#welcome-logo {
-			display: block;
-			margin: 0px auto;
-			text-align: center;
-		}
-		#welcome-logo h1 {
-			display: inline-block;
-			vertical-align: middle;
-			margin: 16px;
-			line-height: 0px;
-		}
-		#welcome-logo h2 {
-			display: inline-block;
-			vertical-align: middle;
-			margin: 0px;
-			padding: 0px;
-			color: #efefef;
-			font-family: 'museo-sans-300';
-			font-size: 64px;
-			font-weight: normal;
-		}
-		#welcome-logo h2 span {
-			color: #d0494b;
-		}
-
-	</style>
+	<!-- DESIGN -->
+	<link rel="stylesheet" href="./design/index.css">
 
 </head>
 <body>
 
-<fyto-ui-Menu id="menu" label="lychee.js" value="Welcome" state="active">
-	<option>Welcome</option>
-	<option>Projects</option>
-	<option>Tools</option>
-</fyto-ui-Menu>
+<header>
+	<h1><img alt="lychee.js Logo" src="/desktop.svg" width="128" height="128"></h1>
+	<h2>lychee<span>js</span></h2>
+</header>
 
-<fyto-app-Main state="welcome">
+<article>
+	<label>Welcome to lychee.js</label>
+	<p>
+		The <a target="_blank" href="https://github.com/Artificial-Engineering/lycheejs-guide.git">lychee.js Guide</a>
+		helps you to get started easily and covers every topic you need to know.
+		Please also take a look at the <a href="lycheejs://file=README.md">README.md</a>,
+		it exists for a reason.
+	</p>
+	<p>
+		Installed lychee.js Version: <span id="lychee-VERSION">2016-Q1</span>.
+	</p>
+	<pre id="lychee-MESSAGE"><code># Please update your lychee.js Installation
 
-	<fyto-ui-State id="welcome" name="welcome" type="full">
-		<div id="welcome-logo">
-			<h1><img alt="lychee.js Logo" src="/desktop.svg" width="128" height="128"></h1>
-			<h2>lychee<span>js</span></h2>
-		</div>
-	
-		<fyto-ui-Element label="welcome">
-			<p>
-				The lychee.ai Stack, Editor and Strainer are Work-in-Progress until 2016-Q3.
-			</p>
-			<p>
-				The official (planned) release date for the lychee.js CARTEL/ES-HyperNEAT
-				stack is the 28th September 2016. It will be released to the public here:
-				<br>
-				<br>
-				<a href="https://github.com/Artificial-Engineering/lycheejs-cartel">https://github.com/Artificial-Engineering/lycheejs-cartel</a>
-			</p>
-			<p>
-				lychee.js Version: <span id="lychee-VERSION">2016-Q1</span>
-			</p>
-		</fyto-ui-Element>
-	</fyto-ui-State>
+cd /opt/lycheejs;
+./bin/maintenance/do-update.sh;</code></pre>
+	<div>
+		<button onclick="location.href='lycheejs://cmd=lycheejs-editor'">Start Editor</button>
+		<button onclick="location.href='lycheejs://cmd=lycheejs-ranger'">Start Ranger</button>
+	</div>
+	<div>
+		<button onclick="window.open('/projects/cultivator/api/index.html')">API Tool</button>
+		<button onclick="window.open('/projects/cultivator/sprite/index.html')">Sprite Tool</button>
+	</div>
+	<hr>
+	<p>
+		Need Help? Join our IRC channel <a target="_blank" href="https://webchat.freenode.net/?channels=%23artificial-engineering">#artificial-engineering @ freenode</a>
+	</p>
+</article>
 
-	<fyto-ui-State name="projects" type="grid">
+<main><!-- PROJECTS --></main>
 
-		<fyto-ui-element-Project order="1" identifier="/projects/boilerplate" label="boilerplate">
-			<p>
-				An easy template and starting point for developing projects with lychee.js.
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="2" identifier="/projects/lethalmaze" label="lethalmaze">
-			<p>
-				Fast-paced Multiplayer action game with battling Tanks in a Maze.
-				Hackathon project (48 hours).
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="3" identifier="/projects/mode7" label="mode7">
-			<p>
-				A demo that shows multiple sandboxed instances and a custom game-specific Renderer.
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="4" identifier="/projects/over-there" label="over-there">
-			<p>
-				Live view from the ISS (International Space Station).
-				Hackathon project (48 hours).
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="5" identifier="/projects/pong" label="pong">
-			<p>
-				Pong implementation that is easy to follow. No adaptive layout, everything as simple
-				as possible.
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="6" identifier="/projects/text-chat" label="text-chat">
-			<p>
-				Broadcast and Multicast peer-to-peer networking chat service with multiple rooms.
-			</p>
-		</fyto-ui-element-Project>
-		<fyto-ui-element-Project order="7" identifier="/projects/tictactoe" label="tictactoe">
-			<p>
-				Tic Tac Toe implementation that is easy to follow. No adaptive layout, everything as simple
-				as possible.
-			</p>
-		</fyto-ui-element-Project>
-
-	</fyto-ui-State>
-
-	<fyto-ui-State name="tools" type="grid">
-
-		<fyto-ui-element-Project order="1" identifier="/projects/cultivator/ranger" label="ranger" command="lycheejs-ranger">
-			<p>
-				A GUI tool to manage and connect your libraries and projects.
-				Manages training and debugging data of your apps.
-			</p>
-		</fyto-ui-element-Project>
-
-		<fyto-ui-element-Project order="2" identifier="/projects/cultivator/editor" label="editor" command="lycheejs-editor">
-			<p>
-				A GUI tool to edit your libraries and projects.
-				Edits all entities, states and manages fertilizer build targets.
-			</p>
-		</fyto-ui-element-Project>
-
-		<fyto-ui-element-Project order="3" identifier="/projects/cultivator/strainer" label="strainer" command="lycheejs-strainer">
-			<p>
-				A GUI tool to update and filter your libraries and projects.
-				Allows a peer-cloud AI to automatically fix and improve your apps.
-			</p>
-		</fyto-ui-element-Project>
-
-		<fyto-ui-element-Project order="4" identifier="/projects/cultivator/api" label="api tool">
-		</fyto-ui-element-Project>
-
-		<fyto-ui-element-Project order="5" identifier="/projects/cultivator/font" label="font tool">
-		</fyto-ui-element-Project>
-
-		<fyto-ui-element-Project order="6" identifier="/projects/cultivator/sprite" label="sprite tool">
-		</fyto-ui-element-Project>
-
-	</fyto-ui-State>
-
-</fyto-app-Main>
 <script>
-(function(global, version, projects) {
+(function(global, version, message, main) {
 
-	var host = (function(location) {
+	let host = (function(location) {
 
 		if (typeof location.hostname === 'string') {
 			return location.hostname;
@@ -201,40 +70,77 @@
 
 
 	if (version !== null) {
+
 		version.innerHTML = lychee.VERSION;
+
+		let curr_year  = parseInt(lychee.VERSION.split('-')[0], 10);
+		let curr_month = parseInt(lychee.VERSION.split('-Q')[1], 10) * 3;
+		let last_year  = new Date().getFullYear();
+		let last_month = ((new Date().getMonth() / 3) | 0) * 3;
+
+		if (last_year >= curr_year && last_month > curr_month) {
+
+			setTimeout(function() {
+				message.className = 'visible';
+			}, 500);
+
+		}
+ 
 	}
 
 
-	if (host === 'localhost' && projects !== null) {
+	if (host === 'localhost' && main !== null) {
 
-		var config = new Config('http://localhost:4848/api/project/index');
-		var other  = [].slice.call(projects.querySelectorAll('fyto-ui-element-Project'));
-		var order  = other.length;
-
+		let config = new Config('http://localhost:4848/api/project/index');
 
 		config.onload = function(result) {
 
 			if (result === true && this.buffer instanceof Array) {
 
-				this.buffer.filter(function(project) {
-					return /projects\/cultivator/g.test(project.identifier) === false;
-				}).forEach(function(project) {
+				let projects = this.buffer.map(function(project) {
 
-					var node = other.find(function(obj) {
-						return obj.getAttribute('identifier') === project.identifier;
-					}) || null;
+					let article  = document.createElement('article');
+					let label    = document.createElement('label');
+					let img      = document.createElement('img');
+					let btn_edit = document.createElement('button');
+					let btn_file = document.createElement('button');
+					let btn_open = document.createElement('button');
 
-					if (node === null) {
 
-						node = document.createElement('fyto-ui-element-Project');
-						node.setAttribute('identifier', project.identifier);
-						node.setAttribute('label',      project.identifier.split('/').pop());
-						node.setAttribute('order',      ++order);
+					article.setAttribute('data-id', project.identifier);
 
-						projects.appendChild(node);
+					label.innerHTML = project.identifier.split('/').pop();
+					img.src = project.identifier + '/icon.png';
 
-					}
+					article.appendChild(label);
+					article.appendChild(img);
+					article.appendChild(btn_edit);
+					article.appendChild(btn_file);
+					article.appendChild(btn_open);
 
+					btn_edit.innerHTML = 'Edit';
+					btn_edit.onclick = function() {
+						document.location.href = 'lycheejs://edit='+ project.identifier;
+					};
+
+					btn_file.innerHTML = 'File';
+					btn_file.onclick = function() {
+						document.location.href = 'lycheejs://file='+ project.identifier;
+					};
+
+					btn_open.innerHTML = 'Open';
+					btn_open.onclick = function() {
+						window.open(project.identifier + '/index.html');
+					};
+
+
+					return article;
+
+				});
+
+
+				projects.forEach(function(article) {
+					main.appendChild(article);
 				});
 
 			}
@@ -245,7 +151,7 @@
 
 	}
 
-})(typeof global !== 'undefined' ? global : this, document.querySelector('#lychee-VERSION'), document.querySelector('fyto-ui-State[name="projects"]'));
+})(typeof global !== 'undefined' ? global : this, document.querySelector('#lychee-VERSION'), document.querySelector('#lychee-MESSAGE'), document.querySelector('main'));
 </script>
 </body>
 </html>    

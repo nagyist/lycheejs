@@ -94,8 +94,27 @@ elif [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
 	mkdir $LYCHEEJS_FOLDER;
 	git clone git@github.com:Artificial-Engineering/lycheejs.git $LYCHEEJS_FOLDER;
 
-	mkdir $LYCHEEJS_FOLDER/bin/runtime;
-	git clone --single-branch --branch master --depth 1 git@github.com:Artificial-Engineering/lycheejs-runtime.git $LYCHEEJS_FOLDER/bin/runtime;
+
+	DOWNLOAD_URL=$(curl -s https://api.github.com/repos/Artificial-Engineering/lycheejs-runtime/releases/latest | grep browser_download_url | grep lycheejs-runtime | head -n 1 | cut -d'"' -f4);
+
+	if [ "$DOWNLOAD_URL" != "" ]; then
+
+		cd $LYCHEEJS_FOLDER/bin;
+		curl -sSL $DOWNLOAD_URL > $LYCHEEJS_FOLDER/bin/runtime.zip;
+
+		mkdir $LYCHEEJS_FOLDER/bin/runtime;
+		git clone --single-branch --branch master --depth 1 git@github.com:Artificial-Engineering/lycheejs-runtime.git $LYCHEEJS_FOLDER/bin/runtime;
+
+		cd $LYCHEEJS_FOLDER/bin/runtime;
+		unzip -nq ../runtime.zip;
+
+		chmod +x $LYCHEEJS_FOLDER/bin/runtime/bin/*.sh;
+		chmod +x $LYCHEEJS_FOLDER/bin/runtime/*/update.sh;
+		chmod +x $LYCHEEJS_FOLDER/bin/runtime/*/package.sh;
+
+		rm $LYCHEEJS_FOLDER/bin/runtime.zip;
+
+	fi;
 
 
 	cd $LYCHEEJS_FOLDER;
@@ -119,13 +138,7 @@ elif [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
 	#
 
 	cd $LYCHEEJS_FOLDER/bin/runtime;
-	./bin/update.sh;
-
-	rm -rf .git/;
-	git init;
-	git remote add origin git@github.com:Artificial-Engineering/lycheejs-runtime.git;
-	git add ./;
-	git commit -m "lychee.js $NEW_VERSION release";
+	./bin/do-update.sh;
 
 
 
@@ -206,7 +219,7 @@ elif [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
 	#
 
 	cd $LYCHEEJS_FOLDER/bin/runtime;
-	git push origin master -f;
+	./bin/do-release.sh;
 
 
 
@@ -241,9 +254,6 @@ elif [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
 	echo "~ ~ ~ ~ ~ ~ ~ ~ ~ SUCCESS ~ ~ ~ ~ ~ ~ ~ ~ ~";
 	echo "";
 	echo "Manual Steps required to do now:";
-	echo "";
-	echo "- Create the $NEW_VERSION release in the lychee.js Harvester repository.";
-	echo "- Upload and attach the builds of it to the release.";
 	echo "";
 	echo "- Create the $NEW_VERSION release in the lychee.js Bundle repository.";
 	echo "- Upload and attach the builds of it to the release.";

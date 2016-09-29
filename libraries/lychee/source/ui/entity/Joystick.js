@@ -70,6 +70,8 @@ lychee.define('lychee.ui.entity.Joystick').includes([
 
 		_Entity.call(this, settings);
 
+		settings = null;
+
 
 
 		/*
@@ -150,9 +152,6 @@ lychee.define('lychee.ui.entity.Joystick').includes([
 			this.setState('default');
 
 		}, this);
-
-
-		settings = null;
 
 	};
 

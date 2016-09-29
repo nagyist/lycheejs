@@ -1,15 +1,16 @@
 <!doctype html>
 <html>
 <head>
-	<title>lycheeJS API Tool</title>
+	<title>lychee.js API Tool</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="robots" content="noindex">
 
-	<link rel="stylesheet" href="/projects/cultivator/design__OLD/index.css">
-	<script src="/projects/cultivator/design__OLD/index.js"></script>
+	<link rel="stylesheet" href="/projects/cultivator/design/index.css">
+	<link rel="stylesheet" href="/projects/cultivator/design/__legacy.css">
+	<script src="/projects/cultivator/design/__legacy.js"></script>
 
 	<!-- BOOTSTRAP -->
 	<script src="/libraries/lychee/build/html/core.js"></script>
@@ -22,20 +23,23 @@
 	.ico-edit:before     { content: "\e05f"; }
 	.ico-refresh:before  { content: "\e098"; }
 	.ico-quit:before     { content: "\e07a"; }
-	#tool > article:nth-of-type(1) p {
+	main {
+		max-width: initial;
+	}
+	main > article:nth-of-type(1) p {
 		margin: 0px;
 		padding: 16px;
 		border-bottom: 2px solid #404844;
 	}
-	#tool > article:nth-of-type(1) ul.select {
-		margin: 0px;
-	}
-	#tool > article:nth-of-type(2) {
+	main > article:nth-of-type(2) {
 		position: relative;
+	}
+	main > article:nth-of-type(2) h3 {
+		z-index: 1000;
 	}
 	#tool-documentation {
 		position: absolute;
-		top: 64px;
+		top: 0px;
 		right: 0px;
 		bottom: 0px;
 		left: 0px;
@@ -43,11 +47,16 @@
 		padding: 0px;
 		overflow-x: hidden;
 		overflow-y: auto;
+		z-index: 100;
 	}
 	#tool-documentation article {
+		display: block;
+		position: relative;
+		width: auto;
 		margin: 128px 0px;
 		padding: 0px;
 		font-size: 16px;
+		text-align: left;
 		background: none;
 	}
 	#tool-documentation article pre {
@@ -64,6 +73,7 @@
 		background: #1f2726;
 		font-family: monaco, Consolas, 'Lucida Console', monospace;
 		font-size: 14px;
+		text-align: left;
 		border-radius: 3px;
 		vertical-align: middle;
 		-webkit-font-smoothing: antialiased;
@@ -101,50 +111,29 @@
 </head>
 <body>
 
-<menu>
-	<b onclick="ui.toggle('menu');"><span></span></b>
-	<li class="active" onclick="ui.changeState('tool');">Tool</li>
-	<aside>
-		<button class="ico-refresh ico-only" title="Refresh" onclick="window.location.href='./index.html';"></button>
-		<button class="ico-quit ico-only" title="Quit" onclick="location.href='../index.html';"></button>
-	</aside>
-</menu>
-
 <main>
+	<article>
+		<h3>Definitions</h3>
+		<form id="settings" enctype="application/json" action="MAIN" method="javascript">
+			<p class="center">
+				<input type="text" title="name" Refresh="custom" placeholder="lychee.Renderer">
+			</p>
+			<table class="vertical"></table>
+		</form>
+	</article>
 
-	<section id="tool" class="active">
-
-		<article>
-			<h3>Definitions</h3>
-			<form id="settings" enctype="application/json" action="MAIN" method="javascript">
-				<p class="center">
-					<input type="text" title="name" Refresh="custom" placeholder="lychee.Renderer">
-					<button class="ico-add ico-only" onclick="location.hash='!' + this.parentNode.querySelector('input').value;return false;"></button>
-				</p>
-				<table class="vertical"></table>
-			</form>
-		</article>
-
-		<article>
-			<h3>
-				Documentation
-				<span>
-					<button class="ico-api ico-only" onclick="MAIN.trigger('api');"></button>
-					<button class="ico-edit ico-only" onclick="MAIN.trigger('edit');"></button>
-					<button class="ico-code ico-only" onclick="MAIN.trigger('code');"></button>
-					<button class="ico-download ico-only" onclick="MAIN.trigger('download');"></button>
-				</span>
-			</h3>
-			<div id="tool-documentation" class="markdown-body"></div>
-		</article>
-
-	</section>
-
+	<article>
+		<h3>
+			<span>
+				<button class="ico-api ico-only" onclick="MAIN.trigger('api');">API</button>
+				<button class="ico-edit ico-only" onclick="MAIN.trigger('edit');">Edit</button>
+				<button class="ico-code ico-only" onclick="MAIN.trigger('code');">Code</button>
+				<button class="ico-download ico-only" onclick="MAIN.trigger('download');">Download</button>
+			</span>
+		</h3>
+		<div id="tool-documentation" class="markdown-body"></div>
+	</article>
 </main>
-
-<footer>
-	lycheeJS is (c) 2012-2016 by Artificial-Engineering and released under MIT license.
-</footer>
 
 <script>
 (function(lychee, global) {

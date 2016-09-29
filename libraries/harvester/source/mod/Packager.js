@@ -23,7 +23,7 @@ lychee.define('harvester.mod.Packager').requires([
 			json = JSON.parse(JSON.stringify(project.package.json));
 		}
 
-
+		if (json === null)                      json        = {};
 		if (typeof json.api    === 'undefined') json.api    = {};
 		if (typeof json.build  === 'undefined') json.build  = {};
 		if (typeof json.source === 'undefined') json.source = {};

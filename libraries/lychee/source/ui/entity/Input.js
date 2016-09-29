@@ -128,6 +128,8 @@ lychee.define('lychee.ui.entity.Input').includes([
 
 		_Entity.call(this, settings);
 
+		settings = null;
+
 
 
 		/*
@@ -263,9 +265,6 @@ lychee.define('lychee.ui.entity.Input').includes([
 			this.setState('default');
 
 		}, this);
-
-
-		settings = null;
 
 	};
 

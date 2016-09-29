@@ -6,7 +6,8 @@ lychee.define('lychee.ui.entity.Upload').tags({
 ]).supports(function(lychee, global) {
 
 	if (
-		typeof global.document !== 'undefined'
+		typeof global.addEventListener === 'function'
+		&& typeof global.document !== 'undefined'
 		&& typeof global.document.createElement === 'function'
 		&& typeof global.FileReader !== 'undefined'
 		&& typeof global.FileReader.prototype.readAsDataURL === 'function'
@@ -26,6 +27,34 @@ lychee.define('lychee.ui.entity.Upload').tags({
 
 
 	/*
+	 * FEATURE DETECTION
+	 */
+
+	(function(document) {
+
+		let focus = 'onfocus' in document;
+		if (focus === true && typeof document.addEventListener === 'function') {
+
+			document.addEventListener('focus', function() {
+
+				for (let w = 0, wl = _WRAPPERS.length; w < wl; w++) {
+
+					let wrapper = _WRAPPERS[w];
+					if (wrapper._visible === true) {
+						wrapper.oncancel();
+					}
+
+				}
+
+			}, true);
+
+		}
+
+	})(global.document || {});
+
+
+
+	/*
 	 * HELPERS
 	 */
 
@@ -41,24 +70,44 @@ lychee.define('lychee.ui.entity.Upload').tags({
 
 	const _wrap = function(instance) {
 
-		let allowed = [ 'json', 'fnt', 'msc', 'snd', 'png', 'js', 'tpl' ];
+		let allowed = [ 'json', 'fnt', 'msc', 'snd', 'png', 'js', 'tpl', 'md' ];
 		let element = global.document.createElement('input');
 
 		if (instance.type !== Composite.TYPE.all) {
 			allowed = [ _MIME_TYPE[instance.type] ];
 		}
 
+		element._visible = false;
 		element.setAttribute('accept',   allowed.map(function(v) { return '.' + v; }).join(','));
 		element.setAttribute('type',     'file');
 		element.setAttribute('multiple', '');
 
+		element.onclick  = function() {
+			element._visible = true;
+		};
+
+		element.oncancel = function() {
+			element._visible = false;
+			element.value    = '';
+			instance.trigger('change', [ null ]);
+		};
 
 		element.onchange = function() {
 
-			let val = [];
+			if (element._visible === false) {
+				return;
+			} else {
+				element._visible = false;
+			}
+
+
+			let val    = [];
+			let change = false;
 
 
 			[].slice.call(this.files).forEach(function(file) {
+
+				change = true;
 
 				let reader = new global.FileReader();
 
@@ -82,19 +131,29 @@ lychee.define('lychee.ui.entity.Upload').tags({
 			});
 
 
-			setTimeout(function() {
+			if (change === true) {
 
-				let result = instance.setValue(val);
-				if (result === true) {
-					instance.trigger('change', [ val ]);
-				}
+				setTimeout(function() {
 
-			}, 1000);
+					let result = instance.setValue(val);
+					if (result === true) {
+						instance.trigger('change', [ val ]);
+					} else {
+						instance.trigger('change', [ null ]);
+					}
+
+				}, 500);
+
+			} else {
+
+				instance.trigger('change', [ null ]);
+
+			}
 
 		};
 
 
-		_WRAPPERS.push(element);
+		return element;
 
 	};
 
