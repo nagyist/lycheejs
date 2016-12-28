@@ -15,7 +15,7 @@ lychee.define('harvester.mod.Server').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -280,7 +280,7 @@ lychee.define('harvester.mod.Server').tags({
 
 			};
 
-		} catch(err) {
+		} catch (err) {
 
 			server = null;
 
@@ -296,7 +296,7 @@ lychee.define('harvester.mod.Server').tags({
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * ENTITY API

@@ -3,7 +3,7 @@ lychee.define('lychee.ui.entity.Texture').requires([
 	'lychee.ui.entity.Upload',
 	'lychee.ui.Sprite'
 ]).includes([
-	'lychee.ui.Entity',
+	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
 	const _Entity = lychee.import('lychee.ui.Entity');
@@ -88,10 +88,10 @@ lychee.define('lychee.ui.entity.Texture').requires([
 			}
 
 			upload.position.x =  0;
-			upload.position.y =  1/2 * this.height - 1/2 * upload.height;
+			upload.position.y =  1 / 2 * this.height - 1 / 2 * upload.height;
 
 			sprite.position.x =  0;
-			sprite.position.y = -1/2 * this.height + 1/2 * sprite.height;
+			sprite.position.y = -1 / 2 * this.height + 1 / 2 * sprite.height;
 			sprite.trigger('relayout');
 
 		}, this);
@@ -156,7 +156,6 @@ lychee.define('lychee.ui.entity.Texture').requires([
 			if (this.visible === false) return;
 
 
-			let alpha    = this.alpha;
 			let position = this.position;
 			let x        = position.x + offsetX;
 			let y        = position.y + offsetY;

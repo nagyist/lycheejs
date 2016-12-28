@@ -51,8 +51,8 @@ lychee.define('lychee.ui.layer.Table').requires([
 		let label    = this.__label;
 		let type     = this.type;
 		let value    = this.value;
-		let x1       = -1/2 * this.width;
-		let y1       = -1/2 * this.height;
+		let x1       = -1 / 2 * this.width;
+		let y1       = -1 / 2 * this.height;
 		let dim_x    = 0;
 		let dim_y    = 0;
 		let off_x    = 0;
@@ -329,7 +329,6 @@ lychee.define('lychee.ui.layer.Table').requires([
 			let entities = this.entities;
 			let font     = this.font;
 			let label    = this.__label;
-			let model    = this.model;
 			let position = this.position;
 			let type     = this.type;
 			let value    = this.value;

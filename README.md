@@ -1,5 +1,5 @@
 
-# lychee.js (2016-Q3)
+# lychee.js (2016-Q4)
 
 brought to you as libre software with joy and pride by [Artificial Engineering](http://artificial.engineering).
 
@@ -24,7 +24,6 @@ Support our libre Bot Cloud via BTC [1CamMuvrFU1QAMebPoDsL3JrioVDoxezY2](bitcoin
 </details>
 
 
-
 ## IMPORTANT NOTICE
 
 We went live with our AI on 1. Sept 2016. This caused a totally fucked up
@@ -44,11 +43,10 @@ Thank you for your understanding.
 
 These are the things that we are currently working on:
 
-- 2016-Q3: Strainer is being refactored to support better AI implementation.
-- 2016-Q3: CARTEL (AI implementation) is being refactored. [Issue](https://github.com/Artificial-Engineering/lycheejs/issues/91)
-- 2016-Q3: Guide is subject to change (to integrate the Editor). [Issue](https://github.com/Artificial-Engineering/lycheejs/issues/159)
-- 2016-Q3: Editor is being refactored to integrate all other Cultivator Tools' functionalities.
-- 2016-Q3: [lychee.js Garden](https://github.com/Artificial-Engineering/lycheejs-garden.git) is being implemented.
+- lychee.ai.neat (ES/HyperNEAT AI) is being refactored.
+- lychee.js Editor is being refactored to integrate all Cultivator Tools' functionalities.
+- [lychee.js Guide](https://github.com/Artificial-Engineering/lycheejs-guide.git) is subject to change (to integrate new AI / Editor stack).
+- [lychee.js Garden](https://github.com/Artificial-Engineering/lycheejs-garden.git) is being implemented.
 
 
 ## Overview
@@ -56,7 +54,6 @@ These are the things that we are currently working on:
 The lychee.js Project started in 2012 and is in active development.
 The following Repositories are related to the lychee.js Engine:
 
-- [lychee.js CARTEL](https://github.com/Artificial-Engineering/lycheejs-cartel.git) contains all academic work related to the CARTEL/ES-HyperNEAT concept (WIP).
 - [lychee.js Guide](https://github.com/Artificial-Engineering/lycheejs-guide.git) contains architecture explanations and concept documentations (WIP).
 - [lychee.js Runtime](https://github.com/Artificial-Engineering/lycheejs-runtime.git) contains all pre-compiled lychee.js Runtimes and Fertilizers.
 - [lychee.js Library](https://github.com/Artificial-Engineering/lycheejs-library.git) contains the lychee.js Library (installable via `bower` and `npm`).
@@ -77,7 +74,6 @@ maintenance and deployment of applications. The underlying
 technology stack does not matter (HTML5, WebGL, OpenGL,
 OpenGLES, libSDL) and is completely automated behind the
 scenes.
-
 
 
 ## Features
@@ -199,6 +195,7 @@ repository).
 
 Notes:
 
+- **Windows** is **unsupported** as development host. Use a VM or the [Dockerfile](https://github.com/Artificial-Engineering/lycheejs-bundle/blob/master/bin/package/docker/Dockerfile) instead.
 - GNU/Linux requires either of `apt-get`, `dnf`, `pacman`, `yum` or `zipper` installed beforehand.
 - Mac OSX requires [brew](https://brew.sh) installed beforehand.
 - FreeBSD/NetBSD requires `pkg` installed and [Linux Compatibility](https://www.freebsd.org/doc/handbook/linuxemu-lbc-install.html) activated beforehand.

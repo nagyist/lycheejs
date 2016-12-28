@@ -34,11 +34,27 @@
 			"Template": [
 				"js"
 			],
-			"data": {
+			"api": {
+				"Callback": [
+					"js"
+				],
+				"Composite": [
+					"js",
+					"json"
+				],
+				"Definition": [
+					"js"
+				],
+				"Module": [
+					"js",
+					"json"
+				]
+			},
+			"plugin": {
 				"API": [
 					"js"
 				],
-				"API__OLD": [
+				"ESLINT": [
 					"js"
 				]
 			}

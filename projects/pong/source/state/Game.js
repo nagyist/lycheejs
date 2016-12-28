@@ -149,14 +149,14 @@ lychee.define('game.state.Game').requires([
 					entity = this.queryLayer('ui', 'score');
 					entity.setPosition({
 						x: 0,
-						y: -1/2 * height + 42
+						y: -1 / 2 * height + 42
 					});
 
 					entity = this.queryLayer('game', 'player');
-					entity.setPosition({ x: -1/2 * width + 42 });
+					entity.setPosition({ x: -1 / 2 * width + 42 });
 
 					entity = this.queryLayer('game', 'enemy');
-					entity.setPosition({ x:  1/2 * width - 42 });
+					entity.setPosition({ x:  1 / 2 * width - 42 });
 
 				}
 

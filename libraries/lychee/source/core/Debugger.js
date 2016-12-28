@@ -196,6 +196,10 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 							if (tmp2.charAt(0) === '(')               tmp2 = tmp2.substr(1);
 							if (tmp2.charAt(tmp2.length - 1) === ')') tmp2 = tmp2.substr(0, tmp2.length - 1);
 
+							// XXX: Thanks, Blink. Thanks -_-
+							if (tmp2.substr(0, 4) === 'http') {
+								tmp2 = '/' + tmp2.split('/').slice(3).join('/');
+							}
 
 							let tmp3 = tmp2.split(':');
 
@@ -212,7 +216,9 @@ lychee.Debugger = typeof lychee.Debugger !== 'undefined' ? lychee.Debugger : (fu
 
 					let orig = Error.prepareStackTrace;
 
-					Error.prepareStackTrace = function(err, stack) { return stack; };
+					Error.prepareStackTrace = function(err, stack) {
+						return stack;
+					};
 					Error.captureStackTrace(new Error());
 
 

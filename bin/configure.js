@@ -64,7 +64,7 @@
 		try {
 			let stat = _fs.lstatSync(path);
 			return stat.isDirectory();
-		} catch(e) {
+		} catch (err) {
 			return false;
 		}
 
@@ -75,7 +75,7 @@
 		try {
 			let stat = _fs.lstatSync(path);
 			return stat.isFile();
-		} catch(e) {
+		} catch (err) {
 			return false;
 		}
 
@@ -84,7 +84,7 @@
 	const _create_directory = function(path, mode) {
 
 		if (mode === undefined) {
-			mode = 0777 & (~_process.umask());
+			mode = 0o777 & (~_process.umask());
 		}
 
 
@@ -94,7 +94,7 @@
 
 			is_directory = _fs.lstatSync(path).isDirectory();
 
-		} catch(err) {
+		} catch (err) {
 
 			if (err.code === 'ENOENT') {
 
@@ -104,16 +104,15 @@
 
 				try {
 					is_directory = _fs.lstatSync(path).isDirectory();
-				} catch(err) {
+				} catch (err) {
 				}
 
 			}
 
-		} finally {
-
-			return is_directory;
-
 		}
+
+
+		return is_directory;
 
 	};
 
@@ -292,7 +291,7 @@
 
 			try {
 				data = JSON.parse(_fs.readFileSync(_path.resolve(_ROOT, './libraries/lychee/lychee.pkg')));
-			} catch(e) {
+			} catch (err) {
 				data = null;
 			}
 
@@ -323,12 +322,12 @@
 
 				lychee.envinit(null);
 
-			} catch(e) {
+			} catch (err) {
 
 				console.log('\n\n\n');
 				console.log('Syntax Error in lychee.js core:');
 				console.log('- - - - - - - - - - - - - - - -');
-				console.log(e);
+				console.log(err);
 				console.log('\n\n\n');
 
 				errors++;
@@ -401,6 +400,17 @@
 
 				Composite.prototype = {
 
+					// deserialize: function(blob) {},
+
+					serialize: function() {
+
+						return {
+							'constructor': 'lychee.DIST',
+							'arguments': []
+						};
+
+					}
+
 				};
 
 				return Composite;
@@ -427,7 +437,7 @@
 
 			try {
 				_fs.writeFileSync(path, code, 'utf8');
-			} catch(e) {
+			} catch (err) {
 				result = false;
 			}
 
@@ -651,7 +661,7 @@
 
 					try {
 						_fs.writeFileSync(path, code, 'utf8');
-					} catch(e) {
+					} catch (err) {
 						result = false;
 					}
 

@@ -28,7 +28,7 @@
 										}
 									]
 								}, {
-									"constructor": "app.ui.element.Project",
+									"constructor": "app.ui.element.modify.Project",
 									"arguments": [
 										{
 											"label": "Modify",
@@ -58,7 +58,7 @@
 					}
 				],
 				"map": {
-					"welcome": 0
+					"project": 0
 				}
 			}
 		}

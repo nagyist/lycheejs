@@ -73,46 +73,46 @@ lychee.define('game.state.Game').requires([
 		let state  = 'active-' + player;
 
 
-        for (let y = 1; y <= 3; y++) {
+		for (let y = 1; y <= 3; y++) {
 
 			let horizontal = tiles.filter(function(tile) {
 				return tile.y === y && tile.state === state;
 			});
 
-            if (horizontal.length === 3) {
-                return true;
-            }
+			if (horizontal.length === 3) {
+				return true;
+			}
 
-        }
+		}
 
 
-        for (let x = 1; x <= 3; x++) {
+		for (let x = 1; x <= 3; x++) {
 
-            let vertical = tiles.filter(function(tile) {
+			let vertical = tiles.filter(function(tile) {
 				return tile.x === x && tiles.state === state;
 			});
 
-            if (vertical.length === 3) {
-                return true;
-            }
+			if (vertical.length === 3) {
+				return true;
+			}
 
-        }
-
-
-        let diagonal_tlbr = tiles.filter(function(tile) {
-            return tile.x === tile.y && tile.state === state;
-        });
-
-        let diagonal_trbl = tiles.filter(function(tile) {
-            return tile.x === (4 - tile.y) && tile.state === state;
-        });
-
-        if (diagonal_trbl.length === 3 || diagonal_tlbr.length === 3) {
-            return true;
-        }
+		}
 
 
-        return false;
+		let diagonal_tlbr = tiles.filter(function(tile) {
+			return tile.x === tile.y && tile.state === state;
+		});
+
+		let diagonal_trbl = tiles.filter(function(tile) {
+			return tile.x === (4 - tile.y) && tile.state === state;
+		});
+
+		if (diagonal_trbl.length === 3 || diagonal_tlbr.length === 3) {
+			return true;
+		}
+
+
+		return false;
 
 	};
 

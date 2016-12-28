@@ -1,11 +1,6 @@
 
 lychee.Asset = typeof lychee.Asset !== 'undefined' ? lychee.Asset : (function(global) {
 
-	const lychee  = global.lychee;
-	const console = global.console;
-
-
-
 	/*
 	 * HELPERS
 	 */

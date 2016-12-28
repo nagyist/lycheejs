@@ -60,7 +60,7 @@ lychee.define('app.ui.entity.Bubble').includes([
 
 
 			let settings = data['arguments'][0] || {};
-			let blob     = data['blob'] || {};
+			// let blob     = data['blob'] || {};
 
 
 			if (this.key !== 'urine') settings.key   = this.key;

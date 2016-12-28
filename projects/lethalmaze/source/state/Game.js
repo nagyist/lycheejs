@@ -366,10 +366,7 @@ lychee.define('game.state.Game').requires([
 		if (data.players === undefined) return;
 
 
-		let control = this.queryLayer('ui', 'control');
 		let timeout = this.queryLayer('ui', 'timeout');
-
-
 		if (timeout !== null) {
 			timeout.setTimeout(data.timeout);
 		}
@@ -453,7 +450,7 @@ lychee.define('game.state.Game').requires([
 		_State.call(this, main);
 
 
-		this.__bullets = [[], [], [], []];
+		this.__bullets = [ [], [], [], [] ];
 		this.__items   = [];
 		this.__tanks   = [];
 		this.__player  = null;

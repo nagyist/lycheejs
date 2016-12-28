@@ -18,16 +18,8 @@ lychee.define('lychee.effect.Visible').exports(function(lychee, global, attachme
 
 		// No data validation garbage allowed for effects
 
-		let delay   = typeof settings.delay === 'number' ? (settings.delay | 0) : null;
-		let visible = settings.visible === true;
-
-		if (delay !== null) {
-			this.delay = delay;
-		}
-
-		if (visible === true || visible === false) {
-			this.visible = visible;
-		}
+		this.delay   = typeof settings.delay === 'number' ? (settings.delay | 0) : 0;
+		this.visible = settings.visible === true;
 
 	};
 

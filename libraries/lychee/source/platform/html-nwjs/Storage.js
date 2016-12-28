@@ -13,7 +13,7 @@ lychee.define('Storage').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -78,7 +78,7 @@ lychee.define('Storage').tags({
 				let raw = null;
 				try {
 					raw = _fs.readFileSync(url, 'utf8');
-				} catch(err) {
+				} catch (err) {
 					raw = null;
 				}
 
@@ -86,7 +86,7 @@ lychee.define('Storage').tags({
 				let buffer = null;
 				try {
 					buffer = JSON.parse(raw);
-				} catch(err) {
+				} catch (err) {
 					buffer = null;
 				}
 
@@ -122,7 +122,7 @@ lychee.define('Storage').tags({
 				let result = false;
 				try {
 					result = _fs.writeFileSync(url, buffer, 'utf8');
-				} catch(err) {
+				} catch (err) {
 					result = false;
 				}
 

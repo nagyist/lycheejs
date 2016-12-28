@@ -113,13 +113,13 @@ lychee.define('lychee.net.remote.Debugger').includes([
 		_bind_relay.call(this, 'define');
 		_bind_relay.call(this, 'execute');
 		_bind_relay.call(this, 'expose');
-		_bind_relay.call(this, 'serialize');
+		_bind_relay.call(this, 'snapshot');
 
 		// Relay events to proper tunnel (data.receiver > data.tid)
 		_bind_console.call(this, 'define-value');
 		_bind_console.call(this, 'execute-value');
 		_bind_console.call(this, 'expose-value');
-		_bind_console.call(this, 'serialize-value');
+		_bind_console.call(this, 'snapshot-value');
 
 	};
 

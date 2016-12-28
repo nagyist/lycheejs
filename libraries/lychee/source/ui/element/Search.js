@@ -76,7 +76,8 @@ lychee.define('lychee.ui.element.Search').requires([
 
 		this.__select = new _Select({
 			options: this.data,
-			value:   this.data[0]
+			value:   this.data[0],
+			height:  this.height - 128
 		});
 
 		this.__select.bind('change', function(value) {
@@ -86,6 +87,11 @@ lychee.define('lychee.ui.element.Search').requires([
 				this.trigger('change', [ value ]);
 			}
 
+		}, this);
+
+		this.__select.unbind('relayout');
+		this.__select.bind('relayout', function() {
+			this.__select.height = this.height - 128;
 		}, this);
 
 		this.addEntity(this.__search);
@@ -99,6 +105,8 @@ lychee.define('lychee.ui.element.Search').requires([
 		/*
 		 * ENTITY API
 		 */
+
+		// deserialize: function(blob) {},
 
 		serialize: function() {
 

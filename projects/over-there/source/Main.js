@@ -108,8 +108,12 @@ lychee.define('app.Main').requires([
 			let blob     = data['blob'] || {};
 
 
-			if (this.settings.appclient !== null) { settings.client = this.settings.appclient; }
-			if (this.settings.appserver !== null) { settings.server = this.settings.appserver; }
+			if (this.settings.appclient !== null) {
+				settings.client = this.settings.appclient;
+			}
+			if (this.settings.appserver !== null) {
+				settings.server = this.settings.appserver;
+			}
 
 
 			data['arguments'][0] = settings;

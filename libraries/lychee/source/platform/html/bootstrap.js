@@ -87,7 +87,7 @@
 
 			try {
 				callback.call(scope, xhr.responseText || xhr.responseXML);
-			} catch(err) {
+			} catch (err) {
 				lychee.Debugger.report(lychee.environment, err, null);
 			} finally {
 				xhr = null;
@@ -99,7 +99,7 @@
 
 			try {
 				callback.call(scope, null);
-			} catch(err) {
+			} catch (err) {
 				lychee.Debugger.report(lychee.environment, err, null);
 			} finally {
 				xhr = null;
@@ -118,6 +118,12 @@
 	 * POLYFILLS
 	 */
 
+	let consol = 'console' in global && typeof console !== 'undefined';
+	if (consol === false) {
+		console = {};
+	}
+
+	const  _clear   = console.clear || function() {};
 	const  _log     = console.log   || function() {};
 	const  _info    = console.info  || console.log;
 	const  _warn    = console.warn  || console.log;
@@ -125,6 +131,10 @@
 	let    _std_out = '';
 	let    _std_err = '';
 
+
+	console.clear = function() {
+		_clear.call(console);
+	};
 
 	console.log = function() {
 
@@ -313,19 +323,9 @@
 		};
 
 
-		let consol = 'console' in global && typeof console !== 'undefined';
 		let audio  = 'Audio' in global && typeof Audio !== 'undefined';
 		let buffer = true;
 		let image  = 'Image' in global && typeof Image !== 'undefined';
-
-
-		if (consol) {
-
-		} else {
-
-			console = {};
-
-		}
 
 
 		if (audio) {
@@ -427,9 +427,7 @@
 		};
 
 
-		if (image) {
-
-		} else {
+		if (!image) {
 
 			Image = function() {
 
@@ -567,7 +565,7 @@
 
 		try {
 			return decodeURIComponent(str);
-		} catch(err) {
+		} catch (err) {
 			return String.fromCharCode(0xFFFD);
 		}
 
@@ -626,7 +624,7 @@
 			let length       = str.length;
 			let placeholders = '=' === str.charAt(length - 2) ? 2 : '=' === str.charAt(length - 1) ? 1 : 0;
 
-			let bytes = new Array(length * 3/4 - placeholders);
+			let bytes = new Array(length * 3 / 4 - placeholders);
 			let l     = placeholders > 0 ? str.length - 4 : str.length;
 
 			let tmp;
@@ -704,17 +702,17 @@
 
 			tmp = (bytes[bytes.length - 2] << 8) + (bytes[bytes.length - 1]);
 
-			str += _encode_base64( tmp >> 10);
-			str += _encode_base64((tmp >>  4) & 0x3F);
-			str += _encode_base64((tmp <<  2) & 0x3F);
+			str += _encode_base64(tmp >> 10);
+			str += _encode_base64((tmp >> 4) & 0x3F);
+			str += _encode_base64((tmp << 2) & 0x3F);
 			str += '=';
 
 		} else if (extrabytes === 1) {
 
 			tmp = bytes[bytes.length - 1];
 
-			str += _encode_base64( tmp >>  2);
-			str += _encode_base64((tmp <<  4) & 0x3F);
+			str += _encode_base64(tmp >> 2);
+			str += _encode_base64((tmp << 4) & 0x3F);
 			str += '==';
 
 		}
@@ -759,7 +757,7 @@
 		let str = '';
 
 		for (let b = start; b < end; b++) {
-			str += String.fromCharCode(buffer[i]);
+			str += String.fromCharCode(buffer[b]);
 		}
 
 		return str;
@@ -928,13 +926,23 @@
 
 		map: function(callback) {
 
-			callback = callback instanceof Function ? callback : function(value) { return value; };
+			callback = callback instanceof Function ? callback : null;
 
 
 			let clone = new Buffer(this.length);
 
-			for (let b = 0; b < this.length; b++) {
-				clone[b] = callback(this[b], b);
+			if (callback !== null) {
+
+				for (let b = 0; b < this.length; b++) {
+					clone[b] = callback(this[b], b);
+				}
+
+			} else {
+
+				for (let b = 0; b < this.length; b++) {
+					clone[b] = this[b];
+				}
+
 			}
 
 			return clone;
@@ -1127,7 +1135,7 @@
 				let data = null;
 				try {
 					data = JSON.parse(raw);
-				} catch(err) {
+				} catch (err) {
 				}
 
 
@@ -1135,14 +1143,8 @@
 				this.__load = false;
 
 
-				if (data !== null) {
-
-				} else {
-
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Config at "' + this.url + '" is invalid');
-					}
-
+				if (data === null) {
+					console.warn('bootstrap.js: Invalid Config at "' + this.url + '" (No JSON file).');
 				}
 
 
@@ -1189,9 +1191,7 @@
 
 		} else {
 
-			if (lychee.debug === true) {
-				console.error('bootstrap.js: Font at "' + this.url + '" is invalid (No FNT file)');
-			}
+			console.warn('bootstrap.js: Invalid Font at "' + this.url + '" (No FNT file).');
 
 		}
 
@@ -1427,7 +1427,7 @@
 				let data = null;
 				try {
 					data = JSON.parse(raw);
-				} catch(err) {
+				} catch (err) {
 				}
 
 
@@ -1675,7 +1675,7 @@
 
 				try {
 					this.buffer.currentTime = 0;
-				} catch(err) {
+				} catch (err) {
 				}
 
 				if (this.buffer.currentTime === 0) {
@@ -1714,7 +1714,7 @@
 
 				try {
 					this.buffer.currentTime = 0;
-				} catch(err) {
+				} catch (err) {
 				}
 
 			}
@@ -1969,7 +1969,7 @@
 
 				try {
 					this.buffer.currentTime = 0;
-				} catch(err) {
+				} catch (err) {
 				}
 
 				if (this.buffer.currentTime === 0) {
@@ -2008,7 +2008,7 @@
 
 				try {
 					this.buffer.currentTime = 0;
-				} catch(err) {
+				} catch (err) {
 				}
 
 			}
@@ -2194,9 +2194,7 @@
 
 				} else {
 
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Texture at "' + url.substr(0, 15) + '" is invalid (no PNG file)');
-					}
+					console.warn('bootstrap.js: Invalid Texture at "' + url.substr(0, 15) + '" (No PNG file).');
 
 
 					if (this.onload instanceof Function) {
@@ -2224,7 +2222,7 @@
 
 						let is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
 						if (lychee.debug === true && is_power_of_two === false) {
-							console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
+							console.warn('bootstrap.js: Texture at "' + this.url + '" is NOT power-of-two');
 						}
 
 
@@ -2248,9 +2246,7 @@
 
 				} else {
 
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Texture at "' + this.url + '" is invalid (no PNG file)');
-					}
+					console.warn('bootstrap.js: Invalid Texture at "' + this.url + '" (no PNG file).');
 
 
 					if (this.onload instanceof Function) {
@@ -2418,7 +2414,6 @@
 			}, function(raw) {
 
 				if (raw !== null) {
-					// this.buffer = raw.toString('utf8');
 					this.buffer = raw;
 				} else {
 					this.buffer = '';
@@ -2439,6 +2434,65 @@
 		}
 
 	};
+
+
+
+	/*
+	 * FEATURES
+	 */
+
+	const _FEATURES = {
+
+		innerWidth:  1337,
+		innerHeight: 1337,
+
+		CanvasRenderingContext2D: function() {},
+		FileReader:               function() {},
+		Storage:                  function() {},
+		WebSocket:                function() {},
+		XMLHttpRequest:           function() {},
+
+		addEventListener:      function() {},
+		clearInterval:         function() {},
+		clearTimeout:          function() {},
+		requestAnimationFrame: function() {},
+		setInterval:           function() {},
+		setTimeout:            function() {},
+
+		document: {
+			createElement:    function() {},
+			querySelectorAll: function() {},
+			body: {
+				appendChild: function() {}
+			}
+		},
+
+		location: {
+			href: 'file:///tmp/index.html'
+		},
+
+		localStorage: {
+		},
+
+		sessionStorage: {
+		}
+
+	};
+
+	_FEATURES.FileReader.prototype.readAsDataURL = function() {};
+
+
+	Object.defineProperty(lychee.Environment, '__FEATURES', {
+
+		get: function() {
+			return _FEATURES;
+		},
+
+		set: function(value) {
+			return false;
+		}
+
+	});
 
 
 

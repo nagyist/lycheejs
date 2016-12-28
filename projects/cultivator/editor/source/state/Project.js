@@ -4,7 +4,7 @@ lychee.define('app.state.Project').includes([
 ]).requires([
 	'app.data.Project',
 	'app.ui.element.Breeder',
-	'app.ui.element.Project',
+	'app.ui.element.modify.Project',
 	'lychee.ui.Blueprint',
 	'lychee.ui.Element',
 	'lychee.ui.Layer',
@@ -66,7 +66,7 @@ lychee.define('app.state.Project').includes([
 			let api = this.api;
 			if (api !== null) {
 
-				let select          = this.queryLayer('ui', 'welcome > select');
+				let select          = this.queryLayer('ui', 'project > select');
 				let library_service = api.getService('library');
 				let project_service = api.getService('project');
 
@@ -130,7 +130,7 @@ lychee.define('app.state.Project').includes([
 			}
 
 
-			this.queryLayer('ui', 'welcome > select').bind('change', function(value) {
+			this.queryLayer('ui', 'project > select').bind('change', function(value) {
 
 				if (/^\/libraries|projects\//g.test(value) === false) {
 					value = '/projects/' + value.split('/').pop();
@@ -144,13 +144,13 @@ lychee.define('app.state.Project').includes([
 					this.main.setProject(project);
 
 
-					let modify = this.queryLayer('ui', 'welcome > modify');
+					let modify = this.queryLayer('ui', 'project > modify');
 					if (modify !== null) {
 						modify.setProject(project);
 						modify.setVisible(true);
 					}
 
-					let breed = this.queryLayer('ui', 'welcome > breed');
+					let breed = this.queryLayer('ui', 'project > breed');
 					if (breed !== null) {
 						breed.setVisible(true);
 					}
@@ -167,14 +167,13 @@ lychee.define('app.state.Project').includes([
 
 			}, this);
 
-			this.queryLayer('ui', 'welcome > modify').bind('change', function(action) {
+			this.queryLayer('ui', 'project > modify').bind('change', function(action) {
 
 				if (action === 'save') {
 
 					let notice = this.queryLayer('ui', 'notice');
 					if (notice !== null) {
 						notice.setLabel('Project saved.');
-						notice.setOptions([ 'Whatever' ]);
 						notice.setState('active');
 					}
 

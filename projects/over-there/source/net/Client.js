@@ -6,7 +6,7 @@ lychee.define('app.net.Client').requires([
 
 	const _Client  = lychee.import('lychee.net.Client');
 	const _CONFIG  = attachments["json"].buffer;
-	const _ROOMS   = ['node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem'];
+	const _ROOMS   = [ 'node1', 'fgb', 'node0', 'sm', 'node3', 'crewlock', 'destiny', 'harmony', 'columbus', 'jem' ];
 	const _SENSORS = {
 		destiny: {
 			pressure:    'USLAB000058',
@@ -90,7 +90,7 @@ lychee.define('app.net.Client').requires([
 		setTimeout(function() {
 
 			let _id = 0;
-			let _ACTIVITIES = ['sleep', 'sleep', 'science', 'sleep', 'sleep', 'science'];
+			let _ACTIVITIES = [ 'sleep', 'sleep', 'science', 'sleep', 'sleep', 'science' ];
 
 			_CONFIG.forEach(function(data) {
 

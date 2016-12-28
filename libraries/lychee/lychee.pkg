@@ -1,69 +1,6 @@
 {
 	"api": {
-		"files": {
-			"core": {
-				"Asset": [
-					"md"
-				],
-				"Debugger": [
-					"md"
-				],
-				"Definition": [
-					"md"
-				],
-				"Environment": [
-					"md"
-				],
-				"Input": [
-					"md"
-				],
-				"Package": [
-					"md"
-				],
-				"Stash": [
-					"md"
-				],
-				"Storage": [
-					"md"
-				],
-				"Viewport": [
-					"md"
-				],
-				"lychee": [
-					"md"
-				]
-			},
-			"data": {
-				"BENCODE": [
-					"md"
-				],
-				"BitON": [
-					"md"
-				],
-				"JSON": [
-					"md"
-				],
-				"MD": [
-					"md"
-				]
-			},
-			"event": {
-				"Emitter": [
-					"md"
-				],
-				"Flow": [
-					"md"
-				],
-				"Queue": [
-					"md"
-				]
-			},
-			"net": {
-				"Tunnel": [
-					"md"
-				]
-			}
-		}
+		"files": {}
 	},
 	"build": {
 		"environments": {
@@ -190,17 +127,30 @@
 				"js"
 			],
 			"ai": {
-				"neural": {
+				"Agent": [
+					"js"
+				],
+				"Genome": [
+					"js"
+				],
+				"Layer": [
+					"js"
+				],
+				"bnn": {
+					"Brain": [
+						"js"
+					]
+				},
+				"enn": {
 					"Agent": [
 						"js"
 					],
-					"Evolution": [
+					"Brain": [
 						"js"
-					],
-					"Genome": [
-						"js"
-					],
-					"Network": [
+					]
+				},
+				"qnn": {
+					"Brain": [
 						"js"
 					]
 				}
@@ -299,15 +249,10 @@
 				"MD5": [
 					"js"
 				],
-				"SHA1": [
-					"js"
-				]
-			},
-			"data": {
-				"HTML": [
+				"MURMUR": [
 					"js"
 				],
-				"MD": [
+				"SHA1": [
 					"js"
 				]
 			},
@@ -513,6 +458,9 @@
 					},
 					"ui": {
 						"entity": {
+							"Download": [
+								"js"
+							],
 							"Helper": [
 								"js",
 								"json",
@@ -569,6 +517,14 @@
 						}
 					}
 				}
+			},
+			"policy": {
+				"Position": [
+					"js"
+				],
+				"Velocity": [
+					"js"
+				]
 			},
 			"ui": {
 				"Blueprint": [

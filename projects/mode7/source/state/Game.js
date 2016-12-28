@@ -87,10 +87,10 @@ lychee.define('game.state.Game').requires([
 					let renderer = this.renderer;
 					if (renderer !== null) {
 
-						this.__origin.bgx = 1/2 * renderer.width;
-						this.__origin.bgy = 1/2 * renderer.height + 64;
-						this.__origin.fgx = 1/2 * renderer.width;
-						this.__origin.fgy = 1/2 * renderer.height + 128;
+						this.__origin.bgx = 1 / 2 * renderer.width;
+						this.__origin.bgy = 1 / 2 * renderer.height + 64;
+						this.__origin.fgx = 1 / 2 * renderer.width;
+						this.__origin.fgy = 1 / 2 * renderer.height + 128;
 
 
 						entity        = this.__background;
@@ -129,7 +129,7 @@ lychee.define('game.state.Game').requires([
 			if (renderer !== null) {
 
 				let camera = this.camera;
-				let width  = renderer.width;
+				// let width  = renderer.width;
 				let height = renderer.height;
 
 

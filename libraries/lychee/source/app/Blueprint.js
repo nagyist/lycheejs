@@ -46,10 +46,9 @@ lychee.define('lychee.app.Blueprint').requires([
 
 			let entity = null;
 			let type   = this.type;
-			let x1     = -1/2 * this.width;
-			let x2     =  1/2 * this.width;
-			let y1     = -1/2 * this.height;
-			let y2     =  1/2 * this.height;
+			let x1     = -1 / 2 * this.width;
+			let x2     =  1 / 2 * this.width;
+			let y1     = -1 / 2 * this.height;
 			let off_x  = x1 + 32;
 			let off_y  = y1 + 32;
 			let pos_x  = 0;
@@ -92,7 +91,7 @@ lychee.define('lychee.app.Blueprint').requires([
 
 						entity.setPosition({
 							x: pos_x,
-							y: pos_y - 3/2 * this.height
+							y: pos_y - 3 / 2 * this.height
 						});
 
 						entity.addEffect(new _Position({
@@ -135,7 +134,7 @@ lychee.define('lychee.app.Blueprint').requires([
 
 						entity.setPosition({
 							x: pos_x,
-							y: pos_y - 3/2 * this.height
+							y: pos_y - 3 / 2 * this.height
 						});
 
 						entity.addEffect(new _Position({
@@ -173,7 +172,7 @@ lychee.define('lychee.app.Blueprint').requires([
 
 						entity.setPosition({
 							x: pos_x,
-							y: pos_y - 3/2 * this.height
+							y: pos_y - 3 / 2 * this.height
 						});
 
 						entity.addEffect(new _Position({

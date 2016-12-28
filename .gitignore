@@ -14,6 +14,7 @@
 
 # Fuck these guys
 
+/node_modules
 /__TODO__
 /.idea
 .DS_Store
@@ -23,6 +24,7 @@
 # Libraries
 
 /libraries/*
+/libraries/*/api
 /libraries/*/build
 /libraries/*/lychee.store
 /libraries/lychee/source/DIST.js
@@ -39,6 +41,7 @@
 # Projects
 
 /projects/*
+/projects/*/api
 /projects/*/build
 /projects/*/lychee.store
 !/projects/README.md
@@ -56,8 +59,10 @@
 
 # Cultivator Projects
 
+/projects/cultivator/editor/api
 /projects/cultivator/editor/build
 /projects/cultivator/editor/lychee.store
+/projects/cultivator/ranger/api
 /projects/cultivator/ranger/build
 /projects/cultivator/ranger/lychee.store
 

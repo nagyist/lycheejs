@@ -14,8 +14,8 @@ lychee.define('lychee.verlet.Constraint').requires([
 
 	let Composite = function(a_vector, b_vector, rigidity) {
 
-        this.__a_vector = a_vector instanceof _Vector3 ? a_vector : null;
-        this.__b_vector = b_vector instanceof _Vector3 ? b_vector : null;
+		this.__a_vector = a_vector instanceof _Vector3 ? a_vector : null;
+		this.__b_vector = b_vector instanceof _Vector3 ? b_vector : null;
 		this.__distance = 0;
 
 		this.rigidity = typeof rigidity === 'number' ? rigidity : 1;

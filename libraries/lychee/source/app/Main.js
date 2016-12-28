@@ -627,6 +627,9 @@ lychee.define('lychee.app.Main').requires([
 
 				}
 
+
+				return true;
+
 			} else {
 
 				if (oldstate !== null) {
@@ -637,10 +640,15 @@ lychee.define('lychee.app.Main').requires([
 
 				}
 
+
+				if (id === null) {
+					return true;
+				}
+
 			}
 
 
-			return true;
+			return false;
 
 		}
 

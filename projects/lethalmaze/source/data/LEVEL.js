@@ -136,7 +136,7 @@ lychee.define('game.data.LEVEL').requires([
 									position: position
 								}));
 
-							break;
+								break;
 
 							case 2:
 
@@ -144,7 +144,7 @@ lychee.define('game.data.LEVEL').requires([
 									position: position
 								}));
 
-							break;
+								break;
 
 							case 3:
 
@@ -152,7 +152,7 @@ lychee.define('game.data.LEVEL').requires([
 									position: position
 								}));
 
-							break;
+								break;
 
 						}
 

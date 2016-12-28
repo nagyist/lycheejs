@@ -384,17 +384,9 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 
 
 					if (result === true) {
-
-						if (lychee.debug === true) {
-							console.info('lychee.Package-' + that.id + ': Package at ' + this.url + ' ready');
-						}
-
+						console.info('lychee.Package-' + that.id + ': Package at "' + this.url + '" ready.');
 					} else {
-
-						if (lychee.debug === true) {
-							console.error('lychee.Package-' + that.id + ': Package at ' + this.url + ' corrupt');
-						}
-
+						console.error('lychee.Package-' + that.id + ': Package at "' + this.url + '" corrupt.');
 					}
 
 				};
@@ -468,10 +460,8 @@ lychee.Package = typeof lychee.Package !== 'undefined' ? lychee.Package : (funct
 
 					} else {
 
-						if (lychee.debug === true) {
-							let info = Object.keys(tags).length > 0 ? ('(' + JSON.stringify(tags) + ')') : '';
-							console.error('lychee.Package-' + this.id + ': Invalid Definition "' + id + '" ' + info);
-						}
+						let info = Object.keys(tags).length > 0 ? ('(' + JSON.stringify(tags) + ')') : '';
+						console.error('lychee.Package-' + this.id + ': Invalid Definition "' + id + '" ' + info);
 
 						return false;
 

@@ -63,11 +63,10 @@ lychee.define('lychee.verlet.Entity').requires([
 			}
 
 
-// TODO: Implement this stuff here
-
-		} else if (shape === Composite.SHAPE.sphere) {
-		} else if (shape === Composite.SHAPE.rectangle) {
-		} else if (shape === Composite.SHAPE.cuboid) {
+		// TODO: Implement this stuff here
+		// } else if (shape === Composite.SHAPE.sphere) {
+		// } else if (shape === Composite.SHAPE.rectangle) {
+		// } else if (shape === Composite.SHAPE.cuboid) {
 		}
 
 
@@ -125,8 +124,14 @@ lychee.define('lychee.verlet.Entity').requires([
 			let data = _Entity.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.verlet.Entity';
 
+			let settings = data['arguments'][0];
+			let blob     = (data['blob'] || {});
+
 
 			if (this.position.length() > 0) settings.position = lychee.serialize(this.position);
+
+
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
 
 
 			return data;

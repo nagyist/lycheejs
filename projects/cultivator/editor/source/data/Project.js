@@ -24,6 +24,50 @@ lychee.define('app.data.Project').exports(function(lychee, global, attachments) 
 	 * HELPERS
 	 */
 
+	const _walk_directory = function(files, node, path) {
+
+		if (node instanceof Array) {
+
+			node.forEach(function(ext) {
+				files.push(path + '.' + ext);
+			});
+
+		} else if (node instanceof Object) {
+
+			Object.keys(node).forEach(function(child) {
+				_walk_directory(files, node[child], path + '/' + child);
+			});
+
+		}
+
+	};
+
+	const _package_files = function(json) {
+
+		let files = [];
+
+		if (json !== null) {
+
+			let root = json.source.files || null;
+			if (root !== null) {
+				_walk_directory(files, root, '');
+			}
+
+		}
+
+
+		return files.map(function(value) {
+			return value.substr(1);
+		}).sort(function(a, b) {
+			if (a > b) return  1;
+			if (a < b) return -1;
+			return 0;
+		}).filter(function(value) {
+			return value.indexOf('__') === -1;
+		});
+
+	};
+
 	const _set_platform = function(platform, value) {
 
 		let id           = /^\/libraries\//g.test(this.identifier) ? 'dist' : 'main';
@@ -241,6 +285,22 @@ lychee.define('app.data.Project').exports(function(lychee, global, attachments) 
 				}, 500);
 
 			}
+
+		},
+
+		getAssets: function() {
+
+			return _package_files(this.config.buffer).filter(function(val) {
+				return val.substr(-3) !== '.js';
+			});
+
+		},
+
+		getEntities: function() {
+
+			return _package_files(this.config.buffer).filter(function(val) {
+				return val.substr(-3) === '.js';
+			});
 
 		},
 

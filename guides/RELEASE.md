@@ -2,8 +2,9 @@
 # Release Guide for lychee.js
 
 1. [Configure Token](#configure-token)
-2. [Update lychee.js](#update-lycheejs)
-3. [Release lychee.js](#release-lycheejs)
+2. [Log in NPM](#log-in-npm)
+3. [Update lychee.js](#update-lycheejs)
+4. [Release lychee.js](#release-lycheejs)
 
 
 ## Configure Token
@@ -18,6 +19,28 @@ file:
 cd /opt/lycheejs;
 
 echo "MY-PERSONAL-ACCESS-TOKEN" > .github/TOKEN;
+```
+
+
+## Log in NPM
+
+The NPM package manager is some kind of bloat, as it is
+not integrated with `git` and neither with `github` and
+therefore has its own publishing process.
+
+In order to have a machine setup for a successful `npm publish`,
+it is necessary to execute an initial `npm login` first.
+
+The account name for NPM is [~artificial-engineering](https://www.npmjs.com/~artificial-engineering).
+Contact [@cookiengineer](https://github.com/cookiengineer) to
+get a login token for your machine.
+
+```bash
+npm login;
+
+# Username: artificial-engineering
+# Password: Contact @cookiengineer
+# Email: robot [ insert an at here ] artificial.engineering
 ```
 
 

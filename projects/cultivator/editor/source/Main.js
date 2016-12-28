@@ -4,7 +4,7 @@ lychee.define('app.Main').requires([
 	'app.data.Project',
 	'app.net.Client',
 	'app.net.Server',
-//	'app.state.Asset',
+	'app.state.Asset',
 	'app.state.Project',
 	'harvester.net.Client'
 ]).includes([
@@ -91,7 +91,7 @@ lychee.define('app.Main').requires([
 
 
 			this.setState('project', new _app.state.Project(this));
-//			this.setState('asset',   new _app.state.Asset(this));
+			this.setState('asset',   new _app.state.Asset(this));
 
 
 			this.changeState('project');

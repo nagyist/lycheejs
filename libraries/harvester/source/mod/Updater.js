@@ -12,7 +12,7 @@ lychee.define('harvester.mod.Updater').requires([
 	 * HELPERS
 	 */
 
-	let _on_sync = function(project, data) {
+	const _on_sync = function(project, data) {
 
 		console.log('SYNCHRONIZING UPDATES', project, data);
 
@@ -24,7 +24,7 @@ lychee.define('harvester.mod.Updater').requires([
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * ENTITY API

@@ -72,13 +72,13 @@ lychee.define('Stash').tags({
 
 		try {
 			local = 'localStorage' in global;
-		} catch(err) {
+		} catch (err) {
 			local = false;
 		}
 
 		try {
 			session = 'sessionStorage' in global;
-		} catch(err) {
+		} catch (err) {
 			session = false;
 		}
 
@@ -134,7 +134,7 @@ lychee.define('Stash').tags({
 			};
 
 
-			(function _initialize() {
+			(function() {
 
 				let data = _JSON.decode(global.localStorage.getItem('lychee-Stash-PERSISTENT'));
 				if (data !== null) {
@@ -174,7 +174,7 @@ lychee.define('Stash').tags({
 	 * HELPERS
 	 */
 
-	const _is_asset = function(asset) {
+	const _validate_asset = function(asset) {
 
 		if (asset instanceof Object && typeof asset.serialize === 'function') {
 			return true;
@@ -629,8 +629,8 @@ lychee.define('Stash').tags({
 
 		write: function(id, asset) {
 
-			id    = typeof id === 'string'    ? id    : null;
-			asset = _is_asset(asset) === true ? asset : null;
+			id    = typeof id === 'string'          ? id    : null;
+			asset = _validate_asset(asset) === true ? asset : null;
 
 
 			if (id !== null && asset !== null) {

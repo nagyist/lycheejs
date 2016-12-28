@@ -53,10 +53,9 @@ lychee.define('lychee.net.client.Debugger').includes([
 
 			if (typeof data.construtor === 'string' || typeof data.reference === 'string') {
 
-				let scope       = (lychee.environment !== null ? lychee.environment.global : global);
 				let environment = (lychee.environment !== null ? lychee.environment        : null);
-				let definition  = lychee.deserialize(data);
 				let value       = false;
+				let definition  = lychee.deserialize(data);
 
 				if (environment !== null) {
 					value = environment.define(definition);
@@ -67,7 +66,7 @@ lychee.define('lychee.net.client.Debugger').includes([
 
 					this.tunnel.send({
 						tid:   data.receiver,
-						value: definition !== null
+						value: value === true
 					}, {
 						id:    'debugger',
 						event: 'define-value'
@@ -162,7 +161,7 @@ lychee.define('lychee.net.client.Debugger').includes([
 
 		}, this);
 
-		this.bind('serialize', function(data) {
+		this.bind('snapshot', function(data) {
 
 			if (typeof data.reference === 'string') {
 
@@ -177,7 +176,7 @@ lychee.define('lychee.net.client.Debugger').includes([
 						value: value
 					}, {
 						id:    'debugger',
-						event: 'serialize-value'
+						event: 'snapshot-value'
 					});
 
 				}
@@ -321,7 +320,7 @@ lychee.define('lychee.net.client.Debugger').includes([
 
 		},
 
-		serialize: function(tid, data) {
+		snapshot: function(tid, data) {
 
 			tid  = typeof tid === 'string' ? tid  : null;
 			data = data instanceof Object  ? data : null;
@@ -334,7 +333,7 @@ lychee.define('lychee.net.client.Debugger').includes([
 					reference: data.reference || null
 				}, {
 					id:    'debugger',
-					event: 'serialize'
+					event: 'snapshot'
 				});
 
 			}

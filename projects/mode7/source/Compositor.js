@@ -74,12 +74,12 @@ lychee.define('game.Compositor').exports(function(lychee, global, attachments) {
 
 
 			// x, y, depth, road width
- 			target.x = Math.round(  hwidth + scale * cameraX *  hwidth );
-			target.y = Math.round( hheight - scale * cameraY * hheight );
+			target.x = Math.round(hwidth + scale * cameraX *  hwidth);
+			target.y = Math.round(hheight - scale * cameraY * hheight);
 			target.z = cameraZ;
 			//                           road width (!)
 			//                            \/\/\/\/\/\/
-			target.w = Math.round(scale * 1.5 * hwidth * hwidth );
+			target.w = Math.round(scale * 1.5 * hwidth * hwidth);
 
 		}
 

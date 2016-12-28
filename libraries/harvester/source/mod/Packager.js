@@ -18,9 +18,18 @@ lychee.define('harvester.mod.Packager').requires([
 
 
 		try {
+
 			json = JSON.parse(project.filesystem.read('/lychee.pkg'));
-		} catch(err) {
-			json = JSON.parse(JSON.stringify(project.package.json));
+
+		} catch (err) {
+
+			console.error('harvester.mod.Packager: FAILURE ("' + project.identifier + '")');
+
+			try {
+				json = JSON.parse(JSON.stringify(project.package.json));
+			} catch (err) {
+			}
+
 		}
 
 		if (json === null)                      json        = {};
@@ -81,7 +90,7 @@ lychee.define('harvester.mod.Packager').requires([
 		let name = path.split('/').pop();
 
 		let info = this.info(path);
-		if (info !== null) {
+		if (info !== null && name.substr(0, 1) !== '.') {
 
 			if (info.type === 'file') {
 
@@ -130,7 +139,7 @@ lychee.define('harvester.mod.Packager').requires([
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * ENTITY API

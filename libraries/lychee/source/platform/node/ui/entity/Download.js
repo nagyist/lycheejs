@@ -17,7 +17,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -28,6 +28,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 
 }).exports(function(lychee, global, attachments) {
 
+	const _fs     = global.require('fs');
 	const _Button = lychee.import('lychee.ui.entity.Button');
 	const _HOME   = (function(env) {
 
@@ -55,11 +56,11 @@ lychee.define('lychee.ui.entity.Download').tags({
 		'Font':    { name: 'Entity', ext: 'fnt',     enc: 'utf8'   },
 		'Music':   {
 			'mp3': { name: 'Entity', ext: 'msc.mp3', enc: 'binary' },
-			'ogg': { name: 'Entity', ext: 'msc.ogg', enc: 'binary' },
+			'ogg': { name: 'Entity', ext: 'msc.ogg', enc: 'binary' }
 		},
 		'Sound':   {
 			'mp3': { name: 'Entity', ext: 'snd.mp3', enc: 'binary' },
-			'ogg': { name: 'Entity', ext: 'snd.ogg', enc: 'binary' },
+			'ogg': { name: 'Entity', ext: 'snd.ogg', enc: 'binary' }
 		},
 		'Texture': { name: 'Entity', ext: 'png',     enc: 'binary' },
 		'Stuff':   { name: 'Entity', ext: 'stuff',   enc: 'utf8'   }
@@ -82,7 +83,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 					let blob = new Buffer(data.blob.buffer[ext], 'base64');
 					let path = _HOME + '/' + name + '.' + mime[ext].ext;
 
-					_fs.writeFileSync(path, buffer, mime[ext].enc);
+					_fs.writeFileSync(path, blob, mime[ext].enc);
 
 				}
 
@@ -95,7 +96,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 					path = _HOME + '/' + mime.name + '.' + mime.ext;
 				}
 
-				_fs.writeFileSync(path, buffer, mime.enc);
+				_fs.writeFileSync(path, blob, mime.enc);
 
 			}
 

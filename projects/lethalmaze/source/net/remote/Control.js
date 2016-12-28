@@ -42,7 +42,7 @@ lychee.define('game.net.remote.Control').includes([
 				active:    false,
 				timeout:   10000,
 				players:   [ this.tunnel.host + ':' + this.tunnel.port ],
-				positions: [ { x: -1, y: -1 }],
+				positions: [{ x: -1, y: -1 }],
 				tunnels:   [ this.tunnel    ]
 			};
 
@@ -158,9 +158,6 @@ lychee.define('game.net.remote.Control').includes([
 
 	const _on_unplug = function() {
 
-		let found = false;
-
-
 		for (let id in _SESSIONS) {
 
 			let session = _SESSIONS[id];
@@ -170,7 +167,6 @@ lychee.define('game.net.remote.Control').includes([
 				session.players.splice(index, 1);
 				session.positions.splice(index, 1);
 				session.tunnels.splice(index, 1);
-				found = true;
 
 
 				for (let t = 0, tl = session.tunnels.length; t < tl; t++) {

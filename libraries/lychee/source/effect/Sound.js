@@ -10,23 +10,15 @@ lychee.define('lychee.effect.Sound').exports(function(lychee, global, attachment
 	let Composite = function(settings) {
 
 		this.delay = 0;
-		this.sound = true;
+		this.sound = null;
 
 		this.__start = null;
 
 
 		// No data validation garbage allowed for effects
 
-		let delay = typeof settings.delay === 'number' ? (settings.delay | 0) : null;
-		let sound = settings.sound instanceof Sound    ? settings.sound       : null;
-
-		if (delay !== null) {
-			this.delay = delay;
-		}
-
-		if (sound !== null) {
-			this.sound = sound;
-		}
+		this.delay = typeof settings.delay === 'number' ? (settings.delay | 0) : 0;
+		this.sound = settings.sound instanceof Sound    ? settings.sound       : null;
 
 	};
 

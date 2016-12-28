@@ -375,17 +375,17 @@ lychee.define('lychee.math.Matrix').exports(function(lychee, global, attachments
 
 
 			// Rotation Matrix
-			let r00 = x * x * t + c;
-			let r01 = y * x * t + z * s;
-			let r02 = z * x * t - y * s;
+			let r00 = x * x * t + cos;
+			let r01 = y * x * t + z * sin;
+			let r02 = z * x * t - y * sin;
 
-			let r10 = x * y * t - z * s;
-			let r11 = y * y * t + c;
-			let r12 = z * y * t + x * s;
+			let r10 = x * y * t - z * sin;
+			let r11 = y * y * t + cos;
+			let r12 = z * y * t + x * sin;
 
-			let r20 = x * z * t + y * s;
-			let r21 = y * z * t - x * s;
-			let r22 = z * z * t + c;
+			let r20 = x * z * t + y * sin;
+			let r21 = y * z * t - x * sin;
+			let r22 = z * z * t + cos;
 
 
 			 d[0] = a00 * r00 + a10 * r01 + a20 * r02;

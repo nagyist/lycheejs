@@ -251,6 +251,9 @@
 			"Main": [
 				"js"
 			],
+			"Watcher": [
+				"js"
+			],
 			"data": {
 				"Filesystem": [
 					"js"

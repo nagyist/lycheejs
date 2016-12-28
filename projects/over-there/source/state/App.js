@@ -126,8 +126,8 @@ lychee.define('app.state.App').requires([
 					entity.height = height;
 
 					entity = this.queryLayer('midground', 'emblem');
-					entity.position.x = 1/2 * width - 128;
-					entity.position.y = 1/2 * height - 32;
+					entity.position.x = 1 / 2 * width - 128;
+					entity.position.y = 1 / 2 * height - 32;
 
 				}
 
@@ -339,7 +339,7 @@ lychee.define('app.state.App').requires([
 			if (background !== null) {
 
 				background.setOrigin({
-					x: background.origin.x + 1/250 * delta
+					x: background.origin.x + 1 / 250 * delta
 				});
 
 			}

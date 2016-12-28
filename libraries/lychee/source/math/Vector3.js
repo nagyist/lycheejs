@@ -283,7 +283,7 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 
 		interpolateAdd: function(vector, t) {
 
- 			this.x += t * vector.x;
+			this.x += t * vector.x;
 			this.y += t * vector.y;
 			this.z += t * vector.z;
 
@@ -326,7 +326,7 @@ lychee.define('lychee.math.Vector3').exports(function(lychee, global, attachment
 			let vy = this.y;
 			let vz = this.z;
 
-			let q  = quarternion.data;
+			let q  = quaternion.data;
 			let qx = q[0];
 			let qy = q[1];
 			let qz = q[2];

@@ -23,8 +23,27 @@ lychee.define('Renderer').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	const _PI2 = Math.PI * 2;
-	let   _id  = 0;
+	const _PI2  = Math.PI * 2;
+	let   _id   = 0;
+	let   _body = null;
+
+
+
+	/*
+	 * FEATURE DETECTION
+	 */
+
+	(function(global) {
+
+		if (typeof global.document !== 'undefined') {
+
+			if (typeof global.document.body !== 'undefined') {
+				_body = global.document.body;
+			}
+
+		}
+
+	})(global);
 
 
 
@@ -86,7 +105,10 @@ lychee.define('Renderer').tags({
 		this.__canvas           = global.document.createElement('canvas');
 		this.__canvas.className = 'lychee-Renderer';
 		this.__ctx              = this.__canvas.getContext('2d');
-		global.document.body.appendChild(this.__canvas);
+
+		if (_body !== null) {
+			_body.appendChild(this.__canvas);
+		}
 
 
 		this.setAlpha(settings.alpha);
@@ -590,8 +612,8 @@ lychee.define('Renderer').tags({
 							y,
 							width,
 							height,
-							-1/2 * width,
-							-1/2 * height,
+							-1 / 2 * width,
+							-1 / 2 * height,
 							width,
 							height
 						);

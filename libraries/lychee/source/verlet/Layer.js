@@ -1,7 +1,8 @@
 
 lychee.define('lychee.verlet.Layer').requires([
-	'lychee.app.Layer',
 	'lychee.math.Vector3'
+]).includes([
+	'lychee.app.Layer'
 ]).exports(function(lychee, global, attachments) {
 
 	const _Layer   = lychee.import('lychee.app.Layer');
@@ -20,7 +21,6 @@ lychee.define('lychee.verlet.Layer').requires([
 
 		this.friction   = 0.99;
 		this.gravity    = new _Vector3({ x: 0, y: 1, z: 0 });
-
 
 		this.__velocity = new _Vector3();
 
@@ -60,6 +60,9 @@ lychee.define('lychee.verlet.Layer').requires([
 			if (this.gravity.length() !== 0) settings.gravity  = lychee.serialize(this.gravity);
 
 
+			data['blob'] = Object.keys(blob).length > 0 ? blob : null;
+
+
 			return data;
 
 		},
@@ -75,14 +78,13 @@ lychee.define('lychee.verlet.Layer').requires([
 			let velocity = this.__velocity;
 
 
-			let hwidth  = this.width  / 2;
 			let hheight = this.height / 2;
 
 			for (let e = 0, el = entities.length; e < el; e++) {
 
 				let entity    = entities[e];
 				let position  = entity.position.clone();
-                let particles = entity.particles;
+				let particles = entity.particles;
 
 				for (let p = 0, pl = particles.length; p < pl; p++) {
 

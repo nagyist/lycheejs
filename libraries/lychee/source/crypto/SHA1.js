@@ -239,13 +239,14 @@ lychee.define('lychee.crypto.SHA1').exports(function(lychee, global, attachments
 
 
 			buffer[length % 64] = 0x80;
-			// _write_zero(buffer, length % 64 + 1);
-			buffer.fill(0, length % 64 + 1);
+			_write_zero(buffer, length % 64 + 1);
+			// buffer.fill(0, length % 64 + 1);
+
 
 			if ((length * 8) % (64 * 8) >= (56 * 8)) {
 				_update_chunk.call(this, buffer);
-				// _write_zero(buffer);
-				buffer.fill(0);
+				_write_zero(buffer);
+				// buffer.fill(0);
 			}
 
 

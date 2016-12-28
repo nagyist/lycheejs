@@ -246,7 +246,7 @@ lychee.define('lychee.ui.entity.Input').includes([
 							this.__isDirty = true;
 						} else if (newvalue < this.min) {
 							this.value     = this.min;
- 							this.__value   = this.min + '';
+							this.__value   = this.min + '';
 							this.__isDirty = true;
 						}
 

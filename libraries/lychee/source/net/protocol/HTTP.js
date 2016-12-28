@@ -133,9 +133,7 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 		buffer = buffer.toString('utf8');
 
 
-		let fragment = this.__fragment;
-		let type     = this.type;
-		let chunk    = {
+		let chunk = {
 			bytes:   -1,
 			headers: {},
 			payload: null
@@ -150,12 +148,10 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 		let headers_length = buffer.indexOf('\r\n\r\n');
 		let headers_data   = buffer.substr(0, headers_length);
 		let payload_data   = buffer.substr(headers_length + 4);
-		let payload_length = buffer.length - headers_length - 4;
 
 		let i_end = payload_data.indexOf('\r\n\r\n');
 		if (i_end !== -1) {
-			payload_data   = payload_data.substr(0, i_end);
-			payload_length = payload_data.length;
+			payload_data = payload_data.substr(0, i_end);
 		}
 
 
@@ -320,14 +316,9 @@ lychee.define('lychee.net.protocol.HTTP').exports(function(lychee, global, attac
 
 	let Composite = function(type) {
 
-		type = lychee.enumof(Composite.TYPE, type) ? type : null;
-
-
-		this.type = type;
-
+		this.type = lychee.enumof(Composite.TYPE, type) ? type : null;
 
 		this.__buffer   = new Buffer(0);
-		this.__fragment = { payload: new Buffer(0) };
 		this.__isClosed = false;
 
 

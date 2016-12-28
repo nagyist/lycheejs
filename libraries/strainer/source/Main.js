@@ -9,7 +9,7 @@ lychee.define('strainer.Main').requires([
 	const _lychee   = lychee.import('lychee');
 	const _Emitter  = lychee.import('lychee.event.Emitter');
 	const _Input    = lychee.import('lychee.Input');
-	const _Template = lychee.import('breeder.Template');
+	const _Template = lychee.import('strainer.Template');
 
 
 
@@ -76,15 +76,28 @@ lychee.define('strainer.Main').requires([
 			});
 
 
-			if (action === 'stash') {
+			if (action === 'check') {
 
 				template.then('read');
-				template.then('read-fix');
-				template.then('read-api');
-//				template.then('stash');
-//				template.then('stash-fix');
-//				template.then('stash-api');
-				template.then('write');
+
+				template.then('check-eslint');
+				template.then('check-api');
+
+				template.then('write-eslint');
+				template.then('write-api');
+
+			} else if (action === 'stage') {
+
+				template.then('read');
+
+				template.then('check-eslint');
+				template.then('check-api');
+
+				template.then('write-eslint');
+				template.then('write-api');
+
+				template.then('stage-eslint');
+				template.then('stage-api');
 
 			}
 

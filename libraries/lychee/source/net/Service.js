@@ -79,14 +79,9 @@ lychee.define('lychee.net.Service').requires([
 
 	let Composite = function(id, tunnel, type) {
 
-		id     = typeof id === 'string'                        ? id     : null;
-		tunnel = lychee.interfaceof(lychee.net.Tunnel, tunnel) ? tunnel : null;
-		type   = lychee.enumof(Composite.TYPE, type)           ? type   : null;
-
-
-		this.id     = id;
-		this.tunnel = tunnel;
-		this.type   = type;
+		this.id     = typeof id === 'string'                        ? id     : null;
+		this.tunnel = lychee.interfaceof(lychee.net.Tunnel, tunnel) ? tunnel : null;
+		this.type   = lychee.enumof(Composite.TYPE, type)           ? type   : null;
 
 		this.__multicast = [];
 

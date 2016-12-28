@@ -13,7 +13,7 @@ lychee.define('harvester.mod.Fertilizer').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -97,7 +97,7 @@ lychee.define('harvester.mod.Fertilizer').tags({
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * ENTITY API

@@ -15,7 +15,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 		}
 
 	}
@@ -40,11 +40,15 @@ lychee.define('lychee.net.socket.HTTP').tags({
 		let that = this;
 		if (that.__connection !== socket) {
 
-			socket.on('data', function(blob) {
+			socket.on('data', function(raw) {
 
 				// XXX: nwjs has global scope problems
 				// XXX: Internal Buffer is not our global.Buffer interface
-				blob = new global.Buffer(blob);
+
+				let blob = new Buffer(raw.length);
+				for (let b = 0; b < blob.length; b++) {
+					blob[b] = raw[b];
+				}
 
 
 				let chunks = protocol.receive(blob);
@@ -159,7 +163,7 @@ lychee.define('lychee.net.socket.HTTP').tags({
 
 
 			let that     = this;
-			let url      = /:/g.test(host) ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
+			// let url      = /:/g.test(host) ? ('http://[' + host + ']:' + port) : ('http://' + host + ':' + port);
 			let protocol = null;
 
 

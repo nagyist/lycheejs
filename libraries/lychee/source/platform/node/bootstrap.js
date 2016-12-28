@@ -42,7 +42,7 @@
 	const _load_asset = function(settings, callback, scope) {
 
 		let path     = lychee.environment.resolve(settings.url);
-		let encoding = settings.encoding === 'binary' ? 'binary': 'utf8';
+		let encoding = settings.encoding === 'binary' ? 'binary' : 'utf8';
 
 
 		_fs.readFile(path, encoding, function(error, buffer) {
@@ -54,7 +54,7 @@
 
 			try {
 				callback.call(scope, raw);
-			} catch(err) {
+			} catch (err) {
 				lychee.Debugger.report(lychee.environment, err, null);
 			}
 
@@ -75,6 +75,15 @@
 	let   _std_out = '';
 	let   _std_err = '';
 
+	console.clear = function() {
+
+		// clear screen
+		// process.stdout.write('\x1B[2J');
+
+		// clear screen and reset cursor
+		process.stdout.write('\x1B[2J\x1B[0f');
+
+	};
 
 	console.log = function() {
 
@@ -209,10 +218,10 @@
 
 
 		let key = {
-			name:     null,
-			ctrl:     false,
-			meta:     false,
-			shift:    false
+			name:  null,
+			ctrl:  false,
+			meta:  false,
+			shift: false
 		};
 
 
@@ -283,26 +292,26 @@
 			// Parse the key itself
 			switch (code) {
 
-				/* xterm ESC O letter */
+				// xterm ESC O letter
 				case 'OP':   key.name = 'f1'; break;
 				case 'OQ':   key.name = 'f2'; break;
 				case 'OR':   key.name = 'f3'; break;
 				case 'OS':   key.name = 'f4'; break;
 
-				/* xterm ESC [ number ~ */
+				// xterm ESC [ number ~
 				case '[11~': key.name = 'f1'; break;
 				case '[12~': key.name = 'f2'; break;
 				case '[13~': key.name = 'f3'; break;
 				case '[14~': key.name = 'f4'; break;
 
-				/* Cygwin/libuv */
+				// Cygwin/libuv
 				case '[[A':  key.name = 'f1'; break;
 				case '[[B':  key.name = 'f2'; break;
 				case '[[C':  key.name = 'f3'; break;
 				case '[[D':  key.name = 'f4'; break;
 				case '[[E':  key.name = 'f5'; break;
 
-				/* common */
+				// common
 				case '[15~': key.name = 'f5';  break;
 				case '[17~': key.name = 'f6';  break;
 				case '[18~': key.name = 'f7';  break;
@@ -312,7 +321,7 @@
 				case '[23~': key.name = 'f11'; break;
 				case '[24~': key.name = 'f12'; break;
 
-				/* xterm ESC [ letter */
+				// xterm ESC [ letter
 				case '[A':   key.name = 'up';    break;
 				case '[B':   key.name = 'down';  break;
 				case '[C':   key.name = 'right'; break;
@@ -321,7 +330,7 @@
 				case '[F':   key.name = 'end';   break;
 				case '[H':   key.name = 'home';  break;
 
-				/* xterm ESC O letter */
+				// xterm ESC O letter
 				case 'OA':   key.name = 'up';    break;
 				case 'OB':   key.name = 'down';  break;
 				case 'OC':   key.name = 'right'; break;
@@ -330,7 +339,7 @@
 				case 'OF':   key.name = 'end';   break;
 				case 'OH':   key.name = 'home';  break;
 
-				/* xterm ESC [ number ~ */
+				// xterm ESC [ number ~
 				case '[1~':  key.name = 'home';     break;
 				case '[2~':  key.name = 'insert';   break;
 				case '[3~':  key.name = 'delete';   break;
@@ -338,11 +347,11 @@
 				case '[5~':  key.name = 'pageup';   break;
 				case '[6~':  key.name = 'pagedown'; break;
 
-				/* Putty */
+				// Putty
 				case '[[5~': key.name = 'pageup';   break;
 				case '[[6~': key.name = 'pagedown'; break;
 
-				/* misc. */
+				// misc.
 				case '[Z':   key.name = 'tab'; key.shift = true; break;
 				default:     key.name = null;                    break;
 
@@ -413,13 +422,23 @@
 
 	Buffer.prototype.map = function(callback) {
 
-		callback = callback instanceof Function ? callback : function(value) { return value; };
+		callback = callback instanceof Function ? callback : null;
 
 
 		let clone = new Buffer(this.length);
 
-		for (let b = 0; b < this.length; b++) {
-			clone[b] = callback(this[b], b);
+		if (callback !== null) {
+
+			for (let b = 0; b < this.length; b++) {
+				clone[b] = callback(this[b], b);
+			}
+
+		} else {
+
+			for (let b = 0; b < this.length; b++) {
+				clone[b] = this[b];
+			}
+
 		}
 
 		return clone;
@@ -524,21 +543,15 @@
 				let data = null;
 				try {
 					data = JSON.parse(raw);
-				} catch(err) {
+				} catch (err) {
 				}
 
 
 				this.buffer = data;
 
 
-				if (data !== null) {
-
-				} else {
-
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Config at ' + this.url + ' is invalid (No JSON file)');
-					}
-
+				if (data === null) {
+					console.warn('bootstrap.js: Invalid Config at "' + this.url + '" (No JSON file).');
 				}
 
 
@@ -585,9 +598,7 @@
 
 		} else {
 
-			if (lychee.debug === true) {
-				console.error('bootstrap.js: Font at "' + this.url + '" is invalid (No FNT file)');
-			}
+			console.warn('bootstrap.js: Invalid Font at "' + this.url + '" (No FNT file).');
 
 		}
 
@@ -821,7 +832,7 @@
 				let data = null;
 				try {
 					data = JSON.parse(raw);
-				} catch(err) {
+				} catch (err) {
 				}
 
 
@@ -1321,9 +1332,7 @@
 
 				} else {
 
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Texture at "' + url.substr(0, 15) + '" is invalid (no PNG file)');
-					}
+					console.warn('bootstrap.js: Invalid Texture at "' + url.substr(0, 15) + '" (No PNG file).');
 
 				}
 
@@ -1352,9 +1361,9 @@
 						}
 
 
-  						let is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
+						let is_power_of_two = (this.width & (this.width - 1)) === 0 && (this.height & (this.height - 1)) === 0;
 						if (lychee.debug === true && is_power_of_two === false) {
-							console.warn('bootstrap.js: Texture at ' + this.url + ' is NOT power-of-two');
+							console.warn('bootstrap.js: Texture at "' + this.url + '" is NOT power-of-two');
 						}
 
 
@@ -1367,9 +1376,7 @@
 
 				} else {
 
-					if (lychee.debug === true) {
-						console.error('bootstrap.js: Texture at "' + this.url + '" is invalid (no PNG file)');
-					}
+					console.warn('bootstrap.js: Invalid Texture at "' + this.url + '" (No PNG file).');
 
 
 					if (this.onload instanceof Function) {
@@ -1420,7 +1427,7 @@
 
 			try {
 				require(cid);
-			} catch(err) {
+			} catch (err) {
 				lychee.Debugger.report(lychee.environment, err, stuff);
 			}
 
@@ -1551,6 +1558,62 @@
 
 
 	/*
+	 * FEATURES
+	 */
+
+	const _FEATURES = {
+
+		require: function(id) {
+
+			if (id === 'child_process') return {};
+			if (id === 'fs')            return {};
+			if (id === 'http')          return {};
+			if (id === 'https')         return {};
+			if (id === 'net')           return {};
+			if (id === 'path')          return {};
+
+
+			throw new Error('Cannot find module \'' + id + '\'');
+
+		},
+
+		process: {
+			env: {
+				APPDATA: null,
+				HOME:    '/home/dev'
+			},
+			stdin: {
+				on: function() {}
+			},
+			stdout: {
+				on:    function() {},
+				write: function() {}
+			}
+		},
+
+		clearInterval: function() {},
+		clearTimeout:  function() {},
+		setInterval:   function() {},
+		setTimeout:    function() {}
+
+	};
+
+
+	Object.defineProperty(lychee.Environment, '__FEATURES', {
+
+		get: function() {
+			return _FEATURES;
+		},
+
+		set: function(value) {
+			return false;
+		}
+
+	});
+
+
+
+	/*
 	 * EXPORTS
 	 */
 
@@ -1581,7 +1644,6 @@
 		}
 
 	});
-
 
 
 	module.exports = function(root) {

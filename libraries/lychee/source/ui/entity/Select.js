@@ -28,6 +28,7 @@ lychee.define('lychee.ui.entity.Select').includes([
 			start:    null,
 			pingpong: false
 		};
+		this.__height = 32;
 		this.__pulse  = {
 			active:   false,
 			duration: 300,
@@ -56,9 +57,11 @@ lychee.define('lychee.ui.entity.Select').includes([
 		settings = null;
 
 
-		if (this.options.length > 1) {
-			this.height = this.options.length * this.height;
+		if (this.height === 32 && this.options.length > 1) {
+			this.__height = this.height;
+			this.height   = this.options.length * this.__height;
 		}
+
 
 		if (this.value === '') {
 			this.setValue(this.options[0] || null);
@@ -75,7 +78,7 @@ lychee.define('lychee.ui.entity.Select').includes([
 			if (this.options.length === 0) return;
 
 
-			let lh  = this.height / this.options.length;
+			let lh  = this.__height;
 			let pos = (position.y + this.height / 2);
 
 			let q = (pos / lh) | 0;
@@ -124,6 +127,18 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 		this.bind('blur', function() {
 			this.setState('default');
+		}, this);
+
+		this.bind('relayout', function() {
+
+			let lh = this.__height;
+
+			if (this.options.length > 0) {
+				this.height = lh * this.options.length;
+			} else {
+				this.height = lh;
+			}
+
 		}, this);
 
 
@@ -237,12 +252,16 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 
 			let x1 = x - hwidth;
-			let lh = this.height / this.options.length;
+			let lh = this.__height;
 
 			for (let o = 0, ol = this.options.length; o < ol; o++) {
 
 				let option = this.options[o];
 				let y1     = y - hheight + o * lh;
+
+				if (y1 + lh > y + hheight) {
+					break;
+				}
 
 
 				if (pulse.active === true) {
@@ -401,20 +420,11 @@ lychee.define('lychee.ui.entity.Select').includes([
 
 			if (options !== null) {
 
-				let height = this.height || null;
-				if (height !== null) {
-
-					if (this.options.length > 0) {
-						this.height = (height / this.options.length) * options.length;
-					} else {
-						this.height = height * options.length;
-					}
-
-				}
-
 				this.options = options.map(function(option) {
 					return '' + option;
 				});
+
+				this.trigger('relayout');
 
 
 				if (this.options.indexOf(this.value) === -1) {

@@ -83,8 +83,8 @@ lychee.define('lychee.app.State').requires([
 		if (renderer !== null) {
 
 			let position = {
-				x: 1/2 * renderer.width,
-				y: 1/2 * renderer.height
+				x: 1 / 2 * renderer.width,
+				y: 1 / 2 * renderer.height
 			};
 
 

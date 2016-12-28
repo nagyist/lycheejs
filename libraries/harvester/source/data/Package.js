@@ -7,9 +7,16 @@ lychee.define('harvester.data.Package').includes([
 	 * HELPERS
 	 */
 
-	var _parse_buffer = function() {
+	const _parse_buffer = function() {
 
-		var json = JSON.parse(this.buffer.toString());
+		let json = null;
+
+		try {
+			json = JSON.parse(this.buffer.toString('utf8'));
+		} catch (err) {
+		}
+
+
 		if (json instanceof Object) {
 
 			if (json.api instanceof Object) {
@@ -66,7 +73,7 @@ lychee.define('harvester.data.Package').includes([
 
 	};
 
-	var _walk_directory = function(files, node, path) {
+	const _walk_directory = function(files, node, path) {
 
 		if (node instanceof Array) {
 
@@ -110,7 +117,7 @@ lychee.define('harvester.data.Package').includes([
 	 * IMPLEMENTATION
 	 */
 
-	var Composite = function(buffer) {
+	let Composite = function(buffer) {
 
 		this.buffer = null;
 
@@ -136,7 +143,7 @@ lychee.define('harvester.data.Package').includes([
 
 		deserialize: function(blob) {
 
-			var buffer = lychee.deserialize(blob.buffer);
+			let buffer = lychee.deserialize(blob.buffer);
 			if (buffer !== null) {
 				this.setBuffer(buffer);
 			}
@@ -145,12 +152,11 @@ lychee.define('harvester.data.Package').includes([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = lychee.event.Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.data.Package';
 
 
-			var settings = {};
-			var blob     = data['blob'] || {};
+			let blob = data['blob'] || {};
 
 
 			if (this.buffer !== null) blob.buffer = lychee.serialize(this.buffer);

@@ -5,7 +5,7 @@ lychee.define('harvester.net.server.Redirect').exports(function(lychee, global, 
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * MODULE API

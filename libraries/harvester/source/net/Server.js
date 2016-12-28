@@ -12,8 +12,12 @@ lychee.define('harvester.net.Server').requires([
 	const _Remote   = lychee.import('harvester.net.Remote');
 	const _Server   = lychee.import('lychee.net.Server');
 	const _CODEC    = {
-		encode: function(data) { return data; },
-		decode: function(data) { return data; }
+		encode: function(data) {
+			return data;
+		},
+		decode: function(data) {
+			return data;
+		}
 	};
 
 

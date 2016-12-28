@@ -212,7 +212,6 @@ lychee.define('lychee.net.protocol.WS').requires([
 	const _decode_buffer = function(buffer) {
 
 		let fragment = this.__fragment;
-		let type     = this.type;
 		let chunk    = {
 			bytes:   -1,
 			headers: {},
@@ -392,11 +391,7 @@ lychee.define('lychee.net.protocol.WS').requires([
 
 	let Composite = function(type) {
 
-		type = lychee.enumof(Composite.TYPE, type) ? type : null;
-
-
-		this.type = type;
-
+		this.type = lychee.enumof(Composite.TYPE, type) ? type : null;
 
 		this.__buffer   = new Buffer(0);
 		this.__fragment = { operator: 0x00, payload: new Buffer(0) };
@@ -587,7 +582,13 @@ lychee.define('lychee.net.protocol.WS').requires([
 
 		ping: function() {
 
-			return _on_pong_frame.call(this);
+			let buffer = _on_pong_frame.call(this);
+			if (buffer !== null) {
+				return buffer;
+			}
+
+
+			return null;
 
 		}
 

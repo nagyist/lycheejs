@@ -13,7 +13,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -92,10 +92,10 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 			try {
 
-				let helper = _child_process.execFile(_root + '/bin/helper.sh', [
+				let helper = _child_process.execFile(_ROOT + '/bin/helper.sh', [
 					'lycheejs://' + value
 				], {
-					cwd: _root
+					cwd: _ROOT
 				}, function(error, stdout, stderr) {
 
 					stderr = (stderr.trim() || '').toString();
@@ -127,7 +127,7 @@ lychee.define('lychee.ui.entity.Helper').tags({
 
 				helper.on('exit', function(code) {});
 
-			} catch(err) {
+			} catch (err) {
 
 				helper = null;
 

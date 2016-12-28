@@ -59,7 +59,7 @@ lychee.define('game.entity.Track').exports(function(lychee, global, attachments)
 			let altitude = data.route[r][3] * 20 || 0;
 
 
-			switch(type) {
+			switch (type) {
 
 				case "straight":
 					track.addRoute(length,   0, element, lastaltitude, altitude);
@@ -170,10 +170,10 @@ lychee.define('game.entity.Track').exports(function(lychee, global, attachments)
 
 				renderer.drawPolygon(
 					4,
-					lx1 - l1/2, y1,
-					lx1 + l1/2, y1,
-					lx2 + l2/2, y2,
-					lx2 - l2/2, y2,
+					lx1 - l1 / 2, y1,
+					lx1 + l1 / 2, y1,
+					lx2 + l2 / 2, y2,
+					lx2 - l2 / 2, y2,
 					palette.lane,
 					true
 				);
@@ -217,11 +217,11 @@ lychee.define('game.entity.Track').exports(function(lychee, global, attachments)
 	Composite.ELEMENTS = {
 
 		jump: function(t, from, to) {
-			return from + (to - from) * Math.pow(t ,2);
+			return from + (to - from) * Math.pow(t, 2);
 		},
 
 		hill: function(t, from, to) {
-			return from + (to - from) * ((-Math.cos(t * Math.PI)/2) + 0.5);
+			return from + (to - from) * ((-Math.cos(t * Math.PI) / 2) + 0.5);
 		}
 
 	};
@@ -243,8 +243,6 @@ lychee.define('game.entity.Track').exports(function(lychee, global, attachments)
 		},
 
 		render: function(renderer, offsetX, offsetY, camera, compositor) {
-
-			let segments = this.__segments;
 
 			if (camera !== null && compositor !== null) {
 

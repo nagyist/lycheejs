@@ -53,7 +53,7 @@ lychee.define('Storage').tags({
 				_TEMPORARY = global.sessionStorage;
 			}
 
-		} catch(err) {
+		} catch (err) {
 
 			local   = false;
 			session = true;

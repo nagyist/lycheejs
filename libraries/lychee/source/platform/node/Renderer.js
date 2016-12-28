@@ -57,10 +57,10 @@ lychee.define('Renderer').tags({
 			let width  = this.width;
 			let height = this.height;
 
-			for (let y = 0; y < this.height; y++) {
+			for (let y = 0; y < height; y++) {
 
-				for (let x = 0; x < this.width; x++) {
-					this.__ctx[y][x] = ' ';
+				for (let x = 0; x < width; x++) {
+					ctx[y][x] = ' ';
 				}
 
 			}
@@ -311,11 +311,9 @@ lychee.define('Renderer').tags({
 			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
-			let ctx = this.__ctx;
-			let pi2 = Math.PI * 2;
-
-
 			// TODO: Implement arc-drawing ASCII art algorithm
+			// let ctx = this.__ctx;
+			// let pi2 = Math.PI * 2;
 
 		},
 
@@ -354,16 +352,24 @@ lychee.define('Renderer').tags({
 			// top - right - bottom - left
 
 			y = y1;
-			for (x = x1 + 1; x < x2; x++) _draw_ctx.call(ctx, x, y, '-');
+			for (x = x1 + 1; x < x2; x++) {
+				_draw_ctx.call(ctx, x, y, '-');
+			}
 
 			x = x2;
-			for (y = y1 + 1; y < y2; y++) _draw_ctx.call(ctx, x, y, '|');
+			for (y = y1 + 1; y < y2; y++) {
+				_draw_ctx.call(ctx, x, y, '|');
+			}
 
 			y = y2;
-			for (x = x1 + 1; x < x2; x++) _draw_ctx.call(ctx, x, y, '-');
+			for (x = x1 + 1; x < x2; x++) {
+				_draw_ctx.call(ctx, x, y, '-');
+			}
 
 			x = x1;
-			for (y = y1 + 1; y < y2; y++) _draw_ctx.call(ctx, x, y, '|');
+			for (y = y1 + 1; y < y2; y++) {
+				_draw_ctx.call(ctx, x, y, '|');
+			}
 
 		},
 
@@ -384,7 +390,7 @@ lychee.define('Renderer').tags({
 				for (let y = y1; y < y2; y++) {
 
 					for (let x = x1; x < x2; x++) {
-						this.__ctx[y][x] = buffer.__ctx[y - y1][x - x1];
+						ctx[y][x] = buffer.__ctx[y - y1][x - x1];
 					}
 
 				}
@@ -400,10 +406,8 @@ lychee.define('Renderer').tags({
 			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
-			let ctx = this.__ctx;
-
-
 			// TODO: Implement circle-drawing ASCII art algorithm
+			// let ctx = this.__ctx;
 
 		},
 
@@ -413,10 +417,8 @@ lychee.define('Renderer').tags({
 			lineWidth = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
-			let ctx = this.__ctx;
-
-
 			// TODO: Implement line-drawing ASCII art algorithm
+			// let ctx = this.__ctx;
 
 		},
 
@@ -427,54 +429,50 @@ lychee.define('Renderer').tags({
 			lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
-			let ctx = this.__ctx;
-
-
 			// TODO: Implement triangle-drawing ASCII art algorithm
+			// let ctx = this.__ctx;
 
 		},
 
 		// points, x1, y1, [ ... x(a), y(a) ... ], [ color, background, lineWidth ]
 		drawPolygon: function(points, x1, y1) {
 
-			let l = arguments.length;
+			// TODO: Implement polygon-drawing ASCII art algorithm
+			// let l = arguments.length;
 
-			if (points > 3) {
+			// if (points > 3) {
 
-				let optargs = l - (points * 2) - 1;
-
-
-				let color, background, lineWidth;
-
-				if (optargs === 3) {
-
-					color      = arguments[l - 3];
-					background = arguments[l - 2];
-					lineWidth  = arguments[l - 1];
-
-				} else if (optargs === 2) {
-
-					color      = arguments[l - 2];
-					background = arguments[l - 1];
-
-				} else if (optargs === 1) {
-
-					color      = arguments[l - 1];
-
-				}
+				// let optargs = l - (points * 2) - 1;
 
 
-				color      = /(#[AaBbCcDdEeFf0-9]{6})/g.test(color) ? color : '#000000';
-				background = background === true;
-				lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
+				// let color, background, lineWidth;
+
+				// if (optargs === 3) {
+
+				// 	color      = arguments[l - 3];
+				// 	background = arguments[l - 2];
+				// 	lineWidth  = arguments[l - 1];
+
+				// } else if (optargs === 2) {
+
+				// 	color      = arguments[l - 2];
+				// 	background = arguments[l - 1];
+
+				// } else if (optargs === 1) {
+
+				// 	color      = arguments[l - 1];
+
+				// }
 
 
-				let ctx = this.__ctx;
+				// color      = /(#[AaBbCcDdEeFf0-9]{6})/g.test(color) ? color : '#000000';
+				// background = background === true;
+				// lineWidth  = typeof lineWidth === 'number' ? lineWidth : 1;
 
 
-				// TODO: Implement polygon-drawing ASCII art algorithm
+				// let ctx = this.__ctx;
 
-			}
+			// }
 
 		},
 
@@ -486,11 +484,12 @@ lychee.define('Renderer').tags({
 
 			if (texture !== null) {
 
-				if (map === null) {
+				// TODO: Implement sprite-drawing ASCII art algorithm
+				// if (map === null) {
 
-				} else {
+				// } else {
 
-				}
+				// }
 
 			}
 

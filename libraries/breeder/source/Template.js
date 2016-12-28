@@ -255,15 +255,14 @@ lychee.define('breeder.Template').requires([
 
 		this.bind('fork', function(oncomplete) {
 
-			let library   = this.settings.library;
-			let project   = this.settings.project;
-			let sandbox   = this.sandbox;
-			let stash     = this.stash;
-			let urls      = [];
-			let assets    = [];
-			let pkg       = new Config(library + '/lychee.pkg');
-			let folder    = project.split('/')[1];
-			let namespace = library.split('/')[2];
+			let library = this.settings.library;
+			let project = this.settings.project;
+			let sandbox = this.sandbox;
+			let stash   = this.stash;
+			let urls    = [];
+			let assets  = [];
+			let pkg     = new Config(library + '/lychee.pkg');
+			let folder  = project.split('/')[1];
 
 
 			console.log('breeder: FORK');
@@ -454,17 +453,18 @@ lychee.define('breeder.Template').requires([
 
 							tmp_stash.batch('read', injections);
 
+							this.__injections = injections;
+
 						}
 
 
+						this.__main = main;
+
 						setTimeout(function() {
 
-							this.__main       = main;
-							this.__injections = injections;
-
-							this.trigger('pull-inject', [function(result) {
+							this.trigger('pull-inject', [ function(result) {
 								oncomplete(result);
-							}]);
+							} ]);
 
 						}.bind(this), 500);
 

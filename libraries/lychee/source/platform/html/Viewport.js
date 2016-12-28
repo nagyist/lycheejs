@@ -368,7 +368,7 @@ lychee.define('Viewport').tags({
 
 			} else {
 
- 				orientation = 'landscape';
+				orientation = 'landscape';
 				rotation    = 'portrait';
 
 			}
@@ -393,7 +393,7 @@ lychee.define('Viewport').tags({
 
 			} else {
 
- 				orientation = 'landscape';
+				orientation = 'landscape';
 				rotation    = 'portrait';
 
 			}

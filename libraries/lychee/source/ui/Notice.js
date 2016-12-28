@@ -27,7 +27,7 @@ lychee.define('lychee.ui.Notice').requires([
 
 		let button = this.getEntity('@options-next');
 		let label  = this.getEntity('@label');
-		let x2     =  1/2 * this.width;
+		let x2     = 1 / 2 * this.width;
 
 
 		if (button.visible === true) {
@@ -103,8 +103,8 @@ lychee.define('lychee.ui.Notice').requires([
 
 			if (typeof width === 'number' && typeof height === 'number') {
 
-				this.__boundary = 1/2 * height;
-				this.position.y = 1/2 * height + this.height / 2;
+				this.__boundary = 1 / 2 * height;
+				this.position.y = 1 / 2 * height + this.height / 2;
 
 				_on_relayout.call(this);
 
@@ -288,14 +288,14 @@ lychee.define('lychee.ui.Notice').requires([
 				if (this.options.length === 0) {
 
 					next.visible = false;
-                    this.trigger('relayout');
+					this.trigger('relayout');
 
 				} else if (this.options.length === 1) {
 
 					next.visible = true;
 					next.setLabel(this.options[0]);
 					next.setValue(this.options[0].toLowerCase());
-                    this.trigger('relayout');
+					this.trigger('relayout');
 
 				}
 
@@ -314,7 +314,7 @@ lychee.define('lychee.ui.Notice').requires([
 			id = typeof id === 'string' ? id : null;
 
 
-			if (id !== null && this.__states[id] !== undefined) {
+			if (id !== null && id !== this.state && this.__states[id] !== undefined) {
 
 				if (id === 'active') {
 

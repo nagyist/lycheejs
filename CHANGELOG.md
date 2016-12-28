@@ -14,19 +14,38 @@ As we cannot influence decisions of our Artificial Intelligence,
 some things might break temporarily on the `development` and
 `humansneednotapply` branch.
 
-The update behaviour is changed as explained in the [RELEASE Guide](./guides/RELEASE.md).
+The update behaviour is changed as explained in the
+[RELEASE Guide](./guides/RELEASE.md). All entries in the changelog
+are listed in this specific order: `changed`, `removed`, `added`
+and `fixed`.
 
 
-## [2016-Q3] - 2016-09-28 (UNRELEASED)
+## [2016-Q4] - 2016-12-28
+
+- **Changed**: `lychee.Environment.__FEATURES` represents Feature Prediction (by `bootstrap.js`).
+- **Added**: `lychee.assimilate(target)` to include non-packaged non-lychee Assets and Implementations.
+- Changed: ES6 Migration for integration scripts (`./bin`).
+- Changed: Performance improvements for `lychee.interfaceof` using a cache.
+- Added: lychee.js Strainer supports ESLint and automated code-refactoring features.
+- Added: lychee.js Strainer understands `Callback`, `Composite` or `Module` API.
+- Added: lychee.js Harvester uses a Watcher and faster bootup cycle.
+- Added: `lychee.ai.enn` Stack implements a feed-forward NN architecture.
+- Added: `lychee.ai.bnn` Stack implements a backpropagated NN architecture.
+- Fixed: lychee.js Fertilizer supports `html` Application Cache manifests.
+- Fixed: lychee.app.Main `changeState()` handles invalid states correctly.
+- Fixed: `html-nwjs` platform has correct peer-to-peer Networking.
+
+
+## [2016-Q3] - 2016-09-28
 
 - Changed: Integration of [@humansneednotapply](https://github.com/humansneednotapply) Account.
 - Changed: Integration of `.github/TOKEN` file.
 - Changed: License to MIT/GPL3/CC4-BY-SA.
 - Changed: New Welcome Page for easier Project-based workflow.
+- Removed: fyto.js was deprecated, lycheejs-legacy is embraced.
+- Added: lychee.js Editor allows `project` changes.
 - Fixed: lychee.ui Entities.
 - Fixed: lychee.effect Stack is now completely delay-compatible.
-- Added: lychee.js Editor allows `project` changes.
-- Removed: fyto.js was deprecated, lycheejs-legacy is embraced.
 
 
 ## [2016-Q2] - 2016-06-27

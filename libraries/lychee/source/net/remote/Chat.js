@@ -33,10 +33,6 @@ lychee.define('lychee.net.remote.Chat').includes([
 		let room = data.room || null;
 		if (user !== null && room !== null) {
 
-
-			let sync = false;
-
-
 			// 1. Create Room
 			let chat = _CHATS[room] || null;
 			if (chat === null) {

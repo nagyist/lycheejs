@@ -16,7 +16,7 @@ lychee.define('lychee.net.Server').tags({
 			global.require('net');
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 		}
 
 	}

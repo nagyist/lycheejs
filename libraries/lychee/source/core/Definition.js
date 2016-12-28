@@ -9,33 +9,6 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 	 * HELPERS
 	 */
 
-	const _lint = function(method) {
-
-		let code  = method.toString();
-		let file  = this.__file;
-		let lines = code.split('\n');
-
-
-		lines.forEach(function(line, l) {
-
-			let curr = line.trim();
-			let next = (lines[l + 1] || '').trim();
-
-			if (curr.substr(0, 2) !== '//') {
-
-				let next_lim = next.substr(0, 1);
-
-				if (curr.substr(curr.length - 1, 1) === ')' && next_lim !== '}' && next_lim !== ']') {
-					console.warn('lychee.Definition: Missing trailing ";" (' + file + '#L' + l + ')');
-					console.warn(curr);
-				}
-
-			}
-
-		});
-
-	};
-
 	const _fuzz_asset = function(type) {
 
 		let asset = {
@@ -254,8 +227,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 		serialize: function() {
 
-			let settings = {};
-			let blob     = {};
+			let blob = {};
 
 
 			if (Object.keys(this._attaches).length > 0) {
@@ -332,10 +304,7 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 
 			if (callback !== null) {
-
 				this._exports = callback;
-				_lint.call(this, this._exports);
-
 			}
 
 
@@ -404,7 +373,6 @@ lychee.Definition = typeof lychee.Definition !== 'undefined' ? lychee.Definition
 
 			if (callback !== null) {
 				this._supports = callback;
-				_lint.call(this, this._supports);
 			}
 
 

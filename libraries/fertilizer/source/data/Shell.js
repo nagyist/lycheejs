@@ -7,12 +7,12 @@ lychee.define('fertilizer.data.Shell').tags({
 
 		try {
 
-			let child_process = global.require('child_process');
-			let path          = global.require('path');
+			global.require('child_process');
+			global.require('path');
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 		}
 
 	}
@@ -134,7 +134,7 @@ lychee.define('fertilizer.data.Shell').tags({
 
 					});
 
-				} catch(err) {
+				} catch (err) {
 
 					callback.call(scope, false);
 

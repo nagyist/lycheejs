@@ -19,7 +19,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 		}
 
 	}
@@ -29,12 +29,14 @@ lychee.define('lychee.net.socket.WS').tags({
 
 }).exports(function(lychee, global, attachments) {
 
-	const _net         = global.require('net');
-	const _setInterval = global.setInterval;
-	const _Buffer      = global.require('buffer').Buffer;
-	const _Emitter     = lychee.import('lychee.event.Emitter');
-	const _Protocol    = lychee.import('lychee.net.protocol.WS');
-	const _SHA1        = lychee.import('lychee.crypto.SHA1');
+	const Buffer         = lychee.import('Buffer');
+	const _net           = global.require('net');
+	const _clearInterval = global.clearInterval;
+	const _setInterval   = global.setInterval;
+	const _Buffer        = global.require('buffer').Buffer;
+	const _Emitter       = lychee.import('lychee.event.Emitter');
+	const _Protocol      = lychee.import('lychee.net.protocol.WS');
+	const _SHA1          = lychee.import('lychee.crypto.SHA1');
 
 
 
@@ -47,11 +49,15 @@ lychee.define('lychee.net.socket.WS').tags({
 		let that = this;
 		if (that.__connection !== socket) {
 
-			socket.on('data', function(blob) {
+			socket.on('data', function(raw) {
 
 				// XXX: nwjs has global scope problems
 				// XXX: Internal Buffer is not our global.Buffer interface
-				blob = new global.Buffer(blob);
+
+				let blob = new Buffer(raw.length);
+				for (let b = 0; b < blob.length; b++) {
+					blob[b] = raw[b];
+				}
 
 
 				let chunks = protocol.receive(blob);
@@ -213,7 +219,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 	const _upgrade_client = function(host, port, nonce) {
 
-		let that       = this;
+		// let that       = this;
 		let handshake  = '';
 		let identifier = lychee.ROOT.project;
 
@@ -379,7 +385,7 @@ lychee.define('lychee.net.socket.WS').tags({
 
 
 			let that = this;
-			let url  = /:/g.test(host) ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
+			// let url  = /:/g.test(host) ? ('ws://[' + host + ']:' + port) : ('ws://' + host + ':' + port);
 
 
 			if (host !== null && port !== null) {
@@ -475,11 +481,22 @@ lychee.define('lychee.net.socket.WS').tags({
 								socket.removeAllListeners('timeout');
 
 
-								_setInterval(function() {
+								let interval_id = _setInterval(function() {
 
-									let chunk = protocol.ping();
-									if (chunk !== null) {
-										socket.write(chunk);
+									if (socket.writable) {
+
+										let chunk = protocol.ping();
+										if (chunk !== null) {
+											// XXX: nwjs has global scope problems
+											// XXX: Internal Buffer is not our global.Buffer interface
+											socket.write(_Buffer.from(chunk));
+										}
+
+									} else {
+
+										_clearInterval(interval_id);
+										interval_id = null;
+
 									}
 
 								}.bind(this), 60000);
@@ -551,12 +568,12 @@ lychee.define('lychee.net.socket.WS').tags({
 				if (connection !== null && protocol !== null) {
 
 					let chunk = protocol.send(payload, headers, binary);
-					let enc   = binary === true ? 'binary' : 'utf8';
+					// let enc   = binary === true ? 'binary' : 'utf8';
 
 					if (chunk !== null) {
 						// XXX: nwjs has global scope problems
 						// XXX: Internal Buffer is not our global.Buffer interface
-						connection.write(chunk.toString(enc), enc);
+						connection.write(_Buffer.from(chunk));
 					}
 
 				}

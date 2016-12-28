@@ -7,9 +7,9 @@ lychee.define('harvester.data.Project').requires([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
-	var _Filesystem = lychee.import('harvester.data.Filesystem');
-	var _Package    = lychee.import('harvester.data.Package');
-	var _Server     = lychee.import('harvester.data.Server');
+	const _Filesystem = lychee.import('harvester.data.Filesystem');
+	const _Package    = lychee.import('harvester.data.Package');
+	const _Server     = lychee.import('harvester.data.Server');
 
 
 
@@ -17,7 +17,7 @@ lychee.define('harvester.data.Project').requires([
 	 * IMPLEMENTATION
 	 */
 
-	var Composite = function(identifier) {
+	let Composite = function(identifier) {
 
 		identifier = typeof identifier === 'string' ? identifier : null;
 
@@ -27,6 +27,11 @@ lychee.define('harvester.data.Project').requires([
 		this.package    = new _Package(this.filesystem.read('/lychee.pkg'));
 		this.server     = null;
 		this.harvester  = this.filesystem.info('/harvester.js') !== null;
+
+
+		if (Object.keys(this.package.source).length === 0) {
+			console.error('harvester.data.Project: Invalid package at "' + identifier + '/lychee.pkg".');
+		}
 
 
 		lychee.event.Emitter.call(this);
@@ -46,12 +51,11 @@ lychee.define('harvester.data.Project').requires([
 
 		serialize: function() {
 
-			var data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = lychee.event.Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.data.Project';
 
 
-			var settings = data['arguments'] || {};
-			var blob     = data['blob'] || {};
+			let blob = data['blob'] || {};
 
 
 			if (this.filesystem !== null) blob.filesystem = lychee.serialize(this.filesystem);
@@ -73,14 +77,14 @@ lychee.define('harvester.data.Project').requires([
 		 * CUSTOM API
 		 */
 
-		setPackage: function(package) {
+		setPackage: function(pkg) {
 
-			package = package instanceof _Package ? package : null;
+			pkg = pkg instanceof _Package ? pkg : null;
 
 
-			if (package !== null) {
+			if (pkg !== null) {
 
-				this.package = package;
+				this.package = pkg;
 
 				return true;
 

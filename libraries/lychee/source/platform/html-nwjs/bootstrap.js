@@ -44,7 +44,10 @@
 				lychee.ROOT.lychee = selfpath.substr(0, tmp1).substr(tmp2 + 3);
 			} else if (tmp1 !== -1) {
 				lychee.ROOT.lychee = selfpath.substr(0, tmp1);
-			} else if (typeof process !== 'undefined') {
+			}
+
+
+			if (typeof process !== 'undefined') {
 				cwd      = process.cwd() || '';
 				selfpath = cwd.split('/').slice(0, -1).join('/');
 			}
@@ -76,6 +79,34 @@
 		return false;
 
 	};
+
+
+
+	/*
+	 * FEATURES
+	 */
+
+	// This is an incremental platform of 'html'
+
+	const _FEATURES = {
+
+		require: function(id) {
+
+			if (id === 'child_process') return {};
+			if (id === 'fs')            return {};
+			if (id === 'http')          return {};
+			if (id === 'https')         return {};
+			if (id === 'net')           return {};
+			if (id === 'path')          return {};
+
+
+			throw new Error('Cannot find module \'' + id + '\'');
+
+		}
+
+	};
+
+	Object.assign(lychee.Environment.__FEATURES, _FEATURES);
 
 })(this.lychee, this);
 

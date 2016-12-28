@@ -54,7 +54,7 @@ lychee.define('app.state.Chat').requires([
 
 			if (background.effects.length === 0) {
 
-				background.color = '#32afe5',
+				background.color = '#32afe5';
 				background.addEffect(new _Color({
 					type:     _Color.TYPE.easeout,
 					duration: 300,
@@ -192,31 +192,31 @@ lychee.define('app.state.Chat').requires([
 
 					entity = this.queryLayer('ui', 'background');
 					entity.width      = width;
-					entity.position.y = 1/2 * height - entity.height / 2;
+					entity.position.y = 1 / 2 * height - entity.height / 2;
 					entity.__isDirty  = true;
 
 					entity = this.queryLayer('ui', 'channel');
-					entity.position.y = 1/2 * height - 32 - entity.height / 2;
+					entity.position.y = 1 / 2 * height - 32 - entity.height / 2;
 
 					entity = this.queryLayer('ui', 'message');
-					entity.position.y = 1/2 * height - 32 - entity.height / 2;
+					entity.position.y = 1 / 2 * height - 32 - entity.height / 2;
 
 					entity = this.queryLayer('ui',  'avatar');
-					entity.position.y = 1/2 * height - 128;
+					entity.position.y = 1 / 2 * height - 128;
 
 					entity = this.queryLayer('ui',  'button');
-					entity.position.y = 1/2 * height - 64;
+					entity.position.y = 1 / 2 * height - 64;
 
 					entity = this.queryLayer('ui', 'messages');
 					entity.width      = width;
 					entity.height     = height - 192;
-					entity.position.y = -192/2;
+					entity.position.y = -192 / 2;
 					entity.__isDirty  = true;
 
 					entity = this.queryLayer('ui', 'slider');
 					entity.height = height - 192;
-					entity.position.x = 1/2 * width - entity.width - 16;
-					entity.position.y = -192/2;
+					entity.position.x = 1 / 2 * width - entity.width - 16;
+					entity.position.y = -192 / 2;
 					entity.setValue(entity.value);
 
 				}

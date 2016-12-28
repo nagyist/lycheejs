@@ -76,20 +76,18 @@ lychee.define('lychee.math.Mersenne').exports(function(lychee, global, attachmen
 			value          = (twister[N - 1] & _UPPER_MASK) | (twister[0] & _LOWER_MASK);
 			twister[N - 1] = twister[M - 1] ^ (value >>> 1) ^ _XOR_MATRIX[value & 0x1];
 
-			index = 0;
+			this.index = 0;
 
 		}
 
 
-		this.index = index++;
-
-
-		value = twister[index];
+		value = twister[this.index++];
 
 		value ^= (value >>> 11);
 		value ^= (value  <<  7) & 0x9d2c5680;
 		value ^= (value  << 15) & 0xefc60000;
 		value ^= (value >>> 18);
+
 
 		return value >>> 0;
 
@@ -148,7 +146,7 @@ lychee.define('lychee.math.Mersenne').exports(function(lychee, global, attachmen
 
 		random: function() {
 
-			return _random_int32.call(this) * (1.0 / 4294967296.0);
+			return (_random_int32.call(this) * (1.0 / 4294967296.0));
 
 		}
 

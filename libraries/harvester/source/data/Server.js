@@ -5,9 +5,9 @@ lychee.define('harvester.data.Server').exports(function(lychee, global, attachme
 	 * IMPLEMENTATION
 	 */
 
-	var Composite = function(data) {
+	let Composite = function(data) {
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
 		this.host = settings.host || null;
@@ -31,7 +31,7 @@ lychee.define('harvester.data.Server').exports(function(lychee, global, attachme
 
 		serialize: function() {
 
-			var settings = {};
+			let settings = {};
 
 
 			if (this.host !== null) settings.host = this.host;

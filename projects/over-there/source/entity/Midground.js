@@ -25,7 +25,7 @@ lychee.define('app.entity.Midground').includes([
 		settings.states  = _CONFIG.states;
 		settings.texture = _TEXTURE;
 		settings.map     = _CONFIG.map;
-		settings.position = { x: 0, y: 0};
+		settings.position = { x: 0, y: 0 };
 
 
 		_Sprite.call(this, settings);

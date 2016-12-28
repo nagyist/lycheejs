@@ -93,7 +93,7 @@ lychee.define('game.app.sprite.Tank').requires([
 
 
 			let settings = data['arguments'][0] || {};
-			let blob     = data['blob'] || {};
+			// let blob     = data['blob'] || {};
 
 
 			if (this.ammo !== 16)         settings.ammo      = this.ammo;
@@ -176,7 +176,7 @@ lychee.define('game.app.sprite.Tank').requires([
 				};
 
 
-				switch(direction) {
+				switch (direction) {
 
 					case 'top':    position.y -= height; break;
 					case 'right':  position.x += width;  break;

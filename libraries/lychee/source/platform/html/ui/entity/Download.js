@@ -30,11 +30,11 @@ lychee.define('lychee.ui.entity.Download').tags({
 		'Font':    { name: 'Entity', ext: 'fnt',     mime: 'application/json'         },
 		'Music':   {
 			'mp3': { name: 'Entity', ext: 'msc.mp3', mime: 'audio/mp3'                },
-			'ogg': { name: 'Entity', ext: 'msc.ogg', mime: 'application/ogg'          },
+			'ogg': { name: 'Entity', ext: 'msc.ogg', mime: 'application/ogg'          }
 		},
 		'Sound':   {
 			'mp3': { name: 'Entity', ext: 'snd.mp3', mime: 'audio/mp3'                },
-			'ogg': { name: 'Entity', ext: 'snd.ogg', mime: 'application/ogg'          },
+			'ogg': { name: 'Entity', ext: 'snd.ogg', mime: 'application/ogg'          }
 		},
 		'Texture': { name: 'Entity', ext: 'png',     mime: 'image/png'                },
 		'Stuff':   { name: 'Entity', ext: 'stuff',   mime: 'application/octet-stream' }
@@ -56,7 +56,7 @@ lychee.define('lychee.ui.entity.Download').tags({
 
 					let element = global.document.createElement('a');
 
-					element.download = name + '.' + ext;
+					element.download = name + '.' + mime[ext].ext;
 					element.href     = data.blob.buffer[ext];
 
 					element.click();

@@ -68,6 +68,7 @@
 			"template": {
 				"html": {
 					"Application": [
+						"appcache.tpl",
 						"config.tpl",
 						"icon.png",
 						"index.tpl",

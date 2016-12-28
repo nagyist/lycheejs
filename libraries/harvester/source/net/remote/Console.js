@@ -25,6 +25,8 @@ lychee.define('harvester.net.remote.Console').includes([
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
 			let data = _Service.prototype.serialize.call(this);

@@ -149,7 +149,7 @@ lychee.define('lychee.net.Server').tags({
 
 				// TODO: Setup HTTP Server
 
-				let that      = this;
+				// let that      = this;
 				// let server = new _net.Server();
 
 

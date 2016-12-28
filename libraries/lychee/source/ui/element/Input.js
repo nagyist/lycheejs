@@ -140,6 +140,8 @@ lychee.define('lychee.ui.element.Input').requires([
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
 			let data = _Element.prototype.serialize.call(this);

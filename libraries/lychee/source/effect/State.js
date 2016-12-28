@@ -17,16 +17,8 @@ lychee.define('lychee.effect.State').exports(function(lychee, global, attachment
 
 		// No data validation garbage allowed for effects
 
-		let delay = typeof settings.delay === 'number' ? (settings.delay | 0) : null;
-		let state = typeof settings.state === 'string' ? settings.state       : null;
-
-		if (delay !== null) {
-			this.delay = delay;
-		}
-
-		if (state !== null) {
-			this.state = state;
-		}
+		this.delay = typeof settings.delay === 'number' ? (settings.delay | 0) : 0;
+		this.state = typeof settings.state === 'string' ? settings.state       : null;
 
 	};
 

@@ -162,11 +162,11 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 			if (this.depth  !== 0) settings.depth  = this.depth;
 			if (this.radius !== 0) settings.radius = this.radius;
 
-			if (this.alpha !== 1)                        settings.alpha     = this.alpha;
+			if (this.alpha !== 1)                            settings.alpha     = this.alpha;
 			if (this.collision !== Composite.COLLISION.none) settings.collision = this.collision;
 			if (this.shape !== Composite.SHAPE.rectangle)    settings.shape     = this.shape;
-			if (this.state !== 'default')                settings.state     = this.state;
-			if (Object.keys(this.__states).length > 1)   settings.states    = this.__states;
+			if (this.state !== 'default')                    settings.state     = this.state;
+			if (Object.keys(this.__states).length > 1)       settings.states    = this.__states;
 
 
 			if (this.position.x !== 0 || this.position.y !== 0 || this.position.z !== 0) {
@@ -242,9 +242,9 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 
 			let effects = this.effects;
-			for (let e = 0, el = this.effects.length; e < el; e++) {
+			for (let e = 0, el = effects.length; e < el; e++) {
 
-				let effect = this.effects[e];
+				let effect = effects[e];
 				if (effect.update(this, clock, delta) === false) {
 					this.removeEffect(effect);
 					el--;
@@ -269,8 +269,10 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 					let ax = position.x;
 					let ay = position.y;
+					let az = position.z;
 					let bx = this.position.x;
 					let by = this.position.y;
+					let bz = this.position.z;
 
 
 					let shape = this.shape;
@@ -305,7 +307,7 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 						let hdepth  = this.depth  / 2;
 						let colX    = (ax >= bx - hwidth)  && (ax <= bx + hwidth);
 						let colY    = (ay >= by - hheight) && (ay <= by + hheight);
-						let colZ    = (az >= bz - hheight) && (az <= bz + hheight);
+						let colZ    = (az >= bz - hdepth)  && (az <= bz + hdepth);
 
 
 						return colX && colY && colZ;
@@ -366,12 +368,12 @@ lychee.define('lychee.app.Entity').exports(function(lychee, global, attachments)
 
 		setAlpha: function(alpha) {
 
-			alpha = (typeof alpha === 'number' && alpha >= 0 && alpha <= 1) ? alpha : null;
+			alpha = typeof alpha === 'number' ? alpha : null;
 
 
 			if (alpha !== null) {
 
-				this.alpha = alpha;
+				this.alpha = Math.min(Math.max(alpha, 0), 1);
 
 				return true;
 

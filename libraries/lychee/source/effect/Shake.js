@@ -20,27 +20,15 @@ lychee.define('lychee.effect.Shake').exports(function(lychee, global, attachment
 
 		// No data validation garbage allowed for effects
 
-		let type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : null;
-		let delay    = typeof settings.delay === 'number'           ? (settings.delay | 0)    : null;
-		let duration = typeof settings.duration === 'number'        ? (settings.duration | 0) : null;
-		let shake    = settings.shake instanceof Object             ? settings.shake          : null;
+		this.type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : Composite.TYPE.easeout;
+		this.delay    = typeof settings.delay === 'number'           ? (settings.delay | 0)    : 0;
+		this.duration = typeof settings.duration === 'number'        ? (settings.duration | 0) : 250;
 
-		if (type !== null) {
-			this.type = type;
-		}
 
-		if (delay !== null) {
-			this.delay = delay;
-		}
-
-		if (duration !== null) {
-			this.duration = duration;
-		}
-
-		if (shake !== null) {
-			this.shake.x = typeof shake.x === 'number' ? (shake.x | 0) : null;
-			this.shake.y = typeof shake.y === 'number' ? (shake.y | 0) : null;
-			this.shake.z = typeof shake.z === 'number' ? (shake.z | 0) : null;
+		if (settings.shake instanceof Object) {
+			this.shake.x = typeof settings.shake.x === 'number' ? (settings.shake.x | 0) : null;
+			this.shake.y = typeof settings.shake.y === 'number' ? (settings.shake.y | 0) : null;
+			this.shake.z = typeof settings.shake.z === 'number' ? (settings.shake.z | 0) : null;
 		}
 
 	};
@@ -162,14 +150,14 @@ lychee.define('lychee.effect.Shake').exports(function(lychee, global, attachment
 
 					let k = 1 - t;
 
-					if ((k /= 1) < ( 1 / 2.75 )) {
-						f = 1 * ( 7.5625 * Math.pow(k, 2) );
-					} else if (k < ( 2 / 2.75 )) {
-						f = 7.5625 * ( k -= ( 1.5   / 2.75 )) * k + 0.75;
-					} else if (k < ( 2.5 / 2.75 )) {
-						f = 7.5625 * ( k -= ( 2.25  / 2.75 )) * k + 0.9375;
+					if ((k /= 1) < (1 / 2.75)) {
+						f = 1 * (7.5625 * Math.pow(k, 2));
+					} else if (k < (2 / 2.75)) {
+						f = 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+					} else if (k < (2.5 / 2.75)) {
+						f = 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
 					} else {
-						f = 7.5625 * ( k -= ( 2.625 / 2.75 )) * k + 0.984375;
+						f = 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
 					}
 
 					x += Math.sin((1 - f) * pi2) * dx;
@@ -178,14 +166,14 @@ lychee.define('lychee.effect.Shake').exports(function(lychee, global, attachment
 
 				} else if (type === Composite.TYPE.bounceeaseout) {
 
-					if ((t /= 1) < ( 1 / 2.75 )) {
-						f = 1 * ( 7.5625 * Math.pow(t, 2) );
-					} else if (t < ( 2 / 2.75 )) {
-						f = 7.5625 * ( t -= ( 1.5   / 2.75 )) * t + 0.75;
-					} else if (t < ( 2.5 / 2.75 )) {
-						f = 7.5625 * ( t -= ( 2.25  / 2.75 )) * t + 0.9375;
+					if ((t /= 1) < (1 / 2.75)) {
+						f = 1 * (7.5625 * Math.pow(t, 2));
+					} else if (t < (2 / 2.75)) {
+						f = 7.5625 * (t -= (1.5 / 2.75)) * t + 0.75;
+					} else if (t < (2.5 / 2.75)) {
+						f = 7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375;
 					} else {
-						f = 7.5625 * ( t -= ( 2.625 / 2.75 )) * t + 0.984375;
+						f = 7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375;
 					}
 
 					x += Math.sin(f * pi2) * dx;

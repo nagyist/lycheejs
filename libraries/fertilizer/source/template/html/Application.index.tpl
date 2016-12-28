@@ -1,5 +1,5 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html manifest="index.appcache">
 <head>
 	<meta charset="utf-8">
 	<title>${id}</title>

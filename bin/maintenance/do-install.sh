@@ -120,9 +120,9 @@ else
 		# Arch
 		elif [[ -x "/usr/bin/pacman" ]]; then
 			REQUIRED_LIST="bash binutils arm-none-eabi-binutils coreutils libicns sed zip unzip tar curl git";
-			REQUIRED_CMD="pacman -S --noconfirm $REQUIRED_LIST";
+			REQUIRED_CMD="pacman -S --noconfirm --needed $REQUIRED_LIST";
 			OPTIONAL_LIST="lib32-glibc lib32-libstdc++5 lib32-ncurses lib32-zlib";
-			OPTIONAL_CMD="pacman -S --noconfirm $OPTIONAL_LIST";
+			OPTIONAL_CMD="pacman -S --noconfirm --needed $OPTIONAL_LIST";
 
 		# openSUSE
 		elif [[ -x "/usr/bin/zypper" ]]; then

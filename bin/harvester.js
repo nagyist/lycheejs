@@ -1,17 +1,17 @@
 #!/usr/local/bin/lycheejs-helper env:node
 
 
-var root = require('path').resolve(__dirname, '../');
-var fs   = require('fs');
-var path = require('path');
+const _fs   = require('fs');
+const _path = require('path');
+const _ROOT = _path.resolve(__dirname, '../');
 
 
-if (fs.existsSync(root + '/libraries/lychee/build/node/core.js') === false) {
-	require(root + '/bin/configure.js');
+if (_fs.existsSync(_ROOT + '/libraries/lychee/build/node/core.js') === false) {
+	require(_ROOT + '/bin/configure.js');
 }
 
 
-var lychee = require(root + '/libraries/lychee/build/node/core.js')(root);
+const lychee = require(_ROOT + '/libraries/lychee/build/node/core.js')(_ROOT);
 
 
 
@@ -19,9 +19,9 @@ var lychee = require(root + '/libraries/lychee/build/node/core.js')(root);
  * USAGE
  */
 
-var _print_help = function() {
+const _print_help = function() {
 
-	var profiles = fs.readdirSync(root + '/bin/harvester').map(function(value) {
+	let profiles = _fs.readdirSync(_ROOT + '/bin/harvester').map(function(value) {
 		return '' + value.substr(0, value.indexOf('.json')) + '';
 	});
 
@@ -39,7 +39,7 @@ var _print_help = function() {
 	console.log('Available Profiles:                                         ');
 	console.log('                                                            ');
 	profiles.forEach(function(profile) {
-		var diff = ('                                                        ').substr(profile.length);
+		let diff = ('                                                        ').substr(profile.length);
 		console.log('    ' + profile + diff);
 	});
 	console.log('                                                            ');
@@ -58,12 +58,142 @@ var _print_help = function() {
 
 };
 
+const _clear_pid = function() {
+
+	try {
+
+		_fs.unlinkSync(_ROOT + '/bin/harvester.pid');
+		return true;
+
+	} catch(e) {
+
+		return false;
+
+	}
+
+};
+
+const _read_pid = function() {
+
+	let pid = null;
+
+	try {
+
+		pid = _fs.readFileSync(_ROOT + '/bin/harvester.pid', 'utf8');
+
+		if (!isNaN(parseInt(pid, 10))) {
+			pid = parseInt(pid, 10);
+		}
+
+	} catch(e) {
+		pid = null;
+	}
+
+	return pid;
+
+};
+
+const _write_pid = function() {
+
+	try {
+
+		_fs.writeFileSync(_ROOT + '/bin/harvester.pid', process.pid);
+		return true;
+
+	} catch(e) {
+
+		return false;
+
+	}
+
+};
+
+const _bootup = function(settings) {
+
+	console.info('BOOTUP (' + process.pid + ')');
+
+	let environment = new lychee.Environment({
+		id:       'harvester',
+		debug:    settings.debug === true,
+		sandbox:  true,
+		build:    'harvester.Main',
+		timeout:  3000,
+		packages: [
+			new lychee.Package('lychee',    '/libraries/lychee/lychee.pkg'),
+			new lychee.Package('harvester', '/libraries/harvester/lychee.pkg')
+		],
+		tags:     {
+			platform: [ 'node' ]
+		}
+	});
 
 
-var _settings = (function() {
+	lychee.setEnvironment(environment);
 
-	var args     = process.argv.slice(2).filter(val => val !== '');
-	var settings = {
+
+	environment.init(function(sandbox) {
+
+		if (sandbox !== null) {
+
+			let lychee    = sandbox.lychee;
+			let harvester = sandbox.harvester;
+
+
+			// Show more debug messages
+			lychee.debug = true;
+
+
+			// This allows using #MAIN in JSON files
+			sandbox.MAIN = new harvester.Main(settings);
+			sandbox.MAIN.bind('destroy', function(code) {
+				process.exit(0);
+			});
+
+			sandbox.MAIN.init();
+			_write_pid();
+
+
+			process.on('SIGHUP',  function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGINT',  function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGQUIT', function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGABRT', function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('SIGTERM', function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('error',   function() { _clear_pid(); sandbox.MAIN.destroy(); this.exit(1); });
+			process.on('exit',    function() {});
+
+
+			new lychee.Input({
+				key:         true,
+				keymodifier: true
+			}).bind('escape', function() {
+
+				console.warn('harvester: [ESC] pressed, exiting ...');
+
+				_clear_pid();
+				sandbox.MAIN.destroy();
+
+			}, this);
+
+		} else {
+
+			console.error('BOOTUP FAILURE');
+
+			_clear_pid();
+
+			process.exit(1);
+
+		}
+
+	});
+
+};
+
+
+
+const _SETTINGS = (function() {
+
+	let args     = process.argv.slice(2).filter(val => val !== '');
+	let settings = {
 		action:  null,
 		profile: null,
 		debug:   false,
@@ -71,10 +201,10 @@ var _settings = (function() {
 	};
 
 
-	var action       = args.find(val => /(start|status|restart|stop)/g.test(val));
-	var profile      = args.find(val => /([A-Za-z0-9-_.])/g.test(val) && val !== action);
-	var debug_flag   = args.find(val => /--([debug]{5})/g.test(val));
-	var sandbox_flag = args.find(val => /--([sandbox]{7})/g.test(val));
+	let action       = args.find(val => /(start|status|restart|stop)/g.test(val));
+	let profile      = args.find(val => /([A-Za-z0-9-_.])/g.test(val) && val !== action);
+	let debug_flag   = args.find(val => /--([debug]{5})/g.test(val));
+	let sandbox_flag = args.find(val => /--([sandbox]{7})/g.test(val));
 
 
 	if (action === 'start') {
@@ -86,12 +216,12 @@ var _settings = (function() {
 
 			try {
 
-				var stat1 = fs.lstatSync(root + '/bin/harvester/' + profile + '.json');
+				let stat1 = _fs.lstatSync(_ROOT + '/bin/harvester/' + profile + '.json');
 				if (stat1.isFile()) {
 
-					var json = null;
+					let json = null;
 					try {
-						json = JSON.parse(fs.readFileSync(root + '/bin/harvester/' + profile + '.json', 'utf8'));
+						json = JSON.parse(_fs.readFileSync(_ROOT + '/bin/harvester/' + profile + '.json', 'utf8'));
 					} catch(e) {
 					}
 
@@ -128,136 +258,6 @@ var _settings = (function() {
 
 })();
 
-var _clear_pid = function() {
-
-	try {
-
-		fs.unlinkSync(root + '/bin/harvester.pid');
-		return true;
-
-	} catch(e) {
-
-		return false;
-
-	}
-
-};
-
-var _read_pid = function() {
-
-	var pid = null;
-
-	try {
-
-		pid = fs.readFileSync(root + '/bin/harvester.pid', 'utf8');
-
-		if (!isNaN(parseInt(pid, 10))) {
-			pid = parseInt(pid, 10);
-		}
-
-	} catch(e) {
-		pid = null;
-	}
-
-	return pid;
-
-};
-
-var _write_pid = function() {
-
-	try {
-
-		fs.writeFileSync(root + '/bin/harvester.pid', process.pid);
-		return true;
-
-	} catch(e) {
-
-		return false;
-
-	}
-
-};
-
-var _bootup = function(settings) {
-
-	console.info('BOOTUP (' + process.pid + ')');
-
-	var environment = new lychee.Environment({
-		id:       'harvester',
-		debug:    settings.debug === true,
-		sandbox:  true,
-		build:    'harvester.Main',
-		timeout:  3000,
-		packages: [
-			new lychee.Package('lychee',    '/libraries/lychee/lychee.pkg'),
-			new lychee.Package('harvester', '/libraries/harvester/lychee.pkg')
-		],
-		tags:     {
-			platform: [ 'node' ]
-		}
-	});
-
-
-	lychee.setEnvironment(environment);
-
-
-	environment.init(function(sandbox) {
-
-		if (sandbox !== null) {
-
-			var lychee    = sandbox.lychee;
-			var harvester = sandbox.harvester;
-
-
-			// Show more debug messages
-			lychee.debug = true;
-
-
-			// This allows using #MAIN in JSON files
-			sandbox.MAIN = new harvester.Main(settings);
-			sandbox.MAIN.bind('destroy', function(code) {
-				process.exit(0);
-			});
-
-			sandbox.MAIN.init();
-			_write_pid();
-
-
-			process.on('SIGHUP',  function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('SIGINT',  function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('SIGQUIT', function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('SIGABRT', function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('SIGTERM', function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('error',   function() { sandbox.MAIN.destroy(); _clear_pid(); this.exit(1); });
-			process.on('exit',    function() {});
-
-
-			new lychee.Input({
-				key:         true,
-				keymodifier: true
-			}).bind('escape', function() {
-
-				console.warn('harvester: [ESC] pressed, exiting ...');
-
-				sandbox.MAIN.destroy();
-				_clear_pid();
-
-			}, this);
-
-		} else {
-
-			console.error('BOOTUP FAILURE');
-
-			_clear_pid();
-
-			process.exit(1);
-
-		}
-
-	});
-
-};
-
 
 
 (function(settings) {
@@ -266,9 +266,9 @@ var _bootup = function(settings) {
 	 * IMPLEMENTATION
 	 */
 
-	var action      = settings.action;
-	var has_action  = settings.action !== null;
-	var has_profile = settings.profile !== null;
+	let action      = settings.action;
+	let has_action  = settings.action !== null;
+	let has_profile = settings.profile !== null;
 
 
 	if (action === 'start' && has_profile) {
@@ -280,7 +280,7 @@ var _bootup = function(settings) {
 
 	} else if (action === 'status') {
 
-		var pid = _read_pid();
+		let pid = _read_pid();
 		if (pid !== null) {
 			console.log('Running (' + pid + ')');
 			process.exit(0);
@@ -292,12 +292,12 @@ var _bootup = function(settings) {
 
 	} else if (action === 'stop') {
 
-		var pid = _read_pid();
+		let pid = _read_pid();
 		if (pid !== null) {
 
 			console.info('SHUTDOWN (' + pid + ')');
 
-			var killed = false;
+			let killed = false;
 
 			try {
 
@@ -343,5 +343,5 @@ var _bootup = function(settings) {
 
 	}
 
-})(_settings);
+})(_SETTINGS);
 

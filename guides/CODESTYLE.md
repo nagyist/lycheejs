@@ -1,24 +1,37 @@
 
 # Codestyle Guide for lychee.js
 
-1. [Project Layout](#project-layout)
+1. [Linting](#linting)
+2. [Project Layout](#project-layout)
   - [Packages](#packages)
   - [Namespaces](#namespaces)
   - [Definitions](#definitions)
-2. [Definition Layout](#definition-layout)
+3. [Definition Layout](#definition-layout)
   - [Modules](#modules)
   - [Composites](#composites)
   - [Callbacks](#callbacks)
-3. [Code Layout](#code-layout)
+4. [Code Layout](#code-layout)
   - [Editorconfig](#editorconfig)
   - [Indentation and Whitespaces](#indentation-and-whitespaces)
   - [Naming of Variables](#naming-variables)
   - [Naming of Properties and Methods](#naming-properties-and-methods)
   - [Data Type Comparison](#data-type-comparison)
   - [Data Type Validation](#data-type-validation)
-4. [Entity Layout](#entity-layout)
+5. [Entity Layout](#entity-layout)
   - [Naming of Attachments](#naming-attachments)
   - [Naming of Events](#naming-events)
+
+
+## Linting
+
+All lychee.js Libraries and Projects are linted and validated in the identical way.
+All third-party projects must follow the same rules, otherwise AI support is dropped.
+
+- Use [eslint](https://github.com/eslint/eslint) with our [.eslintrc.json](/.eslintrc.json) file.
+- Use [editorconfig](http://editorconfig.org) plugin for your Editor with our [.editorconfig](/.editorconfig) file.
+- Install `eslint` globally via `(sudo) npm install -g eslint`.
+- Install the `editorconfig plugin` for your IDE from mentioned website.
+- Use the `lycheejs-strainer` CLI tool to `check` and `stage` all libraries and projects.
 
 
 ## Project Layout

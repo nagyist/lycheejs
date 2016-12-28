@@ -5,10 +5,11 @@ lychee.define('fertilizer.template.html.Application').includes([
 
 	const _Template  = lychee.import('fertilizer.Template');
 	const _TEMPLATES = {
-		config: attachments["config.tpl"],
-		core:   null,
-		icon:   attachments["icon.png"],
-		index:  attachments["index.tpl"]
+		appcache: attachments["appcache.tpl"],
+		config:   attachments["config.tpl"],
+		core:     null,
+		icon:     attachments["icon.png"],
+		index:    attachments["index.tpl"]
 	};
 
 
@@ -22,10 +23,11 @@ lychee.define('fertilizer.template.html.Application').includes([
 		_Template.call(this, data);
 
 
-		this.__config = lychee.deserialize(lychee.serialize(_TEMPLATES.config));
-		this.__core   = lychee.deserialize(lychee.serialize(_TEMPLATES.core));
-		this.__icon   = lychee.deserialize(lychee.serialize(_TEMPLATES.icon));
-		this.__index  = lychee.deserialize(lychee.serialize(_TEMPLATES.index));
+		this.__appcache = lychee.deserialize(lychee.serialize(_TEMPLATES.appcache));
+		this.__config   = lychee.deserialize(lychee.serialize(_TEMPLATES.config));
+		this.__core     = lychee.deserialize(lychee.serialize(_TEMPLATES.core));
+		this.__icon     = lychee.deserialize(lychee.serialize(_TEMPLATES.icon));
+		this.__index    = lychee.deserialize(lychee.serialize(_TEMPLATES.index));
 
 
 
@@ -115,11 +117,12 @@ lychee.define('fertilizer.template.html.Application').includes([
 				console.log('fertilizer: BUILD ' + env.id);
 
 
-				let sandbox = this.sandbox;
-				let config  = this.__config;
-				let core    = this.__core;
-				let icon    = this.__icon;
-				let index   = this.__index;
+				let sandbox  = this.sandbox;
+				let appcache = this.__appcache;
+				let config   = this.__config;
+				let core     = this.__core;
+				let icon     = this.__icon;
+				let index    = this.__index;
 
 
 				config.buffer = config.buffer.replaceObject({
@@ -135,10 +138,11 @@ lychee.define('fertilizer.template.html.Application').includes([
 				});
 
 
-				stash.write(sandbox + '/manifest.json', config);
-				stash.write(sandbox + '/core.js',       core);
-				stash.write(sandbox + '/icon.png',      icon);
-				stash.write(sandbox + '/index.html',    index);
+				stash.write(sandbox + '/manifest.json',  config);
+				stash.write(sandbox + '/core.js',        core);
+				stash.write(sandbox + '/icon.png',       icon);
+				stash.write(sandbox + '/index.appcache', appcache);
+				stash.write(sandbox + '/index.html',     index);
 
 
 				oncomplete(true);

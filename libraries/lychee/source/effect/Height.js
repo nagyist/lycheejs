@@ -20,26 +20,10 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 
 		// No data validation garbage allowed for effects
 
-		let type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : null;
-		let delay    = typeof settings.delay === 'number'           ? (settings.delay | 0)    : null;
-		let duration = typeof settings.duration === 'number'        ? (settings.duration | 0) : null;
-		let height   = typeof settings.height === 'number'          ? (settings.height | 0)   : null;
-
-		if (type !== null) {
-			this.type = type;
-		}
-
-		if (delay !== null) {
-			this.delay = delay;
-		}
-
-		if (duration !== null) {
-			this.duration = duration;
-		}
-
-		if (height !== null) {
-			this.height = height;
-		}
+		this.type     = lychee.enumof(Composite.TYPE, settings.type) ? settings.type           : Composite.TYPE.easeout;
+		this.delay    = typeof settings.delay === 'number'           ? (settings.delay | 0)    : 0;
+		this.duration = typeof settings.duration === 'number'        ? (settings.duration | 0) : 250;
+		this.height   = typeof settings.height === 'number'          ? (settings.height | 0)   : 0;
 
 	};
 
@@ -130,28 +114,28 @@ lychee.define('lychee.effect.Height').exports(function(lychee, global, attachmen
 
 					let k = 1 - t;
 
-					if ((k /= 1) < ( 1 / 2.75 )) {
-						f = 1 * ( 7.5625 * Math.pow(k, 2) );
-					} else if (k < ( 2 / 2.75 )) {
-						f = 7.5625 * ( k -= ( 1.5   / 2.75 )) * k + 0.75;
-					} else if (k < ( 2.5 / 2.75 )) {
-						f = 7.5625 * ( k -= ( 2.25  / 2.75 )) * k + 0.9375;
+					if ((k /= 1) < (1 / 2.75)) {
+						f = 1 * (7.5625 * Math.pow(k, 2));
+					} else if (k < (2 / 2.75)) {
+						f = 7.5625 * (k -= (1.5 / 2.75)) * k + 0.75;
+					} else if (k < (2.5 / 2.75)) {
+						f = 7.5625 * (k -= (2.25 / 2.75)) * k + 0.9375;
 					} else {
-						f = 7.5625 * ( k -= ( 2.625 / 2.75 )) * k + 0.984375;
+						f = 7.5625 * (k -= (2.625 / 2.75)) * k + 0.984375;
 					}
 
 					h += (1 - f) * dh;
 
 				} else if (type === Composite.TYPE.bounceeaseout) {
 
-					if ((t /= 1) < ( 1 / 2.75 )) {
-						f = 1 * ( 7.5625 * Math.pow(t, 2) );
-					} else if (t < ( 2 / 2.75 )) {
-						f = 7.5625 * ( t -= ( 1.5   / 2.75 )) * t + 0.75;
-					} else if (t < ( 2.5 / 2.75 )) {
-						f = 7.5625 * ( t -= ( 2.25  / 2.75 )) * t + 0.9375;
+					if ((t /= 1) < (1 / 2.75)) {
+						f = 1 * (7.5625 * Math.pow(t, 2));
+					} else if (t < (2 / 2.75)) {
+						f = 7.5625 * (t -= (1.5 / 2.75)) * t + 0.75;
+					} else if (t < (2.5 / 2.75)) {
+						f = 7.5625 * (t -= (2.25 / 2.75)) * t + 0.9375;
 					} else {
-						f = 7.5625 * ( t -= ( 2.625 / 2.75 )) * t + 0.984375;
+						f = 7.5625 * (t -= (2.625 / 2.75)) * t + 0.984375;
 					}
 
 					h += f * dh;

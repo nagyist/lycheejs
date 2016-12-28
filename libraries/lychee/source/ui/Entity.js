@@ -86,7 +86,7 @@ lychee.define('lychee.ui.Entity').includes([
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) { },
+		// deserialize: function(blob) {},
 
 		serialize: function() {
 
@@ -102,11 +102,11 @@ lychee.define('lychee.ui.Entity').includes([
 			if (this.depth !== 0)  settings.depth  = this.depth;
 			if (this.radius !== 0) settings.radius = this.radius;
 
-			if (this.alpha !== 1)                      settings.alpha   = this.alpha;
+			if (this.alpha !== 1)                          settings.alpha   = this.alpha;
 			if (this.shape !== Composite.SHAPE.rectangle)  settings.shape   = this.shape;
-			if (this.state !== 'default')              settings.state   = this.state;
-			if (Object.keys(this.__states).length > 0) settings.states  = this.__states;
-			if (this.visible !== true)                 settings.visible = this.visible;
+			if (this.state !== 'default')                  settings.state   = this.state;
+			if (Object.keys(this.__states).length > 0)     settings.states  = this.__states;
+			if (this.visible !== true)                     settings.visible = this.visible;
 
 
 			if (this.position.x !== 0 || this.position.y !== 0) {
@@ -139,9 +139,9 @@ lychee.define('lychee.ui.Entity').includes([
 		update: function(clock, delta) {
 
 			let effects = this.effects;
-			for (let e = 0, el = this.effects.length; e < el; e++) {
+			for (let e = 0, el = effects.length; e < el; e++) {
 
-				let effect = this.effects[e];
+				let effect = effects[e];
 				if (effect.update(this, clock, delta) === false) {
 					this.removeEffect(effect);
 					el--;
@@ -207,12 +207,12 @@ lychee.define('lychee.ui.Entity').includes([
 
 		setAlpha: function(alpha) {
 
-			alpha = (typeof alpha === 'number' && alpha >= 0 && alpha <= 1) ? alpha : null;
+			alpha = typeof alpha === 'number' ? alpha : null;
 
 
 			if (alpha !== null) {
 
-				this.alpha = alpha;
+				this.alpha = Math.min(Math.max(alpha, 0), 1);
 
 				return true;
 

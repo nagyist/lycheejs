@@ -25,6 +25,7 @@ lychee.define('lychee.ui.State').requires([
 	const _State     = lychee.import('lychee.app.State');
 	const _Visible   = lychee.import('lychee.effect.Visible');
 	const _BLOB      = attachments["json"].buffer;
+	let   _BG        = null;
 	const _INSTANCES = [];
 	let   _MENU      = null;
 	let   _NOTICE    = null;
@@ -66,7 +67,7 @@ lychee.define('lychee.ui.State').requires([
 
 	const _on_fade = function(id) {
 
-		let fade_offset = -3/2 * this.getLayer('ui').height;
+		let fade_offset = -3 / 2 * this.getLayer('ui').height;
 		let entity      = this.queryLayer('ui', id);
 		let layers      = this.getLayer('ui').entities.filter(function(layer) {
 			return layer !== _MENU && layer !== _NOTICE;
@@ -230,8 +231,14 @@ lychee.define('lychee.ui.State').requires([
 
 
 				let main   = this.main;
+				let bg     = this.getLayer('bg');
 				let menu   = this.queryLayer('ui', 'menu');
 				let notice = this.queryLayer('ui', 'notice');
+
+
+				if (main !== null && bg !== null) {
+					_BG = bg;
+				}
 
 
 				if (main !== null && menu !== null) {
@@ -279,10 +286,9 @@ lychee.define('lychee.ui.State').requires([
 
 
 				if (main !== null && notice !== null) {
-
 					_NOTICE = notice;
-
 				}
+
 
 			} else {
 
@@ -290,8 +296,21 @@ lychee.define('lychee.ui.State').requires([
 
 
 				let main   = this.main;
+				let bg     = this.getLayer('bg');
 				let menu   = this.queryLayer('ui', 'menu');
 				let notice = this.queryLayer('ui', 'notice');
+
+
+				if (bg !== null && bg !== _BG) {
+
+					// Allow custom bg for each state
+
+				} else if (bg === null) {
+
+					this.setLayer('bg', _BG);
+					bg = _BG;
+
+				}
 
 
 				if (menu !== null && menu !== _MENU) {
@@ -392,7 +411,6 @@ lychee.define('lychee.ui.State').requires([
 			}
 
 
-
 			if (_MENU !== null) {
 
 				_MENU.bind('relayout', function() {
@@ -467,6 +485,56 @@ lychee.define('lychee.ui.State').requires([
 			this.loop.setTimeout(400, function() {
 				_State.prototype.leave.call(this, oncomplete);
 			}, this);
+
+		},
+
+		render: function(clock, delta, custom) {
+
+			let renderer = this.renderer;
+			if (renderer !== null) {
+
+				let menu   = _MENU;
+				let notice = _NOTICE;
+				let layer  = this.__layers.ui;
+
+				if (menu !== null) {
+					menu.visible = false;
+				}
+
+				if (notice !== null) {
+					notice.visible = false;
+				}
+
+
+				renderer.clear();
+
+				_State.prototype.render.call(this, clock, delta, true);
+
+				if (menu !== null) {
+
+					menu.visible = true;
+					menu.render(
+						renderer,
+						layer.position.x + layer.offset.x,
+						layer.position.y + layer.offset.y
+					);
+
+				}
+
+				if (notice !== null) {
+
+					notice.visible = true;
+					notice.render(
+						renderer,
+						layer.position.x + layer.offset.x,
+						layer.position.y + layer.offset.y
+					);
+
+				}
+
+				renderer.flush();
+
+			}
 
 		}
 

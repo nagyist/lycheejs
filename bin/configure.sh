@@ -143,3 +143,27 @@ if [ "$OS" == "linux" ] || [ "$OS" == "osx" ] || [ "$OS" == "bsd" ]; then
 
 fi;
 
+
+if [ "$OS" == "linux" ] || [ "$OS" == "osx" ] || [ "$OS" == "bsd" ]; then
+
+	echo -e "  (L) Fixing GIT config";
+
+
+	cd $LYCHEEJS_ROOT;
+
+
+	check_remote=$(cat .git/config | grep '\[remote "upstream"\]');
+
+	if [ "$check_remote" == "" ]; then
+
+		echo -e "[remote \"upstream\"]" >> .git/config;
+		echo -e "\turl = https://github.com/Artificial-Engineering/lycheejs.git" >> .git/config;
+		echo -e "\tfetch = +refs/heads/*:refs/remotes/upstream/*" >> .git/config;
+
+	fi;
+
+
+	echo -e "  (I) SUCCESS\n";
+
+fi;
+

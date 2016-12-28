@@ -327,6 +327,8 @@ lychee.define('fertilizer.Main').requires([
 		 * ENTITY API
 		 */
 
+		// deserialize: function(blob) {},
+
 		serialize: function() {
 
 			let data = _Emitter.prototype.serialize.call(this);

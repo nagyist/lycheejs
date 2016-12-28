@@ -37,7 +37,7 @@ lychee.define('lychee.ui.sprite.Emblem').includes([
 		 */
 
 		this.bind('reshape', function(orientation, rotation, width, height) {
-			this.position.y = 1/2 * height - _CONFIG.height / 2;
+			this.position.y = 1 / 2 * height - _CONFIG.height / 2;
 		}, this);
 
 	};

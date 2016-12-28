@@ -70,7 +70,7 @@ lychee.define('lychee.ui.Menu').requires([
 
 		this.bind('touch', function(id, position, delta) {
 
-			let min_y = -1/2 * this.height + 64;
+			let min_y = -1 / 2 * this.height + 64;
 			if (min_y > position.y) {
 
 				if (this.state === 'active') {
@@ -201,15 +201,13 @@ lychee.define('lychee.ui.Menu').requires([
 				}
 
 
-				this.__boundary = -1/2 * width;
-				this.position.x = -1/2 * width + this.width / 2;
+				this.__boundary = -1 / 2 * width;
+				this.position.x = -1 / 2 * width + this.width / 2;
 
 
 				let entity = null;
-				let x1     = -1/2 * this.width;
-				let y1     = -1/2 * this.height;
-				let x2     =  1/2 * this.width;
-				let y2     =  1/2 * this.height;
+				let y1     = -1 / 2 * this.height;
+				let y2     =  1 / 2 * this.height;
 
 
 				entity = this.getEntity('@label');

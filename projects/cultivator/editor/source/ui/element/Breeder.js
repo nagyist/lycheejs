@@ -21,7 +21,7 @@ lychee.define('app.ui.element.Breeder').requires([
 		let settings = Object.assign({}, data);
 
 
-		settings.options = [ 'Clone', 'Fork' ];
+		settings.options = [];
 
 		_Element.call(this, settings);
 

@@ -78,7 +78,9 @@ lychee.define('lychee.ui.entity.Upload').tags({
 		}
 
 		element._visible = false;
-		element.setAttribute('accept',   allowed.map(function(v) { return '.' + v; }).join(','));
+		element.setAttribute('accept',   allowed.map(function(v) {
+			return '.' + v;
+		}).join(','));
 		element.setAttribute('type',     'file');
 		element.setAttribute('multiple', '');
 

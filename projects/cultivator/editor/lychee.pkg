@@ -158,12 +158,19 @@
 					"Breeder": [
 						"js"
 					],
-					"Font": [
-						"js"
-					],
-					"Project": [
-						"js"
-					]
+					"modify": {
+						"Font": [
+							"js"
+						],
+						"Project": [
+							"js"
+						]
+					},
+					"preview": {
+						"Font": [
+							"js"
+						]
+					}
 				}
 			}
 		},

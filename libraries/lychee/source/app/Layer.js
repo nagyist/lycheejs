@@ -469,9 +469,9 @@ lychee.define('lychee.app.Layer').requires([
 			}
 
 			let effects = this.effects;
-			for (let ef = 0, efl = this.effects.length; ef < efl; ef++) {
+			for (let ef = 0, efl = effects.length; ef < efl; ef++) {
 
-				let effect = this.effects[ef];
+				let effect = effects[ef];
 				if (effect.update(this, clock, delta) === false) {
 					this.removeEffect(effect);
 					efl--;
@@ -666,7 +666,7 @@ lychee.define('lychee.app.Layer').requires([
 
 		getEntity: function(id, position) {
 
-			id        = typeof id === 'string'    ? id       : null;
+			id       = typeof id === 'string'     ? id       : null;
 			position = position instanceof Object ? position : null;
 
 
@@ -758,9 +758,12 @@ lychee.define('lychee.app.Layer').requires([
 
 		setEntities: function(entities) {
 
+			entities = entities instanceof Array ? entities : null;
+
+
 			let all = true;
 
-			if (entities instanceof Array) {
+			if (entities !== null) {
 
 				for (let e = 0, el = entities.length; e < el; e++) {
 

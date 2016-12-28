@@ -67,13 +67,14 @@ const _print_help = function() {
 	console.log('                                                              ');
 	console.log('Available Flags:                                              ');
 	console.log('                                                              ');
-	console.log('   --debug          Debug Mode with verbose debug messages    ');
+	console.log('   --debug          Debug Mode with debug messages            ');
 	console.log('   --sandbox        Sandbox Mode without software bots        ');
 	console.log('                                                              ');
 	console.log('Examples:                                                     ');
 	console.log('                                                              ');
 	console.log('    lycheejs-fertilizer html-nwjs/main /projects/boilerplate; ');
 	console.log('    lycheejs-fertilizer node/main /projects/boilerplate;      ');
+	console.log('    lycheejs-fertilizer auto /libraries/lychee;               ');
 	console.log('                                                              ');
 
 };
@@ -85,7 +86,7 @@ const _bootup = function(settings) {
 	let environment = new lychee.Environment({
 		id:       'fertilizer',
 		debug:    settings.debug === true,
-		sandbox:  true,
+		sandbox:  settings.debug === true ? false : settings.sandbox === true,
 		build:    'fertilizer.Main',
 		timeout:  3000,
 		packages: [
@@ -122,12 +123,17 @@ const _bootup = function(settings) {
 			sandbox.MAIN.init();
 
 
-			process.on('SIGHUP',  function() { sandbox.MAIN.destroy(); this.exit(1); });
-			process.on('SIGINT',  function() { sandbox.MAIN.destroy(); this.exit(1); });
-			process.on('SIGQUIT', function() { sandbox.MAIN.destroy(); this.exit(1); });
-			process.on('SIGABRT', function() { sandbox.MAIN.destroy(); this.exit(1); });
-			process.on('SIGTERM', function() { sandbox.MAIN.destroy(); this.exit(1); });
-			process.on('error',   function() { sandbox.MAIN.destroy(); this.exit(1); });
+			const _on_process_error = function() {
+				sandbox.MAIN.destroy();
+				process.exit(1);
+			};
+
+			process.on('SIGHUP',  _on_process_error);
+			process.on('SIGINT',  _on_process_error);
+			process.on('SIGQUIT', _on_process_error);
+			process.on('SIGABRT', _on_process_error);
+			process.on('SIGTERM', _on_process_error);
+			process.on('error',   _on_process_error);
 			process.on('exit',    function() {});
 
 
@@ -222,7 +228,7 @@ const _SETTINGS = (function() {
 
 		try {
 			json = JSON.parse(_fs.readFileSync(_ROOT + project + '/lychee.pkg', 'utf8'));
-		} catch(e) {
+		} catch (err) {
 			json = null;
 		}
 
@@ -258,7 +264,7 @@ const _SETTINGS = (function() {
 
 		try {
 			json = JSON.parse(_fs.readFileSync(_ROOT + project + '/lychee.pkg', 'utf8'));
-		} catch(e) {
+		} catch (err) {
 			json = null;
 		}
 
@@ -292,9 +298,9 @@ const _SETTINGS = (function() {
 
 })();
 
-(function(project, identifier, settings, auto) {
+(function(settings) {
 
-	if (auto === true) return;
+	if (settings.auto === true) return;
 
 
 
@@ -302,25 +308,27 @@ const _SETTINGS = (function() {
 	 * IMPLEMENTATION
 	 */
 
-	let has_project    = project !== null;
-	let has_identifier = identifier !== null;
-	let has_settings   = settings !== null;
+	let has_project     = settings.project !== null;
+	let has_identifier  = settings.identifier !== null;
+	let has_environment = settings.environment !== null;
 
 
-	if (has_project && has_identifier && has_settings) {
+	if (has_project && has_identifier && has_environment) {
 
 		_bootup({
 			debug:      settings.debug   === true,
 			sandbox:    settings.sandbox === true,
-			project:    project,
-			identifier: identifier,
-			settings:   settings
+			project:    settings.project,
+			identifier: settings.identifier,
+			settings:   settings.environment
 		});
 
 	} else if (has_project) {
 
 		_bootup({
-			project:    project,
+			debug:      settings.debug   === true,
+			sandbox:    settings.sandbox === true,
+			project:    settings.project,
 			identifier: null,
 			settings:   null
 		});
@@ -335,5 +343,5 @@ const _SETTINGS = (function() {
 
 	}
 
-})(_SETTINGS.project, _SETTINGS.identifier, _SETTINGS.environment, _SETTINGS.auto);
+})(_SETTINGS);
 

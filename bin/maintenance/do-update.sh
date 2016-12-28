@@ -60,8 +60,11 @@ elif [ "$LYCHEEJS_CHANGE" == "" ]; then
 
 
 	cd $LYCHEEJS_FOLDER;
+
 	git checkout $LYCHEEJS_BRANCH;
-	git pull origin $LYCHEEJS_BRANCH;
+	git fetch;
+	git reset "origin/$LYCHEEJS_BRANCH" --hard;
+	# git pull origin $LYCHEEJS_BRANCH;
 
 
 	if [ ! -d $LYCHEEJS_FOLDER/bin/runtime ]; then

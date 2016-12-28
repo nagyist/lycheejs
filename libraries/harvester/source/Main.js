@@ -3,40 +3,26 @@ lychee.define('harvester.Main').requires([
 	'lychee.Input',
 	'harvester.net.Admin',
 	'harvester.net.Server',
-	'harvester.mod.Fertilizer',
-	'harvester.mod.Packager',
-	'harvester.mod.Server',
-//	'harvester.mod.Strainer',
-	'harvester.mod.Updater'
+	'harvester.Watcher'
 ]).includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
-	const _harvester   = lychee.import('harvester');
-	const _mod         = {
-		Fertilizer: lychee.import('harvester.mod.Fertilizer'),
-		Packager:   lychee.import('harvester.mod.Packager'),
-		Server:     lychee.import('harvester.mod.Server'),
-		Strainer:   lychee.import('harvester.mod.Strainer'),
-		Updater:    lychee.import('harvester.mod.Updater')
-	};
-	const _setInterval = global.setInterval;
-	const _setTimeout  = global.setTimeout;
-	const _Emitter     = lychee.import('lychee.event.Emitter');
-	const _LIBRARIES   = {};
-	const _PROJECTS    = {};
-	const _PUBLIC_IPS  = (function() {
+	const _harvester     = lychee.import('harvester');
+	const _clearInterval = global.clearInterval || function() {};
+	const _setInterval   = global.setInterval;
+	const _Emitter       = lychee.import('lychee.event.Emitter');
+	const _PUBLIC_IPS    = (function() {
 
 		let os = null;
 
 		try {
 			os = require('os');
-		} catch(err) {
+		} catch (err) {
 		}
 
 
 		if (os !== null) {
-
 
 			let candidates = [];
 
@@ -70,184 +56,6 @@ lychee.define('harvester.Main').requires([
 
 
 	/*
-	 * HELPERS
-	 */
-
-	const _initialize = function(sandbox) {
-
-		let libraries  = Object.values(_LIBRARIES);
-		let projects   = Object.values(_PROJECTS);
-		let Fertilizer = _mod.Fertilizer;
-		let Packager   = _mod.Packager;
-		let Server     = _mod.Server;
-		let Strainer   = _mod.Strainer;
-		let Updater    = _mod.Updater;
-
-
-		if (sandbox === true) {
-
-			console.info('harvester: SANDBOX mode active');
-			console.info('harvester: Software bots disabled');
-			console.log('\n\n');
-
-			Fertilizer = null;
-			Strainer   = null;
-			Updater    = null;
-
-		} else {
-
-			console.info('harvester: SANDBOX mode inactive');
-			console.info('harvester: Software bots enabled');
-			console.log('\n\n');
-
-		}
-
-
-
-		/*
-		 * BOOTUP: LIBRARIES
-		 */
-
-		libraries.forEach(function(library, l) {
-
-			if (Packager !== null && Packager.can(library) === true) {
-				Packager.process(library);
-			}
-
-			if (Server !== null && Server.can(library) === true) {
-				Server.process(library);
-			}
-
-			if (Updater !== null && Updater.can(library) === true) {
-				Updater.process(library);
-			}
-
-			if (Fertilizer !== null && Fertilizer.can(library) === true) {
-				Fertilizer.process(library);
-			}
-
-		});
-
-
-
-		/*
-		 * BOOTUP: PROJECTS
-		 */
-
-		_setTimeout(function() {
-
-			projects.forEach(function(project, p) {
-
-				if (Packager !== null && Packager.can(project) === true) {
-					Packager.process(project);
-				}
-
-				if (Server !== null && Server.can(project) === true) {
-					Server.process(project);
-				}
-
-				if (Updater !== null && Updater.can(project) === true) {
-					Updater.process(project);
-				}
-
-				if (Fertilizer !== null && Fertilizer.can(project) === true) {
-
-					_setTimeout(function() {
-						Fertilizer.process(project);
-					}, p * 2000);
-
-				}
-
-			});
-
-		}, 3000);
-
-
-
-		/*
-		 * INTERVAL
-		 */
-
-		_setInterval(function() {
-
-			libraries.forEach(function(library) {
-
-				if (Packager !== null && Packager.can(library) === true) {
-					Packager.process(library);
-				}
-
-			});
-
-			projects.forEach(function(project) {
-
-				if (Packager !== null && Packager.can(project) === true) {
-					Packager.process(project);
-				}
-
-			});
-
-		}, 30000);
-
-
-	};
-
-
-
-	/*
-	 * FEATURE DETECTION
-	 */
-
-	(function(libraries, projects) {
-
-		let filesystem = new _harvester.data.Filesystem();
-
-
-		filesystem.dir('/libraries').filter(function(value) {
-			return /README\.md/.test(value) === false;
-		}).map(function(value) {
-			return '/libraries/' + value;
-		}).forEach(function(identifier) {
-
-			let info1 = filesystem.info(identifier + '/lychee.pkg');
-			if ((info1 !== null && info1.type === 'file')) {
-				libraries[identifier] = new _harvester.data.Project(identifier);
-			}
-
-		});
-
-		filesystem.dir('/projects').filter(function(value) {
-			return /cultivator|README\.md/.test(value) === false;
-		}).map(function(value) {
-			return '/projects/' + value;
-		}).forEach(function(identifier) {
-
-			let info1 = filesystem.info(identifier + '/index.html');
-			let info2 = filesystem.info(identifier + '/lychee.pkg');
-			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
-				projects[identifier] = new _harvester.data.Project(identifier);
-			}
-
-		});
-
-		filesystem.dir('/projects/cultivator').filter(function(value) {
-			return /design|index\.html|robots\.txt/.test(value) === false;
-		}).map(function(value) {
-			return '/projects/cultivator/' + value;
-		}).forEach(function(identifier) {
-
-			let info1 = filesystem.info(identifier + '/index.html');
-			let info2 = filesystem.info(identifier + '/lychee.pkg');
-			if ((info1 !== null && info1.type === 'file') || (info2 !== null && info2.type === 'file')) {
-				projects[identifier] = new _harvester.data.Project(identifier);
-			}
-
-		});
-
-	})(_LIBRARIES, _PROJECTS);
-
-
-
-	/*
 	 * IMPLEMENTATION
 	 */
 
@@ -257,12 +65,15 @@ lychee.define('harvester.Main').requires([
 		this.defaults = lychee.assignunlink({}, this.settings);
 
 
-		this.admin  = null;
-		this.server = null;
+		// Updated by Watcher instance
+		this._libraries = {};
+		this._projects  = {};
 
+		this.admin   = null;
+		this.server  = null;
+		this.watcher = new _harvester.Watcher(this);
 
-		this._libraries = _LIBRARIES;
-		this._projects  = _PROJECTS;
+		this.__interval = null;
 
 
 		settings.host    = typeof settings.host === 'string' ? settings.host       : null;
@@ -312,7 +123,18 @@ lychee.define('harvester.Main').requires([
 
 
 		this.bind('init', function() {
-			_initialize.call(this, settings.sandbox);
+
+			let watcher = this.watcher || null;
+			if (watcher !== null) {
+
+				watcher.init(settings.sandbox);
+
+				this.__interval = _setInterval(function() {
+					watcher.update();
+				}.bind(this), 30000);
+
+			}
+
 		}, this, true);
 
 	};
@@ -376,9 +198,9 @@ lychee.define('harvester.Main').requires([
 
 		destroy: function() {
 
-			for (let identifier in _PROJECTS) {
+			for (let pid in this._projects) {
 
-				let project = _PROJECTS[identifier];
+				let project = this._projects[pid];
 				if (project.server !== null) {
 
 					if (typeof project.server.destroy === 'function') {
@@ -398,6 +220,11 @@ lychee.define('harvester.Main').requires([
 			if (this.server !== null) {
 				this.server.disconnect();
 				this.server = null;
+			}
+
+			if (this.__interval !== null) {
+				_clearInterval(this.__interval);
+				this.__interval = null;
 			}
 
 

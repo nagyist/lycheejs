@@ -31,10 +31,8 @@ lychee.define('lychee.app.Element').requires([
 		];
 
 
-		let x1 = -1/2 * this.width;
-		let x2 =  1/2 * this.width;
-		let y1 = -1/2 * this.height;
-		let y2 =  1/2 * this.height;
+		let x1 = -1 / 2 * this.width;
+		let y1 = -1 / 2 * this.height;
 
 
 		if (content.length % 2 === 0) {
@@ -53,13 +51,13 @@ lychee.define('lychee.app.Element').requires([
 
 					if (label !== null) {
 
-						label.position.x  =   x1 + 16 + label.width / 2;
-						label.position.y  =   y1 + offset + label.height / 2;
+						label.position.x  = x1 + 16 + label.width / 2;
+						label.position.y  = y1 + offset + label.height / 2;
 						label.visible     = true;
 
-						entity.width      =  1/2 * (this.width - 32);
-						entity.position.x =  1/4 * (this.width - 32);
-						entity.position.y =   y1 + offset + entity.height / 2;
+						entity.width      = 1 / 2 * (this.width - 32);
+						entity.position.x = 1 / 4 * (this.width - 32);
+						entity.position.y = y1 + offset + entity.height / 2;
 						entity.visible    = true;
 						entity.trigger('relayout');
 
@@ -97,9 +95,7 @@ lychee.define('lychee.app.Element').requires([
 		}
 
 
-		let entities = this.entities;
-		let index    = -1;
-		let order_w  = 0;
+		let order_w = 0;
 
 
 		entity            = layout[0];

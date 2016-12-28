@@ -265,12 +265,10 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global, attachment
 			let ax = this.x;
 			let ay = this.y;
 			let az = this.z;
-			let aw = this.w;
 
 			let bx = this.x;
 			let by = this.y;
 			let bz = this.z;
-			let bw = this.w;
 
 
 			this.x = ay * bz - az * by;
@@ -303,7 +301,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global, attachment
 
 		interpolateAdd: function(vector, t) {
 
- 			this.x += t * vector.x;
+			this.x += t * vector.x;
 			this.y += t * vector.y;
 			this.z += t * vector.z;
 			this.w += t * vector.w;
@@ -315,7 +313,7 @@ lychee.define('lychee.math.Vector4').exports(function(lychee, global, attachment
 
 		interpolateSet: function(vector, t) {
 
- 			this.x = t * vector.x;
+			this.x = t * vector.x;
 			this.y = t * vector.y;
 			this.z = t * vector.z;
 			this.w = t * vector.w;

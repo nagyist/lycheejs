@@ -13,7 +13,7 @@ lychee.define('Stash').tags({
 
 			return true;
 
-		} catch(err) {
+		} catch (err) {
 
 		}
 
@@ -83,7 +83,7 @@ lychee.define('Stash').tags({
 		const _mkdir_p = function(path, mode) {
 
 			if (mode === undefined) {
-				mode = 0777 & (~process.umask());
+				mode = 0o777 & (~process.umask());
 			}
 
 
@@ -93,7 +93,7 @@ lychee.define('Stash').tags({
 
 				is_directory = _fs.lstatSync(path).isDirectory();
 
-			} catch(err) {
+			} catch (err) {
 
 				if (err.code === 'ENOENT') {
 
@@ -103,16 +103,15 @@ lychee.define('Stash').tags({
 
 					try {
 						is_directory = _fs.lstatSync(path).isDirectory();
-					} catch(err) {
+					} catch (err) {
 					}
 
 				}
 
-			} finally {
-
-				return is_directory;
-
 			}
+
+
+			return is_directory;
 
 		};
 
@@ -149,7 +148,7 @@ lychee.define('Stash').tags({
 								try {
 									_fs.writeFileSync(path, buffer, encoding);
 									result = true;
-								} catch(err) {
+								} catch (err) {
 									result = false;
 								}
 
@@ -162,7 +161,7 @@ lychee.define('Stash').tags({
 						try {
 							_fs.unlinkSync(path);
 							result = true;
-						} catch(err) {
+						} catch (err) {
 							result = false;
 						}
 
@@ -202,7 +201,7 @@ lychee.define('Stash').tags({
 	 * HELPERS
 	 */
 
-	const _is_asset = function(asset) {
+	const _validate_asset = function(asset) {
 
 		if (asset instanceof Object && typeof asset.serialize === 'function') {
 			return true;
@@ -658,8 +657,8 @@ lychee.define('Stash').tags({
 
 		write: function(id, asset) {
 
-			id    = typeof id === 'string'    ? id    : null;
-			asset = _is_asset(asset) === true ? asset : null;
+			id    = typeof id === 'string'          ? id    : null;
+			asset = _validate_asset(asset) === true ? asset : null;
 
 
 			if (id !== null && asset !== null) {

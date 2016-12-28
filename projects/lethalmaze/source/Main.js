@@ -109,8 +109,12 @@ lychee.define('game.Main').requires([
 			let blob     = data['blob'] || {};
 
 
-			if (this.settings.gameclient !== null) { settings.client = this.defaults.client; }
-			if (this.settings.gameserver !== null) { settings.server = this.defaults.server; }
+			if (this.settings.gameclient !== null) {
+				settings.client = this.defaults.client;
+			}
+			if (this.settings.gameserver !== null) {
+				settings.server = this.defaults.server;
+			}
 
 
 			data['arguments'][0] = settings;

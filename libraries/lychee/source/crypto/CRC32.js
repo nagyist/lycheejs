@@ -3,7 +3,7 @@ lychee.define('lychee.crypto.CRC32').exports(function(lychee, global, attachment
 
 	const _CRC_TABLE = (function(table) {
 
-        let value = 0;
+		let value = 0;
 
 		for (let t = 0, tl = table.length; t < tl; t++) {
 
@@ -91,9 +91,7 @@ lychee.define('lychee.crypto.CRC32').exports(function(lychee, global, attachment
 
 		digest: function() {
 
-			let crc  = this.__crc;
 			let hash = (this.__crc).toString(16);
-
 			if (hash.length % 2 === 1) {
 				hash = '0' + hash;
 			}

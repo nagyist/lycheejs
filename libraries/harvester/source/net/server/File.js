@@ -5,33 +5,33 @@ lychee.define('harvester.net.server.File').requires([
 
 	const _Filesystem = lychee.import('harvester.data.Filesystem');
 	const _MIME       = {
-		'default': { binary: true,  type: 'application/octet-stream'      },
-		'css':     { binary: false, type: 'text/css'                      },
-		'env':     { binary: false, type: 'application/json'              },
-		'eot':     { binary: false, type: 'application/vnd.ms-fontobject' },
-		'gz':      { binary: true,  type: 'application/x-gzip'            },
-		'fnt':     { binary: false, type: 'application/json'              },
-		'html':    { binary: false, type: 'text/html'                     },
-		'ico':     { binary: true,  type: 'image/x-icon'                  },
-		'jpg':     { binary: true,  type: 'image/jpeg'                    },
-		'js':      { binary: false, type: 'application/javascript'        },
-		'json':    { binary: false, type: 'application/json'              },
-		'md':      { binary: false, type: 'text/x-markdown'               },
-		'mf':      { binary: false, type: 'text/cache-manifest'           },
-		'mp3':     { binary: true,  type: 'audio/mp3'                     },
-		'ogg':     { binary: true,  type: 'application/ogg'               },
-		'pkg':     { binary: false, type: 'application/json'              },
-		'store':   { binary: false, type: 'application/json'              },
-		'tar':     { binary: true,  type: 'application/x-tar'             },
-		'ttf':     { binary: false, type: 'application/x-font-truetype'   },
-		'txt':     { binary: false, type: 'text/plain'                    },
-		'png':     { binary: true,  type: 'image/png'                     },
-		'svg':     { binary: true,  type: 'image/svg+xml'                 },
-		'woff':    { binary: true,  type: 'application/font-woff'         },
-		'woff2':   { binary: true,  type: 'application/font-woff'         },
-		'xml':     { binary: false, type: 'text/xml'                      },
-		'zip':     { binary: true,  type: 'application/zip'               }
-
+		'default':  { binary: true,  type: 'application/octet-stream'      },
+		'appcache': { binary: false, type: 'text/cache-manifest'           },
+		'css':      { binary: false, type: 'text/css'                      },
+		'env':      { binary: false, type: 'application/json'              },
+		'eot':      { binary: false, type: 'application/vnd.ms-fontobject' },
+		'gz':       { binary: true,  type: 'application/x-gzip'            },
+		'fnt':      { binary: false, type: 'application/json'              },
+		'html':     { binary: false, type: 'text/html'                     },
+		'ico':      { binary: true,  type: 'image/x-icon'                  },
+		'jpg':      { binary: true,  type: 'image/jpeg'                    },
+		'js':       { binary: false, type: 'application/javascript'        },
+		'json':     { binary: false, type: 'application/json'              },
+		'md':       { binary: false, type: 'text/x-markdown'               },
+		'mf':       { binary: false, type: 'text/cache-manifest'           },
+		'mp3':      { binary: true,  type: 'audio/mp3'                     },
+		'ogg':      { binary: true,  type: 'application/ogg'               },
+		'pkg':      { binary: false, type: 'application/json'              },
+		'store':    { binary: false, type: 'application/json'              },
+		'tar':      { binary: true,  type: 'application/x-tar'             },
+		'ttf':      { binary: false, type: 'application/x-font-truetype'   },
+		'txt':      { binary: false, type: 'text/plain'                    },
+		'png':      { binary: true,  type: 'image/png'                     },
+		'svg':      { binary: true,  type: 'image/svg+xml'                 },
+		'woff':     { binary: true,  type: 'application/font-woff'         },
+		'woff2':    { binary: true,  type: 'application/font-woff'         },
+		'xml':      { binary: false, type: 'text/xml'                      },
+		'zip':      { binary: true,  type: 'application/zip'               }
 	};
 
 	const _PUBLIC_CULTIVATOR = {
@@ -79,7 +79,7 @@ lychee.define('harvester.net.server.File').requires([
 	 * IMPLEMENTATION
 	 */
 
-	let Module = {
+	const Module = {
 
 		/*
 		 * MODULE API
@@ -102,12 +102,13 @@ lychee.define('harvester.net.server.File').requires([
 
 		receive: function(payload, headers) {
 
-			let info    = null;
-			let path    = null;
-			let project = null;
-			let tunnel  = this.tunnel;
-			let url     = headers['url'];
-			let mime    = _MIME[url.split('.').pop()] || _MIME['default'];
+			let identifier = null;
+			let info       = null;
+			let path       = null;
+			let project    = null;
+			let tunnel     = this.tunnel;
+			let url        = headers['url'];
+			let mime       = _MIME[url.split('.').pop()] || _MIME['default'];
 
 
 			// Single-project mode
