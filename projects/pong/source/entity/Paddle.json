@@ -1,23 +1,33 @@
 {
-	"width":      24,
-	"height":    104,
-	"collision":   1,
-	"shape":       1,
-
+	"width": 24,
+	"height": 104,
+	"collision": 1,
+	"shape": 1,
 	"states": {
-		"player": { "animation": false },
-		"enemy":  { "animation": false }
+		"evil": {
+			"animation": false
+		},
+		"good": {
+			"animation": false
+		}
 	},
-
 	"map": {
-
-		"player": [
-			{ "x":    0, "y":    0, "w": 24, "h": 104 }
+		"evil": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 104
+			}
 		],
-		"enemy": [
-			{ "x":    0, "y":    0, "w": 24, "h": 104 }
+		"good": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 104
+			}
 		]
-
 	}
 
 }

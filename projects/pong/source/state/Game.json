@@ -28,7 +28,7 @@
 				}, {
 					"constructor": "game.entity.Paddle",
 					"arguments": [{
-						"state": "player",
+						"state": "good",
 						"position": {
 							"x": -128,
 							"y": 0
@@ -37,7 +37,7 @@
 				}, {
 					"constructor": "game.entity.Paddle",
 					"arguments": [{
-						"state": "enemy",
+						"state": "evil",
 						"position": {
 							"x": 128,
 							"y": 0
@@ -45,9 +45,9 @@
 					}]
 				}],
 				"map": {
-					"ball":    0,
-					"player":  1,
-					"enemy":   2
+					"ball": 0,
+					"good": 1,
+					"evil": 2
 				}
 			}
 		},
@@ -74,7 +74,7 @@
 					}]
 				}],
 				"map": {
-					"score":   0,
+					"info": 0,
 					"welcome": 1
 				}
 			}
