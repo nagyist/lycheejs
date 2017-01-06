@@ -8,7 +8,12 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 	let Composite = function(data) {
 
 		let settings = lychee.assignsafe({
-			limit: 0xffff
+			entity: null,
+			limit:  {
+				x: Infinity,
+				y: Infinity,
+				z: Infinity
+			}
 		}, data);
 
 
@@ -25,6 +30,8 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 		/*
 		 * ENTITY API
 		 */
+
+		// deserialize: function(blob) {},
 
 		serialize: function() {
 
@@ -53,11 +60,12 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 			let limit  = this.limit;
 			let values = [ 0.5, 0.5, 0.5 ];
 
+
 			if (entity !== null) {
 
-				values[0] = entity.position.x / limit;
-				values[1] = entity.position.y / limit;
-				values[2] = entity.position.z / limit;
+				values[0] = entity.position.x / limit.x;
+				values[1] = entity.position.y / limit.y;
+				values[2] = entity.position.z / limit.z;
 
 			}
 
@@ -70,9 +78,9 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let x      = values[0] * limit;
-			let y      = values[1] * limit;
-			let z      = values[2] * limit;
+			let x      = values[0] * limit.x;
+			let y      = values[1] * limit.y;
+			let z      = values[2] * limit.z;
 
 
 			if (entity !== null) {

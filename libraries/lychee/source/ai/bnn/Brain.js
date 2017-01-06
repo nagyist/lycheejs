@@ -29,6 +29,11 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 		}, 0);
 
 
+		if (input_size === 0 || output_size === 0) {
+			return;
+		}
+
+
 		let layers_size = 3;
 		let hidden_size = 1;
 		let weight_size = 0;
@@ -200,9 +205,8 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 			let blob     = {};
 
 
-			// XXX: controls and sensors are handled by lychee.ai.Agent
-			// if (this.controls.length > 0) settings.controls = lychee.serialize(this.controls);
-			// if (this.sensors.length > 0)  settings.sensors  = lychee.serialize(this.sensors);
+			if (this.controls.length > 0) settings.controls = lychee.serialize(this.controls);
+			if (this.sensors.length > 0)  settings.sensors  = lychee.serialize(this.sensors);
 
 
 			if (this.__layers.length > 0) {

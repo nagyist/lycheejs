@@ -1,5 +1,5 @@
 
-lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachments) {
+lychee.define('game.policy.Paddle').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -15,7 +15,6 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 				z: Infinity
 			}
 		}, data);
-
 
 		this.entity = settings.entity || null;
 		this.limit  = settings.limit;
@@ -42,7 +41,7 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 
 			return {
-				'constructor': 'lychee.policy.Velocity',
+				'constructor': 'game.policy.Paddle',
 				'arguments':   [ settings ]
 			};
 
@@ -58,17 +57,19 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let values = [ 0.5, 0.5, 0.5 ];
+			let values = [ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ];
 
 
 			if (entity !== null) {
 
-				values[0] = entity.velocity.x / limit.x;
-				values[1] = entity.velocity.y / limit.y;
-				values[2] = entity.velocity.z / limit.z;
+				values[0] = entity.position.x / limit.x;
+				values[1] = entity.position.y / limit.y;
+				values[2] = entity.position.z / limit.z;
+				values[3] = entity.velocity.x / 256;
+				values[4] = entity.velocity.y / 256;
+				values[5] = entity.velocity.z / 256;
 
 			}
-
 
 			return values;
 
@@ -85,9 +86,11 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 			if (entity !== null) {
 
-				entity.velocity.x = x;
-				entity.velocity.y = y;
-				entity.velocity.z = z;
+				entity.moveTo({
+					x: x,
+					y: y,
+					z: z
+				});
 
 			}
 

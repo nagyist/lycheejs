@@ -1,5 +1,5 @@
 
-lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachments) {
+lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -42,7 +42,7 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 
 			return {
-				'constructor': 'lychee.policy.Velocity',
+				'constructor': 'game.policy.Ball',
 				'arguments':   [ settings ]
 			};
 
@@ -58,39 +58,26 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let values = [ 0.5, 0.5, 0.5 ];
+			let values = [ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ];
 
 
 			if (entity !== null) {
 
-				values[0] = entity.velocity.x / limit.x;
-				values[1] = entity.velocity.y / limit.y;
-				values[2] = entity.velocity.z / limit.z;
+				values[0] = entity.position.x / limit.x;
+				values[1] = entity.position.y / limit.y;
+				values[2] = entity.position.z / limit.z;
+				values[3] = entity.velocity.x / 500;
+				values[4] = entity.velocity.y / 500;
+				values[5] = entity.velocity.z / 500;
 
 			}
-
 
 			return values;
 
 		},
 
 		control: function(values) {
-
-			let entity = this.entity;
-			let limit  = this.limit;
-			let x      = values[0] * limit.x;
-			let y      = values[1] * limit.y;
-			let z      = values[2] * limit.z;
-
-
-			if (entity !== null) {
-
-				entity.velocity.x = x;
-				entity.velocity.y = y;
-				entity.velocity.z = z;
-
-			}
-
+			// XXX: Do nothing
 		}
 
 	};

@@ -19,20 +19,13 @@ lychee.define('game.Main').requires([
 		let settings = Object.assign({
 
 			client:  null,
+			input:   null,
 			server:  null,
 			stash:   null,
 			storage: null,
 
-			input: {
-				delay:       0,
-				key:         false,
-				keymodifier: false,
-				touch:       true,
-				swipe:       false
-			},
-
 			jukebox: {
-				music: true,
+				music: false,
 				sound: true
 			},
 
