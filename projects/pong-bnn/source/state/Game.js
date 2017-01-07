@@ -12,6 +12,7 @@ lychee.define('game.state.Game').requires([
 	'lychee.app.State'
 ]).exports(function(lychee, global, attachments) {
 
+	const _policy = lychee.import('game.policy');
 	const _Agent  = lychee.import('game.ai.Agent');
 	const _Color  = lychee.import('lychee.effect.Color');
 	const _Shake  = lychee.import('lychee.effect.Shake');
@@ -33,38 +34,20 @@ lychee.define('game.state.Game').requires([
 		player = typeof player === 'string' ? player : null;
 
 
-		// XXX: Training must happen BEFORE ball is reset
-		let evil_ai = this.getLayer('ai').getAgent('evil');
-		let good_ai = this.getLayer('ai').getAgent('good');
+		if (player !== null) {
 
-		if (evil_ai !== null && good_ai !== null) {
+			// XXX: Training must happen BEFORE ball is reset
+			let evil_ai = this.getLayer('ai').getAgent('evil');
+			let good_ai = this.getLayer('ai').getAgent('good');
 
-			if (evil_ai.training !== null) {
-
-				let evil_training = {
-					inputs:  evil_ai.training.inputs.slice(0),
-					outputs: evil_ai.brain.sensors[0].sensor()
-				};
+			if (evil_ai !== null && good_ai !== null) {
 
 				if (player === 'evil') {
-					evil_ai.reward(10, evil_training);
+					evil_ai.reward(10);
+					good_ai.punish(10);
 				} else if (player === 'good') {
-					evil_ai.punish(10, evil_training);
-				}
-
-			}
-
-			if (good_ai.training !== null) {
-
-				let good_training = {
-					inputs:  good_ai.training.inputs.slice(0),
-					outputs: good_ai.brain.sensors[0].sensor()
-				};
-
-				if (player === 'evil') {
-					good_ai.punish(10, good_training);
-				} else if (player === 'good') {
-					good_ai.reward(10, good_training);
+					evil_ai.punish(10);
+					good_ai.reward(10);
 				}
 
 			}
@@ -119,8 +102,8 @@ lychee.define('game.state.Game').requires([
 		}
 
 
-		this.queryLayer('game', 'good').setPosition({ y: 0 });
 		this.queryLayer('game', 'evil').setPosition({ y: 0 });
+		this.queryLayer('game', 'good').setPosition({ y: 0 });
 
 	};
 
@@ -181,7 +164,7 @@ lychee.define('game.state.Game').requires([
 		_State.call(this, main);
 
 
-		this.__cache = {
+		this.__cache      = {
 			evil: {
 				agent:  null,
 				paddle: null
@@ -191,7 +174,7 @@ lychee.define('game.state.Game').requires([
 				paddle: null
 			}
 		};
-
+		this.__policy     = null;
 		this.__statistics = {
 			evil:       0,
 			good:       0,

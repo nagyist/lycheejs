@@ -38,6 +38,7 @@ lychee.define('game.ai.Agent').requires([
 		sensors.push(ball);
 		sensors.push(paddle);
 		controls.push(paddle);
+		this.__expected = ball;
 
 
 		settings.brain = new _Brain({
@@ -65,6 +66,36 @@ lychee.define('game.ai.Agent').requires([
 
 			let data = _Agent.prototype.serialize.call(this);
 			data['constructor'] = 'game.ai.Agent';
+
+		},
+
+
+
+		/*
+		 * CUSTOM API
+		 */
+
+		reward: function(diff) {
+
+			let training = {
+				iterations: diff,
+				inputs:     this.brain._inputs.slice(0),
+				outputs:    this.__expected.sensor()
+			};
+
+			return _Agent.prototype.reward.call(this, diff, training);
+
+		},
+
+		punish: function(diff) {
+
+			let training = {
+				iterations: diff,
+				inputs:     this.brain._inputs.slice(0),
+				outputs:    this.__expected.sensor()
+			};
+
+			return _Agent.prototype.punish.call(this, diff, training);
 
 		}
 

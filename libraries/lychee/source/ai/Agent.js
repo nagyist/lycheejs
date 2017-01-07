@@ -35,7 +35,7 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 				let iterations = training.iterations || 1;
 
 				for (let i = 0; i < iterations; i++) {
-					brain.learn(training);
+					brain.learn(training.inputs, training.outputs);
 				}
 
 			}

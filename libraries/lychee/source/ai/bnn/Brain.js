@@ -96,11 +96,11 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 		this.__size.output = output_size;
 		this.__size.weight = weight_size;
 
-		this.__cache.inputs  = null;
-		this.__cache.outputs = null;
+		this._inputs  = null;
+		this._outputs = null;
 
-		this.__cache.inputs  = new Array(input_size);
-		this.__cache.outputs = new Array(output_size);
+		this._inputs  = new Array(input_size);
+		this._outputs = new Array(output_size);
 
 	};
 
@@ -171,11 +171,9 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 		this.__sensors_map  = [];
 
 		// cache structures
-		this.__cache = {
-			inputs:  [],
-			outputs: []
-		};
-		this.__size = {
+		this._inputs  = [];
+		this._outputs = [];
+		this.__size   = {
 			input:  0,
 			hidden: 0,
 			output: 0,
@@ -241,8 +239,8 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 			let controls     = this.controls;
 			let controls_map = this.__controls_map;
 			let sensors      = this.sensors;
-			let inputs       = this.__cache.inputs;
-			let outputs      = this.__cache.outputs;
+			let inputs       = this._inputs;
+			let outputs      = this._outputs;
 
 
 			// 1. Transform Policies to Inputs
@@ -299,7 +297,7 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 
 
 				// 1. Update Network
-				_update_network.call(this, inputs, this.__cache.outputs);
+				_update_network.call(this, inputs, this._outputs);
 
 
 				// 2. Calculate gradient for Output Layer
