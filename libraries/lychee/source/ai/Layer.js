@@ -372,12 +372,7 @@ lychee.define('lychee.ai.Layer').requires([
 
 			let agents = this.agents;
 			for (let a = 0, al = agents.length; a < al; a++) {
-
-				let agent = agents[a];
-
-				agent.update(clock, delta);
-				this.trigger('update', [ agent ]);
-
+				agents[a].update(clock, delta);
 			}
 
 

@@ -22,6 +22,28 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 
 	};
 
+	const _train_brain = function() {
+
+		let brain = this.brain;
+		if (brain !== null) {
+
+			let trainings = this.trainings;
+
+			for (let t = 0, tl = trainings.length; t < tl; t++) {
+
+				let training   = trainings[t];
+				let iterations = training.iterations || 1;
+
+				for (let i = 0; i < iterations; i++) {
+					brain.train(training);
+				}
+
+			}
+
+		}
+
+	};
+
 
 
 	/*
@@ -33,11 +55,10 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 		let settings = Object.assign({}, data);
 
 
-		this.brain   = null;
-		this.fitness = 0;
-
-		this.__training  = null;
-		this.__trainings = [];
+		this.brain     = null;
+		this.fitness   = 0;
+		this.training  = null;
+		this.trainings = [];
 
 
 		this.setBrain(settings.brain);
@@ -63,7 +84,7 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 			}
 
 			if (blob.trainings instanceof Array) {
-				this.__trainings = blob.trainings.map(lychee.deserialize);
+				this.trainings = blob.trainings.map(lychee.deserialize);
 			}
 
 		},
@@ -77,8 +98,8 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 			if (this.fitness !== 0) settings.fitness = this.fitness;
 
 
-			if (this.brain !== null)         blob.brain     = lychee.serialize(this.brain);
-			if (this.__trainings.length > 0) blob.trainings = this.__trainings.map(lychee.serialize);
+			if (this.brain !== null)       blob.brain     = lychee.serialize(this.brain);
+			if (this.trainings.length > 0) blob.trainings = this.trainings.map(lychee.serialize);
 
 
 			return {
@@ -93,7 +114,7 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 
 			let brain = this.brain;
 			if (brain !== null) {
-				this.__training = brain.update(clock, delta);
+				this.training = brain.update(clock, delta);
 			}
 
 		},
@@ -125,34 +146,41 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 
 		},
 
-		reward: function(diff) {
+		reward: function(diff, training) {
 
-			diff = typeof diff === 'number' ? Math.abs(diff | 0) : 1;
+			diff     = typeof diff === 'number'   ? Math.abs(diff | 0) : 1;
+			training = training instanceof Object ? training           : null;
 
 
 			this.fitness += diff;
 
 
-			let training = this.__training;
 			if (training !== null) {
 
 				training.iterations = diff;
-				this.__trainings.push(training);
-
-				let brain = this.brain;
-				if (brain !== null) {
-					brain.train(training);
-				}
+				this.trainings.push(training);
+				_train_brain.call(this);
 
 			}
 
 		},
 
-		punish: function(diff) {
+		punish: function(diff, training) {
 
-			diff = typeof diff === 'number' ? Math.abs(diff | 0) : 1;
+			diff     = typeof diff === 'number'   ? Math.abs(diff | 0) : 1;
+			training = training instanceof Object ? training           : null;
+
 
 			this.fitness -= diff;
+
+
+			if (training !== null) {
+
+				training.iterations = diff;
+				this.trainings.push(training);
+				_train_brain.call(this);
+
+			}
 
 		},
 

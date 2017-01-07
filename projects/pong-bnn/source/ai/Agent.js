@@ -35,12 +35,8 @@ lychee.define('game.ai.Agent').requires([
 		});
 
 
-		console.log(ball, paddle);
-
-
 		sensors.push(ball);
 		sensors.push(paddle);
-
 		controls.push(paddle);
 
 

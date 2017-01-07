@@ -57,6 +57,12 @@ lychee.define('game.Main').requires([
 
 		this.bind('init', function() {
 
+			let viewport = this.viewport || null;
+			if (viewport !== null) {
+				viewport.unbind('hide');
+				viewport.unbind('show');
+			}
+
 			this.setState('game', new _game.state.Game(this));
 			this.changeState('game');
 

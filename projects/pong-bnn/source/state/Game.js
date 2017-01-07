@@ -33,6 +33,45 @@ lychee.define('game.state.Game').requires([
 		player = typeof player === 'string' ? player : null;
 
 
+		// XXX: Training must happen BEFORE ball is reset
+		let evil_ai = this.getLayer('ai').getAgent('evil');
+		let good_ai = this.getLayer('ai').getAgent('good');
+
+		if (evil_ai !== null && good_ai !== null) {
+
+			if (evil_ai.training !== null) {
+
+				let evil_training = {
+					inputs:  evil_ai.training.inputs.slice(0),
+					outputs: evil_ai.brain.sensors[0].sensor()
+				};
+
+				if (player === 'evil') {
+					evil_ai.reward(10, evil_training);
+				} else if (player === 'good') {
+					evil_ai.punish(10, evil_training);
+				}
+
+			}
+
+			if (good_ai.training !== null) {
+
+				let good_training = {
+					inputs:  good_ai.training.inputs.slice(0),
+					outputs: good_ai.brain.sensors[0].sensor()
+				};
+
+				if (player === 'evil') {
+					good_ai.punish(10, good_training);
+				} else if (player === 'good') {
+					good_ai.reward(10, good_training);
+				}
+
+			}
+
+		}
+
+
 		let ball = this.queryLayer('game', 'ball');
 		if (ball !== null) {
 
@@ -63,12 +102,12 @@ lychee.define('game.state.Game').requires([
 		let stats = this.__statistics || null;
 		if (stats !== null) {
 
-			if (player === 'good') {
-				stats.generation++;
-				stats.good++;
-			} else if (player === 'evil') {
+			if (player === 'evil') {
 				stats.generation++;
 				stats.evil++;
+			} else if (player === 'good') {
+				stats.generation++;
+				stats.good++;
 			}
 
 
@@ -142,9 +181,20 @@ lychee.define('game.state.Game').requires([
 		_State.call(this, main);
 
 
+		this.__cache = {
+			evil: {
+				agent:  null,
+				paddle: null
+			},
+			good: {
+				agent:  null,
+				paddle: null
+			}
+		};
+
 		this.__statistics = {
-			good:       0,
 			evil:       0,
+			good:       0,
 			generation: 1
 		};
 
@@ -215,6 +265,11 @@ lychee.define('game.state.Game').requires([
 
 				let width  = renderer.width;
 				let height = renderer.height;
+				let limit  = {
+					x: width,
+					y: height,
+					z: 1
+				};
 
 
 				let ball = this.queryLayer('game', 'ball');
@@ -224,29 +279,29 @@ lychee.define('game.state.Game').requires([
 
 				if (evil !== null && ball !== null) {
 
-					layer.addAgent(new _Agent({
-						limit:  {
-							x: width,
-							y: height,
-							z: 1
-						},
+					let agent = new _Agent({
+						limit:  limit,
 						ball:   ball,
 						paddle: evil
-					}));
+					});
+
+					layer.setAgent('evil', agent);
+					this.__cache.evil.agent  = agent;
+					this.__cache.evil.paddle = evil;
 
 				}
 
 				if (good !== null && ball !== null) {
 
-					layer.addAgent(new _Agent({
-						limit:  {
-							x: width,
-							y: height,
-							z: 1
-						},
+					let agent = new _Agent({
+						limit:  limit,
 						ball:   ball,
 						paddle: good
-					}));
+					});
+
+					layer.setAgent('good', agent);
+					this.__cache.good.agent  = agent;
+					this.__cache.good.paddle = good;
 
 				}
 
@@ -377,15 +432,6 @@ lychee.define('game.state.Game').requires([
 				_bounce_effect.call(this, 'evil');
 
 			}
-
-
-
-			/*
-			 * 4: CONTROLS
-			 */
-
-			// good.moveTo(target);
-			// evil.moveTo(target);
 
 		}
 

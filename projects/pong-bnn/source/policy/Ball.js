@@ -58,7 +58,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let values = [ 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 ];
+			let values = [ 0.5, 0.5, 0.5 ];
 
 
 			if (entity !== null) {
@@ -66,9 +66,6 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 				values[0] = entity.position.x / limit.x;
 				values[1] = entity.position.y / limit.y;
 				values[2] = entity.position.z / limit.z;
-				values[3] = entity.velocity.x / 500;
-				values[4] = entity.velocity.y / 500;
-				values[5] = entity.velocity.z / 500;
 
 			}
 
