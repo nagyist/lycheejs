@@ -1,5 +1,5 @@
 
-lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) {
+lychee.define('lychee.policy.Shake').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -42,7 +42,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 
 			return {
-				'constructor': 'game.policy.Ball',
+				'constructor': 'lychee.policy.Shake',
 				'arguments':   [ settings ]
 			};
 
@@ -63,22 +63,39 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 			if (entity !== null) {
 
-				let hx = limit.x / 2;
-				let hy = limit.y / 2;
-				let hz = limit.z / 2;
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
+				let hlz = limit.z / 2;
 
-				values[0] = (hx + entity.position.x) / (hx * 2);
-				values[1] = (hy + entity.position.y) / (hy * 2);
-				values[2] = (hz + entity.position.z) / (hz * 2);
+				values[0] = (hlx + entity.shake.x) / (hlx * 2);
+				values[1] = (hly + entity.shake.y) / (hly * 2);
+				values[2] = (hlz + entity.shake.z) / (hlz * 2);
 
 			}
+
 
 			return values;
 
 		},
 
 		control: function(values) {
-			// XXX: Do nothing
+
+			let entity = this.entity;
+			let limit  = this.limit;
+
+
+			if (entity !== null) {
+
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
+				let hlz = limit.z / 2;
+
+				entity.shake.x = (values[0] * (hlx * 2)) - hlx;
+				entity.shake.y = (values[1] * (hly * 2)) - hly;
+				entity.shake.z = (values[2] * (hlz * 2)) - hlz;
+
+			}
+
 		}
 
 	};

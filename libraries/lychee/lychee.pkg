@@ -519,10 +519,34 @@
 				}
 			},
 			"policy": {
+				"Alpha": [
+					"js"
+				],
+				"Depth": [
+					"js"
+				],
+				"Height": [
+					"js"
+				],
+				"Offset": [
+					"js"
+				],
 				"Position": [
 					"js"
 				],
+				"Radius": [
+					"js"
+				],
+				"Shake": [
+					"js"
+				],
 				"Velocity": [
+					"js"
+				],
+				"Visible": [
+					"js"
+				],
+				"Width": [
 					"js"
 				]
 			},

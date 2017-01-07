@@ -63,9 +63,13 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 			if (entity !== null) {
 
-				values[0] = entity.velocity.x / limit.x;
-				values[1] = entity.velocity.y / limit.y;
-				values[2] = entity.velocity.z / limit.z;
+				let hx = limit.x / 2;
+				let hy = limit.y / 2;
+				let hz = limit.z / 2;
+
+				values[0] = (hx + entity.velocity.x) / (hx * 2);
+				values[1] = (hy + entity.velocity.y) / (hy * 2);
+				values[2] = (hz + entity.velocity.z) / (hz * 2);
 
 			}
 
@@ -78,16 +82,17 @@ lychee.define('lychee.policy.Velocity').exports(function(lychee, global, attachm
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let x      = values[0] * limit.x;
-			let y      = values[1] * limit.y;
-			let z      = values[2] * limit.z;
 
 
 			if (entity !== null) {
 
-				entity.velocity.x = x;
-				entity.velocity.y = y;
-				entity.velocity.z = z;
+				let hx = limit.x / 2;
+				let hy = limit.y / 2;
+				let hz = limit.z / 2;
+
+				entity.velocity.x = (values[0] * (hx * 2)) - hx;
+				entity.velocity.y = (values[1] * (hy * 2)) - hy;
+				entity.velocity.z = (values[2] * (hz * 2)) - hz;
 
 			}
 

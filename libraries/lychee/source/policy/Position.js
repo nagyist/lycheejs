@@ -63,9 +63,13 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 
 			if (entity !== null) {
 
-				values[0] = entity.position.x / limit.x;
-				values[1] = entity.position.y / limit.y;
-				values[2] = entity.position.z / limit.z;
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
+				let hlz = limit.z / 2;
+
+				values[0] = (hlx + entity.position.x) / (hlx * 2);
+				values[1] = (hly + entity.position.y) / (hly * 2);
+				values[2] = (hlz + entity.position.z) / (hlz * 2);
 
 			}
 
@@ -78,16 +82,17 @@ lychee.define('lychee.policy.Position').exports(function(lychee, global, attachm
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let x      = values[0] * limit.x;
-			let y      = values[1] * limit.y;
-			let z      = values[2] * limit.z;
 
 
 			if (entity !== null) {
 
-				entity.position.x = x;
-				entity.position.y = y;
-				entity.position.z = z;
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
+				let hlz = limit.z / 2;
+
+				entity.position.x = (values[0] * (hlx * 2)) - hlx;
+				entity.position.y = (values[1] * (hly * 2)) - hly;
+				entity.position.z = (values[2] * (hlz * 2)) - hlz;
 
 			}
 

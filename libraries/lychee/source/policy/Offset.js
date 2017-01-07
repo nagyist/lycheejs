@@ -1,5 +1,5 @@
 
-lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) {
+lychee.define('lychee.policy.Offset').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -11,8 +11,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 			entity: null,
 			limit:  {
 				x: Infinity,
-				y: Infinity,
-				z: Infinity
+				y: Infinity
 			}
 		}, data);
 
@@ -42,7 +41,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 
 			return {
-				'constructor': 'game.policy.Ball',
+				'constructor': 'lychee.policy.Offset',
 				'arguments':   [ settings ]
 			};
 
@@ -58,27 +57,40 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let values = [ 0.5, 0.5, 0.5 ];
+			let values = [ 0.5, 0.5 ];
 
 
 			if (entity !== null) {
 
-				let hx = limit.x / 2;
-				let hy = limit.y / 2;
-				let hz = limit.z / 2;
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
 
-				values[0] = (hx + entity.position.x) / (hx * 2);
-				values[1] = (hy + entity.position.y) / (hy * 2);
-				values[2] = (hz + entity.position.z) / (hz * 2);
+				values[0] = (hlx + entity.offset.x) / (hlx * 2);
+				values[1] = (hly + entity.offset.y) / (hly * 2);
 
 			}
+
 
 			return values;
 
 		},
 
 		control: function(values) {
-			// XXX: Do nothing
+
+			let entity = this.entity;
+			let limit  = this.limit;
+
+
+			if (entity !== null) {
+
+				let hlx = limit.x / 2;
+				let hly = limit.y / 2;
+
+				entity.offset.x = (values[0] * (hlx * 2)) - hlx;
+				entity.offset.y = (values[1] * (hly * 2)) - hly;
+
+			}
+
 		}
 
 	};

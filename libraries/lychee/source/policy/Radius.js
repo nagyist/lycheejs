@@ -1,5 +1,5 @@
 
-lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) {
+lychee.define('lychee.policy.Radius').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -9,11 +9,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 		let settings = lychee.assignsafe({
 			entity: null,
-			limit:  {
-				x: Infinity,
-				y: Infinity,
-				z: Infinity
-			}
+			limit:  Infinity
 		}, data);
 
 
@@ -42,7 +38,7 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 
 			return {
-				'constructor': 'game.policy.Ball',
+				'constructor': 'lychee.policy.Radius',
 				'arguments':   [ settings ]
 			};
 
@@ -58,27 +54,36 @@ lychee.define('game.policy.Ball').exports(function(lychee, global, attachments) 
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let values = [ 0.5, 0.5, 0.5 ];
+			let values = [ 0.5 ];
 
 
 			if (entity !== null) {
 
-				let hx = limit.x / 2;
-				let hy = limit.y / 2;
-				let hz = limit.z / 2;
+				let hl = limit / 2;
 
-				values[0] = (hx + entity.position.x) / (hx * 2);
-				values[1] = (hy + entity.position.y) / (hy * 2);
-				values[2] = (hz + entity.position.z) / (hz * 2);
+				values[0] = (hl + entity.radius) / (hl * 2);
 
 			}
+
 
 			return values;
 
 		},
 
 		control: function(values) {
-			// XXX: Do nothing
+
+			let entity = this.entity;
+			let limit  = this.limit;
+
+
+			if (entity !== null) {
+
+				let hl = limit / 2;
+
+				entity.radius = (values[0] * (hl * 2)) - hl;
+
+			}
+
 		}
 
 	};

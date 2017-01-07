@@ -59,12 +59,15 @@ lychee.define('game.policy.Paddle').exports(function(lychee, global, attachments
 			let limit  = this.limit;
 			let values = [ 0.5, 0.5, 0.5 ];
 
-
 			if (entity !== null) {
 
-				values[0] = entity.position.x / limit.x;
-				values[1] = entity.position.y / limit.y;
-				values[2] = entity.position.z / limit.z;
+				let hx = limit.x / 2;
+				let hy = limit.y / 2;
+				let hz = limit.z / 2;
+
+				values[0] = (hx + entity.position.x) / (hx * 2);
+				values[1] = (hy + entity.position.y) / (hy * 2);
+				values[2] = (hz + entity.position.z) / (hz * 2);
 
 			}
 
@@ -76,17 +79,18 @@ lychee.define('game.policy.Paddle').exports(function(lychee, global, attachments
 
 			let entity = this.entity;
 			let limit  = this.limit;
-			let x      = values[0] * limit.x;
-			let y      = values[1] * limit.y;
-			let z      = values[2] * limit.z;
 
 
 			if (entity !== null) {
 
+				let hx = limit.x / 2;
+				let hy = limit.y / 2;
+				let hz = limit.z / 2;
+
 				entity.moveTo({
-					x: x,
-					y: y,
-					z: z
+					x: (values[0] * (hx * 2)) - hx,
+					y: (values[1] * (hy * 2)) - hy,
+					z: (values[2] * (hz * 2)) - hz
 				});
 
 			}
