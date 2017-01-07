@@ -87,6 +87,12 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 		this.__size.output = output_size;
 		this.__size.weight = weight_size;
 
+		this.__cache.inputs  = null;
+		this.__cache.outputs = null;
+
+		this.__cache.inputs  = new Array(input_size);
+		this.__cache.outputs = new Array(output_size);
+
 	};
 
 	const _update_network = function(inputs, outputs) {
@@ -156,6 +162,10 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 		this.__sensors_map  = [];
 
 		// cache structures
+		this.__cache = {
+			inputs:  [],
+			outputs: []
+		};
 		this.__size = {
 			input:  0,
 			hidden: 0,
@@ -222,10 +232,8 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 			let controls     = this.controls;
 			let controls_map = this.__controls_map;
 			let sensors      = this.sensors;
-			let training     = {
-				inputs:  new Array(this.__size.input),
-				outputs: new Array(this.__size.output)
-			};
+			let inputs       = this.__cache.inputs;
+			let outputs      = this.__cache.outputs;
 
 
 			// 1. Transform Policies to Inputs
@@ -235,14 +243,14 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 				let values = sensor.sensor();
 
 				for (let v = 0, vl = values.length; v < vl; v++) {
-					training.inputs[i++] = values[v];
+					inputs[i++] = values[v];
 				}
 
 			}
 
 
 			// 2. Update Network
-			_update_network.call(this, training.inputs, training.outputs);
+			_update_network.call(this, inputs, outputs);
 
 
 			// 3. Transform Outputs to Policies
@@ -252,7 +260,7 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 
 				let control = controls[c];
 				let length  = controls_map[c];
-				let values  = [].slice.call(training.outputs, offset, length);
+				let values  = [].slice.call(outputs, offset, length);
 
 				if (values.length > 0) {
 					control.control(values);
@@ -262,9 +270,6 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 
 			}
 
-
-			return training;
-
 		},
 
 
@@ -273,14 +278,15 @@ lychee.define('lychee.ai.enn.Brain').exports(function(lychee, global, attachment
 		 * CUSTOM API
 		 */
 
-		train: function(training) {
+		learn: function(inputs, outputs) {
 
-			training = training instanceof Object ? training : null;
+			inputs  = inputs instanceof Array  ? inputs  : null;
+			outputs = outputs instanceof Array ? outputs : null;
 
 
-			if (training !== null) {
+			if (inputs !== null && outputs !== null) {
 
-				// XXX: Feed Forward NN has no training
+				// XXX: Feed Forward NN cannot learn
 
 				return true;
 

@@ -35,7 +35,7 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 				let iterations = training.iterations || 1;
 
 				for (let i = 0; i < iterations; i++) {
-					brain.train(training);
+					brain.learn(training);
 				}
 
 			}
@@ -57,7 +57,6 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 
 		this.brain     = null;
 		this.fitness   = 0;
-		this.training  = null;
 		this.trainings = [];
 
 
@@ -114,7 +113,7 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 
 			let brain = this.brain;
 			if (brain !== null) {
-				this.training = brain.update(clock, delta);
+				brain.update(clock, delta);
 			}
 
 		},
