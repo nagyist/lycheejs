@@ -272,6 +272,9 @@
 				"Height": [
 					"js"
 				],
+				"Music": [
+					"js"
+				],
 				"Offset": [
 					"js"
 				],
@@ -522,10 +525,16 @@
 				"Alpha": [
 					"js"
 				],
+				"Color": [
+					"js"
+				],
 				"Depth": [
 					"js"
 				],
 				"Height": [
+					"js"
+				],
+				"Music": [
 					"js"
 				],
 				"Offset": [
@@ -538,6 +547,12 @@
 					"js"
 				],
 				"Shake": [
+					"js"
+				],
+				"Sound": [
+					"js"
+				],
+				"State": [
 					"js"
 				],
 				"Velocity": [

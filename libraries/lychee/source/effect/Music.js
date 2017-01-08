@@ -1,5 +1,5 @@
 
-lychee.define('lychee.effect.State').exports(function(lychee, global, attachments) {
+lychee.define('lychee.effect.Music').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -8,7 +8,7 @@ lychee.define('lychee.effect.State').exports(function(lychee, global, attachment
 	let Composite = function(settings) {
 
 		this.delay = 0;
-		this.state = null;
+		this.music = null;
 
 		this.__start = null;
 
@@ -16,7 +16,7 @@ lychee.define('lychee.effect.State').exports(function(lychee, global, attachment
 		// No data validation garbage allowed for effects
 
 		this.delay = typeof settings.delay === 'number' ? (settings.delay | 0) : 0;
-		this.state = typeof settings.state === 'string' ? settings.state       : null;
+		this.music = settings.music instanceof Music    ? settings.music       : null;
 
 	};
 
@@ -35,11 +35,11 @@ lychee.define('lychee.effect.State').exports(function(lychee, global, attachment
 
 
 			if (this.delay !== 0)    settings.delay = this.delay;
-			if (this.state !== null) settings.state = this.state;
+			if (this.music !== null) settings.music = this.music;
 
 
 			return {
-				'constructor': 'lychee.effect.State',
+				'constructor': 'lychee.effect.Music',
 				'arguments':   [ settings ]
 			};
 
@@ -62,21 +62,15 @@ lychee.define('lychee.effect.State').exports(function(lychee, global, attachment
 			}
 
 
-			let state = this.state;
-
 			if (t <= 1) {
 
 				return true;
 
-			} else if (state !== null) {
+			} else {
 
-				if (typeof entity.setState === 'function') {
-
-					// XXX: Allowing setState() using removeEffects()
-					this.state = null;
-
-					entity.setState(state);
-
+				let music = this.music;
+				if (music !== null) {
+					music.play();
 				}
 
 

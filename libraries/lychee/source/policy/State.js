@@ -1,5 +1,5 @@
 
-lychee.define('lychee.policy.Visible').exports(function(lychee, global, attachments) {
+lychee.define('lychee.policy.State').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -8,11 +8,13 @@ lychee.define('lychee.policy.Visible').exports(function(lychee, global, attachme
 	let Composite = function(data) {
 
 		let settings = lychee.assignsafe({
-			entity: null
+			entity: null,
+			limit:  [ 'default', 'active' ]
 		}, data);
 
 
 		this.entity = settings.entity || null;
+		this.limit  = settings.limit;
 
 		settings = null;
 
@@ -30,12 +32,13 @@ lychee.define('lychee.policy.Visible').exports(function(lychee, global, attachme
 		serialize: function() {
 
 			let settings = {
-				entity: null
+				entity: null,
+				limit:  this.limit.slice(0)
 			};
 
 
 			return {
-				'constructor': 'lychee.policy.Visible',
+				'constructor': 'lychee.policy.State',
 				'arguments':   [ settings ]
 			};
 
@@ -50,16 +53,15 @@ lychee.define('lychee.policy.Visible').exports(function(lychee, global, attachme
 		sensor: function() {
 
 			let entity = this.entity;
+			let limit  = this.limit;
 			let values = [ 0.5 ];
 
 
 			if (entity !== null) {
 
-				let visible = entity.visible;
-				if (visible === true) {
-					values[0] = 1;
-				} else if (visible === false) {
-					values[0] = 0;
+				let index = limit.indexOf(entity.state);
+				if (index !== -1) {
+					values[0] = (index / limit.length);
 				}
 
 			}
@@ -72,14 +74,18 @@ lychee.define('lychee.policy.Visible').exports(function(lychee, global, attachme
 		control: function(values) {
 
 			let entity = this.entity;
+			let limit  = this.limit;
 
 
 			if (entity !== null) {
 
-				if (values[0] > 0.5) {
-					entity.visible = true;
-				} else if (values[0] < 0.5) {
-					entity.visible = false;
+				let index = (values[0] * limit.length) | 0;
+				if (index >= 0) {
+
+					if (typeof entity.setState === 'function') {
+						entity.setState(limit[index]);
+					}
+
 				}
 
 			}
