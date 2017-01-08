@@ -137,6 +137,9 @@
 					"js"
 				],
 				"bnn": {
+					"Agent": [
+						"js"
+					],
 					"Brain": [
 						"js"
 					]
