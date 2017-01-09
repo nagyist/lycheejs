@@ -86,7 +86,7 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 			}
 
 			this.__layers[l]  = layer;
-			weight_size      += layer.length;
+			weight_size      += layer.length * 2;
 
 		}
 
@@ -469,6 +469,7 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 					if (neuron.weights.length !== 0) {
 
 						for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+							weights.push(neuron.history[w]);
 							weights.push(neuron.weights[w]);
 						}
 
@@ -509,6 +510,7 @@ lychee.define('lychee.ai.bnn.Brain').exports(function(lychee, global, attachment
 							if (neuron.weights.length !== 0) {
 
 								for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+									neuron.history[w] = weights[count++];
 									neuron.weights[w] = weights[count++];
 								}
 

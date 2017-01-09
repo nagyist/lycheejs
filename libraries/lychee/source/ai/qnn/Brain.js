@@ -1,14 +1,22 @@
 
 lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachments) {
 
-	const _MOMENTUM      = 0.3;
-	const _LEARNING_RATE = 0.3;
+	const _LEARNING_RATE     = 0.3;
+	const _LEARNING_MOMENTUM = 0.9;
 
 
 
 	/*
 	 * HELPERS
 	 */
+
+	const _random = function() {
+		return (Math.random() * 2) - 1;
+	};
+
+	const _sigmoid = function(value) {
+		return (1 / (1 + Math.exp((-1 * value) / 1)));
+	};
 
 	const _init_network = function() {
 
@@ -21,18 +29,25 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 		}, 0);
 
 
-		let hidden_size = 1;
-
-		if (input_size > output_size) {
-			hidden_size = input_size;
-		} else {
-			hidden_size = output_size;
+		if (input_size === 0 || output_size === 0) {
+			return;
 		}
 
 
-		let layer_amount = 6;
+		let layers_size = 3;
+		let hidden_size = 1;
+		let weight_size = 0;
 
-		for (let l = 0; l < layer_amount; l++) {
+		if (input_size > output_size) {
+			hidden_size = input_size;
+			layers_size = Math.max(input_size - output_size, 3);
+		} else {
+			hidden_size = output_size;
+			layers_size = Math.max(output_size - input_size, 3);
+		}
+
+
+		for (let l = 0; l < layers_size; l++) {
 
 			let prev = hidden_size;
 			let size = hidden_size;
@@ -43,7 +58,7 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 			} else if (l === 1) {
 				prev = input_size;
 				size = hidden_size;
-			} else if (l === layer_amount - 1) {
+			} else if (l === layers_size - 1) {
 				prev = hidden_size;
 				size = output_size;
 			}
@@ -54,95 +69,86 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 			for (let n = 0, nl = layer.length; n < nl; n++) {
 
 				let neuron = {
-					bias:    (Math.random() * 0.4 - 0.2),
-					change:  0.0,
-					delta:   0.0,
-					weights: [],
-					output:  0.5
+					bias:    1,
+					delta:   0,
+					value:   _random(),
+					history: [],
+					weights: []
 				};
 
 				for (let p = 0; p < prev; p++) {
-					neuron.weights.push(Math.random() * 0.4 - 0.2);
+					neuron.history.push(0);
+					neuron.weights.push(_random());
 				}
 
 				layer[n] = neuron;
 
 			}
 
-			this.__layers[l] = layer;
+			this.__layers[l]  = layer;
+			weight_size      += layer.length * 2;
 
 		}
 
+
+		this.__size.input  = input_size;
+		this.__size.hidden = hidden_size;
+		this.__size.output = output_size;
+		this.__size.weight = weight_size;
+
+		this._inputs  = null;
+		this._outputs = null;
+
+		this._inputs  = new Array(input_size);
+		this._outputs = new Array(output_size);
+
 	};
 
-	const _train_network = function(inputs, outputs) {
+	const _update_network = function(inputs, outputs) {
 
-		let ll = this.__layers.length;
+		let layers = this.__layers;
 
-		for (let l = ll - 1; l >= 0; l--) {
 
-			let layer = this.__layers[l];
+		// Update Input Layer
+		let input_layer = layers[0];
 
-			for (let n = 0, nl = layer.length; n < nl; n++) {
+		for (let il = 0, ill = input_layer.length; il < ill; il++) {
+			input_layer[il].value = inputs[il];
+		}
 
-				let neuron = layer[n];
+
+		// Update Hidden Layers
+		let prev_layer = layers[0];
+
+		for (let l = 1, ll = layers.length; l < ll; l++) {
+
+			let current_layer = layers[l];
+
+			for (let n = 0, nl = current_layer.length; n < nl; n++) {
+
+				let neuron = current_layer[n];
 				let value  = 0;
 
-				if (l === ll - 1) {
-
-					value = outputs[n] - neuron.output;
-
-				} else {
-
-					let others = this.__layers[l + 1];
-
-					for (let o = 0, ol = others.length; o < ol; o++) {
-
-						let other = others[o];
-
-						value += other.delta * other.weights[n];
-
-					}
-
+				for (let p = 0, pl = prev_layer.length; p < pl; p++) {
+					value += prev_layer[p].value * neuron.weights[p];
 				}
 
-				neuron.delta = value * neuron.output * (1 - neuron.output);
+				value        += neuron.bias;
+				neuron.value  = _sigmoid(value);
 
 			}
+
+			prev_layer = current_layer;
 
 		}
 
 
-		for (let l = 1; l < ll; l++) {
+		// Update Output Layer
+		let output_layer = layers[layers.length - 1];
 
-			let layer = this.__layers[l];
-			let prev  = this.__layers[l - 1];
-
-			for (let n = 0, nl = layer.length; n < nl; n++) {
-
-				let neuron = layer[n];
-				let delta  = neuron.delta;
-
-				for (let p = 0, pl = prev.length; p < pl; p++) {
-
-					let change = (_LEARNING_RATE * delta * prev[p].output) + (_MOMENTUM * neuron.change);
-
-					neuron.change      = change;
-					neuron.weights[p] += change;
-
-				}
-
-				neuron.bias += (_LEARNING_RATE * delta);
-
-			}
-
+		for (let o = 0, ol = output_layer.length; o < ol; o++) {
+			outputs[o] = output_layer[o].value;
 		}
-
-	};
-
-	const _sigmoid = function(value) {
-
-		return (1 / (1 + Math.exp(-1 * value)));
 
 	};
 
@@ -164,6 +170,16 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 		this.__layers       = [];
 		this.__sensors_map  = [];
 
+		// cache structures
+		this._inputs  = [];
+		this._outputs = [];
+		this.__size   = {
+			input:  0,
+			hidden: 0,
+			output: 0,
+			weight: 0
+		};
+
 
 		this.setSensors(settings.sensors);
 		this.setControls(settings.controls);
@@ -179,7 +195,17 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 		 * ENTITY API
 		 */
 
-		// deserialize: function(blob) {},
+		deserialize: function(blob) {
+
+			if (blob.layers instanceof Array) {
+				this.__layers = lychee.deserialize(blob.layers);
+			}
+
+			if (blob.size instanceof Object) {
+				this.__size = lychee.deserialize(blob.size);
+			}
+
+		},
 
 		serialize: function() {
 
@@ -191,8 +217,13 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 			if (this.sensors.length > 0)  settings.sensors  = lychee.serialize(this.sensors);
 
 
-			// TODO: Brain serialization
-			// in form of Genome (for qnn.Agent mutate / crossover)
+			if (this.__layers.length > 0) {
+				blob.layers = lychee.serialize(this.__layers);
+			}
+
+			if (this.__size.input !== 0 || this.__size.output !== 0) {
+				blob.size = lychee.serialize(this.__size);
+			}
 
 
 			return {
@@ -208,61 +239,28 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 			let controls     = this.controls;
 			let controls_map = this.__controls_map;
 			let sensors      = this.sensors;
-			let training     = {
-				inputs:  null,
-				outputs: null
-			};
+			let inputs       = this._inputs;
+			let outputs      = this._outputs;
 
 
-			let inputs = [];
-
-			for (let s = 0, sl = sensors.length; s < sl; s++) {
+			// 1. Transform Policies to Inputs
+			for (let i = 0, s = 0, sl = sensors.length; s < sl; s++) {
 
 				let sensor = sensors[s];
 				let values = sensor.sensor();
 
-				inputs.push.apply(inputs, values);
-
-			}
-
-			training.inputs = inputs;
-
-
-			let outputs = [];
-
-			for (let l = 0, ll = this.__layers.length; l < ll; l++) {
-
-				let layer = this.__layers[l];
-
-				if (l > 0 && layer.length > 0) {
-					inputs  = outputs;
-					outputs = [];
-				}
-
-				for (let n = 0, nl = layer.length; n < nl; n++) {
-
-					let count  = 0;
-					let neuron = layer[n];
-					let value  = neuron.bias;
-
-					let wl = neuron.weights.length;
-
-					for (let w = 0; w < wl; w++) {
-						value += neuron.weights[w] * inputs[count++];
-					}
-
-					neuron.output = _sigmoid(value);
-
-
-					outputs.push(neuron.output);
-
+				for (let v = 0, vl = values.length; v < vl; v++) {
+					inputs[i++] = values[v];
 				}
 
 			}
 
-			training.outputs = outputs;
+
+			// 2. Update Network
+			_update_network.call(this, inputs, outputs);
 
 
+			// 3. Transform Outputs to Policies
 			let offset = 0;
 
 			for (let c = 0, cl = controls_map.length; c < cl; c++) {
@@ -279,9 +277,6 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 
 			}
 
-
-			return training;
-
 		},
 
 
@@ -290,28 +285,102 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 		 * CUSTOM API
 		 */
 
-		train: function(training) {
+		learn: function(inputs, outputs) {
 
-			training = training instanceof Object ? training : null;
-
-
-			if (training !== null) {
-
-				let iterations = training.iterations || (1 / _LEARNING_RATE) * 30;
-				let inputs     = training.inputs     || null;
-				let outputs    = training.outputs    || null;
+			inputs  = inputs instanceof Array  ? inputs  : null;
+			outputs = outputs instanceof Array ? outputs : null;
 
 
-				if (inputs !== null && outputs !== null) {
+			if (inputs !== null && outputs !== null) {
 
-					for (let i = 0; i < iterations; i++) {
-						_train_network.call(this, inputs, outputs);
-					}
+				let layers = this.__layers;
 
 
-					return true;
+				// 1. Update Network
+				_update_network.call(this, inputs, this._outputs);
+
+
+				// 2. Calculate gradient for Output Layer
+				let output_layer = layers[layers.length - 1];
+
+				for (let o = 0, ol = output_layer.length; o < ol; o++) {
+
+					let neuron = output_layer[o];
+					let value  = neuron.value;
+
+					neuron.delta = value * (1 - value) * (outputs[o] - value);
 
 				}
+
+
+				// 3. Calculate gradients for Hidden Layers and Input Layer
+				for (let l = layers.length - 2; l >= 0; l--) {
+
+					let current_layer = layers[l];
+					let next_layer    = layers[l + 1];
+
+					for (let c = 0, cl = current_layer.length; c < cl; c++) {
+
+						let neuron = current_layer[c];
+						let value  = neuron.value;
+						let error  = 0.0;
+
+						for (let n = 0, nl = next_layer.length; n < nl; n++) {
+							let next_neuron = next_layer[n];
+							error += next_neuron.weights[c] * next_neuron.delta;
+						}
+
+						neuron.delta = value * (1 - value) * error;
+
+					}
+
+				}
+
+
+				// 4. Calculate weights for Input Layer
+				let input_layer = layers[0];
+
+				for (let i = 0, il = input_layer.length; i < il; i++) {
+
+					let neuron = input_layer[i];
+
+					neuron.bias += _LEARNING_RATE * neuron.delta;
+
+
+					for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+						let delta = _LEARNING_RATE * neuron.delta * inputs[w];
+						neuron.weights[w] += delta + _LEARNING_MOMENTUM * neuron.history[w];
+						neuron.history[w]  = delta;
+					}
+
+				}
+
+
+				// 5. Calculate weights for Hidden Layers and Output Layer
+				for (let l = 1, ll = layers.length; l < ll; l++) {
+
+					let current_layer = layers[l];
+					let prev_layer    = layers[l - 1];
+
+					for (let c = 0, cl = current_layer.length; c < cl; c++) {
+
+						let neuron = current_layer[c];
+
+						neuron.bias += _LEARNING_RATE * neuron.delta;
+
+
+						for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+							let delta = _LEARNING_RATE * neuron.delta * prev_layer[w].value;
+							neuron.weights[w] += delta + _LEARNING_MOMENTUM * neuron.history[w];
+							neuron.history[w]  = delta;
+						}
+
+					}
+
+				}
+
+
+				return true;
 
 			}
 
@@ -333,7 +402,14 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 					return (control.sensor() || [ 1 ]).length;
 				});
 
-				_init_network.call(this);
+
+				let size = this.__controls_map.reduce(function(a, b) {
+					return a + b;
+				}, 0);
+
+				if (size !== this.__size.output) {
+					_init_network.call(this);
+				}
 
 
 				return true;
@@ -358,10 +434,96 @@ lychee.define('lychee.ai.qnn.Brain').exports(function(lychee, global, attachment
 					return (sensor.sensor() || [ 1 ]).length;
 				});
 
-				_init_network.call(this);
+
+				let size = this.__sensors_map.reduce(function(a, b) {
+					return a + b;
+				}, 0);
+
+				if (size !== this.__size.input) {
+					_init_network.call(this);
+				}
 
 
 				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		getWeights: function() {
+
+			let layers  = this.__layers;
+			let weights = [];
+
+
+			for (let l = 0, ll = layers.length; l < ll; l++) {
+
+				let layer = layers[l];
+
+				for (let n = 0, nl = layer.length; n < nl; n++) {
+
+					let neuron = layer[n];
+					if (neuron.weights.length !== 0) {
+
+						for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+							weights.push(neuron.history[w]);
+							weights.push(neuron.weights[w]);
+						}
+
+					}
+
+				}
+
+			}
+
+
+			this.__size.weight = weights.length;
+
+
+			return weights;
+
+		},
+
+		setWeights: function(weights) {
+
+			weights = weights instanceof Array ? weights : null;
+
+
+			if (weights !== null) {
+
+				let size = this.__size.weight;
+				if (size === weights.length) {
+
+					let count  = 0;
+					let layers = this.__layers;
+
+					for (let l = 0, ll = layers.length; l < ll; l++) {
+
+						let layer = layers[l];
+
+						for (let n = 0, nl = layer.length; n < nl; n++) {
+
+							let neuron = layer[n];
+							if (neuron.weights.length !== 0) {
+
+								for (let w = 0, wl = neuron.weights.length; w < wl; w++) {
+									neuron.history[w] = weights[count++];
+									neuron.weights[w] = weights[count++];
+								}
+
+							}
+
+						}
+
+					}
+
+
+					return true;
+
+				}
 
 			}
 
