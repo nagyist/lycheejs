@@ -66,10 +66,10 @@ if [ "$OS" == "linux" ] || [ "$OS" == "osx" ] || [ "$OS" == "bsd" ]; then
 		echo -e "  (L) Building lychee.js Libraries";
 
 		./bin/fertilizer.sh auto /libraries/lychee;
-		# ./bin/fertilizer.sh auto /libraries/breeder;
+		./bin/fertilizer.sh auto /libraries/breeder;
 		./bin/fertilizer.sh auto /libraries/fertilizer;
 		./bin/fertilizer.sh auto /libraries/harvester;
-		# ./bin/fertilizer.sh auto /libraries/strainer;
+		./bin/fertilizer.sh auto /libraries/strainer;
 
 		echo -e "  (I) SUCCESS\n";
 
