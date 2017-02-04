@@ -1,13 +1,17 @@
 {
 	"states": {
-		"default": { "animation": false }
+		"default": {
+			"animation": false
+		}
 	},
-
 	"map": {
-
-		"default": [{
-			"x": 0, "y": 0, "w": 512, "h": 512
-		}]
-
+		"default": [
+			{
+				"x": 0,
+				"y": 0,
+				"w": 512,
+				"h": 512
+			}
+		]
 	}
 }

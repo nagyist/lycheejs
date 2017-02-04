@@ -1,11 +1,10 @@
 #!/usr/local/bin/lycheejs-helper env:node
 
-
 const _child_process = require('child_process');
 const _fs            = require('fs');
 const _path          = require('path');
 const _CHILDREN      = [];
-const _ROOT          = _path.resolve(__dirname, '../');
+const _ROOT          = '/opt/lycheejs';
 
 
 if (_fs.existsSync(_ROOT + '/libraries/lychee/build/node/core.js') === false) {
@@ -88,7 +87,7 @@ const _bootup = function(settings) {
 		debug:    settings.debug === true,
 		sandbox:  settings.debug === true ? false : settings.sandbox === true,
 		build:    'fertilizer.Main',
-		timeout:  3000,
+		timeout:  5000,
 		packages: [
 			new lychee.Package('lychee',     '/libraries/lychee/lychee.pkg'),
 			new lychee.Package('fertilizer', '/libraries/fertilizer/lychee.pkg')
@@ -161,11 +160,8 @@ const _bootup = function(settings) {
 
 const _spawn = function(program, args) {
 
-	let stdout = _fs.openSync('/dev/null', 'a');
-	let stderr = _fs.openSync('/dev/null', 'a');
 	let child  = _child_process.spawn(program, args, {
-		detached: true,
-		stdio: [ 'ignore', stdout, stderr ]
+		detached: true
 	});
 
 	_CHILDREN.push(child.pid);

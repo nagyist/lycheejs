@@ -77,6 +77,8 @@ lychee.define('game.ai.Agent').requires([
 
 		reward: function(diff) {
 
+			diff = typeof diff === 'number' ? (diff | 0) : 1;
+
 			let training = {
 				iterations: diff,
 				inputs:     this.brain._inputs.slice(0),
@@ -88,6 +90,8 @@ lychee.define('game.ai.Agent').requires([
 		},
 
 		punish: function(diff) {
+
+			diff = typeof diff === 'number' ? (diff | 0) : 1;
 
 			let training = {
 				iterations: diff,

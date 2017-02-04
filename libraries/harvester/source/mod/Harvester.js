@@ -1,22 +1,10 @@
 
-lychee.define('harvester.mod.Updater').requires([
+lychee.define('harvester.mod.Harvester').requires([
 	'harvester.net.Client'
 ]).exports(function(lychee, global, attachments) {
 
 	const _Client = lychee.import('harvester.net.Client');
 	let   _CLIENT = null;
-
-
-
-	/*
-	 * HELPERS
-	 */
-
-	const _on_sync = function(project, data) {
-
-		console.log('SYNCHRONIZING UPDATES', project, data);
-
-	};
 
 
 
@@ -35,7 +23,7 @@ lychee.define('harvester.mod.Updater').requires([
 		serialize: function() {
 
 			return {
-				'reference': 'harvester.mod.Updater',
+				'reference': 'harvester.mod.Harvester',
 				'arguments': []
 			};
 
@@ -53,7 +41,18 @@ lychee.define('harvester.mod.Updater').requires([
 
 				_CLIENT = new _Client({
 					host: 'harvester.artificial.engineering',
-					port: 8080
+					port: 4848
+				});
+
+				_CLIENT.bind('disconnect', function() {
+
+					console.log('\n');
+					console.warn('+--------------------------------------------------------+');
+					console.warn('| No connection to harvester.artificial.engineering:4848 |');
+					console.warn('| Cannot synchronize data for AI training and knowledge  |');
+					console.warn('+--------------------------------------------------------+');
+					console.log('\n');
+
 				});
 
 			}
@@ -61,7 +60,7 @@ lychee.define('harvester.mod.Updater').requires([
 
 			if (project.identifier.indexOf('__') === -1 && project.package !== null) {
 
-				let service = _CLIENT.getService('update');
+				let service = _CLIENT.getService('harvester');
 				if (service !== null) {
 					return true;
 				}
@@ -77,17 +76,9 @@ lychee.define('harvester.mod.Updater').requires([
 
 			if (project.package !== null) {
 
-				let service = _CLIENT.getService('update');
+				let service = _CLIENT.getService('harvester');
 				if (service !== null) {
-
-					service.sync({
-						identifier: project.identifier
-					});
-
-					service.bind('sync', function(data) {
-						_on_sync.call(this, project, data);
-					}, this, true);
-
+					service.connect();
 				}
 
 			}

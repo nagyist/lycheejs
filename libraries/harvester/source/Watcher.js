@@ -2,23 +2,23 @@
 lychee.define('harvester.Watcher').requires([
 	'harvester.data.Filesystem',
 	'harvester.data.Project',
+	'harvester.mod.Beautifier',
 	'harvester.mod.Fertilizer',
+	'harvester.mod.Harvester',
 	'harvester.mod.Packager',
 	'harvester.mod.Server'
-//	'harvester.mod.Strainer',
-//	'harvester.mod.Updater'
+//	'harvester.mod.Strainer'
 ]).exports(function(lychee, global, attachments) {
 
 	const _Filesystem = lychee.import('harvester.data.Filesystem');
 	const _Project    = lychee.import('harvester.data.Project');
 	const _mod        = {
+		Beautifier: lychee.import('harvester.mod.Beautifier'),
 		Fertilizer: lychee.import('harvester.mod.Fertilizer'),
+		Harvester:  lychee.import('harvester.mod.Harvester'),
 		Packager:   lychee.import('harvester.mod.Packager'),
 		Server:     lychee.import('harvester.mod.Server'),
-		Strainer:   null,
-		Updater:    null
-		// Strainer:   lychee.import('harvester.mod.Strainer'),
-		// Updater:    lychee.import('harvester.mod.Updater')
+		Strainer:   lychee.import('harvester.mod.Strainer')
 	};
 
 
@@ -81,10 +81,10 @@ lychee.define('harvester.Watcher').requires([
 	const _update_mods = function() {
 
 		let Fertilizer = _mod.Fertilizer;
+		let Harvester  = _mod.Harvester;
 		let Packager   = _mod.Packager;
 		let Server     = _mod.Server;
 		let Strainer   = _mod.Strainer;
-		let Updater    = _mod.Updater;
 		let sandbox    = this.sandbox;
 
 		if (sandbox === true) {
@@ -117,8 +117,8 @@ lychee.define('harvester.Watcher').requires([
 				Server.process(library);
 			}
 
-			if (Updater !== null && Updater.can(library) === true) {
-				Updater.process(library);
+			if (Harvester !== null && Harvester.can(library) === true) {
+				Harvester.process(library);
 			}
 
 			if (Strainer !== null && Strainer.can(library) === true) {
@@ -143,8 +143,8 @@ lychee.define('harvester.Watcher').requires([
 				Server.process(project);
 			}
 
-			if (Updater !== null && Updater.can(project) === true) {
-				Updater.process(project);
+			if (Harvester !== null && Harvester.can(project) === true) {
+				Harvester.process(project);
 			}
 
 			if (Strainer !== null && Strainer.can(project) === true) {
@@ -234,6 +234,10 @@ lychee.define('harvester.Watcher').requires([
 					_mod.Packager.process(library);
 				}
 
+				if (_mod.Beautifier !== null && _mod.Beautifier.can(library) === true) {
+					_mod.Beautifier.process(library);
+				}
+
 				if (_mod.Server !== null && _mod.Server.can(library) === true) {
 					_mod.Server.process(library);
 				}
@@ -246,6 +250,10 @@ lychee.define('harvester.Watcher').requires([
 
 				if (_mod.Packager !== null && _mod.Packager.can(project) === true) {
 					_mod.Packager.process(project);
+				}
+
+				if (_mod.Beautifier !== null && _mod.Beautifier.can(project) === true) {
+					_mod.Beautifier.process(project);
 				}
 
 				if (_mod.Server !== null && _mod.Server.can(project) === true) {

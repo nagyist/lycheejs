@@ -3,7 +3,7 @@
 
 const _fs   = require('fs');
 const _path = require('path');
-const _ROOT = _path.resolve(__dirname, '../');
+const _ROOT = '/opt/lycheejs';
 
 
 if (_fs.existsSync(_ROOT + '/libraries/lychee/build/node/core.js') === false) {
@@ -85,7 +85,7 @@ const _bootup = function(settings) {
 		debug:    settings.debug === true,
 		sandbox:  false,
 		build:    'breeder.Main',
-		timeout:  1000,
+		timeout:  5000,
 		packages: [
 			new lychee.Package('lychee',     '/libraries/lychee/lychee.pkg'),
 			new lychee.Package('fertilizer', '/libraries/fertilizer/lychee.pkg'),

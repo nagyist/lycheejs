@@ -23,17 +23,19 @@ lychee.define('harvester.net.remote.Server').includes([
 
 				if (database['server'] instanceof Object) {
 
-					if (database['server']['@objects'] instanceof Array) {
+					let objects = database['server']['@objects'] || null;
+					if (objects instanceof Object) {
 
-						remotes.push.apply(remotes, database['server']['@objects'].map(function(remote) {
+						remotes = Object.values(objects).map(function(remote) {
 
 							return {
-								id:   remote.host + ':' + remote.port,
+								id:   remote.id,
+								type: remote.type,
 								host: remote.host,
 								port: remote.port
 							};
 
-						}));
+						});
 
 					}
 

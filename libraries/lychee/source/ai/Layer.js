@@ -2,8 +2,8 @@
 lychee.define('lychee.ai.Layer').requires([
 	'lychee.ai.Agent',
 	'lychee.ai.bnn.Agent',
-	'lychee.ai.enn.Agent'
-//	'lychee.ai.neat.Agent',
+	'lychee.ai.enn.Agent',
+	'lychee.ai.neat.Agent'
 //	'lychee.ai.bneat.Agent',
 //	'lychee.ai.hyperneat.Agent'
 ]).includes([

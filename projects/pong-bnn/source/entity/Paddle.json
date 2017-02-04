@@ -3,21 +3,30 @@
 	"height": 104,
 	"collision": 1,
 	"shape": 1,
-
 	"states": {
-		"evil": { "animation": false },
-		"good":  { "animation": false }
+		"evil": {
+			"animation": false
+		},
+		"good": {
+			"animation": false
+		}
 	},
-
 	"map": {
-
 		"evil": [
-			{ "x": 0, "y": 0, "w": 24, "h": 104 }
+			{
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 104
+			}
 		],
 		"good": [
-			{ "x": 0, "y": 0, "w": 24, "h": 104 }
+			{
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 104
+			}
 		]
-
 	}
-
 }

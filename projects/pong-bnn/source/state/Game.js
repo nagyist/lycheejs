@@ -12,7 +12,6 @@ lychee.define('game.state.Game').requires([
 	'lychee.app.State'
 ]).exports(function(lychee, global, attachments) {
 
-	const _policy = lychee.import('game.policy');
 	const _Agent  = lychee.import('game.ai.Agent');
 	const _Color  = lychee.import('lychee.effect.Color');
 	const _Shake  = lychee.import('lychee.effect.Shake');
@@ -164,7 +163,7 @@ lychee.define('game.state.Game').requires([
 		_State.call(this, main);
 
 
-		this.__cache      = {
+		this.__cache = {
 			evil: {
 				agent:  null,
 				paddle: null
@@ -174,7 +173,6 @@ lychee.define('game.state.Game').requires([
 				paddle: null
 			}
 		};
-		this.__policy     = null;
 		this.__statistics = {
 			evil:       0,
 			good:       0,
