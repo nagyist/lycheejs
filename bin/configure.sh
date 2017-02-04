@@ -118,6 +118,14 @@ if [ "$OS" == "linux" ] || [ "$OS" == "osx" ] || [ "$OS" == "bsd" ]; then
 
 
 
+	# Make fertilizers explicitely executable
+
+	chmod +x ./bin/runtime/bin/*.sh;
+	chmod +x ./bin/runtime/*/package.sh;
+	chmod +x ./bin/runtime/*/update.sh;
+
+
+
 	# Make runtimes explicitely executable
 
 	if [ -f "$LYCHEEJS_NODE" ]; then
