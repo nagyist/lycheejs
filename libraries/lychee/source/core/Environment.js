@@ -891,19 +891,9 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 	};
 
 
+	Composite.__FEATURES  = null;
+	Composite.__FILENAME  = null;
 
-	/*
-	 * BOOTSTRAP API
-	 */
-
-	Composite.__FEATURES = null;
-	Composite.__FILENAME = null;
-
-
-
-	/*
-	 * IMPLEMENTATION
-	 */
 
 	Composite.prototype = {
 
@@ -1618,6 +1608,10 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 		}
 
 	};
+
+
+	Composite.displayName           = 'lychee.Environment';
+	Composite.prototype.displayName = 'lychee.Environment';
 
 
 	return Composite;
