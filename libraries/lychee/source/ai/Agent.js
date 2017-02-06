@@ -55,11 +55,13 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 		let settings = Object.assign({}, data);
 
 
+		this.alive     = true;
 		this.brain     = null;
 		this.fitness   = 0;
 		this.trainings = [];
 
 
+		this.setAlive(settings.alive);
 		this.setBrain(settings.brain);
 		this.setFitness(settings.fitness);
 
@@ -180,6 +182,21 @@ lychee.define('lychee.ai.Agent').exports(function(lychee, global, attachments) {
 				_train_brain.call(this);
 
 			}
+
+		},
+
+		setAlive: function(alive) {
+
+			if (alive === true || alive === false) {
+
+				this.alive = alive;
+
+				return true;
+
+			}
+
+
+			return false;
 
 		},
 

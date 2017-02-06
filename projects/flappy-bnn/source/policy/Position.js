@@ -1,5 +1,5 @@
 
-lychee.define('game.policy.Control').exports(function(lychee, global, attachments) {
+lychee.define('game.policy.Position').exports(function(lychee, global, attachments) {
 
 	/*
 	 * IMPLEMENTATION
@@ -9,12 +9,16 @@ lychee.define('game.policy.Control').exports(function(lychee, global, attachment
 
 		let settings = lychee.assignsafe({
 			entity: null,
-			target: null
+			limit:  {
+				x: Infinity,
+				y: Infinity,
+				z: Infinity
+			}
 		}, data);
 
 
 		this.entity = settings.entity || null;
-		this.target = settings.target || null;
+		this.limit  = settings.limit;
 
 		settings = null;
 
@@ -33,12 +37,12 @@ lychee.define('game.policy.Control').exports(function(lychee, global, attachment
 
 			let settings = {
 				entity: null,
-				target: null
+				limit:  this.limit
 			};
 
 
 			return {
-				'constructor': 'game.policy.Control',
+				'constructor': 'game.policy.Position',
 				'arguments':   [ settings ]
 			};
 
@@ -53,20 +57,15 @@ lychee.define('game.policy.Control').exports(function(lychee, global, attachment
 		sensor: function() {
 
 			let entity = this.entity;
-			let target = this.target;
+			let limit  = this.limit;
 			let values = [ 0.5 ];
 
 
-			if (entity !== null && target !== null) {
+			if (entity !== null) {
 
-				let ey = entity.position.y;
-				let ty = target.position.y;
+				let hly = limit.y / 2;
 
-				if (ty < ey) {
-					values[0] = 1;
-				} else {
-					values[0] = 0;
-				}
+				values[0] = (hly + entity.position.y) / (hly * 2);
 
 			}
 
@@ -78,18 +77,14 @@ lychee.define('game.policy.Control').exports(function(lychee, global, attachment
 		control: function(values) {
 
 			let entity = this.entity;
+			let limit  = this.limit;
 
 
 			if (entity !== null) {
 
-				let val = values[0];
-				if (val > 0.5) {
+				let hly = limit.y / 2;
 
-					if (typeof entity.flap === 'function') {
-						entity.flap();
-					}
-
-				}
+				entity.position.y = (values[0] * (hly * 2)) - hly;
 
 			}
 

@@ -1,16 +1,16 @@
 
 lychee.define('game.ai.Agent').requires([
-	'lychee.ai.bnn.Brain',
-	'lychee.policy.Position',
-	'game.policy.Control'
+	'lychee.ai.enn.Brain',
+	'game.policy.Control',
+	'game.policy.Position'
 ]).includes([
-	'lychee.ai.Agent'
+	'lychee.ai.enn.Agent'
 ]).exports(function(lychee, global, attachments) {
 
-	const _Agent    = lychee.import('lychee.ai.Agent');
+	const _Agent    = lychee.import('lychee.ai.enn.Agent');
 	const _Control  = lychee.import('game.policy.Control');
-	const _Position = lychee.import('lychee.policy.Position');
-	const _Brain    = lychee.import('lychee.ai.bnn.Brain');
+	const _Position = lychee.import('game.policy.Position');
+	const _Brain    = lychee.import('lychee.ai.enn.Brain');
 
 
 
@@ -36,7 +36,7 @@ lychee.define('game.ai.Agent').requires([
 			limit:  settings.limit
 		});
 
-		let goal  = new _Position({
+		let goal = new _Position({
 			entity: settings.goal,
 			limit:  settings.limit
 		});
@@ -46,8 +46,8 @@ lychee.define('game.ai.Agent').requires([
 		sensors.push(goal);
 		controls.push(control);
 
-		this.__expected = goal;
-		this.__control  = control;
+		this._expected = goal;
+		this.__control = control;
 
 
 		settings.brain = new _Brain({

@@ -80,7 +80,7 @@ lychee.define('game.entity.Plane').includes([
 		update: function(clock, delta) {
 
 			if (this.__timeout === null) {
-				this.__timeout = clock + 500;
+				this.__timeout = clock + 250;
 			} else if (clock > this.__timeout) {
 				this.__canflap = true;
 			}

@@ -51,7 +51,14 @@ lychee.define('lychee.ai.Layer').requires([
 
 		let Agent = _Agent;
 		let type  = this.type;
-		if (type === Composite.TYPE.ENN) {
+		if (type === Composite.TYPE.CUSTOM) {
+
+			let template = lychee.serialize(this.agents[0]);
+			if (template !== null) {
+				Agent = lychee.import(template['constructor']);
+			}
+
+		} else if (type === Composite.TYPE.ENN) {
 			Agent = _agent.ENN;
 		} else if (type === Composite.TYPE.BNN) {
 			Agent = _agent.BNN;
@@ -231,6 +238,7 @@ lychee.define('lychee.ai.Layer').requires([
 		// XXX: Don't break references
 		for (let n = 0, nl = new_agents.length; n < nl; n++) {
 			this.agents[n] = new_agents[n];
+			this.agents[n].alive = true;
 		}
 
 
@@ -261,9 +269,8 @@ lychee.define('lychee.ai.Layer').requires([
 		this.visible  = true;
 
 
-		this.agents   = [];
-		this.lifetime = 30000;
-		this.type     = Composite.TYPE.ENN;
+		this.agents = [];
+		this.type   = Composite.TYPE.CUSTOM;
 
 		this.__fitness = {
 			total:    0,
@@ -272,11 +279,9 @@ lychee.define('lychee.ai.Layer').requires([
 			worst:    Infinity
 		};
 		this.__map     = {};
-		this.__start   = null;
 
 
 		this.setAgents(settings.agents);
-		this.setLifetime(settings.lifetime);
 
 		if (lychee.enumof(Composite.TYPE, settings.type) && this.type !== settings.type) {
 			this.setType(settings.type);
@@ -301,11 +306,12 @@ lychee.define('lychee.ai.Layer').requires([
 
 
 	Composite.TYPE = {
-		ENN:       0,
-		BNN:       1,
-		NEAT:      2,
-		BNEAT:     3,
-		HYPERNEAT: 4
+		CUSTOM:    0,
+		ENN:       1,
+		BNN:       2,
+		NEAT:      3,
+		BNEAT:     4,
+		HYPERNEAT: 5
 	};
 
 
@@ -326,8 +332,7 @@ lychee.define('lychee.ai.Layer').requires([
 			let blob     = (data['blob'] || {});
 
 
-			if (this.lifetime !== 30000)          settings.lifetime = this.lifetime;
-			if (this.type !== Composite.TYPE.ENN) settings.type     = this.type;
+			if (this.type !== Composite.TYPE.ENN) settings.type = this.type;
 
 
 			if (this.agents.length > 0) {
@@ -365,23 +370,21 @@ lychee.define('lychee.ai.Layer').requires([
 
 		update: function(clock, delta) {
 
-			if (this.__start === null) {
-				this.__start = clock;
-			}
-
-
-			let agents = this.agents;
+			let agents   = this.agents;
+			let is_alive = false;
 			for (let a = 0, al = agents.length; a < al; a++) {
-				agents[a].update(clock, delta);
+
+				let agent = agents[a];
+				if (agent.alive === true) {
+					agent.update(clock, delta);
+					is_alive = true;
+				}
+
 			}
 
 
-			let t = (clock - this.__start) / this.lifetime;
-			if (t > 1) {
-
+			if (is_alive === false) {
 				this.trigger('epoche');
-				this.__start = clock;
-
 			}
 
 		},
@@ -543,24 +546,6 @@ lychee.define('lychee.ai.Layer').requires([
 			}
 
 			return true;
-
-		},
-
-		setLifetime: function(lifetime) {
-
-			lifetime = typeof lifetime === 'number' ? (lifetime | 0) : null;
-
-
-			if (lifetime !== null) {
-
-				this.lifetime = lifetime;
-
-				return true;
-
-			}
-
-
-			return false;
 
 		},
 

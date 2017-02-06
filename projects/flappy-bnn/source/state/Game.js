@@ -55,7 +55,11 @@ lychee.define('game.state.Game').requires([
 
 	const _reset_game = function() {
 
+		let layer = this.getLayer('ai');
 		let stats = this.__statistics;
+
+		layer.trigger('epoche');
+
 
 		stats.generation++;
 		stats.highscore = Math.max(stats.highscore, stats.score);
@@ -63,6 +67,7 @@ lychee.define('game.state.Game').requires([
 
 
 		this.twister = new _Mersenne(1337);
+
 
 		_reset_agents.call(this, true);
 		_reset_goals.call(this, true);
@@ -133,7 +138,6 @@ lychee.define('game.state.Game').requires([
 
 		let planes = this.__cache.planes;
 		let width  = this.renderer.width;
-		let height = this.renderer.height;
 
 		if (complete === true) {
 
@@ -285,10 +289,11 @@ lychee.define('game.state.Game').requires([
 						goal:  cache.goals[0],
 						limit: limit
 					});
-					cache.agents.push(agent);
 					layer.addAgent(agent);
 
 				}
+
+				this.__cache.agents = layer.agents;
 
 			}
 
@@ -327,7 +332,16 @@ lychee.define('game.state.Game').requires([
 
 		update: function(clock, delta) {
 
-			_State.prototype.update.call(this, clock, delta);
+			for (let id in this.__layers) {
+
+				if (id === 'ai') continue;
+
+				let layer = this.__layers[id];
+				if (layer.visible === false) continue;
+
+				layer.update(clock, delta);
+
+			}
 
 
 			let cache  = this.__cache;
@@ -359,8 +373,8 @@ lychee.define('game.state.Game').requires([
 					let plane = planes[p];
 					let agent = agents[p] || null;
 					if (agent !== null) {
-						agent.__control.target  = next_goal;
-						agent.__expected.entity = next_goal;
+						agent.__control.target = next_goal;
+						agent._expected.entity = next_goal;
 						agent.update();
 					}
 

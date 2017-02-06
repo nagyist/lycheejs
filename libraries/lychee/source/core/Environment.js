@@ -438,7 +438,6 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 
 				namespace[identifier].displayName = definition.id;
 				namespace[identifier].prototype = {};
-				namespace[identifier].prototype.displayName = definition.id;
 
 
 				let tplenums   = {};
@@ -495,6 +494,8 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 				}
 
 				Object.assign.apply(lychee, tplmethods);
+				namespace[identifier].prototype.displayName = definition.id;
+
 				Object.freeze(namespace[identifier].prototype);
 
 
@@ -507,9 +508,15 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 				namespace[identifier] = template;
 				namespace[identifier].displayName = definition.id;
 
+				console.log(definition.id, identifier);
 
 				if (template instanceof Object) {
 					Object.freeze(namespace[identifier]);
+				}
+
+				if (namespace[identifier].prototype instanceof Object) {
+					namespace[identifier].prototype.displayName = definition.id;
+					Object.freeze(namespace[identifier].prototype);
 				}
 
 			}
@@ -520,6 +527,8 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 			namespace[identifier].displayName = definition.id;
 			namespace[identifier].prototype = {};
 			namespace[identifier].prototype.displayName = definition.id;
+
+			Object.freeze(namespace[identifier].prototype);
 
 
 			this.global.console.error('lychee-Environment (' + this.id + '): Invalid Definition "' + definition.id + '", it is replaced with a Dummy Composite');
