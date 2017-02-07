@@ -508,7 +508,6 @@ lychee.Environment = typeof lychee.Environment !== 'undefined' ? lychee.Environm
 				namespace[identifier] = template;
 				namespace[identifier].displayName = definition.id;
 
-				console.log(definition.id, identifier);
 
 				if (template instanceof Object) {
 					Object.freeze(namespace[identifier]);
