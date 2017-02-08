@@ -83,7 +83,7 @@ const _bootup = function(settings) {
 	let environment = new lychee.Environment({
 		id:       'breeder',
 		debug:    settings.debug === true,
-		sandbox:  false,
+		sandbox:  settings.debug === true ? false : true,
 		build:    'breeder.Main',
 		timeout:  5000,
 		packages: [
