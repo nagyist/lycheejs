@@ -75,6 +75,8 @@
 	let   _std_out = '';
 	let   _std_err = '';
 
+	const _INDENT         = '    ';
+	const _WHITESPACE     = new Array(512).fill(' ').join('');
 	const _args_to_string = function(args, offset) {
 
 		let output  = [];
@@ -90,7 +92,7 @@
 				let tmp = [];
 
 				try {
-					tmp = JSON.stringify(value, null, '\t').split('\n');
+					tmp = JSON.stringify(value, null, _INDENT).split('\n');
 				} catch (err) {
 				}
 
@@ -117,9 +119,9 @@
 
 				let chunk = output[o];
 				if (chunk === undefined) {
-					output[o] = ('' + value).trim();
+					output[o] = ('' + value).replace(/\t/g, _INDENT).trim();
 				} else {
-					output[o] = (chunk + ' ' + value).trim();
+					output[o] = (chunk + (' ' + value).replace(/\t/g, _INDENT)).trim();
 				}
 
 			}
@@ -136,6 +138,8 @@
 				let maxl = (o === 0 || o === ol - 1) ? (columns - offset) : columns;
 				if (line.length > maxl) {
 					output[o] = line.substr(0, maxl);
+				} else {
+					output[o] = line + _WHITESPACE.substr(0, maxl - line.length);
 				}
 
 			}
@@ -149,7 +153,7 @@
 			if (line.length > maxl) {
 				return line.substr(0, maxl);
 			} else {
-				return line;
+				return line + _WHITESPACE.substr(0, maxl - line.length);
 			}
 
 		}
@@ -178,7 +182,7 @@
 
 		_log.call(console,
 			' ',
-			_args_to_string(args, 1),
+			_args_to_string(args, 2),
 			' '
 		);
 

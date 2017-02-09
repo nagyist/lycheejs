@@ -21,7 +21,9 @@ const lychee = require(_ROOT + '/libraries/lychee/build/node/core.js')(_ROOT);
 
 const _print_help = function() {
 
-	let profiles = _fs.readdirSync(_ROOT + '/libraries/harvester/profiles').map(function(value) {
+	let profiles = _fs.readdirSync(_ROOT + '/libraries/harvester/profiles').filter(function(value) {
+		return value.endsWith('.json');
+	}).map(function(value) {
 		return '' + value.substr(0, value.indexOf('.json')) + '';
 	});
 
