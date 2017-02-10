@@ -228,32 +228,6 @@
 
 	};
 
-	const _package_definitions = function(json) {
-
-		let files = [];
-
-		if (json !== null) {
-
-			let root = json.source.files || null;
-			if (root !== null) {
-				_walk_directory(files, root, '', false);
-			}
-
-		}
-
-
-		return files.map(function(value) {
-			return value.substr(1);
-		}).filter(function(value) {
-			return value.substr(0, 4) !== 'core' && value.substr(0, 8) !== 'platform';
-		}).map(function(value) {
-			return 'lychee.' + value.split('.')[0].split('/').join('.');
-		}).filter(function(value) {
-			return value.indexOf('__') === -1;
-		});
-
-	};
-
 	const _package_assets = function(json) {
 
 		let files = [];
@@ -274,6 +248,32 @@
 			if (a > b) return  1;
 			if (a < b) return -1;
 			return 0;
+		}).filter(function(value) {
+			return value.indexOf('__') === -1;
+		});
+
+	};
+
+	const _package_definitions = function(json) {
+
+		let files = [];
+
+		if (json !== null) {
+
+			let root = json.source.files || null;
+			if (root !== null) {
+				_walk_directory(files, root, '', false);
+			}
+
+		}
+
+
+		return files.map(function(value) {
+			return value.substr(1);
+		}).filter(function(value) {
+			return value.substr(0, 4) !== 'core' && value.substr(0, 8) !== 'platform';
+		}).map(function(value) {
+			return 'lychee.' + value.split('.')[0].split('/').join('.');
 		}).filter(function(value) {
 			return value.indexOf('__') === -1;
 		});
