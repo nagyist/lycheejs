@@ -5,21 +5,23 @@ lychee.define('lychee.policy.Offset').exports(function(lychee, global, attachmen
 	 * IMPLEMENTATION
 	 */
 
-	let Composite = function(data) {
+	let Composite = function(settings) {
 
-		let settings = lychee.assignsafe({
-			entity: null,
-			limit:  {
-				x: Infinity,
-				y: Infinity
-			}
-		}, data);
+		this.entity = null;
+		this.limit  = { x: Infinity, y: Infinity };
 
 
-		this.entity = settings.entity || null;
-		this.limit  = settings.limit;
+		// No data validation garbage allowed for policies
 
-		settings = null;
+		if (settings.entity instanceof Object) {
+			this.entity = settings.entity;
+		}
+
+		if (settings.limit instanceof Object) {
+			this.limit.x = typeof settings.limit.x === 'number' ? (settings.limit.x | 0) : Infinity;
+			this.limit.y = typeof settings.limit.y === 'number' ? (settings.limit.y | 0) : Infinity;
+			this.limit.z = typeof settings.limit.z === 'number' ? (settings.limit.z | 0) : Infinity;
+		}
 
 	};
 

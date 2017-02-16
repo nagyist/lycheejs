@@ -5,16 +5,9 @@ lychee.define('lychee.policy.Music').exports(function(lychee, global, attachment
 	 * IMPLEMENTATION
 	 */
 
-	let Composite = function(data) {
+	let Composite = function(settings) {
 
-		let settings = lychee.assignsafe({
-			music: null
-		}, data);
-
-
-		this.music = settings.music || null;
-
-		settings = null;
+		this.music = settings.music instanceof Music ? settings.music : null;
 
 	};
 

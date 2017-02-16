@@ -5,18 +5,17 @@ lychee.define('lychee.policy.Alpha').exports(function(lychee, global, attachment
 	 * IMPLEMENTATION
 	 */
 
-	let Composite = function(data) {
+	let Composite = function(settings) {
 
-		let settings = lychee.assignsafe({
-			entity: null,
-			limit:  1
-		}, data);
+		this.entity = null;
+		this.limit  = typeof settings.limit === 'number' ? settings.limit : 1;
 
 
-		this.entity = settings.entity || null;
-		this.limit  = settings.limit;
+		// No data validation garbage allowed for policies
 
-		settings = null;
+		if (settings.entity instanceof Object) {
+			this.entity = settings.entity;
+		}
 
 	};
 

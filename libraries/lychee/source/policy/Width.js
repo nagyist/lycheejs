@@ -5,18 +5,16 @@ lychee.define('lychee.policy.Width').exports(function(lychee, global, attachment
 	 * IMPLEMENTATION
 	 */
 
-	let Composite = function(data) {
+	let Composite = function(settings) {
 
-		let settings = lychee.assignsafe({
-			entity: null,
-			limit:  Infinity
-		}, data);
+		this.entity = null;
+		this.limit  = typeof settings.limit === 'number' ? (settings.limit | 0) : Infinity;
 
+		// No data validation garbage allowed for policies
 
-		this.entity = settings.entity || null;
-		this.limit  = settings.limit;
-
-		settings = null;
+		if (settings.entity instanceof Object) {
+			this.entity = settings.entity;
+		}
 
 	};
 
