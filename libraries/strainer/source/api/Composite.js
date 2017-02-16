@@ -854,6 +854,35 @@ lychee.define('strainer.api.Composite').requires([
 			_parse_methods(result.methods, result.properties, stream, errors);
 
 
+			for (let m in result.methods) {
+
+				let method = result.methods[m];
+
+				for (let p in result.properties) {
+
+					let property = result.properties[p];
+					if (property.type === 'undefined') {
+
+						let name = 'set' + p.charAt(0).toUpperCase() + p.substr(1);
+						if (name === m) {
+
+							let found = method.parameters.find(function(val) {
+								return p === val.name;
+							});
+
+							if (found !== undefined && found.type !== 'undefined') {
+								property.type = found.type;
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+
 			for (let p in result.properties) {
 
 				let property = result.properties[p];
