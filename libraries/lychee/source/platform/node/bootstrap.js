@@ -178,6 +178,9 @@
 		// clear screen and reset cursor
 		process.stdout.write('\x1B[2J\x1B[0f');
 
+		// clear scroll buffer
+		process.stdout.write('\u001b[3J');
+
 	};
 
 	console.log = function() {
