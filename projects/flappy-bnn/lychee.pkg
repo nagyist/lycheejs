@@ -76,6 +76,9 @@
 			"policy": {
 				"Control": [
 					"js"
+				],
+				"Position": [
+					"js"
 				]
 			},
 			"state": {

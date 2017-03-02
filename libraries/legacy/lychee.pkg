@@ -1,0 +1,34 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"tags": {
+			"platform": {
+				"html": "platform/html"
+			}
+		},
+		"files": {
+			"app": {
+				"Main": [
+					"js"
+				]
+			},
+			"platform": {
+				"html": {
+					"Input": [
+						"js"
+					],
+					"Renderer": [
+						"js"
+					]
+				}
+			}
+		}
+	}
+}

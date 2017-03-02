@@ -135,7 +135,7 @@ any remote debugging protocol.
 
 We ain't doing HTML5 websites or single-page-webapps here. If you
 want to teach lychee.js those Legacy Technologies, there's the
-[lychee.js Legacy Library](https://github.com/Artificial-Engineering/lycheejs-legacy.git).
+[Legacy Library](./libraries/legacy).
 
 
 
