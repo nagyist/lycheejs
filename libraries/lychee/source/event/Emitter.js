@@ -377,7 +377,7 @@ lychee.define('lychee.event.Emitter').exports(function(lychee, global, attachmen
 		trigger: function(event, data) {
 
 			event = typeof event === 'string' ? event : null;
-			data  = data instanceof Array     ? data : null;
+			data  = data instanceof Array     ? data  : null;
 
 
 			let result = _trigger.call(this, event, data);

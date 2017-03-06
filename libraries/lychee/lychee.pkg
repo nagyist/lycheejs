@@ -321,6 +321,9 @@
 				],
 				"Queue": [
 					"js"
+				],
+				"Router": [
+					"js"
 				]
 			},
 			"math": {
