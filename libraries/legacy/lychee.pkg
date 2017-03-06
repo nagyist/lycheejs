@@ -14,11 +14,6 @@
 			}
 		},
 		"files": {
-			"app": {
-				"Main": [
-					"js"
-				]
-			},
 			"platform": {
 				"html": {
 					"Input": [
@@ -26,7 +21,15 @@
 					],
 					"Renderer": [
 						"js"
-					]
+					],
+					"app": {
+						"Main": [
+							"js"
+						],
+						"State": [
+							"js"
+						]
+					}
 				}
 			}
 		}

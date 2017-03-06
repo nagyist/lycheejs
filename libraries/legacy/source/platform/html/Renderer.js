@@ -12,7 +12,7 @@ lychee.define('legacy.Renderer').tags({
 
 		try {
 
-			let wrapper = document.createElement('custom-wrapper');
+			let wrapper = global.document.createElement('custom-wrapper');
 			if ('transform' in wrapper.style) {
 				return true;
 			}
@@ -123,14 +123,18 @@ lychee.define('legacy.Renderer').tags({
 
 	const _render_element = function(entity, map) {
 
-		let wrapper = null;
-		let layer   = map.layer || null;
+		let layer   = map.layer  || null;
+		let wrapper = map.wrapper || null;
 
-		if (layer !== null) {
+		if (wrapper === null) {
 
-			let index = _CACHE.entities.indexOf(layer);
-			if (index !== -1) {
-				wrapper = _CACHE.elements[index]._content;
+			if (layer !== null) {
+
+				let index = _CACHE.entities.indexOf(layer);
+				if (index !== -1) {
+					wrapper = _CACHE.elements[index]._content;
+				}
+
 			}
 
 		}

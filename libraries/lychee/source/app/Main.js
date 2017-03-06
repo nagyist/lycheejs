@@ -542,18 +542,15 @@ lychee.define('lychee.app.Main').requires([
 
 		setState: function(id, state) {
 
-			id = typeof id === 'string' ? id : null;
+			id    = typeof id === 'string'            ? id    : null;
+			state = lychee.interfaceof(_State, state) ? state : null;
 
 
-			if (lychee.interfaceof(_State, state)) {
+			if (id !== null && state !== null) {
 
-				if (id !== null) {
+				this.__states[id] = state;
 
-					this.__states[id] = state;
-
-					return true;
-
-				}
+				return true;
 
 			}
 
@@ -583,11 +580,12 @@ lychee.define('lychee.app.Main').requires([
 
 			if (id !== null && this.__states[id] !== undefined) {
 
-				delete this.__states[id];
-
 				if (this.state === this.__states[id]) {
 					this.changeState(null);
 				}
+
+				delete this.__states[id];
+
 
 				return true;
 
