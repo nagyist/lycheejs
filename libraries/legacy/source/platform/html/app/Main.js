@@ -1,5 +1,7 @@
 
-lychee.define('legacy.app.Main').requires([
+lychee.define('legacy.app.Main').tags({
+	platform: 'html'
+}).requires([
 	'legacy.Input',
 	'legacy.Renderer',
 	'legacy.app.State'
@@ -15,6 +17,8 @@ lychee.define('legacy.app.Main').requires([
 		try {
 
 			global.document.createElement('legacy-app-Main');
+
+			return true;
 
 		} catch (err) {
 		}

@@ -12,8 +12,8 @@ lychee.define('legacy.Renderer').tags({
 
 		try {
 
-			let wrapper = global.document.createElement('custom-wrapper');
-			if ('transform' in wrapper.style) {
+			let element = global.document.createElement('custom-wrapper');
+			if ('transform' in element.style) {
 				return true;
 			}
 

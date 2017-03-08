@@ -2464,6 +2464,13 @@
 	 * FEATURES
 	 */
 
+	const _ELEMENT = {
+		id:    '',
+		style: {
+			transform: ''
+		}
+	};
+
 	const _FEATURES = {
 
 		innerWidth:  1337,
@@ -2483,8 +2490,12 @@
 		setTimeout:            function() {},
 
 		document: {
-			createElement:    function() {},
-			querySelectorAll: function() {},
+			createElement: function() {
+				return _ELEMENT;
+			},
+			querySelectorAll: function() {
+				return _ELEMENT;
+			},
 			body: {
 				appendChild: function() {}
 			}

@@ -16,10 +16,15 @@ lychee.define('legacy.app.State').requires([
 
 			global.document.createElement('legacy-app-Main');
 
+			return true;
+
 		} catch (err) {
 		}
 
 	}
+
+
+	return false;
 
 }).exports(function(lychee, global, attachments) {
 
@@ -29,6 +34,19 @@ lychee.define('legacy.app.State').requires([
 	//   stylesheet: _STYLESHEET,
 	//   wrapper:    document.querySelector('main > section')
 	// })
+
+	let Composite = function(data) {
+		// TODO: Implement state._element
+		// TODO: Inherit from lychee.app.State
+	};
+
+
+	Composite.prototype = {
+
+	};
+
+
+	return Composite;
 
 });
 
