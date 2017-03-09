@@ -7,7 +7,7 @@ lychee.define('lychee.ai.neat.Agent').includes([
 
 	const _Agent  = lychee.import('lychee.ai.Agent');
 	const _Genome = lychee.import('lychee.ai.neat.Genome');
-	// const _Brain = lychee.import('lychee.ai.neat.Brain');
+	const _Brain  = lychee.import('lychee.ai.neat.Brain');
 
 
 
@@ -20,7 +20,7 @@ lychee.define('lychee.ai.neat.Agent').includes([
 		let settings = Object.assign({}, data);
 
 
-//		settings.brain = settings.brain || new _Brain();
+		settings.brain = settings.brain || new _Brain();
 
 		_Agent.call(this, settings);
 
@@ -54,6 +54,12 @@ lychee.define('lychee.ai.neat.Agent').includes([
 		 */
 
 		crossover: function(agent) {
+
+			// TODO: Figure out how to crossoverGenome with Brain's genes
+
+		},
+
+		crossover__WRONG: function(agent) {
 
 			agent = lychee.interfaceof(Composite, agent) ? agent : null;
 
@@ -109,6 +115,12 @@ lychee.define('lychee.ai.neat.Agent').includes([
 
 			}
 
+		},
+
+		reward: function(diff, training) {
+		},
+
+		punish: function(diff, training) {
 		}
 
 	};
