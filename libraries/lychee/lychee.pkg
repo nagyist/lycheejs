@@ -156,10 +156,16 @@
 					"Agent": [
 						"js"
 					],
+					"Brain": [
+						"js"
+					],
 					"Gene": [
 						"js"
 					],
 					"Genome": [
+						"js"
+					],
+					"Pool": [
 						"js"
 					]
 				}
