@@ -9,6 +9,27 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 	 * HELPERS
 	 */
 
+	const _validate_gene = function(gene) {
+
+		if (gene instanceof Object) {
+
+			if (
+				typeof gene['in'] === 'number'
+				&& typeof gene['out'] === 'number'
+				&& typeof gene.enabled === 'boolean'
+				&& typeof gene.innovation === 'number'
+			) {
+
+				return true;
+
+			}
+
+		}
+
+		return false;
+
+	};
+
 	const _random = function() {
 		return (Math.random() * 2) - 1;
 	};
@@ -33,8 +54,9 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 		}
 
 
-		let genes   = this.genes;
-		let neurons = {};
+		let genes       = this.genes;
+		let neurons     = {};
+		let neuron_size = 0;
 
 		for (let i = 0; i < input_size; i++) {
 
@@ -42,6 +64,8 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 				incoming: [],
 				value:    0.0
 			};
+
+			neuron_size++;
 
 		}
 
@@ -52,6 +76,8 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 				incoming: [],
 				value:    0.0
 			};
+
+			neuron_size++;
 
 		}
 
@@ -76,6 +102,8 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 						value:    0.0
 					};
 
+					neuron_size++;
+
 				}
 
 				let neuron2 = neurons[gene['in']] || null;
@@ -87,6 +115,8 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 						value:    0.0
 					};
 
+					neuron_size++;
+
 				}
 
 			}
@@ -95,6 +125,7 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 
 
 		this.__neurons     = neurons;
+		this.__size.neuron = neuron_size;
 		this.__size.input  = input_size;
 		this.__size.output = output_size;
 
@@ -110,10 +141,6 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 	const _update_network = function(inputs, outputs) {
 
 		let neurons = this.__neurons;
-
-
-		// XXX: This is the always-on button
-		// inputs.push(1);
 
 
 		for (let i = 0, il = inputs.length; i < il; i++) {
@@ -184,7 +211,8 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 		this._outputs = [];
 		this.__size   = {
 			input:  0,
-			output: 0
+			output: 0,
+			neuron: 0
 		};
 
 
@@ -208,6 +236,10 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 				this.__neurons = lychee.deserialize(blob.neurons);
 			}
 
+			if (blob.size instanceof Object) {
+				this.__size = lychee.deserialize(blob.size);
+			}
+
 		},
 
 		serialize: function() {
@@ -222,6 +254,10 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 
 			if (Object.keys(this.__neurons).length > 0) {
 				blob.neurons = lychee.serialize(this.__neurons);
+			}
+
+			if (this.__size.input !== 0 || this.__size.output !== 0) {
+				blob.size = lychee.serialize(this.__size);
 			}
 
 
@@ -349,6 +385,41 @@ lychee.define('lychee.ai.neat.Brain').exports(function(lychee, global, attachmen
 				if (size !== this.__size.input) {
 					_init_network.call(this);
 				}
+
+
+				return true;
+
+			}
+
+
+			return false;
+
+		},
+
+		getGenes: function() {
+
+			let genes = [];
+
+			for (let g = 0, gl = this.genes.length; g < gl; g++) {
+				genes.push(this.genes[g]);
+			}
+
+			return genes;
+
+		},
+
+		setGenes: function(genes) {
+
+			genes = genes instanceof Array ? genes : null;
+
+
+			if (genes !== null) {
+
+				this.genes = genes.filter(function(gene) {
+					return _validate_gene(gene);
+				});
+
+				_init_network.call(this);
 
 
 				return true;
