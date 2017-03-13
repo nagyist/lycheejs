@@ -51,6 +51,7 @@
 !/projects/cultivator
 !/projects/flappy-bnn
 !/projects/lethalmaze
+!/projects/lycheejs-editor
 !/projects/mode7
 !/projects/over-there
 !/projects/pong
@@ -62,9 +63,6 @@
 
 # Cultivator Projects
 
-/projects/cultivator/editor/api
-/projects/cultivator/editor/build
-/projects/cultivator/editor/lychee.store
 /projects/cultivator/ranger/api
 /projects/cultivator/ranger/build
 /projects/cultivator/ranger/lychee.store

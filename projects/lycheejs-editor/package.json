@@ -1,0 +1,23 @@
+{
+	"main":            "./index.html",
+	"name":            "lycheejs-editor",
+	"description":     "lychee.js Editor",
+	"version":         "${version}",
+	"window": {
+		"title":       "lychee.js Editor",
+		"icon":        "./icon.png",
+		"toolbar":     true,
+		"frame":       true,
+		"show":        true,
+		"transparent": false,
+		"width":       640,
+		"height":      512,
+		"position":    "center",
+		"min_width":   400,
+		"min_height":  512
+	},
+	"webkit": {
+		"plugin": false
+	},
+	"nodejs": true
+}

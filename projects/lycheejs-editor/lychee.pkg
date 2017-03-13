@@ -26,8 +26,8 @@
 				},
 				"variant": "application",
 				"profile": {
-					"client": "/api/server/connect?identifier=/projects/cultivator/editor",
-					"server": "/api/server/connect?identifier=/projects/cultivator/editor"
+					"client": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor",
+					"server": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor"
 				}
 			},
 			"html-webview/main": {
@@ -52,8 +52,8 @@
 				},
 				"variant": "application",
 				"profile": {
-					"client": "/api/server/connect?identifier=/projects/cultivator/editor",
-					"server": "/api/server/connect?identifier=/projects/cultivator/editor"
+					"client": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor",
+					"server": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor"
 				}
 			},
 			"html/main": {
@@ -77,8 +77,8 @@
 				},
 				"variant": "application",
 				"profile": {
-					"client": "/api/server/connect?identifier=/projects/cultivator/editor",
-					"server": "/api/server/connect?identifier=/projects/cultivator/editor"
+					"client": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor",
+					"server": "http://localhost:4848/api/server/connect?identifier=/projects/lycheejs-editor"
 				}
 			},
 			"node/main": {
@@ -102,7 +102,8 @@
 				},
 				"variant": "application",
 				"profile": {
-					"client": null
+					"client": null,
+					"renderer": null
 				}
 			}
 		},
