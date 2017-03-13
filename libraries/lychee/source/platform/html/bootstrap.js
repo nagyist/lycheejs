@@ -2,6 +2,7 @@
 (function(lychee, global) {
 
 	let _filename = null;
+	let _protocol = null;
 
 
 
@@ -22,19 +23,20 @@
 		}
 
 
-		if (/http|https/g.test(proto)) {
+		if (/^(http|https)$/g.test(proto)) {
 
 			// Hint: The harvester (HTTP server) understands
 			// /projects/* and /libraries/* requests.
 
 			lychee.ROOT.lychee = '';
+			_protocol = proto;
 
 
 			if (cwd !== '') {
 				lychee.ROOT.project = cwd === '/' ? '' : cwd;
 			}
 
-		} else if (/app|file|chrome-extension/g.test(proto)) {
+		} else if (/^(app|file|chrome-extension)$/g.test(proto)) {
 
 			let tmp1 = selfpath.indexOf('/libraries/lychee');
 			let tmp2 = selfpath.indexOf('://');
@@ -49,6 +51,10 @@
 			let tmp3 = selfpath.split('/').slice(0, 3).join('/');
 			if (tmp3.substr(0, 13) === '/opt/lycheejs') {
 				lychee.ROOT.lychee = tmp3;
+			}
+
+			if (/^(file|chrome-extension)$/g.test(proto)) {
+				_protocol = 'file';
 			}
 
 
@@ -71,7 +77,12 @@
 		let path = lychee.environment.resolve(settings.url);
 		let xhr  = new XMLHttpRequest();
 
-		xhr.open('GET', path, true);
+
+		if (_protocol !== null && path.substr(0, 13) === '/opt/lycheejs') {
+			xhr.open('GET', _protocol + '://' + path, true);
+		} else {
+			xhr.open('GET', path, true);
+		}
 
 
 		if (settings.headers instanceof Object) {
@@ -2334,7 +2345,14 @@
 				document.body.removeChild(this);
 
 			};
-			tmp.src = lychee.environment.resolve(stuff.url);
+
+
+			let path = lychee.environment.resolve(stuff.url);
+			if (_protocol !== null && path.substr(0, 13) === '/opt/lycheejs') {
+				tmp.src = _protocol + '://' + path;
+			} else {
+				tmp.src = path;
+			}
 
 			document.body.appendChild(tmp);
 

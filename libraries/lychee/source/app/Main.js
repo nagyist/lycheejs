@@ -65,7 +65,7 @@ lychee.define('lychee.app.Main').requires([
 		url = typeof url === 'string' ? url : '/api/server/connect?identifier=boilerplate';
 
 
-		if (/^http(s)\:\/\//g.test(url) === false) {
+		if (/^(http|https):\/\//g.test(url) === false) {
 			url = _API_ORIGIN + url;
 		}
 
