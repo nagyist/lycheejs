@@ -52,7 +52,7 @@ lychee.define('lychee.ui.entity.Texture').requires([
 
 		this.__upload.bind('change', function(assets) {
 
-			if (assets.length === 1) {
+			if (assets !== null && assets.length === 1) {
 
 				let texture = assets[0];
 				if (texture.width <= this.width && texture.height <= this.height) {

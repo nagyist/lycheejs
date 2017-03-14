@@ -266,7 +266,7 @@ lychee.define('lychee.app.Sprite').includes([
 			id = typeof id === 'string' ? id : null;
 
 
-			let result = lychee.app.Entity.prototype.setState.call(this, id);
+			let result = _Entity.prototype.setState.call(this, id);
 			if (result === true) {
 
 				let map = this.__map[this.state] || null;
