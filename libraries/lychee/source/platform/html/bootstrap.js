@@ -78,7 +78,7 @@
 		let xhr  = new XMLHttpRequest();
 
 
-		if (_protocol !== null && path.substr(0, 13) === '/opt/lycheejs') {
+		if (path.substr(0, 13) === '/opt/lycheejs' && _protocol !== null) {
 			xhr.open('GET', _protocol + '://' + path, true);
 		} else {
 			xhr.open('GET', path, true);
@@ -1659,10 +1659,17 @@
 
 				buffer.autobuffer = true;
 				buffer.preload    = true;
-				buffer.src        = lychee.environment.resolve(url + '.' + type);
+
+
+				let path = lychee.environment.resolve(url + '.' + type);
+				if (path.substr(0, 13) === '/opt/lycheejs' && _protocol !== null) {
+					buffer.src = _protocol + '://' + path;
+				} else {
+					buffer.src = path;
+				}
+
+
 				buffer.load();
-
-
 				buffer.onload();
 
 			} else {
@@ -1964,10 +1971,17 @@
 
 				buffer.autobuffer = true;
 				buffer.preload    = true;
-				buffer.src        = lychee.environment.resolve(url + '.' + type);
+
+
+				let path = lychee.environment.resolve(url + '.' + type);
+				if (path.substr(0, 13) === '/opt/lycheejs' && _protocol !== null) {
+					buffer.src = _protocol + '://' + path;
+				} else {
+					buffer.src = path;
+				}
+
+
 				buffer.load();
-
-
 				buffer.onload();
 
 			} else {
@@ -2276,7 +2290,13 @@
 
 					};
 
-					buffer.src = lychee.environment.resolve(url);
+
+					let path = lychee.environment.resolve(url);
+					if (path.substr(0, 13) === '/opt/lycheejs' && _protocol !== null) {
+						buffer.src = _protocol + '://' + path;
+					} else {
+						buffer.src = path;
+					}
 
 				} else {
 
@@ -2348,7 +2368,7 @@
 
 
 			let path = lychee.environment.resolve(stuff.url);
-			if (_protocol !== null && path.substr(0, 13) === '/opt/lycheejs') {
+			if (path.substr(0, 13) === '/opt/lycheejs' && _protocol !== null) {
 				tmp.src = _protocol + '://' + path;
 			} else {
 				tmp.src = path;

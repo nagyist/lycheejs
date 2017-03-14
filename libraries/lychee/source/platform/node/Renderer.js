@@ -482,7 +482,7 @@ lychee.define('Renderer').tags({
 			map     = map instanceof Object      ? map     : null;
 
 
-			if (texture !== null) {
+			if (texture !== null && texture.buffer !== null) {
 
 				// TODO: Implement sprite-drawing ASCII art algorithm
 				// if (map === null) {

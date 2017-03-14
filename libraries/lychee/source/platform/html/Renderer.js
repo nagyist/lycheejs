@@ -541,7 +541,7 @@ lychee.define('Renderer').tags({
 			map     = map instanceof Object      ? map     : null;
 
 
-			if (texture !== null) {
+			if (texture !== null && texture.buffer !== null) {
 
 				let ctx    = this.__ctx;
 				let width  = 0;
