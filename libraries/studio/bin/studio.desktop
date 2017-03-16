@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=lychee.js Studio
+Exec=__ROOT__/bin/studio.sh
+Icon=lycheejs
+Type=Application
+NoDisplay=false
+Categories=Development;System;
+

@@ -2,8 +2,6 @@
 # Runtime Caches
 
 /lychee.store
-/bin/editor
-/bin/ranger
 /bin/runtime
 /bin/harvester.pid
 
@@ -37,6 +35,7 @@
 !/libraries/lychee
 !/libraries/ranger
 !/libraries/strainer
+!/libraries/studio
 
 
 
@@ -52,7 +51,6 @@
 !/projects/cultivator
 !/projects/flappy-bnn
 !/projects/lethalmaze
-!/projects/lycheejs-editor
 !/projects/mode7
 !/projects/over-there
 !/projects/pong

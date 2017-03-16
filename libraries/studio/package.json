@@ -1,0 +1,23 @@
+{
+	"main":            "./index.html",
+	"name":            "lycheejs-studio",
+	"description":     "lychee.js Studio",
+	"version":         "${version}",
+	"window": {
+		"title":       "lychee.js Studio",
+		"icon":        "./icon.png",
+		"toolbar":     true,
+		"frame":       true,
+		"show":        true,
+		"transparent": false,
+		"width":       1280,
+		"height":      800,
+		"position":    "center",
+		"min_width":   1280,
+		"min_height":  800
+	},
+	"webkit": {
+		"plugin": false
+	},
+	"nodejs": true
+}

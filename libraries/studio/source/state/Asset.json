@@ -1,0 +1,68 @@
+{
+	"layers": {
+		"ui": {
+			"constructor": "lychee.ui.Layer",
+			"arguments": [
+				{}
+			],
+			"blob": {
+				"entities": [
+					{
+						"constructor": "lychee.ui.Blueprint",
+						"arguments": [
+							{
+								"visible": true,
+								"type": 3
+							}
+						],
+						"blob": {
+							"entities": [
+								{
+									"constructor": "lychee.ui.element.Search",
+									"arguments": [
+										{
+											"label": "Select",
+											"width": 320,
+											"height": 620,
+											"data": []
+										}
+									]
+								},
+								{
+									"constructor": "studio.ui.element.Font",
+									"arguments": [
+										{
+											"label": "Modify",
+											"width": 512,
+											"height": 620,
+											"visible": false
+										}
+									]
+								},
+								{
+									"constructor": "studio.ui.element.Preview",
+									"arguments": [
+										{
+											"label": "Preview",
+											"width": 512,
+											"height": 620,
+											"visible": false
+										}
+									]
+								}
+							],
+							"map": {
+								"select": 0,
+								"modify": 1,
+								"preview": 2
+							}
+						}
+					}
+				],
+				"map": {
+					"asset": 0
+				}
+			}
+		}
+	}
+}

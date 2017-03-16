@@ -1,0 +1,156 @@
+{
+	"api": {
+		"files": {}
+	},
+	"build": {
+		"environments": {
+			"html-nwjs/main": {
+				"build": "studio.Main",
+				"debug": false,
+				"packages": [
+					[
+						"studio",
+						"./lychee.pkg"
+					],
+					[
+						"harvester",
+						"/libraries/harvester/lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html-nwjs",
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "http://localhost:4848/api/server/connect?identifier=/libraries/studio",
+					"server": "http://localhost:4848/api/server/connect?identifier=/libraries/studio"
+				}
+			},
+			"html/main": {
+				"build": "studio.Main",
+				"debug": false,
+				"packages": [
+					[
+						"studio",
+						"./lychee.pkg"
+					],
+					[
+						"harvester",
+						"/libraries/harvester/lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"html"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": "http://localhost:4848/api/server/connect?identifier=/libraries/studio",
+					"server": "http://localhost:4848/api/server/connect?identifier=/libraries/studio"
+				}
+			},
+			"node/main": {
+				"build": "studio.Main",
+				"debug": false,
+				"packages": [
+					[
+						"studio",
+						"./lychee.pkg"
+					],
+					[
+						"harvester",
+						"/libraries/harvester/lychee.pkg"
+					]
+				],
+				"sandbox": false,
+				"tags": {
+					"platform": [
+						"node"
+					]
+				},
+				"variant": "application",
+				"profile": {
+					"client": null,
+					"renderer": null
+				}
+			}
+		},
+		"files": {}
+	},
+	"source": {
+		"environments": {},
+		"files": {
+			"Main": [
+				"js"
+			],
+			"data": {
+				"Project": [
+					"js"
+				]
+			},
+			"net": {
+				"Client": [
+					"js"
+				],
+				"Server": [
+					"js"
+				]
+			},
+			"platform": {
+				"html": {
+					"codec": {
+						"FONT": [
+							"js"
+						]
+					}
+				},
+				"node": {
+					"codec": {
+						"FONT": [
+							"js"
+						]
+					}
+				}
+			},
+			"state": {
+				"Asset": [
+					"js",
+					"json"
+				],
+				"Project": [
+					"js",
+					"json"
+				]
+			},
+			"ui": {
+				"element": {
+					"modify": {
+						"Font": [
+							"js"
+						],
+						"Project": [
+							"js"
+						]
+					},
+					"preview": {
+						"Font": [
+							"js"
+						]
+					}
+				}
+			}
+		},
+		"tags": {
+			"platform": {
+				"html": "platform/html",
+				"node": "platform/node"
+			}
+		}
+	}
+}
