@@ -197,7 +197,7 @@ _handle_action () {
 
 		edit)
 
-			studio=`which lycheejs-studio`;
+			studio=`which lycheejs-studio 2> /dev/null`;
 
 			if [ "$studio" == "" ]; then
 				studio="$LYCHEEJS_ROOT/libraries/studio/bin/studio.sh";
@@ -276,9 +276,11 @@ _handle_action () {
 
 			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 
-				chrome1=`which google-chrome`;
-				chrome2=`which chromium-browser`;
-				chrome3=`which chrome`;
+				# XXX: Privacy First
+				chrome1=`which inox 2> /dev/null`;
+				chrome2=`which chromium-browser 2> /dev/null`;
+				chrome3=`which google-chrome 2> /dev/null`;
+				chrome4=`which chrome 2> /dev/null`;
 
 				if [ -x "$chrome1" ]; then
 					"$chrome1" "$clean_resource";
@@ -286,6 +288,8 @@ _handle_action () {
 					"$chrome2" "$clean_resource";
 				elif [ -x "$chrome3" ]; then
 					"$chrome3" "$clean_resource";
+				elif [ -x "$chrome4" ]; then
+					"$chrome4" "$clean_resource";
 				else
 					xdg-open "$clean_resource" 2>&1;
 				fi;
@@ -402,11 +406,13 @@ elif [ "$protocol" == "env" ]; then
 
 		if [ "$platform" == "html" ]; then
 
-			if [ "$OS" == "linux" ]; then
+			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 
-				chrome1=`which google-chrome`;
-				chrome2=`which chromium-browser`;
-				chrome3=`which chrome`;
+				# XXX: Privacy First
+				chrome1=`which inox 2> /dev/null`;
+				chrome2=`which chromium-browser 2> /dev/null`;
+				chrome3=`which google-chrome 2> /dev/null`;
+				chrome4=`which chrome 2> /dev/null`;
 
 				if [ -x "$chrome1" ]; then
 					"$chrome1" "$program";
@@ -414,6 +420,8 @@ elif [ "$protocol" == "env" ]; then
 					"$chrome2" "$program";
 				elif [ -x "$chrome3" ]; then
 					"$chrome3" "$program";
+				elif [ -x "$chrome4" ]; then
+					"$chrome4" "$program";
 				else
 					xdg-open "$program" 2>&1;
 				fi;
@@ -435,7 +443,7 @@ elif [ "$protocol" == "env" ]; then
 			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 				_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/$ARCH/nw $program $arg1 $arg2 $arg3;
 			elif [ "$OS" == "osx" ]; then
-				_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nw $program $arg1 $arg2 $arg3;
+				_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nwjs.app/Contents/MacOS/nwjs $program $arg1 $arg2 $arg3;
 			fi;
 
 		elif [ "$platform" == "node" ]; then
@@ -460,11 +468,14 @@ elif [ "$protocol" == "env" ]; then
 
 		if [ "$platform" == "html" ]; then
 
-			if [ "$OS" == "linux" ]; then
+			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 
-				chrome1=`which google-chrome`;
-				chrome2=`which chromium-browser`;
-				chrome3=`which chrome`;
+				# XXX: Privacy First
+				chrome1=`which inox 2> /dev/null`;
+				chrome2=`which chromium-browser 2> /dev/null`;
+				chrome3=`which google-chrome 2> /dev/null`;
+				chrome4=`which chrome 2> /dev/null`;
+				x_www=`which x-www-browser 2> /dev/null`;
 
 				if [ -x "$chrome1" ]; then
 					"$chrome1";
@@ -472,6 +483,10 @@ elif [ "$protocol" == "env" ]; then
 					"$chrome2";
 				elif [ -x "$chrome3" ]; then
 					"$chrome3";
+				elif [ -x "$chrome4" ]; then
+					"$chrome4";
+				elif [ -x "$x_www" != "" ]; then
+					"$x_www";
 				fi;
 
 			elif [ "$OS" == "osx" ]; then
@@ -489,7 +504,7 @@ elif [ "$protocol" == "env" ]; then
 			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 				$LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/$ARCH/nw;
 			elif [ "$OS" == "osx" ]; then
-				$LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nw;
+				$LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nwjs.app/Contents/MacOS/nwjs;
 			fi;
 
 		elif [ "$platform" == "node" ]; then
@@ -526,17 +541,70 @@ elif [ "$protocol" == "run" ]; then
 
 	if [ "$resource" != "" ] && [ -d "$LYCHEEJS_ROOT$resource/build" ]; then
 
-		# XXX: Logic for running is
-		# if exists index.html or binary then run binary
-		# else if exists index.js then create ~run.js or ~run.html and fake inclusion
-
 		build="$LYCHEEJS_ROOT$resource/build";
 		name=$(echo $resource | cut -d"/" -f 3);
 
 
 		if [ "$platform" == "html" ]; then
-			# TODO: Create a fake html file that includes file as <script> element
-			echo "asd";
+
+			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
+
+				if [ -d "$build/html/$identifier" ]; then
+
+					program="$build/html/$identifier/index.html";
+
+					if [ -f "$program" ]; then
+
+						# XXX: Privacy First
+						chrome1=`which inox 2> /dev/null`;
+						chrome2=`which chromium-browser 2> /dev/null`;
+						chrome3=`which google-chrome 2> /dev/null`;
+						chrome4=`which chrome 2> /dev/null`;
+
+						if [ -x "$chrome1" ]; then
+							"$chrome1" "$program";
+						elif [ -x "$chrome2" ]; then
+							"$chrome2" "$program";
+						elif [ -x "$chrome3" ]; then
+							"$chrome3" "$program";
+						elif [ -x "$chrome4" ]; then
+							"$chrome4" "$program";
+						else
+							xdg-open "$program" 2>&1;
+						fi;
+
+					else
+						exit 1;
+					fi;
+
+				else
+					exit 1;
+				fi;
+
+			elif [ "$OS" == "osx" ]; then
+
+				if [ -d "$build/html/$identifier" ]; then
+
+					program="$build/html/$identifier/index.html";
+
+					if [ -f "$program" ]; then
+
+						chrome1="/Applications/Google Chrome.app";
+
+						if [ -x "$chrome1" ]; then
+							open -a "$chrome1" "$program";
+						else
+							open "$program" 2>&1;
+						fi;
+
+					fi;
+
+				else
+					exit 1;
+				fi;
+
+			fi;
+
 		elif [ "$platform" == "html-nwjs" ]; then
 
 			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
@@ -564,7 +632,7 @@ elif [ "$protocol" == "run" ]; then
 				if [ -d "$build/html-nwjs/$identifier" ]; then
 
 					program="$build/html-nwjs/$identifier";
-					_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/$ARCH/nw $program $arg1 $arg2 $arg3;
+					_start_env $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nwjs.app/Contents/MacOS/nwjs $program $arg1 $arg2 $arg3;
 
 				elif [ -d "$build/html-nwjs/$identifier-osx/$ARCH" ]; then
 
@@ -587,22 +655,103 @@ elif [ "$protocol" == "run" ]; then
 			# requires emulator binaries for all platform
 			# which is too much bloat
 
-			echo "Sorry, lychee.js ships no emulators due to bloat size :(";
+			echo "Sorry, lychee.js ships no mobile emulators due to bloat size :(";
 
 			exit 1;
 
 		elif [ "$platform" == "node" ]; then
 
-			echo "asd";
+			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
+
+				if [ -d "$build/node/$identifier" ]; then
+
+					program="$build/node/$identifier";
+					_start_env $LYCHEEJS_ROOT/bin/runtime/node/linux/$ARCH/node $program $arg1 $arg2 $arg3;
+
+				elif [ -d "$build/node/$identifier-linux/$ARCH" ]; then
+
+					program="$build/node/$identifier-linux/$ARCH/$name.sh";
+
+					if [ -f $program ]; then
+						chmod +x $program;
+						_start_env $program $arg1 $arg2 $arg3;
+					else
+						exit 1;
+					fi;
+
+				fi;
+
+			elif [ "$OS" == "osx" ]; then
+
+				if [ -d "$build/node/$identifier" ]; then
+
+					program="$build/node/$identifier";
+					_start_env $LYCHEEJS_ROOT/bin/runtime/node/osx/$ARCH/node $program $arg1 $arg2 $arg3;
+
+				elif [ -d "$build/node/$identifier-osx/$ARCH" ]; then
+
+					program="$build/node/$identifier-osx/$ARCH/$name.sh";
+
+					if [ -f $program ]; then
+						chmod +x $program;
+						_start_env $program $arg1 $arg2 $arg3;
+					else
+						exit 1;
+					fi;
+
+				fi;
+
+			fi;
+
 		elif [ "$platform" == "node-sdl" ]; then
-			echo "asd";
+
+			if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
+
+				if [ -d "$build/node-sdl/$identifier" ]; then
+
+					program="$build/node-sdl/$identifier";
+					_start_env $LYCHEEJS_ROOT/bin/runtime/node-sdl/linux/$ARCH/node $program $arg1 $arg2 $arg3;
+
+				elif [ -d "$build/node-sdl/$identifier-linux/$ARCH" ]; then
+
+					program="$build/node-sdl/$identifier-linux/$ARCH/$name.sh";
+
+					if [ -f $program ]; then
+						chmod +x $program;
+						_start_env $program $arg1 $arg2 $arg3;
+					else
+						exit 1;
+					fi;
+
+				fi;
+
+			elif [ "$OS" == "osx" ]; then
+
+				if [ -d "$build/node-sdl/$identifier" ]; then
+
+					program="$build/node-sdl/$identifier";
+					_start_env $LYCHEEJS_ROOT/bin/runtime/node-sdl/osx/$ARCH/node $program $arg1 $arg2 $arg3;
+
+				elif [ -d "$build/node-sdl/$identifier-osx/$ARCH" ]; then
+
+					program="$build/node-sdl/$identifier-osx/$ARCH/$name.sh";
+
+					if [ -f $program ]; then
+						chmod +x $program;
+						_start_env $program $arg1 $arg2 $arg3;
+					else
+						exit 1;
+					fi;
+
+				fi;
+
+			fi;
+
 		fi;
 
 	else
 		exit 1;
 	fi;
-
-	echo "$platform" "$identifier" "$resource";
 
 elif [ "$protocol" == "which" ]; then
 
@@ -613,10 +762,12 @@ elif [ "$protocol" == "which" ]; then
 
 		if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 
-			chrome1=`which google-chrome`;
-			chrome2=`which chromium-browser`;
-			chrome3=`which chrome`;
-			x_www=`which x-www-browser`;
+			# XXX: Privacy First
+			chrome1=`which inox 2> /dev/null`;
+			chrome2=`which chromium-browser 2> /dev/null`;
+			chrome3=`which google-chrome 2> /dev/null`;
+			chrome4=`which chrome 2> /dev/null`;
+			x_www=`which x-www-browser 2> /dev/null`;
 
 			if [ -x "$chrome1" ]; then
 				echo "$chrome1";
@@ -624,6 +775,8 @@ elif [ "$protocol" == "which" ]; then
 				echo "$chrome2";
 			elif [ -x "$chrome3" ]; then
 				echo "$chrome3";
+			elif [ -x "$chrome4" ]; then
+				echo "$chrome4";
 			elif [ "$x_www" != "" ]; then
 				echo "$(readlink -f "$x_www")";
 			fi;
@@ -647,7 +800,7 @@ elif [ "$protocol" == "which" ]; then
 		if [ "$OS" == "linux" ] || [ "$OS" == "bsd" ]; then
 			echo $LYCHEEJS_ROOT/bin/runtime/html-nwjs/linux/$ARCH/nw;
 		elif [ "$OS" == "osx" ]; then
-			echo $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nw;
+			echo $LYCHEEJS_ROOT/bin/runtime/html-nwjs/osx/$ARCH/nwjs.app/Contents/MacOS/nwjs;
 		fi;
 
 	elif [ "$platform" == "node" ]; then
