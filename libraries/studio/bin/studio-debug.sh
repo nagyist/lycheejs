@@ -8,12 +8,10 @@ LYCHEEJS_HELPER=`which lycheejs-helper`;
 if [ "$LYCHEEJS_HELPER" != "" ] && [ "$LYCHEEJS_FERTILIZER" != "" ]; then
 
 	cd $LYCHEEJS_ROOT/libraries/studio;
-	cp ./index-normal.html ./index.html;
+	cp ./index-debug.html ./index.html;
 
-	cd $LYCHEEJS_ROOT;
-
-	$LYCHEEJS_FERTILIZER html-nwjs/main /libraries/studio;
-	$LYCHEEJS_HELPER run:html-nwjs/main /libraries/studio;
+	cd $LYCHEEJS_ROOT/libraries/studio;
+	nw-debug .;
 
 	exit $?;
 

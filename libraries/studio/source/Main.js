@@ -30,8 +30,9 @@ lychee.define('studio.Main').requires([
 			input: {
 				delay:       0,
 				key:         true,
-				keymodifier: false,
+				keymodifier: true,
 				touch:       true,
+				scroll:      true,
 				swipe:       true
 			},
 

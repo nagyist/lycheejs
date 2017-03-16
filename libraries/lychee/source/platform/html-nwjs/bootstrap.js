@@ -86,7 +86,7 @@
 	 * FEATURES
 	 */
 
-	// This is an incremental platform of 'html'
+	// XXX: This is an incremental platform of 'html'
 
 	const _FEATURES = {
 

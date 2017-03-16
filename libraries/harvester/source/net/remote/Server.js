@@ -143,14 +143,25 @@ lychee.define('harvester.net.remote.Server').includes([
 
 			if (main !== null && tunnel !== null) {
 
-				let projects = Object.values(main._projects).filter(function(project) {
-					return /cultivator/g.test(project.identifier) === false;
-				}).map(_serialize).forEach(function(project) {
+				let all       = [];
+				let projects  = Object.values(main._projects);
+				let libraries = Object.values(main._libraries);
+
+				for (let p = 0, pl = projects.length; p < pl; p++) {
+					all.push(projects[p]);
+				}
+
+				for (let l = 0, ll = libraries.length; l < ll; l++) {
+					all.push(libraries[l]);
+				}
+
+
+				all.forEach(function(project) {
 					project.host = project.host !== 'localhost' ? project.host : host;
 				});
 
 
-				tunnel.send(projects, {
+				tunnel.send(all.map(_serialize), {
 					id:    this.id,
 					event: 'sync'
 				});
@@ -176,7 +187,7 @@ lychee.define('harvester.net.remote.Server').includes([
 
 			if (identifier !== null && main !== null && tunnel !== null) {
 
-				let project = _serialize(main._projects[identifier]);
+				let project = _serialize(main._libraries[identifier] || main._projects[identifier]);
 				if (project !== null) {
 
 					project.host = project.host !== 'localhost' ? project.host : host;
