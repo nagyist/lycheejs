@@ -1,5 +1,5 @@
 
-lychee.define('app.state.Profile').requires([
+lychee.define('ranger.state.Profile').requires([
 	'lychee.codec.JSON',
 	'lychee.ui.Blueprint',
 	'lychee.ui.Element',
@@ -126,7 +126,7 @@ lychee.define('app.state.Profile').requires([
 		serialize: function() {
 
 			let data = _State.prototype.serialize.call(this);
-			data['constructor'] = 'app.state.Profile';
+			data['constructor'] = 'ranger.state.Profile';
 
 
 			return data;

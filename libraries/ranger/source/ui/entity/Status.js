@@ -1,5 +1,5 @@
 
-lychee.define('app.ui.entity.Status').includes([
+lychee.define('ranger.ui.entity.Status').includes([
 	'lychee.ui.entity.Label'
 ]).exports(function(lychee, global, attachments) {
 
@@ -32,7 +32,7 @@ lychee.define('app.ui.entity.Status').includes([
 		serialize: function() {
 
 			let data = _Label.prototype.serialize.call(this);
-			data['constructor'] = 'app.ui.entity.Status';
+			data['constructor'] = 'ranger.ui.entity.Status';
 
 
 			return data;

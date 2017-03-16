@@ -1,5 +1,5 @@
 
-lychee.define('app.ui.entity.Console').includes([
+lychee.define('ranger.ui.entity.Console').includes([
 	'lychee.ui.Entity'
 ]).exports(function(lychee, global, attachments) {
 
@@ -34,7 +34,7 @@ lychee.define('app.ui.entity.Console').includes([
 			let x1     = 0;
 			let x2     = buffer.width;
 			let y1     = 0;
-			let y2     = buffer.height;
+			// let y2     = buffer.height;
 			let lh     = font.lineheight;
 			let ll     = lines.length;
 			if (ll > 0) {
@@ -150,7 +150,7 @@ lychee.define('app.ui.entity.Console').includes([
 		serialize: function() {
 
 			let data = _Entity.prototype.serialize.call(this);
-			data['constructor'] = 'app.ui.entity.Console';
+			data['constructor'] = 'ranger.ui.entity.Console';
 
 
 			return data;
@@ -246,10 +246,10 @@ lychee.define('app.ui.entity.Console').includes([
 			if (value !== null) {
 
 				this.value     = value;
-				this.__lines   = value.split('\n').map(function(val) {
-					return val.replace('\t',' ').replace('\\n','').trim();
-				});
 				this.__isDirty = true;
+				this.__lines   = value.split('\n').map(function(val) {
+					return val.replace('\t', ' ').replace('\\n', '').trim();
+				});
 
 
 				return true;

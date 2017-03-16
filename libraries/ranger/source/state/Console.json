@@ -48,13 +48,13 @@
 												"blob": {
 													"model": {
 														"stdout": {
-															"constructor": "app.ui.entity.Console",
+															"constructor": "ranger.ui.entity.Console",
 															"arguments": [
 																{}
 															]
 														},
 														"stderr": {
-															"constructor": "app.ui.entity.Console",
+															"constructor": "ranger.ui.entity.Console",
 															"arguments": [
 																{}
 															]

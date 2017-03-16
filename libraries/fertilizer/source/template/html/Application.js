@@ -5,8 +5,8 @@ lychee.define('fertilizer.template.html.Application').includes([
 
 	const _Template  = lychee.import('fertilizer.Template');
 	const _TEMPLATES = {
-		appcache: attachments["appcache.tpl"],
 		config:   attachments["config.tpl"],
+		appcache: attachments["appcache.tpl"],
 		core:     null,
 		icon:     attachments["icon.png"],
 		index:    attachments["index.tpl"]
@@ -125,11 +125,16 @@ lychee.define('fertilizer.template.html.Application').includes([
 				let index    = this.__index;
 
 
-				config.buffer = config.buffer.replaceObject({
-					debug:   env.debug,
-					id:      env.id,
-					version: lychee.VERSION
-				});
+				if (!(config instanceof Config)) {
+
+					config        = new Config();
+					config.buffer = JSON.parse(_TEMPLATES.config.buffer.replaceObject({
+						debug:   env.debug,
+						id:      env.id,
+						version: lychee.VERSION
+					}));
+
+				}
 
 				index.buffer = index.buffer.replaceObject({
 					blob:    env.serialize(),

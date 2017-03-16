@@ -5,11 +5,11 @@
 	"build": {
 		"environments": {
 			"html-nwjs/main": {
-				"build": "app.Main",
+				"build": "ranger.Main",
 				"debug": false,
 				"packages": [
 					[
-						"app",
+						"ranger",
 						"./lychee.pkg"
 					],
 					[
@@ -27,11 +27,11 @@
 				"variant": "application"
 			},
 			"html-webview/main": {
-				"build": "app.Main",
+				"build": "ranger.Main",
 				"debug": false,
 				"packages": [
 					[
-						"app",
+						"ranger",
 						"./lychee.pkg"
 					],
 					[
@@ -49,11 +49,11 @@
 				"variant": "application"
 			},
 			"html/main": {
-				"build": "app.Main",
+				"build": "ranger.Main",
 				"debug": false,
 				"packages": [
 					[
-						"app",
+						"ranger",
 						"./lychee.pkg"
 					],
 					[

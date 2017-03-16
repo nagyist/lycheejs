@@ -1,5 +1,5 @@
 
-lychee.define('app.ui.layer.Web').includes([
+lychee.define('ranger.ui.layer.Web').includes([
 	'lychee.ui.Layer'
 ]).requires([
 	'lychee.ui.entity.Helper'
@@ -32,8 +32,8 @@ lychee.define('app.ui.layer.Web').includes([
 			}
 
 
-			let x1         = -1/2 * this.width;
-			let y1         = -1/2 * this.height;
+			let x1         = -1 / 2 * this.width;
+			let y1         = -1 / 2 * this.height;
 			let horizontal = this.width > this.height;
 			let offset     = 0;
 
@@ -111,7 +111,7 @@ lychee.define('app.ui.layer.Web').includes([
 		serialize: function() {
 
 			let data = _Layer.prototype.serialize.call(this);
-			data['constructor'] = 'app.ui.layer.Web';
+			data['constructor'] = 'ranger.ui.layer.Web';
 
 
 			return data;

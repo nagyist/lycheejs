@@ -3,7 +3,7 @@ lychee.define('lychee.app.Loop').includes([
 	'lychee.event.Emitter'
 ]).supports(function(lychee, global) {
 
-	if (typeof setInterval === 'function') {
+	if (typeof global.setInterval === 'function') {
 		return true;
 	}
 
@@ -11,6 +11,7 @@ lychee.define('lychee.app.Loop').includes([
 
 }).exports(function(lychee, global, attachments) {
 
+	const _Emitter   = lychee.import('lychee.event.Emitter');
 	const _INSTANCES = [];
 	let   _id        = 0;
 
@@ -225,7 +226,7 @@ lychee.define('lychee.app.Loop').includes([
 		this.setRender(settings.render);
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 		_INSTANCES.push(this);
 
@@ -289,7 +290,7 @@ lychee.define('lychee.app.Loop').includes([
 
 		serialize: function() {
 
-			let data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'lychee.app.Loop';
 
 

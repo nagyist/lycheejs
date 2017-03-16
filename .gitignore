@@ -35,6 +35,7 @@
 !/libraries/harvester
 !/libraries/legacy
 !/libraries/lychee
+!/libraries/ranger
 !/libraries/strainer
 
 
@@ -58,12 +59,4 @@
 !/projects/pong-bnn
 !/projects/text-chat
 !/projects/tictactoe
-
-
-
-# Cultivator Projects
-
-/projects/cultivator/ranger/api
-/projects/cultivator/ranger/build
-/projects/cultivator/ranger/lychee.store
 

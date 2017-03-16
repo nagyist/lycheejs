@@ -7,6 +7,7 @@ lychee.define('harvester.data.Project').requires([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Emitter    = lychee.import('lychee.event.Emitter');
 	const _Filesystem = lychee.import('harvester.data.Filesystem');
 	const _Package    = lychee.import('harvester.data.Package');
 	const _Server     = lychee.import('harvester.data.Server');
@@ -34,7 +35,7 @@ lychee.define('harvester.data.Project').requires([
 		}
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
@@ -51,7 +52,7 @@ lychee.define('harvester.data.Project').requires([
 
 		serialize: function() {
 
-			let data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.data.Project';
 
 

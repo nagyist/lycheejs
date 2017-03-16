@@ -1,0 +1,23 @@
+{
+	"main":            "./index.html",
+	"name":            "lycheejs-ranger",
+	"description":     "lychee.js Ranger",
+	"version":         "${version}",
+	"window": {
+		"title":       "lychee.js Ranger",
+		"icon":        "./icon.png",
+		"toolbar":     true,
+		"frame":       true,
+		"show":        true,
+		"transparent": false,
+		"width":       800,
+		"height":      512,
+		"position":    "center",
+		"min_width":   800,
+		"min_height":  512
+	},
+	"webkit": {
+		"plugin": false
+	},
+	"nodejs": true
+}

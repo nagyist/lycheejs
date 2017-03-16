@@ -1,6 +1,6 @@
 
-lychee.define('app.state.Console').requires([
-	'app.ui.entity.Console',
+lychee.define('ranger.state.Console').requires([
+	'ranger.ui.entity.Console',
 	'lychee.ui.entity.Label',
 	'lychee.ui.layer.Table'
 ]).includes([
@@ -121,7 +121,7 @@ lychee.define('app.state.Console').requires([
 		serialize: function() {
 
 			let data = _State.prototype.serialize.call(this);
-			data['constructor'] = 'app.state.Console';
+			data['constructor'] = 'ranger.state.Console';
 
 
 			return data;

@@ -1,11 +1,11 @@
 
-lychee.define('app.state.Welcome').requires([
+lychee.define('ranger.state.Welcome').requires([
 	'lychee.ui.entity.Helper',
 	'lychee.ui.entity.Label',
 	'lychee.ui.layer.Table',
-	'app.ui.entity.Identifier',
-	'app.ui.layer.Control',
-	'app.ui.layer.Web'
+	'ranger.ui.entity.Identifier',
+	'ranger.ui.layer.Control',
+	'ranger.ui.layer.Web'
 ]).includes([
 	'lychee.ui.State'
 ]).exports(function(lychee, global, attachments) {
@@ -151,6 +151,7 @@ lychee.define('app.state.Welcome').requires([
 			}, this);
 
 
+			let entity   = null;
 			let viewport = this.viewport;
 			if (viewport !== null) {
 
@@ -179,7 +180,7 @@ lychee.define('app.state.Welcome').requires([
 		serialize: function() {
 
 			let data = _State.prototype.serialize.call(this);
-			data['constructor'] = 'app.state.Welcome';
+			data['constructor'] = 'ranger.state.Welcome';
 
 
 			return data;

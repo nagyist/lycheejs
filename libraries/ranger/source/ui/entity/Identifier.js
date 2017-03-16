@@ -1,5 +1,5 @@
 
-lychee.define('app.ui.entity.Identifier').includes([
+lychee.define('ranger.ui.entity.Identifier').includes([
 	'lychee.ui.entity.Label'
 ]).exports(function(lychee, global, attachments) {
 
@@ -32,7 +32,7 @@ lychee.define('app.ui.entity.Identifier').includes([
 		serialize: function() {
 
 			let data = _Label.prototype.serialize.call(this);
-			data['constructor'] = 'app.ui.entity.Identifier';
+			data['constructor'] = 'ranger.ui.entity.Identifier';
 
 
 			return data;

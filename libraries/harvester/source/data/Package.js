@@ -3,6 +3,10 @@ lychee.define('harvester.data.Package').includes([
 	'lychee.event.Emitter'
 ]).exports(function(lychee, global, attachments) {
 
+	const _Emitter = lychee.import('lychee.event.Emitter');
+
+
+
 	/*
 	 * HELPERS
 	 */
@@ -130,7 +134,7 @@ lychee.define('harvester.data.Package').includes([
 		this.setBuffer(buffer);
 
 
-		lychee.event.Emitter.call(this);
+		_Emitter.call(this);
 
 	};
 
@@ -152,7 +156,7 @@ lychee.define('harvester.data.Package').includes([
 
 		serialize: function() {
 
-			let data = lychee.event.Emitter.prototype.serialize.call(this);
+			let data = _Emitter.prototype.serialize.call(this);
 			data['constructor'] = 'harvester.data.Package';
 
 

@@ -42,10 +42,9 @@ Thank you for your understanding.
 
 These are the things that we are currently working on:
 
-- lychee.ai.neat (ES/HyperNEAT AI) is being refactored.
-- lychee.js Editor is being refactored to integrate all Cultivator Tools' functionalities.
-- [lychee.js Guide](https://github.com/Artificial-Engineering/lycheejs-guide.git) is subject to change (to integrate new AI / Editor stack).
-- [lychee.js Garden](https://github.com/Artificial-Engineering/lycheejs-garden.git) is being implemented.
+- lychee.ai.neat (ES/HyperNEAT AI) is being refactored and unstable.
+- lychee.js Studio is being refactored and unstable.
+- lychee.js Guide is subject to change (to integrate new AI stack).
 
 
 ## Overview
@@ -95,8 +94,8 @@ The lychee.js Core and Definition System:
 
 The lychee.js Software Bots:
 
-- Graphical Asset Management and Entity/Scene Design Tool ([Editor](/projects/cultivator/editor))
-- Graphical Project Management and Server Maintenance Tool ([Ranger](/projects/cultivator/ranger))
+- Graphical Asset Management and Entity/Scene Design Tool ([Studio](/projects/lycheejs-studio))
+- Graphical Project Management and Server Maintenance Tool ([Ranger](/projects/lycheejs-ranger))
 - Command-Line Continous Integration Server ([Harvester](/libraries/harvester))
 - Command-Line Wizard for Projects and Libraries ([Breeder](/libraries/breeder))
 - Command-Line Builder and Cross-Compiler ([Fertilizer](/libraries/fertilizer))
@@ -122,20 +121,17 @@ Every (not sandboxed) lychee.js Harvester is connected to the
 lychee.js Peer Cloud and is contributing to the evolutionary
 AI's knowledge and improves its capabilities for all others.
 
-The lychee.js Engine uses CARTEL/ES-HyperNEAT as an evolutionary
-AI that is connected to a Botnet of lychee.js Harvesters. Each
-and every Definition written in lychee.js contributes to the AI
-so that it can predict, suggest and improve all other Projects.
+The lychee.js Engine uses backpropagated ES/HyperNEAT as an
+evolutionary AI that is connected to a Botnet of lychee.js
+Harvesters. Each and every Definition written in lychee.js
+contributes to the AI so that it can predict, suggest and
+improve all other Projects.
 
 The development process is optimized for Blink-based web
 browsers (Chromium, Google Chrome, Opera) and their
 developer tools. We honestly recommend NOT using Firefox
 due to lack of developer and debugging tools nor has it
 any remote debugging protocol.
-
-We ain't doing HTML5 websites or single-page-webapps here. If you
-want to teach lychee.js those Legacy Technologies, there's the
-[Legacy Library](./libraries/legacy).
 
 
 

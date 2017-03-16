@@ -112,9 +112,7 @@ if [ "$OS" == "linux" ] || [ "$OS" == "osx" ] || [ "$OS" == "bsd" ]; then
 
 
 	chmod +x ./bin/configure.js;
-	chmod +x ./bin/editor.sh;
 	chmod +x ./bin/helper.sh;
-	chmod +x ./bin/ranger.sh;
 
 
 

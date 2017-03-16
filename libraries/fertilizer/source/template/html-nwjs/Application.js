@@ -122,11 +122,16 @@ lychee.define('fertilizer.template.html-nwjs.Application').includes([
 				let index   = this.__index;
 
 
-				config.buffer = config.buffer.replaceObject({
-					debug:   env.debug,
-					id:      env.id,
-					version: lychee.VERSION
-				});
+				if (!(config instanceof Config)) {
+
+					config = new Config();
+					config.buffer = JSON.parse(_TEMPLATES.config.buffer.replaceObject({
+						debug:   env.debug,
+						id:      env.id,
+						version: lychee.VERSION
+					}));
+
+				}
 
 				index.buffer = index.buffer.replaceObject({
 					blob:    env.serialize(),

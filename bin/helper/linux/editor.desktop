@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=lychee.js Editor
-Exec=__ROOT__/bin/editor.sh
-Icon=lycheejs
-Type=Application
-NoDisplay=false
-Categories=Development;System;
-

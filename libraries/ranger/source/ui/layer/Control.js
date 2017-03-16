@@ -1,5 +1,5 @@
 
-lychee.define('app.ui.layer.Control').includes([
+lychee.define('ranger.ui.layer.Control').includes([
 	'lychee.ui.Layer'
 ]).requires([
 	'lychee.ui.entity.Helper'
@@ -62,8 +62,8 @@ lychee.define('app.ui.layer.Control').includes([
 			}
 
 
-			let x1         = -1/2 * this.width;
-			let y1         = -1/2 * this.height;
+			let x1         = -1 / 2 * this.width;
+			let y1         = -1 / 2 * this.height;
 			let horizontal = this.width > this.height;
 			let offset     = 0;
 
@@ -141,7 +141,7 @@ lychee.define('app.ui.layer.Control').includes([
 		serialize: function() {
 
 			let data = _Layer.prototype.serialize.call(this);
-			data['constructor'] = 'app.ui.layer.Control';
+			data['constructor'] = 'ranger.ui.layer.Control';
 
 
 			return data;

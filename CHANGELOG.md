@@ -23,6 +23,7 @@ and `fixed`.
 ## [2017-Q1] - UNRELEASED
 
 - **Changed**: Each Project and Library now has binaries (`./bin`).
+- **Added**: lychee.js Helper supports `run:platform/identifier` syntax.
 - **Fixed**: `lychee.app.Sprite` and `lychee.ui.Sprite` renders effects correctly.
 - Changed: Project Pong refactored to fit AI-relevant requirements.
 - Added: `lychee.ai` Stack refactored to fit `NEAT` requirements.

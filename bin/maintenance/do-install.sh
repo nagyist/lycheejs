@@ -224,14 +224,17 @@ else
 			echo "";
 
 
-			cp ./bin/helper/linux/editor.desktop /usr/share/applications/lycheejs-editor.desktop;
-			cp ./bin/helper/linux/helper.desktop /usr/share/applications/lycheejs-helper.desktop;
-			cp ./bin/helper/linux/ranger.desktop /usr/share/applications/lycheejs-ranger.desktop;
 			cp ./bin/helper/linux/lycheejs.svg /usr/share/icons/lycheejs.svg;
-
-			sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-editor.desktop";
+			cp ./bin/helper/linux/helper.desktop /usr/share/applications/lycheejs-helper.desktop;
 			sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-helper.desktop";
-			sed -i 's|__ROOT__|'$LYCHEEJS_ROOT'|g' "/usr/share/applications/lycheejs-ranger.desktop";
+
+			cp "$LYCHEEJS_ROOT/libraries/ranger/bin/ranger.desktop" /usr/share/applications/lycheejs-ranger.desktop;
+			ranger_root="$LYCHEEJS_ROOT/libraries/ranger";
+			sed -i 's|__ROOT__|'$ranger_root'|g' /usr/share/applications/lycheejs-ranger.desktop;
+
+			cp "$LYCHEEJS_ROOT/libraries/studio/bin/studio.desktop" /usr/share/applications/lycheejs-studio.desktop;
+			studio_root="$LYCHEEJS_ROOT/libraries/studio";
+			sed -i 's|__ROOT__|'$studio_root'|g' /usr/share/applications/lycheejs-studio.desktop;
 
 
 			update_desktop=`which update-desktop-database`;
@@ -259,22 +262,20 @@ else
 			echo "";
 
 
-			rm /usr/local/bin/lycheejs-breeder 2> /dev/null;
-			rm /usr/local/bin/lycheejs-editor 2> /dev/null;
+			rm /usr/local/bin/lycheejs-breeder    2> /dev/null;
 			rm /usr/local/bin/lycheejs-fertilizer 2> /dev/null;
-			rm /usr/local/bin/lycheejs-harvester 2> /dev/null;
-			rm /usr/local/bin/lycheejs-helper 2> /dev/null;
-			rm /usr/local/bin/lycheejs-ranger 2> /dev/null;
-			rm /usr/local/bin/lycheejs-strainer 2> /dev/null;
+			rm /usr/local/bin/lycheejs-harvester  2> /dev/null;
+			rm /usr/local/bin/lycheejs-helper     2> /dev/null;
+			rm /usr/local/bin/lycheejs-ranger     2> /dev/null;
+			rm /usr/local/bin/lycheejs-strainer   2> /dev/null;
+			rm /usr/local/bin/lycheejs-studio     2> /dev/null;
 
+			ln -s "$LYCHEEJS_ROOT/bin/helper.sh"                          /usr/local/bin/lycheejs-helper;
 			ln -s "$LYCHEEJS_ROOT/libraries/breeder/bin/breeder.sh"       /usr/local/bin/lycheejs-breeder;
 			ln -s "$LYCHEEJS_ROOT/libraries/fertilizer/bin/fertilizer.sh" /usr/local/bin/lycheejs-fertilizer;
 			ln -s "$LYCHEEJS_ROOT/libraries/harvester/bin/harvester.sh"   /usr/local/bin/lycheejs-harvester;
+			ln -s "$LYCHEEJS_ROOT/libraries/ranger/bin/ranger.sh"         /usr/local/bin/lycheejs-ranger;
 			ln -s "$LYCHEEJS_ROOT/libraries/strainer/bin/strainer.sh"     /usr/local/bin/lycheejs-strainer;
-
-			ln -s "$LYCHEEJS_ROOT/bin/editor.sh" /usr/local/bin/lycheejs-editor;
-			ln -s "$LYCHEEJS_ROOT/bin/helper.sh" /usr/local/bin/lycheejs-helper;
-			ln -s "$LYCHEEJS_ROOT/bin/ranger.sh" /usr/local/bin/lycheejs-ranger;
 
 
 			echo "> DONE";
@@ -310,22 +311,20 @@ else
 			fi;
 
 
-			rm /usr/local/bin/lycheejs-breeder 2> /dev/null;
-			rm /usr/local/bin/lycheejs-editor 2> /dev/null;
+			rm /usr/local/bin/lycheejs-breeder    2> /dev/null;
 			rm /usr/local/bin/lycheejs-fertilizer 2> /dev/null;
-			rm /usr/local/bin/lycheejs-harvester 2> /dev/null;
-			rm /usr/local/bin/lycheejs-helper 2> /dev/null;
-			rm /usr/local/bin/lycheejs-ranger 2> /dev/null;
-			rm /usr/local/bin/lycheejs-strainer 2> /dev/null;
+			rm /usr/local/bin/lycheejs-harvester  2> /dev/null;
+			rm /usr/local/bin/lycheejs-helper     2> /dev/null;
+			rm /usr/local/bin/lycheejs-ranger     2> /dev/null;
+			rm /usr/local/bin/lycheejs-strainer   2> /dev/null;
+			rm /usr/local/bin/lycheejs-studio     2> /dev/null;
 
+			ln -s "$LYCHEEJS_ROOT/bin/helper.sh"                          /usr/local/bin/lycheejs-helper;
 			ln -s "$LYCHEEJS_ROOT/libraries/breeder/bin/breeder.sh"       /usr/local/bin/lycheejs-breeder;
 			ln -s "$LYCHEEJS_ROOT/libraries/fertilizer/bin/fertilizer.sh" /usr/local/bin/lycheejs-fertilizer;
 			ln -s "$LYCHEEJS_ROOT/libraries/harvester/bin/harvester.sh"   /usr/local/bin/lycheejs-harvester;
+			ln -s "$LYCHEEJS_ROOT/libraries/ranger/bin/ranger.sh"         /usr/local/bin/lycheejs-ranger;
 			ln -s "$LYCHEEJS_ROOT/libraries/strainer/bin/strainer.sh"     /usr/local/bin/lycheejs-strainer;
-
-			ln -s "$LYCHEEJS_ROOT/bin/editor.sh" /usr/local/bin/lycheejs-editor;
-			ln -s "$LYCHEEJS_ROOT/bin/helper.sh" /usr/local/bin/lycheejs-helper;
-			ln -s "$LYCHEEJS_ROOT/bin/ranger.sh" /usr/local/bin/lycheejs-ranger;
 
 
 			echo "> DONE";

@@ -1,15 +1,15 @@
 
-lychee.define('app.Main').requires([
-	'app.state.Welcome',
-	'app.state.Profile',
-	'app.state.Console',
+lychee.define('ranger.Main').requires([
+	'ranger.state.Welcome',
+	'ranger.state.Profile',
+	'ranger.state.Console',
 	'harvester.net.Client'
 ]).includes([
 	'lychee.app.Main'
 ]).exports(function(lychee, global, attachments) {
 
 	const _lychee = lychee.import('lychee');
-	const _app    = lychee.import('app');
+	const _ranger = lychee.import('ranger');
 	const _Client = lychee.import('harvester.net.Client');
 	const _Main   = lychee.import('lychee.app.Main');
 
@@ -54,9 +54,9 @@ lychee.define('app.Main').requires([
 			}
 
 
-			this.setState('welcome', new _app.state.Welcome(this));
-			this.setState('profile', new _app.state.Profile(this));
-			this.setState('console', new _app.state.Console(this));
+			this.setState('welcome', new _ranger.state.Welcome(this));
+			this.setState('profile', new _ranger.state.Profile(this));
+			this.setState('console', new _ranger.state.Console(this));
 
 
 			this.changeState('welcome', 'welcome');
@@ -77,7 +77,7 @@ lychee.define('app.Main').requires([
 		serialize: function() {
 
 			let data = _Main.prototype.serialize.call(this);
-			data['constructor'] = 'app.Main';
+			data['constructor'] = 'ranger.Main';
 
 			let settings = data['arguments'][0] || {};
 			let blob     = data['blob'] || {};

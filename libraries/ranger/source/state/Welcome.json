@@ -100,7 +100,7 @@
 												"blob": {
 													"model": {
 														"identifier": {
-															"constructor": "app.ui.entity.Identifier",
+															"constructor": "ranger.ui.entity.Identifier",
 															"arguments": [
 																{
 																	"width": 224,
@@ -109,7 +109,7 @@
 															]
 														},
 														"control": {
-															"constructor": "app.ui.layer.Control",
+															"constructor": "ranger.ui.layer.Control",
 															"arguments": [
 																{
 																	"width": 224,
@@ -118,7 +118,7 @@
 															]
 														},
 														"web": {
-															"constructor": "app.ui.layer.Web",
+															"constructor": "ranger.ui.layer.Web",
 															"arguments": [
 																{
 																	"width": 224,
