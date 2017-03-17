@@ -92,7 +92,26 @@
 				let tmp = [];
 
 				try {
-					tmp = JSON.stringify(value, null, _INDENT).split('\n');
+
+					let cache = [];
+
+					tmp = JSON.stringify(value, function(key, value) {
+
+						if (value instanceof Object) {
+
+							if (cache.indexOf(value) === -1) {
+								cache.push(value);
+								return value;
+							} else {
+								return undefined;
+							}
+
+						} else {
+							return value;
+						}
+
+					}, _INDENT).split('\n');
+
 				} catch (err) {
 				}
 
