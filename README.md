@@ -5,13 +5,12 @@ brought to you as libre software with joy and pride by [Artificial Engineering](
 
 Support our libre Bot Cloud via BTC [1CamMuvrFU1QAMebPoDsL3JrioVDoxezY2](bitcoin:1CamMuvrFU1QAMebPoDsL3JrioVDoxezY2?amount=0.5&label=lychee.js%20Support).
 
-<details>
-<summary>**QR Codes**</summary>
-![QR codes](./guides/asset/qr-codes.png)
-</details>
+**QR Codes**
 
-<details>
-<summary>**Table of Contents**</summary>
+![QR codes](./guides/asset/qr-codes.png)
+
+**Table of Contents**
+
 - [Overview](#overview)
 - [Features](#features)
 - [Workflow](#workflow)
@@ -21,7 +20,6 @@ Support our libre Bot Cloud via BTC [1CamMuvrFU1QAMebPoDsL3JrioVDoxezY2](bitcoin
 - [Contributor Guides](#contributor-guides)
 - [Help](#help)
 - [License](#license)
-</details>
 
 
 ## IMPORTANT NOTICE
