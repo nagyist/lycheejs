@@ -59,12 +59,12 @@ lychee.define('harvester.net.server.Redirect').exports(function(lychee, global, 
 				}
 
 
-			// Multi-project mode /projects/cultivator/*
-			} else if (url === '/index.html' || url === '/') {
+			// Multi-project mode /index.html
+			} else if (url === '/') {
 
 				tunnel.send('SHIT', {
 					'status':   '301 Moved Permanently',
-					'location': '/projects/cultivator/index.html'
+					'location': '/index.html'
 				});
 
 				return true;

@@ -1,26 +1,18 @@
 
 @font-face {
 	font-family: 'museo-sans-300';
-	src: url('museo-sans-300.eot');
-	src: url('museo-sans-300.eot?#iefix') format('embedded-opentype'),
-		 url('museo-sans-300.woff2') format('woff2'),
-		 url('museo-sans-300.woff') format('woff'),
-		 url('museo-sans-300.ttf') format('truetype'),
-		 url('museo-sans-300.svg#museo_sans300') format('svg');
+	src: url('museo-sans-300.woff2') format('woff2'),
+	     url('museo-sans-300.woff') format('woff');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
-    font-family: 'museo-sans-500';
-	src: url('museo-sans-500.eot');
-	src: url('museo-sans-500.eot?#iefix') format('embedded-opentype'),
-		 url('museo-sans-500.woff2') format('woff2'),
-		 url('museo-sans-500.woff') format('woff'),
-		 url('museo-sans-500.ttf') format('truetype'),
-		 url('museo-sans-500.svg#museo_sans500') format('svg');
-    font-weight: normal;
-    font-style: normal;
+	font-family: 'museo-sans-500';
+	src: url('museo-sans-500.woff2') format('woff2'),
+	     url('museo-sans-500.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
 }
 
 body {
@@ -46,7 +38,7 @@ body > article div {
 }
 
 body > article div button {
-	width: 128px;
+	width: 160px;
 	margin: 0px 16px;
 }
 
@@ -70,7 +62,6 @@ body > article > p:last-child {
 }
 
 #lychee-MESSAGE.visible {
-	/* height: auto; */
 	height: 5em;
 	padding: 16px 16px;
 	opacity: 1;

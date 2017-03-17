@@ -160,12 +160,7 @@ lychee.define('harvester.net.remote.Project').requires([
 
 			if (main !== null && tunnel !== null) {
 
-				let projects = Object.values(main._projects).filter(function(project) {
-					return /cultivator/g.test(project.identifier) === false;
-				}).map(_serialize);
-
-
-				tunnel.send(projects, {
+				tunnel.send(Object.values(main._projects).map(_serialize), {
 					id:    this.id,
 					event: 'sync'
 				});

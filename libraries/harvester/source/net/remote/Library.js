@@ -148,12 +148,7 @@ lychee.define('harvester.net.remote.Library').requires([
 
 			if (main !== null && tunnel !== null) {
 
-				let libraries = Object.values(main._libraries).filter(function(library) {
-					return /cultivator/g.test(library.identifier) === false;
-				}).map(_serialize);
-
-
-				tunnel.send(libraries, {
+				tunnel.send(Object.values(main._libraries).map(_serialize), {
 					id:    this.id,
 					event: 'sync'
 				});

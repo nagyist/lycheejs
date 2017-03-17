@@ -82,22 +82,9 @@ lychee.define('harvester.Watcher').requires([
 
 		// Projects
 		let projects = this.filesystem.dir('/projects').filter(function(value) {
-			return /cultivator|README\.md/.test(value) === false;
+			return value !== 'README.md';
 		}).map(function(value) {
 			return '/projects/' + value;
-		});
-
-		// Cultivator Projects
-		this.filesystem.dir('/projects/cultivator').filter(function(value) {
-			return /design|index\.html|robots\.txt/.test(value) === false;
-		}).map(function(value) {
-			return '/projects/cultivator/' + value;
-		}).forEach(function(identifier) {
-
-			if (projects.indexOf(identifier) === -1) {
-				projects.push(identifier);
-			}
-
 		});
 
 

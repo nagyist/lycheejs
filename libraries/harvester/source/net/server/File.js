@@ -34,11 +34,6 @@ lychee.define('harvester.net.server.File').requires([
 		'zip':      { binary: true,  type: 'application/zip'               }
 	};
 
-	const _PUBLIC_CULTIVATOR = {
-		identifier: '/projects/cultivator',
-		filesystem: new _Filesystem('/projects/cultivator')
-	};
-
 	const _PUBLIC_PROJECT = {
 		identifier: '/libraries/harvester/public',
 		filesystem: new _Filesystem('/libraries/harvester/public')
@@ -127,22 +122,6 @@ lychee.define('harvester.net.server.File').requires([
 				project    = lychee.import('MAIN')._libraries[identifier] || null;
 
 
-			// Multi-project mode /projects/cultivator/*
-			} else if (url.substr(0, 20) === '/projects/cultivator') {
-
-				identifier = url.split('/').slice(0, 4).join('/');
-				path       = '/' + url.split('/').slice(4).join('/');
-				project    = lychee.import('MAIN')._projects[identifier] || null;
-
-
-				// /projects/cultivator/design/*, /projects/cultivator/index.html
-				if (project === null) {
-					identifier = url.split('/').slice(0, 3).join('/');
-					path       = '/' + url.split('/').slice(3).join('/');
-					project    = _PUBLIC_CULTIVATOR;
-				}
-
-
 			// Multi-project mode /projects/*
 			} else if (url.substr(0, 9) === '/projects') {
 
@@ -151,7 +130,7 @@ lychee.define('harvester.net.server.File').requires([
 				project    = lychee.import('MAIN')._projects[identifier] || null;
 
 
-			// /favicon.ico
+			// /favicon.ico /index.html
 			} else {
 
 				identifier = null;
