@@ -276,6 +276,7 @@ else
 			ln -s "$LYCHEEJS_ROOT/libraries/harvester/bin/harvester.sh"   /usr/local/bin/lycheejs-harvester;
 			ln -s "$LYCHEEJS_ROOT/libraries/ranger/bin/ranger.sh"         /usr/local/bin/lycheejs-ranger;
 			ln -s "$LYCHEEJS_ROOT/libraries/strainer/bin/strainer.sh"     /usr/local/bin/lycheejs-strainer;
+			ln -s "$LYCHEEJS_ROOT/libraries/studio/bin/studio.sh"         /usr/local/bin/lycheejs-studio;
 
 
 			echo "> DONE";
@@ -325,6 +326,7 @@ else
 			ln -s "$LYCHEEJS_ROOT/libraries/harvester/bin/harvester.sh"   /usr/local/bin/lycheejs-harvester;
 			ln -s "$LYCHEEJS_ROOT/libraries/ranger/bin/ranger.sh"         /usr/local/bin/lycheejs-ranger;
 			ln -s "$LYCHEEJS_ROOT/libraries/strainer/bin/strainer.sh"     /usr/local/bin/lycheejs-strainer;
+			ln -s "$LYCHEEJS_ROOT/libraries/studio/bin/studio.sh"         /usr/local/bin/lycheejs-studio;
 
 
 			echo "> DONE";

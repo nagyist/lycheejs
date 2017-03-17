@@ -14,40 +14,36 @@ lychee.define('tool.data.SPRITE').tags({
 	 * HELPERS
 	 */
 
-	var _defaults = {};
-
-	(function(defaults) {
-
-		defaults.texture     = 512;
-		defaults.frame       = 'power-of-two';
-		defaults.boundingbox = 'auto';
-		defaults.width       = null;
-		defaults.height      = null;
-		defaults.depth       = null;
-		defaults.radius      = null;
-		defaults.states      = 'auto';
-		defaults.statemap    = 'image';
-		defaults.files       = [];
-
-	})(_defaults);
+	const _DEFAULTS = {
+		texture:     512,
+		frame:       'power-of-two',
+		boundingbox: 'auto',
+		width:       null,
+		height:      null,
+		depth:       null,
+		radius:      null,
+		states:      'auto',
+		statemap:    'image',
+		files:       []
+	};
 
 
-	var _Buffer = function(data, mode) {
+	const _Buffer = function(data, mode) {
 
 		data = typeof data === 'string'          ? _JSON.decode(data) : null;
 		mode = lychee.enumof(_Buffer.MODE, mode) ? mode               : 0;
 
 
-		var settings = Object.assign({}, data);
+		let settings = Object.assign({}, data);
 
 
-		var config = settings.config;
+		let config = settings.config;
 		if (typeof config === 'string') {
 			settings.config = new Config(config);
 			settings.config.deserialize({ buffer: config });
 		}
 
-		var texture = settings.texture;
+		let texture = settings.texture;
 		if (typeof texture === 'string') {
 			settings.texture = new Texture(texture);
 			settings.texture.deserialize({ buffer: texture });
@@ -83,7 +79,7 @@ lychee.define('tool.data.SPRITE').tags({
 
 		toString: function() {
 
-			var tmp = Object.assign({}, this.__data);
+			let tmp = Object.assign({}, this.__data);
 
 			if (tmp.config !== null) {
 				tmp.config = tmp.config.url || null;
@@ -142,13 +138,13 @@ lychee.define('tool.data.SPRITE').tags({
 	 * ENCODER and DECODER
 	 */
 
-	var _encode_buffer = function(buffer, data) {
+	const _encode_buffer = function(buffer, data) {
 
-		var settings = Object.assign({}, _defaults, data);
+		let settings = Object.assign({}, _DEFAULTS, data);
 
-		var frames = [];
-		var states = {};
-		var map    = {};
+		let frames = [];
+		let states = {};
+		let map    = {};
 
 
 
@@ -158,10 +154,10 @@ lychee.define('tool.data.SPRITE').tags({
 
 		(function(files) {
 
-			var frame_width  = 0;
-			var frame_height = 0;
-			var size_x       = 0;
-			var size_y       = 0;
+			let frame_width  = 0;
+			let frame_height = 0;
+			let size_x       = 0;
+			let size_y       = 0;
 
 			if (settings.frame === 'original') {
 
@@ -180,12 +176,12 @@ lychee.define('tool.data.SPRITE').tags({
 					frame_height = Math.max(frame_height, file.data.height);
 				});
 
-				var tmp_w = Math.round(Math.sqrt(frame_width));
+				let tmp_w = Math.round(Math.sqrt(frame_width));
 				if (tmp_w % 2 !== 0) {
 					frame_width = Math.pow(tmp_w++, 2);
 				}
 
-				var tmp_h = Math.round(Math.sqrt(frame_height));
+				let tmp_h = Math.round(Math.sqrt(frame_height));
 				if (tmp_h % 2 !== 0) {
 					frame_height = Math.pow(tmp_h++, 2);
 				}
@@ -202,17 +198,17 @@ lychee.define('tool.data.SPRITE').tags({
 
 			files.forEach(function(file, index) {
 
-				var state   = file.name.toLowerCase().split('_')[0].split('.')[0];
-				var texture = file.data;
+				let state   = file.name.toLowerCase().split('_')[0].split('.')[0];
+				let texture = file.data;
 
 
-				var mapx    = ( index % size_x)      * frame_width;
-				var mapy    = ((index / size_x) | 0) * frame_height;
-				var renderx = mapx + (frame_width / 2) - (texture.width / 2);
-				var rendery = mapy + (frame_height / 2) - (texture.height / 2);
+				let mapx    = (index % size_x)       * frame_width;
+				let mapy    = ((index / size_x) | 0) * frame_height;
+				let renderx = mapx + (frame_width / 2) - (texture.width / 2);
+				let rendery = mapy + (frame_height / 2) - (texture.height / 2);
 
 
-				var data = {
+				let data = {
 					state:   state,
 					texture: texture,
 					map: {
@@ -254,7 +250,7 @@ lychee.define('tool.data.SPRITE').tags({
 
 				files.forEach(function(file) {
 
-					var state = file.name.toLowerCase().split('_')[0].split('.')[0];
+					let state = file.name.toLowerCase().split('_')[0].split('.')[0];
 					if (states[state] === undefined) {
 
 						states[state] = {
@@ -305,7 +301,7 @@ lychee.define('tool.data.SPRITE').tags({
 
 				frames.forEach(function(frame) {
 
-					var state = frame.state;
+					let state = frame.state;
 					if (map[state] === undefined) {
 						map[state] = [];
 					}
@@ -332,18 +328,18 @@ lychee.define('tool.data.SPRITE').tags({
 		 * 4. Render Config
 		 */
 
-		var config = null;
+		let config = null;
 
 
 		(function() {
 
-			var width  = typeof settings.width === 'number'  ? (settings.width  | 0) : null;
-			var height = typeof settings.height === 'number' ? (settings.height | 0) : null;
-			var depth  = typeof settings.depth === 'number'  ? (settings.depth  | 0) : null;
-			var radius = typeof settings.radius === 'number' ? (settings.radius | 0) : null;
+			let width  = typeof settings.width === 'number'  ? (settings.width  | 0) : null;
+			let height = typeof settings.height === 'number' ? (settings.height | 0) : null;
+			let depth  = typeof settings.depth === 'number'  ? (settings.depth  | 0) : null;
+			let radius = typeof settings.radius === 'number' ? (settings.radius | 0) : null;
 
 
-			var data = {
+			let data = {
 				map:    map,
 				states: states
 			};
@@ -387,8 +383,8 @@ lychee.define('tool.data.SPRITE').tags({
 			 * 4.2 Export Config
 			 */
 
-			// var blob = 'data:application/json;base64,' + new Buffer(_JSON.encode(data), 'utf8').toString('base64');
-			var blob = 'data:application/json;base64,' + new Buffer(JSON.stringify(data, null, '\t'), 'utf8').toString('base64');
+			// let blob = 'data:application/json;base64,' + new Buffer(_JSON.encode(data), 'utf8').toString('base64');
+			let blob = 'data:application/json;base64,' + new Buffer(JSON.stringify(data, null, '\t'), 'utf8').toString('base64');
 
 			config = new Config(blob);
 			config.deserialize({ buffer: blob });
@@ -401,21 +397,21 @@ lychee.define('tool.data.SPRITE').tags({
 		 * 5. Render Texture
 		 */
 
-		var texture = null;
+		let texture = null;
 
 
 		(function() {
 
-			var canvas = document.createElement('canvas');
+			let canvas = document.createElement('canvas');
 
 			canvas.width  = settings.texture;
 			canvas.height = settings.texture;
 
 
-			var render_frame = function(frame) {
+			let render_frame = function(frame) {
 
-				var map     = frame.render;
-				var texture = frame.texture;
+				let map     = frame.render;
+				let texture = frame.texture;
 
 
 				this.drawImage(
@@ -447,7 +443,7 @@ lychee.define('tool.data.SPRITE').tags({
 			 * 5.2 Export Texture
 			 */
 
-			var blob = canvas.toDataURL('image/png');
+			let blob = canvas.toDataURL('image/png');
 
 			texture    = new Texture(blob);
 			texture.deserialize({ buffer: blob });
@@ -465,7 +461,7 @@ lychee.define('tool.data.SPRITE').tags({
 
 	};
 
-	var _encode = function(buffer, data) {
+	const _encode = function(buffer, data) {
 
 		if (data instanceof Object) {
 
@@ -482,9 +478,9 @@ lychee.define('tool.data.SPRITE').tags({
 	};
 
 
-	var _decode = function(buffer) {
+	const _decode = function(buffer) {
 
-		var value = buffer.getBlob();
+		let value = buffer.getBlob();
 		if (value.texture === null) {
 			value = undefined;
 		}
@@ -500,29 +496,30 @@ lychee.define('tool.data.SPRITE').tags({
 	 * IMPLEMENTATION
 	 */
 
-	var Module = {};
+	const Module = {
+
+		encode: function(data) {
+
+			let buffer = new _Buffer(null, _Buffer.MODE.write);
+
+			_encode(buffer, data);
+
+			return buffer.toString();
+
+		},
 
 
-	Module.encode = function(data) {
+		decode: function(data) {
 
-		var buffer = new _Buffer(null, _Buffer.MODE.write);
+			let buffer = new _Buffer(data, _Buffer.MODE.read);
 
-		_encode(buffer, data);
+			let value = _decode(buffer);
+			if (value === undefined) {
+				return null;
+			} else {
+				return value;
+			}
 
-		return buffer.toString();
-
-	};
-
-
-	Module.decode = function(data) {
-
-		var buffer = new _Buffer(data, _Buffer.MODE.read);
-
-		var value = _decode(buffer);
-		if (value === undefined) {
-			return null;
-		} else {
-			return value;
 		}
 
 	};

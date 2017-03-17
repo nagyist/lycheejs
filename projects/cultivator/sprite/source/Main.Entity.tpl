@@ -38,7 +38,7 @@ lychee.define('app.entity.Entity').includes([
 
 		serialize: function() {
 
-			var data = _Sprite.prototype.serialize.call(this);
+			let data = _Sprite.prototype.serialize.call(this);
 			data['constructor'] = 'app.entity.Entity';
 
 
